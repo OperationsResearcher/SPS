@@ -2,6 +2,33 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-218 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3b devamı — surec/karne.html çevirisi (surec modülü TAM)
+**Modül:** ui/surec/karne.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3b son dilim. karne.html (1101 satır, en yoğun template) ~130 görünür HTML metni
+{{ _() }} ile işaretlendi: banner, AI özet, sağlık/KPI widget'ları, kanban (PG+faaliyet), 6 modal
+(PG ekle, veri girişi VGS, geçmiş düzenle/sil, micro PG tablo, veri detay/düzenle, K-Vektör analizi).
+Status/enum value'ları korundu (value="Aktif"/"RG"/"Increasing" sabit, görünen _() çevrildi).
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/surec/karne.html` → ~130 metin {{ _() }} (bölüm bölüm, 7 mantıksal grup)
+- `translations/en/LC_MESSAGES/messages.po` → +127 string (296 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`
+- `scripts/_arsiv/fix_oneshot/i18n_fill_surec.py` → karne sözlüğü eklendi (~130 TR→EN)
+
+### Test
+karne.html Jinja parse OK (status değerleri, %% kaçış, named param %(i)s, liste indeksleme, multi-line
+syntax bozmadı). compile 0 boş 0 fuzzy. force_locale EN: "New Performance Indicator|Target Setting Method|
+Competitor-Based (CB)|Data Entry Wizard|Excellent|3 Points" (named param dahil).
+
+### Notlar
+surec modülü ARTIK TAM İngilizce (faaliyetler+index+karne). JS blokları (956+) DOKUNULMADI — FAZ 4.
+Hedef belirleme kısaltmaları çevrildi (RG→CB, HKY→TCM...) ama value kodları sabit. Sıradaki: bireysel modülü.
+
 ## TASK-217 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3b — surec (Process) modülü: faaliyetler + index çevirisi

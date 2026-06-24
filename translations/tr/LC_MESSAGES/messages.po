@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 03:30+0300\n"
+"POT-Creation-Date: 2026-06-24 03:58+0300\n"
 "PO-Revision-Date: 2026-05-23 12:00+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -163,6 +163,17 @@ msgstr ""
 
 #: ui/templates/platform/base.html:563
 #: ui/templates/platform/surec/index.html:506
+#: ui/templates/platform/surec/karne.html:502
+#: ui/templates/platform/surec/karne.html:683
+#: ui/templates/platform/surec/karne.html:752
+#: ui/templates/platform/surec/karne.html:785
+#: ui/templates/platform/surec/karne.html:811
+#: ui/templates/platform/surec/karne.html:880
+#: ui/templates/platform/surec/karne.html:892
+#: ui/templates/platform/surec/karne.html:898
+#: ui/templates/platform/surec/karne.html:910
+#: ui/templates/platform/surec/karne.html:939
+#: ui/templates/platform/surec/karne.html:947
 msgid "Kapat"
 msgstr ""
 
@@ -176,6 +187,11 @@ msgstr "Düzenle"
 
 #: ui/templates/platform/base.html:826
 #: ui/templates/platform/surec/index.html:634
+#: ui/templates/platform/surec/karne.html:665
+#: ui/templates/platform/surec/karne.html:736
+#: ui/templates/platform/surec/karne.html:769
+#: ui/templates/platform/surec/karne.html:795
+#: ui/templates/platform/surec/karne.html:925
 msgid "İptal"
 msgstr "İptal"
 
@@ -210,6 +226,7 @@ msgid "Yönetici Sabah Özeti"
 msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:63
+#: ui/templates/platform/surec/karne.html:727
 msgid "Yükleniyor…"
 msgstr ""
 
@@ -354,16 +371,22 @@ msgstr ""
 #: ui/templates/platform/surec/faaliyetler.html:2
 #: ui/templates/platform/surec/faaliyetler.html:3
 #: ui/templates/platform/surec/faaliyetler.html:36
+#: ui/templates/platform/surec/karne.html:137
+#: ui/templates/platform/surec/karne.html:406
 msgid "Süreç Faaliyetleri"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:10
 #: ui/templates/platform/surec/faaliyetler.html:75
 #: ui/templates/platform/surec/faaliyetler.html:94
+#: ui/templates/platform/surec/karne.html:390
 msgid "Faaliyetler"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:33
+#: ui/templates/platform/surec/karne.html:133
+#: ui/templates/platform/surec/karne.html:285
+#: ui/templates/platform/surec/karne.html:809
 msgid "Süreç Karnesi"
 msgstr ""
 
@@ -377,18 +400,24 @@ msgid "Revizyon"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:51
+#: ui/templates/platform/surec/karne.html:99
+#: ui/templates/platform/surec/karne.html:293
+#: ui/templates/platform/surec/karne.html:819
 msgid "Yıl"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:60
+#: ui/templates/platform/surec/karne.html:691
 msgid "Süreç"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:77
+#: ui/templates/platform/surec/karne.html:392
 msgid "Toplam"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:81
+#: ui/templates/platform/surec/karne.html:396
 msgid "Tamamlanan"
 msgstr ""
 
@@ -398,73 +427,94 @@ msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:89
 #: ui/templates/platform/surec/faaliyetler.html:114
+#: ui/templates/platform/surec/karne.html:278
+#: ui/templates/platform/surec/karne.html:486
+#: ui/templates/platform/surec/karne.html:944
 msgid "Veriler yükleniyor…"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:96
+#: ui/templates/platform/surec/karne.html:431
 msgid "Faaliyet Ekle"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:104
+#: ui/templates/platform/surec/karne.html:476
 msgid "Faaliyet"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:105
 #: ui/templates/platform/surec/index.html:530
+#: ui/templates/platform/surec/karne.html:221
+#: ui/templates/platform/surec/karne.html:477
 #, fuzzy
 msgid "Durum"
 msgstr "Kurum Paneli"
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Oca"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Şub"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Mar"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Nis"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "May"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Haz"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Tem"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Ağu"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Eyl"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Eki"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 msgid "Kas"
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
 #, fuzzy
 msgid "Ara"
 msgstr "Ayarlar"
 
 #: ui/templates/platform/surec/faaliyetler.html:109
+#: ui/templates/platform/surec/karne.html:222
+#: ui/templates/platform/surec/karne.html:481
 msgid "İşlem"
 msgstr ""
 
@@ -546,14 +596,17 @@ msgid "Kritik (&lt;50)"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:270
+#: ui/templates/platform/surec/karne.html:361
 msgid "Hedefte"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:321
+#: ui/templates/platform/surec/karne.html:369
 msgid "Risk altında"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:372
+#: ui/templates/platform/surec/karne.html:377
 msgid "Hedef dışı"
 msgstr ""
 
@@ -660,6 +713,9 @@ msgid "Sürecin bitiş noktası..."
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:572
+#: ui/templates/platform/surec/karne.html:621
+#: ui/templates/platform/surec/karne.html:645
+#: ui/templates/platform/surec/karne.html:920
 msgid "Açıklama"
 msgstr ""
 
@@ -724,6 +780,571 @@ msgstr ""
 
 #: ui/templates/platform/surec/index.html:637
 msgid "Süreci Kaydet"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:89
+msgid "SÜREÇ KARNESİ"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:93
+msgid "Döküman No"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:96
+msgid "Rev. tarihi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:100
+msgid "Rapor yılı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:119
+msgid "Süreç seçin"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:120
+msgid "Görüntülenecek süreç"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:129
+msgid "Görünüm"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:140
+msgid "Bu süreçteki PG ağırlıkları ve başarı puanı aralıklarını kontrol eder"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:141
+#: ui/templates/platform/surec/karne.html:937
+msgid "K-Vektör Analizi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:158
+msgid "AI YÖNETİCİ ÖZETİ"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:171
+msgid "Genel bilgiler"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:177
+msgid "Genel sağlık skoru"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:180
+msgid "Seçili yıl PG gerçekleşme / hedef ortalamasına göre"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:183
+#: ui/templates/platform/surec/karne.html:185
+msgid "KPI başarı dağılımı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:190
+msgid "Faaliyetlerin ilerlemesi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:192
+msgid "Genel faaliyet skoru"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:197
+msgid "KPI veri doluluk"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:211
+msgid "Yönetici özeti (alt süreçler)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:218
+msgid "Alt süreç"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:219
+msgid "Süreç lideri (özet)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:220
+msgid "İlerleme"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:263
+msgid "Gösterge"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:265
+msgid "— PG seçin —"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:271
+msgid "Grafik için bir PG seçin"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:294
+msgid "Performans göstergeleri rapor yılı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:301
+#: ui/templates/platform/surec/karne.html:413
+#: ui/templates/platform/surec/karne.html:823
+msgid "Gösterim"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:302
+msgid "Görünüm periyodu"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:303
+#: ui/templates/platform/surec/karne.html:825
+msgid "Yıllık (yıl sonu)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:304
+#: ui/templates/platform/surec/karne.html:826
+msgid "6 aylık"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:305
+#: ui/templates/platform/surec/karne.html:560
+#: ui/templates/platform/surec/karne.html:827
+msgid "Çeyreklik"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:306
+#: ui/templates/platform/surec/karne.html:559
+#: ui/templates/platform/surec/karne.html:828
+msgid "Aylık"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:307
+#: ui/templates/platform/surec/karne.html:829
+msgid "Haftalık"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:308
+#: ui/templates/platform/surec/karne.html:830
+msgid "Günlük"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:314
+msgid "Önceki dönem"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:315
+#: ui/templates/platform/surec/karne.html:837
+msgid "Önceki"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:321
+msgid "Sonraki dönem"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:322
+#: ui/templates/platform/surec/karne.html:844
+msgid "Sonraki"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:329
+msgid "Günlük ay (senkron)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:337
+msgid "Veri Giriş Sihirbazı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:341
+#, fuzzy
+msgid "PG ekle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/surec/karne.html:345
+#: ui/templates/platform/surec/karne.html:434
+msgid "Excel'e aktar"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:348
+#: ui/templates/platform/surec/karne.html:437
+msgid "Yazdır"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:350
+msgid "PG tablo modalını aç"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:351
+msgid "Tablo Görünümü"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:383
+msgid "Henüz performans göstergesi eklenmemiş."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:398
+msgid "Özet görünüm"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:414
+msgid "Faaliyet görünümü"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:415
+msgid "Kanban"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:416
+msgid "Aylık takip tablosu"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:423
+msgid "Faaliyet paneli"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:424
+msgid "Özet kartlar + detay görünüm"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:447
+msgid "Planlananlar"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:455
+msgid "Devam Edenler"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:463
+msgid "Tamamlanan / İptal"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:469
+msgid "Henüz faaliyet eklenmemiş."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:500
+#, fuzzy
+msgid "Yeni Performans Göstergesi"
+msgstr "Bireysel Karne"
+
+#: ui/templates/platform/surec/karne.html:510
+msgid "Gösterge Adı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:512
+msgid "Performans göstergesi adı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:517
+#: ui/templates/platform/surec/karne.html:863
+msgid "Kodu"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:522
+msgid "Hedef Değer"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:524
+msgid "Hedef değer"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:527
+msgid "Ölçüm Birimi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:533
+msgid "Listeden seçin veya kendi biriminizi yazın."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:549
+msgid "Skor Ağırlığı (%)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:557
+msgid "Ölçüm Periyodu"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:561
+msgid "6 ay"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:562
+msgid "Yıllık"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:566
+msgid "Hedef Yönü"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:568
+msgid "Arttıkça İyi ↑"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:569
+msgid "Azaldıkça İyi ↓"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:573
+msgid "Hesaplama Yöntemi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:575
+msgid "Ortalama"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:576
+msgid "Toplama"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:577
+msgid "Son Değer"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:584
+msgid "Gösterge Türü"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:586
+#: ui/templates/platform/surec/karne.html:595
+msgid "Seçiniz"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:587
+msgid "İyileştirme"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:588
+#, fuzzy
+msgid "Koruma"
+msgstr "Kurum Paneli"
+
+#: ui/templates/platform/surec/karne.html:589
+msgid "Bilgi Amaçlı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:593
+msgid "Hedef Belirleme Yöntemi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:596
+msgid "Rakibe Göre (RG)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:597
+msgid "Hedef Katsayısı Yöntemi (HKY)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:598
+msgid "Hedef Konulamaz (HK)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:599
+msgid "Sabit Hedef (SH)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:600
+msgid "Dalgalı Hedef (DH)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:601
+msgid "Sektöre Göre Hedef (SGH)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:605
+msgid "Alt Strateji (Opsiyonel)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:607
+msgid "-- Alt Strateji Seçiniz --"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:614
+msgid "Önceki Yıl Ortalaması"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:616
+msgid "Opsiyonel baz değer"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:632
+msgid "Başarı Puanı Yapılandırması (Opsiyonel)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:640
+#, fuzzy
+msgid "Aralık"
+msgstr "Ayarlar"
+
+#: ui/templates/platform/surec/karne.html:641
+msgid "Aralık hakkında bilgi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:641
+msgid "Aralık açıklaması"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:649
+#, python-format
+msgid "%(i)s Puan"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:656
+msgid "Beklentinin Çok Altında"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:656
+msgid "İyileştirmeye Açık"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:656
+msgid "Hedefe Ulaşmış"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:656
+msgid "Hedefin Üzerinde"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:656
+msgid "Mükemmel"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:668
+#: ui/templates/platform/surec/karne.html:738
+#: ui/templates/platform/surec/karne.html:771
+#: ui/templates/platform/surec/karne.html:926
+msgid "Kaydet"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:681
+msgid "Veri Girişi Sihirbazı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:695
+msgid "Performans göstergesi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:701
+msgid "Veri tarihi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:706
+msgid ""
+"Verinin <strong>hangi güne / olaya ilişkin</strong> olduğunu seçin (ör. "
+"anketin yapıldığı gün). <strong>Kaydet</strong> ile sisteme işlendiği "
+"tarih ve saat <strong>otomatik</strong> kaydedilir; yıl ve dönem bu veri "
+"tarihine göre PG ölçüm tipine uygun hesaplanır."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:709
+msgid ""
+"Veri, <strong>kendi adınıza</strong> süreç karnesine ve bireysel "
+"karnenize yazılır."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:712
+#: ui/templates/platform/surec/karne.html:760
+msgid "Gerçekleşen değer"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:714
+msgid "Örn: 42"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:717
+#: ui/templates/platform/surec/karne.html:764
+msgid "Açıklama (opsiyonel)"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:718
+msgid "İsteğe bağlı not"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:723
+msgid "Kayıt geçmişi"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:729
+msgid "Bu PG için henüz kayıt yok."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:750
+#, fuzzy
+msgid "Kayıt düzenle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/surec/karne.html:757
+msgid "Veri tarihi değişmez; yalnızca gerçekleşen değer ve açıklama güncellenir."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:783
+msgid "Kaydı pasifleştir"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:790
+msgid ""
+"Kayıt <strong>kalıcı olarak silinmez</strong>. Pasif yapılır; skor ve "
+"raporlarda kullanılmaz."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:791
+msgid "Silme işlemi <strong>sizin adınıza</strong> kayda geçer (kim / ne zaman)."
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:797
+msgid "Evet, pasifleştir"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:851
+#, fuzzy
+msgid "PG Ekle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/surec/karne.html:856
+#, fuzzy
+msgid "PGV Ekle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/surec/karne.html:862
+msgid "Sütun gösterimi:"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:864
+#, fuzzy
+msgid "Strateji"
+msgstr "Stratejik Planlama"
+
+#: ui/templates/platform/surec/karne.html:865
+msgid "Ağırlık"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:866
+msgid "Birim"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:867
+msgid "Periyot"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:868
+msgid "Yıllık hedef"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:869
+msgid "Önceki yıl"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:870
+msgid "Ağırlıklı başarı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:890
+msgid "Periyot veri detayı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:908
+#, fuzzy
+msgid "Veri düzenle"
+msgstr "Düzenle"
+
+#: ui/templates/platform/surec/karne.html:916
+msgid "Gerçekleşen"
 msgstr ""
 
 #~ msgid "Hoş geldiniz"
