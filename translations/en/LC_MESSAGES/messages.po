@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 04:34+0300\n"
+"POT-Creation-Date: 2026-06-24 04:51+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -29,7 +29,8 @@ msgstr "My Desktop"
 msgid "Stratejik Planlama"
 msgstr "Strategic Planning"
 
-#: ui/templates/platform/base.html:150
+#: ui/templates/platform/base.html:150 ui/templates/platform/kurum/index.html:2
+#: ui/templates/platform/kurum/index.html:3
 msgid "Kurum Paneli"
 msgstr "Organization Panel"
 
@@ -186,6 +187,7 @@ msgid "Sayfa / strateji / PG / proje / süreç / kullanıcı ara…"
 msgstr "Search page / strategy / PI / project / process / user…"
 
 #: ui/templates/platform/base.html:816
+#: ui/templates/platform/kurum/index.html:106
 msgid "Düzenle"
 msgstr "Edit"
 
@@ -337,6 +339,7 @@ msgid "E-posta Ayarları"
 msgstr "Email Settings"
 
 #: ui/templates/platform/ayarlar/eposta.html:10
+#: ui/templates/platform/kurum/ayarlar.html:74
 msgid "E-posta"
 msgstr "Email"
 
@@ -465,6 +468,7 @@ msgid "Test Maili Gönder"
 msgstr "Send Test Email"
 
 #: ui/templates/platform/ayarlar/eposta.html:175
+#: ui/templates/platform/kurum/ayarlar.html:201
 #: ui/templates/platform/surec/karne.html:668
 #: ui/templates/platform/surec/karne.html:738
 #: ui/templates/platform/surec/karne.html:771
@@ -543,6 +547,9 @@ msgid "Haftalık özet · sabah operasyonel · risk uyarısı · aylık PG"
 msgstr "Weekly summary · morning operational · risk alert · monthly PI"
 
 #: ui/templates/platform/ayarlar/index.html:118
+#: ui/templates/platform/kurum/ayarlar.html:2
+#: ui/templates/platform/kurum/ayarlar.html:3
+#: ui/templates/platform/kurum/ayarlar.html:23
 msgid "Kurum Ayarları"
 msgstr "Organization Settings"
 
@@ -587,6 +594,8 @@ msgstr ""
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:81
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:109
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:136
+#: ui/templates/platform/kurum/ayarlar.html:109
+#: ui/templates/platform/kurum/ayarlar.html:139
 msgid "Açık"
 msgstr "On"
 
@@ -785,7 +794,8 @@ msgid "Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti."
 msgstr "A brief summary of data coverage and your indicators for the selected year."
 "A brief summary of data coverage and your indicators for the selected "
 "year.A brief summary of data coverage and your indicators for the "
-"selected year."
+"selected year.A brief summary of data coverage and your indicators for "
+"the selected year."
 
 #: ui/templates/platform/bireysel/karne.html:192
 msgid ""
@@ -969,6 +979,497 @@ msgstr "Activity"
 #: ui/templates/platform/surec/karne.html:477
 msgid "Durum"
 msgstr "Status"
+
+#: ui/templates/platform/kurum/ayarlar.html:24
+msgid "Kurum bilgilerini ve logosunu güncelle."
+msgstr "Update organization information and logo."
+
+#: ui/templates/platform/kurum/ayarlar.html:30
+msgid "Yetkili kullanıcılar düzenleyebilir."
+msgstr "Authorized users can edit."
+
+#: ui/templates/platform/kurum/ayarlar.html:36
+msgid "Kurum Bilgileri"
+msgstr "Organization Information"
+
+#: ui/templates/platform/kurum/ayarlar.html:42
+msgid "Kurum Adı"
+msgstr "Organization Name"
+
+#: ui/templates/platform/kurum/ayarlar.html:46
+msgid "Sektör"
+msgstr "Sector"
+
+#: ui/templates/platform/kurum/ayarlar.html:50
+msgid "Vergi No"
+msgstr "Tax No"
+
+#: ui/templates/platform/kurum/ayarlar.html:60
+msgid "İletişim"
+msgstr "Contact"
+
+#: ui/templates/platform/kurum/ayarlar.html:66
+msgid "Adres"
+msgstr "Address"
+
+#: ui/templates/platform/kurum/ayarlar.html:70
+msgid "Telefon"
+msgstr "Phone"
+
+#: ui/templates/platform/kurum/ayarlar.html:78
+msgid "Website"
+msgstr "Website"
+
+#: ui/templates/platform/kurum/ayarlar.html:88
+msgid "K-Vektör (vizyon skoru)"
+msgstr "K-Vector (vision score)"
+
+#: ui/templates/platform/kurum/ayarlar.html:93
+msgid "Açıldığında vizyon skoru 1000 ölçeğinde hiyerarşik hesaplanır."
+msgstr "When enabled, the vision score is calculated hierarchically on a 1000 scale."
+
+#: ui/templates/platform/kurum/ayarlar.html:94
+#, python-format
+msgid ""
+"<strong>Ana ve alt strateji ham ağırlıkları</strong> <a "
+"href=\"%(sp_url)s\">Stratejik Planlama</a> (/sp) sayfasından girilir ve "
+"düzenlenir."
+msgstr ""
+
+#: ui/templates/platform/kurum/ayarlar.html:95
+#, python-format
+msgid ""
+"<strong>Süreç–alt strateji katkı %%</strong> değerleri <a "
+"href=\"%(surec_url)s\">Süreç Yönetimi</a> (/process) üzerinden süreç "
+"kaydı açılarak girilir."
+msgstr ""
+
+#: ui/templates/platform/kurum/ayarlar.html:105
+msgid "K-Vektör kullanımını etkinleştir"
+msgstr "Enable K-Vector usage"
+
+#: ui/templates/platform/kurum/ayarlar.html:106
+msgid "Kurum genelinde vizyon skoru ve hiyerarşik ağırlıklar devreye girer."
+msgstr "Vision score and hierarchical weights are activated across the organization."
+
+#: ui/templates/platform/kurum/ayarlar.html:108
+#: ui/templates/platform/kurum/ayarlar.html:138
+msgid "Kapalı"
+msgstr "Off"
+
+#: ui/templates/platform/kurum/ayarlar.html:120
+msgid "Yıllık Plan Dönemleri"
+msgstr "Annual Plan Periods"
+
+#: ui/templates/platform/kurum/ayarlar.html:125
+msgid ""
+"Açıldığında Stratejik Planlama sayfasında yıl seçici çubuğu görünür. Her "
+"plan yılı için KPI hedefleri, ağırlıklar ve metodlar ayrı ayrı "
+"tanımlanabilir. Kapalı olduğunda tüm KPI hesapları mevcut "
+"<strong>ProcessKpi</strong> değerlerine göre yapılır."
+msgstr ""
+
+#: ui/templates/platform/kurum/ayarlar.html:135
+msgid "Yıllık dönem planlamasını etkinleştir"
+msgstr "Enable annual period planning"
+
+#: ui/templates/platform/kurum/ayarlar.html:136
+msgid "SP sayfasına yıl seçici eklenir; KPI hedefleri yıl bazında ayrı tutulur."
+msgstr "A year selector is added to the SP page; KPI targets are kept separately per year."
+
+#: ui/templates/platform/kurum/ayarlar.html:147
+msgid "Geçmiş yılları dahil et"
+msgstr "Include past years"
+
+#: ui/templates/platform/kurum/ayarlar.html:150
+msgid ""
+"Seçilen yıldan bugüne kadar tüm yıllar otomatik oluşturulur. Mevcut SP "
+"verisi her yıla kopyalanır; sonradan yıl bazında değiştirilebilir."
+msgstr ""
+
+#: ui/templates/platform/kurum/ayarlar.html:154
+msgid "— Seçin —"
+msgstr "— Select —"
+
+#: ui/templates/platform/kurum/ayarlar.html:156
+#, python-format
+msgid "%(yr)s yılından itibaren"
+msgstr "from %(yr)s onwards"
+
+#: ui/templates/platform/kurum/ayarlar.html:160
+#, python-format
+msgid "%(yr)s–bugün arası yıllar aktif"
+msgstr "years from %(yr)s to today are active"
+
+#: ui/templates/platform/kurum/ayarlar.html:170
+msgid "Kurum Logosu"
+msgstr "Organization Logo"
+
+#: ui/templates/platform/kurum/ayarlar.html:176
+msgid "Mevcut Logo"
+msgstr "Current Logo"
+
+#: ui/templates/platform/kurum/ayarlar.html:178
+msgid "Kurum logosu"
+msgstr "Organization logo"
+
+#: ui/templates/platform/kurum/ayarlar.html:181
+msgid "Logo yok"
+msgstr "No logo"
+
+#: ui/templates/platform/kurum/ayarlar.html:186
+msgid "Logo Yükle (max 2MB)"
+msgstr "Upload Logo (max 2MB)"
+
+#: ui/templates/platform/kurum/ayarlar.html:189
+msgid "JPG/PNG/GIF/WEBP desteklenir."
+msgstr "JPG/PNG/GIF/WEBP supported."
+
+#: ui/templates/platform/kurum/ayarlar.html:192
+msgid "Logoyu Yükle"
+msgstr "Upload Logo"
+
+#: ui/templates/platform/kurum/index.html:41
+msgid "Henüz madde eklenmedi."
+msgstr "No items added yet."
+
+#: ui/templates/platform/kurum/index.html:44
+msgid "Madde ekle"
+msgstr "Add item"
+
+#: ui/templates/platform/kurum/index.html:68
+#: ui/templates/platform/surec/karne.html:158
+msgid "AI YÖNETİCİ ÖZETİ"
+msgstr "AI EXECUTIVE SUMMARY"
+
+#: ui/templates/platform/kurum/index.html:94
+msgid ""
+"Süreç ve proje sayıları, <strong>size atanmış / erişiminiz olan</strong> "
+"kayıtlara göredir. Yöneticiler kurum genelini görür."
+msgstr ""
+
+#: ui/templates/platform/kurum/index.html:102
+msgid "Stratejik Kimlik"
+msgstr "Strategic Identity"
+
+#: ui/templates/platform/kurum/index.html:122
+msgid "Kurum vizyonu"
+msgstr "Organization vision"
+
+#: ui/templates/platform/kurum/index.html:123
+msgid "Geleceğe yönelik ifade — tüm ekip için ortak pusula"
+msgstr "A forward-looking statement — a shared compass for the whole team"
+
+#: ui/templates/platform/kurum/index.html:137
+msgid "Amaç"
+msgstr "Purpose"
+
+#: ui/templates/platform/kurum/index.html:159
+msgid "Temel değerler"
+msgstr "Core values"
+
+#: ui/templates/platform/kurum/index.html:179
+msgid "Etik kurallar"
+msgstr "Code of ethics"
+
+#: ui/templates/platform/kurum/index.html:199
+msgid "Kalite politikası"
+msgstr "Quality policy"
+
+#: ui/templates/platform/kurum/index.html:228
+msgid "Aktif Kullanıcı"
+msgstr "Active Users"
+
+#: ui/templates/platform/kurum/index.html:235
+msgid "Aktif Süreç"
+msgstr "Active Processes"
+
+#: ui/templates/platform/kurum/index.html:242
+msgid "Ana Strateji"
+msgstr "Main Strategy"
+
+#: ui/templates/platform/kurum/index.html:254
+msgid "Süreç özeti"
+msgstr "Process summary"
+
+#: ui/templates/platform/kurum/index.html:255
+msgid "PG, strateji, operasyon, risk ve performans"
+msgstr "PI, strategy, operations, risk and performance"
+
+#: ui/templates/platform/kurum/index.html:260
+#: ui/templates/platform/kurum/index.html:502
+msgid "Özet Bilgiler"
+msgstr "Summary Info"
+
+#: ui/templates/platform/kurum/index.html:261
+msgid ""
+"Erişim kapsamınızdaki süreçlere göre özet rakamlar. Grafikler için "
+"aşağıdaki panelleri açın."
+msgstr ""
+
+#: ui/templates/platform/kurum/index.html:264
+#: ui/templates/platform/kurum/index.html:333
+msgid "Aktif süreç"
+msgstr "Active processes"
+
+#: ui/templates/platform/kurum/index.html:268
+msgid "PG tanımlı süreç"
+msgstr "Processes with PI defined"
+
+#: ui/templates/platform/kurum/index.html:272
+#: ui/templates/platform/kurum/index.html:337
+msgid "Aktif PG"
+msgstr "Active PIs"
+
+#: ui/templates/platform/kurum/index.html:276
+msgid "Stratejisiz süreç"
+msgstr "Processes without strategy"
+
+#: ui/templates/platform/kurum/index.html:280
+msgid "30g veri giren süreç"
+msgstr "Processes with data in 30d"
+
+#: ui/templates/platform/kurum/index.html:284
+msgid "30g PG veri (satır)"
+msgstr "30d PI data (rows)"
+
+#: ui/templates/platform/kurum/index.html:288
+msgid "Açık faaliyet"
+msgstr "Open activities"
+
+#: ui/templates/platform/kurum/index.html:292
+msgid "Bu ay takip"
+msgstr "Tracked this month"
+
+#: ui/templates/platform/kurum/index.html:296
+#: ui/templates/platform/kurum/index.html:341
+msgid "Bayat veri (PG)"
+msgstr "Stale data (PI)"
+
+#: ui/templates/platform/kurum/index.html:300
+#: ui/templates/platform/kurum/index.html:345
+msgid "Geciken faaliyet"
+msgstr "Overdue activities"
+
+#: ui/templates/platform/kurum/index.html:304
+#: ui/templates/platform/kurum/index.html:349
+msgid "Eksik tanım (PG)"
+msgstr "Incomplete definition (PI)"
+
+#: ui/templates/platform/kurum/index.html:308
+#: ui/templates/platform/kurum/index.html:353
+msgid "Ort. PG skoru"
+msgstr "Avg. PI score"
+
+#: ui/templates/platform/kurum/index.html:312
+msgid "Skoru olan PG"
+msgstr "PIs with score"
+
+#: ui/templates/platform/kurum/index.html:316
+#: ui/templates/platform/kurum/index.html:357
+msgid "Skor &lt; 50"
+msgstr "Score &lt; 50"
+
+#: ui/templates/platform/kurum/index.html:327
+msgid "Kurum geneli (yönetici)"
+msgstr "Organization-wide (manager)"
+
+#: ui/templates/platform/kurum/index.html:328
+msgid ""
+"Tüm aktif süreçler — üyelik filtresi uygulanmaz. Yalnızca "
+"<strong>tenant_admin</strong> / <strong>executive_manager</strong> / "
+"<strong>Admin</strong>."
+msgstr ""
+
+#: ui/templates/platform/kurum/index.html:361
+msgid "30g veri (satır)"
+msgstr "30d data (rows)"
+
+#: ui/templates/platform/kurum/index.html:369
+#: ui/templates/platform/kurum/index.html:587
+msgid "Grafikler"
+msgstr "Charts"
+
+#: ui/templates/platform/kurum/index.html:377
+msgid "PG kapsamı &amp; strateji hizalaması"
+msgstr "PI coverage &amp; strategy alignment"
+
+#: ui/templates/platform/kurum/index.html:392
+msgid "PG kapsamı"
+msgstr "PI coverage"
+
+#: ui/templates/platform/kurum/index.html:393
+msgid "Süreçlerde PG tanımı dağılımı"
+msgstr "Distribution of PI definitions across processes"
+
+#: ui/templates/platform/kurum/index.html:399
+msgid "Strateji hizalaması"
+msgstr "Strategy alignment"
+
+#: ui/templates/platform/kurum/index.html:400
+#: ui/templates/platform/surec/index.html:580
+msgid "Alt strateji bağlantısı"
+msgstr "Sub-strategy link"
+
+#: ui/templates/platform/kurum/index.html:415
+msgid "Operasyonel hacim"
+msgstr "Operational volume"
+
+#: ui/templates/platform/kurum/index.html:428
+msgid "Aktif PG, veri giren süreç, açık faaliyet ve bu ay tamamlanan takip"
+msgstr "Active PIs, processes with data, open activities and tracking completed this month"
+
+#: ui/templates/platform/kurum/index.html:441
+msgid "Risk &amp; uyarı"
+msgstr "Risk &amp; alert"
+
+#: ui/templates/platform/kurum/index.html:455
+#, python-format
+msgid ""
+"PG için son geçerli veri <strong>%(days)s günden</strong> eskiyse "
+"“bayat”; geciken faaliyet; hedef/dönem eksik PG."
+msgstr ""
+
+#: ui/templates/platform/kurum/index.html:469
+msgid "Performans (PG skoru)"
+msgstr "Performance (PI score)"
+
+#: ui/templates/platform/kurum/index.html:483
+msgid ""
+"<code class=\"text-[10px] bg-slate-200/50 dark:bg-slate-700/50 px-1 "
+"rounded\">calculated_score</code> — düşük (&lt;50), skorlu (≥50), "
+"skorsuz."
+msgstr ""
+
+#: ui/templates/platform/kurum/index.html:497
+msgid "Proje özeti"
+msgstr "Project summary"
+
+#: ui/templates/platform/kurum/index.html:498
+msgid "Özet bilgiler, kurum geneli (yönetici) ve akordeon grafikler"
+msgstr "Summary info, organization-wide (manager) and accordion charts"
+
+#: ui/templates/platform/kurum/index.html:503
+msgid ""
+"Erişiminiz olan projelere göre özet. Grafikler için aşağıdaki panelleri "
+"açın."
+msgstr ""
+
+#: ui/templates/platform/kurum/index.html:506
+#: ui/templates/platform/kurum/index.html:551
+msgid "Aktif proje"
+msgstr "Active projects"
+
+#: ui/templates/platform/kurum/index.html:510
+msgid "Bitişi geciken"
+msgstr "Overdue end"
+
+#: ui/templates/platform/kurum/index.html:514
+msgid "30 gün içinde bitiş"
+msgstr "Ends within 30 days"
+
+#: ui/templates/platform/kurum/index.html:518
+#: ui/templates/platform/kurum/index.html:563
+msgid "Açık görev"
+msgstr "Open tasks"
+
+#: ui/templates/platform/kurum/index.html:522
+#: ui/templates/platform/kurum/index.html:567
+msgid "Geciken görev"
+msgstr "Overdue tasks"
+
+#: ui/templates/platform/kurum/index.html:526
+msgid "7 gün vadesi"
+msgstr "Due in 7 days"
+
+#: ui/templates/platform/kurum/index.html:530
+#: ui/templates/platform/kurum/index.html:575
+msgid "Açık RAID"
+msgstr "Open RAID"
+
+#: ui/templates/platform/kurum/index.html:534
+msgid "Sağlık &lt; 50 proje"
+msgstr "Health &lt; 50 projects"
+
+#: ui/templates/platform/kurum/index.html:545
+msgid "Kurum geneli — projeler (yönetici)"
+msgstr "Organization-wide — projects (manager)"
+
+#: ui/templates/platform/kurum/index.html:546
+msgid "Tüm aktif projeler — üye/lider filtresi uygulanmaz."
+msgstr "All active projects — no member/lead filter applied."
+
+#: ui/templates/platform/kurum/index.html:555
+msgid "Bitiş geciken"
+msgstr "End overdue"
+
+#: ui/templates/platform/kurum/index.html:559
+msgid "30 gün bitiş"
+msgstr "30-day end"
+
+#: ui/templates/platform/kurum/index.html:571
+msgid "7 gün vade"
+msgstr "7-day due"
+
+#: ui/templates/platform/kurum/index.html:579
+msgid "Sağlık &lt;50"
+msgstr "Health &lt;50"
+
+#: ui/templates/platform/kurum/index.html:594
+msgid "Proje bitişi &amp; görev dağılımı"
+msgstr "Project completion &amp; task distribution"
+
+#: ui/templates/platform/kurum/index.html:609
+msgid "Proje bitiş durumu"
+msgstr "Project completion status"
+
+#: ui/templates/platform/kurum/index.html:610
+msgid "Geciken, 30 gün içinde, diğer"
+msgstr "Overdue, within 30 days, other"
+
+#: ui/templates/platform/kurum/index.html:616
+msgid "Açık görev dağılımı"
+msgstr "Open task distribution"
+
+#: ui/templates/platform/kurum/index.html:617
+msgid "Vadesi geçen, 7 gün içinde, diğer"
+msgstr "Past due, within 7 days, other"
+
+#: ui/templates/platform/kurum/index.html:631
+msgid "Risk ve yük göstergeleri"
+msgstr "Risk and load indicators"
+
+#: ui/templates/platform/kurum/index.html:644
+msgid "Geciken görev, yaklaşan vade, RAID, düşük sağlık"
+msgstr "Overdue tasks, upcoming due, RAID, low health"
+
+#: ui/templates/platform/kurum/index.html:661
+msgid "Stratejiler"
+msgstr "Strategies"
+
+#: ui/templates/platform/kurum/index.html:665
+#: ui/templates/platform/kurum/index.html:761
+msgid "Ana Strateji Ekle"
+msgstr "Add Main Strategy"
+
+#: ui/templates/platform/kurum/index.html:692
+msgid "Alt Ekle"
+msgstr "Add Sub"
+
+#: ui/templates/platform/kurum/index.html:720
+msgid "Alt stratejiler"
+msgstr "Sub-strategies"
+
+#: ui/templates/platform/kurum/index.html:748
+msgid ""
+"Bu strateji için henüz alt strateji yok. <span class=\"not-italic font-"
+"medium text-violet-600 dark:text-violet-400\">«Alt»</span> ile "
+"ekleyebilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/kurum/index.html:758
+msgid "Henüz strateji eklenmemiş"
+msgstr "No strategy added yet"
 
 #: ui/templates/platform/masaustu/index.html:24
 msgid "Widget görünürlüğü"
@@ -1385,10 +1886,6 @@ msgstr "Optional description"
 msgid "Alt strateji bağlantısı ve K-Vektör katkı %"
 msgstr "Sub-strategy link and K-Vector contribution %"
 
-#: ui/templates/platform/surec/index.html:580
-msgid "Alt strateji bağlantısı"
-msgstr "Sub-strategy link"
-
 #: ui/templates/platform/surec/index.html:582
 msgid "(en az bir)"
 msgstr "(at least one)"
@@ -1475,10 +1972,6 @@ msgstr "Checks the PI weights and success score ranges in this process"
 #: ui/templates/platform/surec/karne.html:937
 msgid "K-Vektör Analizi"
 msgstr "K-Vector Analysis"
-
-#: ui/templates/platform/surec/karne.html:158
-msgid "AI YÖNETİCİ ÖZETİ"
-msgstr "AI EXECUTIVE SUMMARY"
 
 #: ui/templates/platform/surec/karne.html:171
 msgid "Genel bilgiler"
@@ -1894,7 +2387,8 @@ msgstr "The data date does not change; only the actual value and description are
 "The data date does not change; only the actual value and description are "
 "updated.The data date does not change; only the actual value and "
 "description are updated.The data date does not change; only the actual "
-"value and description are updated."
+"value and description are updated.The data date does not change; only the"
+" actual value and description are updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"

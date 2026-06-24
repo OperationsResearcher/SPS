@@ -2,6 +2,32 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-222 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3f — kurum (Organization) modülü çevirisi (2 dosya)
+**Modül:** ui/kurum/{ayarlar,index}.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3f. kurum modülünün 2 template'i (~110 metin) {{ _() }} ile işaretlendi: ayarlar
+(form alanları, K-Vektör/plan-yıl toggle'ları + açıklamalar, logo), index (stratejik kimlik akordeon,
+özet kartlar, süreç/proje özet panelleri — scoped+tenant, akordeon grafikler, stratejiler). EN (PG→PI).
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/kurum/ayarlar.html`, `index.html` → ~110 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +99 string (533 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`, fill scripti
+
+### Verimlilik
+Tekrar eden kısa etiketler (Aktif süreç, Geciken görev, Aktif PG — scoped+tenant 2'şer kez) replace_all
+ile + fill scriptinin tekrar-tek-msgid mantığı sayesinde verimli. HTML içeren çeviriler |safe + named param
+(%(yr)s, %(days)s, %(sp_url)s). compile 0 boş 0 fuzzy. force_locale EN doğrulandı.
+
+### Notlar
+data-card-* (KART kodları), data-ov/data-ov-t (overview anahtarları), JS DOKUNULMADI. "Kurum"→Organization,
+"Özet Bilgiler"→Summary Info fuzzy düzeltmesi. Tamamlanan: base, masaustu, surec(tam), bireysel, bildirim,
+analiz, ayarlar, kurum. Kalan büyük: sp(31), raporlar(45), k_radar, k_rapor, admin.
+
 ## TASK-221 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3e — ayarlar (Settings) modülü çevirisi (3 dosya)
