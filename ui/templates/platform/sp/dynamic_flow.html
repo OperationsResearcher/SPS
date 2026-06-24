@@ -1,6 +1,6 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Dinamik Strateji Grafiği{% endblock %}
-{% block page_title %}Dinamik Strateji Grafiği{% endblock %}
+{% block title %}{{ _("Dinamik Strateji Grafiği") }}{% endblock %}
+{% block page_title %}{{ _("Dinamik Strateji Grafiği") }}{% endblock %}
 
 {% block content %}
 {# Tüm dinamik veriler data-* ile JS'e aktarılır — Jinja2 .js dosyalarında yasak #}
@@ -14,23 +14,23 @@
       <!-- Renk açıklamaları -->
       <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
         <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#64748b;">
-          <span style="width:10px; height:10px; border-radius:50%; background:#6366f1; display:inline-block;"></span> Vizyon
+          <span style="width:10px; height:10px; border-radius:50%; background:#6366f1; display:inline-block;"></span> {{ _("Vizyon") }}
         </span>
         <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#64748b;">
-          <span style="width:10px; height:10px; border-radius:50%; background:#8b5cf6; display:inline-block;"></span> Strateji
+          <span style="width:10px; height:10px; border-radius:50%; background:#8b5cf6; display:inline-block;"></span> {{ _("Strateji") }}
         </span>
         <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#64748b;">
-          <span style="width:10px; height:10px; border-radius:50%; background:#60a5fa; display:inline-block;"></span> Alt Strateji
+          <span style="width:10px; height:10px; border-radius:50%; background:#60a5fa; display:inline-block;"></span> {{ _("Alt Strateji") }}
         </span>
         <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#64748b;">
-          <span style="width:10px; height:10px; border-radius:50%; background:#10b981; display:inline-block;"></span> Süreç
+          <span style="width:10px; height:10px; border-radius:50%; background:#10b981; display:inline-block;"></span> {{ _("Süreç") }}
         </span>
         <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#64748b;">
-          <span style="width:10px; height:10px; border-radius:50%; background:#f59e0b; display:inline-block;"></span> PG
+          <span style="width:10px; height:10px; border-radius:50%; background:#f59e0b; display:inline-block;"></span> {{ _("PG") }}
         </span>
       </div>
       <button id="btn-reload-graph" class="mc-btn mc-btn-secondary mc-btn-sm">
-        <i class="fas fa-sync-alt"></i> Yenile
+        <i class="fas fa-sync-alt"></i> {{ _("Yenile") }}
       </button>
     </div>
   </div>
@@ -38,7 +38,7 @@
   <!-- Yükleniyor -->
   <div id="graph-loading" class="mc-empty">
     <i class="fas fa-spinner fa-spin" style="font-size:28px; color:#6366f1;"></i>
-    <div class="mc-empty-text" style="margin-top:8px;">Graf yükleniyor…</div>
+    <div class="mc-empty-text" style="margin-top:8px;">{{ _("Graf yükleniyor…") }}</div>
   </div>
 
   <!-- Graf canvas -->
@@ -52,8 +52,8 @@
   <div id="graph-empty" class="mc-card" style="display:none;">
     <div class="mc-empty">
       <div class="mc-empty-icon"><i class="fas fa-project-diagram"></i></div>
-      <div class="mc-empty-title">Veri bulunamadı</div>
-      <div class="mc-empty-text">Henüz strateji verisi bulunmuyor.</div>
+      <div class="mc-empty-title">{{ _("Veri bulunamadı") }}</div>
+      <div class="mc-empty-text">{{ _("Henüz strateji verisi bulunmuyor.") }}</div>
     </div>
   </div>
 

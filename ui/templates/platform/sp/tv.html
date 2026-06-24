@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <title>KOKPİTİM — Savaş Odası</title>
+  <title>{{ _("KOKPİTİM — Savaş Odası") }}</title>
   <style>
     * { box-sizing: border-box; margin: 0; padding: 0; }
     html, body { height: 100%; }
@@ -109,8 +109,8 @@
       data-uid="{{ savas_uid }}" data-tid="{{ savas_tid }}">
   <div class="tv-head" id="tv-head">
     <div>
-      <div class="tv-title">KOKPİTİM <span class="dot">●</span> SAVAŞ ODASI</div>
-      <div class="tv-sub" id="tv-sub">Yönetici Kokpiti — canlı izleme</div>
+      <div class="tv-title">{{ _("KOKPİTİM") }} <span class="dot">●</span> {{ _("SAVAŞ ODASI") }}</div>
+      <div class="tv-sub" id="tv-sub">{{ _("Yönetici Kokpiti — canlı izleme") }}</div>
     </div>
     <div class="tv-right">
       <div class="scene-dots" id="scene-dots">
@@ -119,12 +119,12 @@
       </div>
       <div>
         <div class="tv-clock" id="tv-clock">--:--:--</div>
-        <div class="tv-meta" id="tv-updated">güncelleniyor…</div>
+        <div class="tv-meta" id="tv-updated">{{ _("güncelleniyor…") }}</div>
       </div>
       <div style="display:flex; flex-direction:column; gap:6px;">
-        <button class="tv-fs" id="tv-fs">⛶ Tam ekran</button>
-        <button class="tv-fs" id="tv-anim">✈️ Animasyonu kapat</button>
-        <button class="tv-fs" id="tv-settings">⚙️ Cepheleri düzenle</button>
+        <button class="tv-fs" id="tv-fs">{{ _("⛶ Tam ekran") }}</button>
+        <button class="tv-fs" id="tv-anim">{{ _("✈️ Animasyonu kapat") }}</button>
+        <button class="tv-fs" id="tv-settings">{{ _("⚙️ Cepheleri düzenle") }}</button>
       </div>
     </div>
   </div>
@@ -146,29 +146,29 @@
 
   <div class="stage" id="stage"></div>
 
-  <div class="ticker"><div class="ticker-track" id="ticker">Yükleniyor…</div></div>
+  <div class="ticker"><div class="ticker-track" id="ticker">{{ _("Yükleniyor…") }}</div></div>
 
-  <div class="tv-loading" id="tv-loading">Savaş Odası yükleniyor…</div>
+  <div class="tv-loading" id="tv-loading">{{ _("Savaş Odası yükleniyor…") }}</div>
   <div class="tv-err" id="tv-err"></div>
 
   {# Ayarlar #}
   <div class="settings-overlay" id="settings-overlay">
     <div class="settings-panel">
-      <h2>⚙️ Cepheleri Düzenle</h2>
-      <div class="s-sub">Cephe ekle/sil, yeniden adlandır, gösterilecek verileri seç. Ayarlar bu tarayıcıda saklanır.</div>
+      <h2>{{ _("⚙️ Cepheleri Düzenle") }}</h2>
+      <div class="s-sub">{{ _("Cephe ekle/sil, yeniden adlandır, gösterilecek verileri seç. Ayarlar bu tarayıcıda saklanır.") }}</div>
       <div class="s-row">
-        <span class="s-label">Sahne süresi (sn):</span>
+        <span class="s-label">{{ _("Sahne süresi (sn):") }}</span>
         <input type="number" id="s-duration" class="s-input" min="6" max="120" style="width:80px;">
       </div>
       <div id="s-fronts"></div>
       <div class="s-row">
-        <button class="s-btn" id="s-add-metrics">+ Metrik panosu</button>
-        <button class="s-btn" id="s-add-ranking">+ Sıralama cephesi</button>
+        <button class="s-btn" id="s-add-metrics">{{ _("+ Metrik panosu") }}</button>
+        <button class="s-btn" id="s-add-ranking">{{ _("+ Sıralama cephesi") }}</button>
       </div>
       <div class="s-actions">
-        <button class="s-btn primary" id="s-save">Kaydet</button>
-        <button class="s-btn" id="s-cancel">İptal</button>
-        <button class="s-btn danger" id="s-reset">Varsayılana dön</button>
+        <button class="s-btn primary" id="s-save">{{ _("Kaydet") }}</button>
+        <button class="s-btn" id="s-cancel">{{ _("İptal") }}</button>
+        <button class="s-btn danger" id="s-reset">{{ _("Varsayılana dön") }}</button>
       </div>
     </div>
   </div>

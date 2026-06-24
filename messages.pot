@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 06:21+0300\n"
+"POT-Creation-Date: 2026-06-24 06:44+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -26,6 +26,18 @@ msgid "Masaüstüm"
 msgstr ""
 
 #: ui/templates/platform/base.html:145
+#: ui/templates/platform/sp/blue_ocean.html:10
+#: ui/templates/platform/sp/ceyreklik_review.html:10
+#: ui/templates/platform/sp/donemler.html:11
+#: ui/templates/platform/sp/index.html:70
+#: ui/templates/platform/sp/initiatives.html:10
+#: ui/templates/platform/sp/menu.html:17
+#: ui/templates/platform/sp/projeler.html:10
+#: ui/templates/platform/sp/projeler.html:24
+#: ui/templates/platform/sp/replan_triggers.html:10
+#: ui/templates/platform/sp/scenarios.html:10
+#: ui/templates/platform/sp/strategy_project_matrix.html:7
+#: ui/templates/platform/sp/vrio.html:10
 #: ui/templates/platform/surec/index.html:489
 msgid "Stratejik Planlama"
 msgstr ""
@@ -52,6 +64,7 @@ msgid "Müşteri Kurumlarım"
 msgstr ""
 
 #: ui/templates/platform/base.html:183
+#: ui/templates/platform/sp/exec_dashboard.html:109
 #: ui/templates/platform/surec/faaliyetler.html:10
 msgid "Süreç Yönetimi"
 msgstr ""
@@ -62,10 +75,12 @@ msgstr ""
 
 #: ui/templates/platform/analiz/index.html:62
 #: ui/templates/platform/base.html:206
+#: ui/templates/platform/sp/exec_dashboard.html:112
 msgid "K-Analiz"
 msgstr ""
 
 #: ui/templates/platform/base.html:212
+#: ui/templates/platform/sp/exec_dashboard.html:94
 msgid "Savaş Odası"
 msgstr ""
 
@@ -247,6 +262,19 @@ msgstr ""
 #: ui/templates/platform/k_radar/ks.html:399
 #: ui/templates/platform/k_radar/risk_management.html:108
 #: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/sp/blue_ocean.html:67
+#: ui/templates/platform/sp/blue_ocean.html:102
+#: ui/templates/platform/sp/blue_ocean.html:142
+#: ui/templates/platform/sp/donemler.html:197
+#: ui/templates/platform/sp/initiatives.html:72
+#: ui/templates/platform/sp/initiatives.html:80
+#: ui/templates/platform/sp/okr.html:89 ui/templates/platform/sp/okr.html:131
+#: ui/templates/platform/sp/projeler.html:70
+#: ui/templates/platform/sp/projeler.html:90
+#: ui/templates/platform/sp/projeler.html:134
+#: ui/templates/platform/sp/replan_triggers.html:102
+#: ui/templates/platform/sp/templates.html:43
+#: ui/templates/platform/sp/tv.html:170
 #: ui/templates/platform/surec/index.html:634
 #: ui/templates/platform/surec/karne.html:665
 #: ui/templates/platform/surec/karne.html:736
@@ -454,6 +482,11 @@ msgstr ""
 #: ui/templates/platform/masaustu/index.html:63
 #: ui/templates/platform/raporlar/esg_yonetim.html:34
 #: ui/templates/platform/raporlar/veri_kalitesi.html:32
+#: ui/templates/platform/sp/bsc.html:29
+#: ui/templates/platform/sp/llm_usage.html:25
+#: ui/templates/platform/sp/llm_usage.html:30
+#: ui/templates/platform/sp/scenarios_kiyas.html:27
+#: ui/templates/platform/sp/tv.html:149
 #: ui/templates/platform/surec/karne.html:727
 msgid "Yükleniyor…"
 msgstr ""
@@ -580,6 +613,7 @@ msgstr ""
 
 #: ui/templates/platform/admin/holding_dashboard.html:74
 #: ui/templates/platform/admin/holding_drilldown.html:88
+#: ui/templates/platform/sp/exec_dashboard.html:234
 msgid "Yüksek Anomali"
 msgstr ""
 
@@ -589,6 +623,7 @@ msgstr ""
 
 #: ui/templates/platform/admin/holding_dashboard.html:79
 #: ui/templates/platform/admin/holding_drilldown.html:78
+#: ui/templates/platform/sp/exec_dashboard.html:214
 msgid "Gecikmiş Faaliyet"
 msgstr ""
 
@@ -636,6 +671,7 @@ msgid "Konsolide Görünüme Dön"
 msgstr ""
 
 #: ui/templates/platform/admin/holding_drilldown.html:43
+#: ui/templates/platform/sp/exec_dashboard.html:133
 msgid "Strateji Sağlık Skoru"
 msgstr ""
 
@@ -649,12 +685,19 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:827
 #: ui/templates/platform/raporlar/kv_carpiklik.html:61
 #: ui/templates/platform/raporlar/sektorel_detay.html:15
+#: ui/templates/platform/sp/ceyreklik_review.html:65
+#: ui/templates/platform/sp/dynamic_flow.html:20
+#: ui/templates/platform/sp/exec_dashboard.html:162
+#: ui/templates/platform/sp/strateji_haritasi.html:97
+#: ui/templates/platform/sp/strateji_haritasi.html:111
 #: ui/templates/platform/surec/karne.html:864
 msgid "Strateji"
 msgstr ""
 
 #: ui/templates/platform/admin/holding_drilldown.html:58
 #: ui/templates/platform/admin/sub_tenants_usage.html:76
+#: ui/templates/platform/sp/exec_dashboard.html:173
+#: ui/templates/platform/sp/strateji_haritasi.html:115
 msgid "Girişim"
 msgstr ""
 
@@ -667,6 +710,7 @@ msgid "Girişim Ortalaması"
 msgstr ""
 
 #: ui/templates/platform/admin/holding_drilldown.html:83
+#: ui/templates/platform/sp/exec_dashboard.html:224
 msgid "Kritik Risk"
 msgstr ""
 
@@ -675,6 +719,8 @@ msgid "Kullanıcı / Senaryo"
 msgstr ""
 
 #: ui/templates/platform/admin/holding_drilldown.html:102
+#: ui/templates/platform/sp/initiatives.html:10
+#: ui/templates/platform/sp/menu.html:28
 msgid "Girişimler"
 msgstr ""
 
@@ -715,11 +761,18 @@ msgstr ""
 
 #: ui/templates/platform/admin/istatistikler.html:36
 #: ui/templates/platform/kurum/index.html:242
+#: ui/templates/platform/sp/flow.html:23 ui/templates/platform/sp/index.html:98
+#: ui/templates/platform/sp/strateji_haritasi.html:48
 msgid "Ana Strateji"
 msgstr ""
 
 #: ui/templates/platform/admin/istatistikler.html:37
 #: ui/templates/platform/k_rapor/index.html:492
+#: ui/templates/platform/sp/dynamic_flow.html:23
+#: ui/templates/platform/sp/flow.html:28
+#: ui/templates/platform/sp/strateji_haritasi.html:55
+#: ui/templates/platform/sp/strateji_haritasi.html:98
+#: ui/templates/platform/sp/strateji_haritasi.html:112
 msgid "Alt Strateji"
 msgstr ""
 
@@ -737,6 +790,10 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:753
 #: ui/templates/platform/raporlar/sektorel_detay.html:16
 #: ui/templates/platform/raporlar/sektorel_detay.html:46
+#: ui/templates/platform/sp/dynamic_flow.html:26
+#: ui/templates/platform/sp/flow.html:33
+#: ui/templates/platform/sp/strateji_haritasi.html:62
+#: ui/templates/platform/sp/strateji_haritasi.html:113
 #: ui/templates/platform/surec/faaliyetler.html:60
 #: ui/templates/platform/surec/karne.html:691
 msgid "Süreç"
@@ -752,6 +809,8 @@ msgstr ""
 #: ui/templates/platform/k_radar/risk_management.html:99
 #: ui/templates/platform/k_rapor/index.html:251
 #: ui/templates/platform/k_rapor/index.html:597
+#: ui/templates/platform/sp/strateji_haritasi.html:86
+#: ui/templates/platform/sp/strateji_haritasi.html:116
 msgid "Proje"
 msgstr ""
 
@@ -858,6 +917,8 @@ msgstr ""
 #: ui/templates/platform/k_radar/index.html:70
 #: ui/templates/platform/k_radar/index.html:77
 #: ui/templates/platform/k_radar/index.html:127
+#: ui/templates/platform/sp/ceyreklik_review.html:52
+#: ui/templates/platform/sp/xmatrix.html:28
 msgid "Yükleniyor..."
 msgstr ""
 
@@ -1134,6 +1195,10 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:827
 #: ui/templates/platform/raporlar/initiative_bubble.html:109
 #: ui/templates/platform/raporlar/op_istatistik.html:38
+#: ui/templates/platform/sp/donemler.html:91
+#: ui/templates/platform/sp/initiatives.html:66
+#: ui/templates/platform/sp/projeler.html:65
+#: ui/templates/platform/sp/projeler.html:115
 #: ui/templates/platform/surec/faaliyetler.html:105
 #: ui/templates/platform/surec/index.html:530
 #: ui/templates/platform/surec/karne.html:221
@@ -1151,6 +1216,8 @@ msgstr ""
 #: ui/templates/platform/k_radar/cross_paydas.html:39
 #: ui/templates/platform/k_radar/kp_olgunluk.html:43
 #: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/sp/donemler.html:92
+#: ui/templates/platform/sp/vrio.html:62
 #: ui/templates/platform/surec/faaliyetler.html:109
 #: ui/templates/platform/surec/karne.html:222
 #: ui/templates/platform/surec/karne.html:481
@@ -1203,6 +1270,7 @@ msgstr ""
 #: ui/templates/platform/admin/packages.html:101
 #: ui/templates/platform/k_radar/cross_paydas.html:23
 #: ui/templates/platform/k_radar/kp_olgunluk.html:28
+#: ui/templates/platform/sp/blue_ocean.html:143
 #: ui/templates/platform/surec/index.html:602
 #: ui/templates/platform/surec/index.html:622
 msgid "Ekle"
@@ -1213,6 +1281,8 @@ msgstr ""
 #: ui/templates/platform/admin/tenants.html:129
 #: ui/templates/platform/admin/users.html:69
 #: ui/templates/platform/admin/users.html:133
+#: ui/templates/platform/sp/donemler.html:63
+#: ui/templates/platform/sp/donemler.html:105
 #: ui/templates/platform/surec/index.html:127
 #: ui/templates/platform/surec/index.html:532
 msgid "Aktif"
@@ -1349,6 +1419,9 @@ msgstr ""
 #: ui/templates/platform/admin/users.html:240
 #: ui/templates/platform/k_radar/cross_paydas.html:39
 #: ui/templates/platform/raporlar/onay_zinciri.html:25
+#: ui/templates/platform/sp/donemler.html:90
+#: ui/templates/platform/sp/initiatives.html:50
+#: ui/templates/platform/sp/replan_triggers.html:59
 msgid "Ad"
 msgstr ""
 
@@ -1377,6 +1450,8 @@ msgid "Otomatik üretilecek"
 msgstr ""
 
 #: ui/templates/platform/admin/sub_tenants.html:164
+#: ui/templates/platform/sp/blue_ocean.html:68
+#: ui/templates/platform/sp/donemler.html:199
 msgid "Oluştur"
 msgstr ""
 
@@ -1422,6 +1497,10 @@ msgid "Alt Kurum Kullanımı"
 msgstr ""
 
 #: ui/templates/platform/admin/sub_tenants_usage.html:26
+#: ui/templates/platform/sp/degerler.html:14
+#: ui/templates/platform/sp/misyon.html:14
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:55
+#: ui/templates/platform/sp/vizyon.html:14
 msgid "Geri"
 msgstr ""
 
@@ -1448,6 +1527,7 @@ msgid "Doluluk"
 msgstr ""
 
 #: ui/templates/platform/admin/sub_tenants_usage.html:77
+#: ui/templates/platform/sp/donemler.html:177
 msgid "Plan Yılı"
 msgstr ""
 
@@ -1489,6 +1569,7 @@ msgstr ""
 #: ui/templates/platform/admin/tenants.html:69
 #: ui/templates/platform/admin/tenants.html:231
 #: ui/templates/platform/kurum/ayarlar.html:46
+#: ui/templates/platform/sp/blue_ocean.html:54
 msgid "Sektör"
 msgstr ""
 
@@ -1693,6 +1774,16 @@ msgstr ""
 #: ui/templates/platform/k_radar/ks.html:400
 #: ui/templates/platform/k_radar/risk_management.html:109
 #: ui/templates/platform/kurum/ayarlar.html:201
+#: ui/templates/platform/sp/ai_settings.html:104
+#: ui/templates/platform/sp/initiatives.html:81
+#: ui/templates/platform/sp/okr.html:90 ui/templates/platform/sp/okr.html:132
+#: ui/templates/platform/sp/pestel.html:32
+#: ui/templates/platform/sp/porter.html:31
+#: ui/templates/platform/sp/projeler.html:91
+#: ui/templates/platform/sp/projeler.html:135
+#: ui/templates/platform/sp/replan_triggers.html:103
+#: ui/templates/platform/sp/swot.html:30 ui/templates/platform/sp/tows.html:30
+#: ui/templates/platform/sp/tv.html:169
 #: ui/templates/platform/surec/karne.html:668
 #: ui/templates/platform/surec/karne.html:738
 #: ui/templates/platform/surec/karne.html:771
@@ -1993,6 +2084,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:346
 #: ui/templates/platform/k_rapor/index.html:405
 #: ui/templates/platform/k_rapor/index.html:697
+#: ui/templates/platform/sp/vrio.html:55
 msgid "Kaynak"
 msgstr ""
 
@@ -2100,6 +2192,7 @@ msgid "Sonraki dönem tahmini"
 msgstr ""
 
 #: ui/templates/platform/analiz/index.html:92
+#: ui/templates/platform/sp/ceyreklik_review.html:85
 msgid "Anomali"
 msgstr ""
 
@@ -2281,6 +2374,7 @@ msgid "Ayar ara…"
 msgstr ""
 
 #: ui/templates/platform/ayarlar/index.html:66
+#: ui/templates/platform/sp/index.html:517
 msgid "Kişisel"
 msgstr ""
 
@@ -2320,6 +2414,7 @@ msgstr ""
 #: ui/templates/platform/kurum/ayarlar.html:2
 #: ui/templates/platform/kurum/ayarlar.html:3
 #: ui/templates/platform/kurum/ayarlar.html:23
+#: ui/templates/platform/sp/donemler.html:38
 msgid "Kurum Ayarları"
 msgstr ""
 
@@ -2409,6 +2504,7 @@ msgid "Şimdi önizle"
 msgstr ""
 
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:63
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:50
 msgid "Önizleme"
 msgstr ""
 
@@ -2509,6 +2605,8 @@ msgstr ""
 
 #: ui/templates/platform/bireysel/karne.html:73
 #: ui/templates/platform/k_rapor/index.html:877
+#: ui/templates/platform/sp/ceyreklik_review.html:32
+#: ui/templates/platform/sp/donemler.html:89
 #: ui/templates/platform/surec/faaliyetler.html:51
 #: ui/templates/platform/surec/karne.html:99
 #: ui/templates/platform/surec/karne.html:293
@@ -2624,6 +2722,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:437
 #: ui/templates/platform/k_rapor/index.html:727
 #: ui/templates/platform/raporlar/sektorel_detay.html:62
+#: ui/templates/platform/sp/okr.html:120
 msgid "Hedef"
 msgstr ""
 
@@ -2731,6 +2830,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:101
 #: ui/templates/platform/k_rapor/index.html:237
 #: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/sp/ceyreklik_review.html:75
 #: ui/templates/platform/surec/faaliyetler.html:104
 #: ui/templates/platform/surec/karne.html:476
 msgid "Faaliyet"
@@ -2880,6 +2980,7 @@ msgstr ""
 
 #: ui/templates/platform/k_radar/cross_paydas.html:35
 #: ui/templates/platform/k_radar/kp_olgunluk.html:39
+#: ui/templates/platform/sp/templates.html:44
 msgid "Uygula"
 msgstr ""
 
@@ -2888,6 +2989,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:346
 #: ui/templates/platform/k_rapor/index.html:450
 #: ui/templates/platform/k_rapor/index.html:663
+#: ui/templates/platform/sp/blue_ocean.html:133
 msgid "Etki"
 msgstr ""
 
@@ -3038,6 +3140,7 @@ msgid "Vizyon → strateji → süreç → PG akış görseli"
 msgstr ""
 
 #: ui/templates/platform/k_radar/hub.html:58
+#: ui/templates/platform/sp/strategy_project_matrix.html:8
 msgid "Strateji × Proje Matrisi"
 msgstr ""
 
@@ -3419,6 +3522,9 @@ msgid "Sektöre özel hazır plan şablonları"
 msgstr ""
 
 #: ui/templates/platform/k_radar/hub.html:121
+#: ui/templates/platform/sp/strateji_haritasi.html:3
+#: ui/templates/platform/sp/strateji_haritasi.html:12
+#: ui/templates/platform/sp/strateji_haritasi.html:21
 msgid "Strateji Haritası"
 msgstr ""
 
@@ -3708,6 +3814,8 @@ msgid "Reddedildi"
 msgstr ""
 
 #: ui/templates/platform/k_radar/index.html:109
+#: ui/templates/platform/sp/initiatives.html:70
+#: ui/templates/platform/sp/projeler.html:71
 #: ui/templates/platform/surec/index.html:534
 msgid "Beklemede"
 msgstr ""
@@ -4130,6 +4238,7 @@ msgid "Toplam Strateji"
 msgstr ""
 
 #: ui/templates/platform/k_radar/ks.html:64
+#: ui/templates/platform/sp/ceyreklik_review.html:67
 msgid "— alt strateji"
 msgstr ""
 
@@ -4144,6 +4253,7 @@ msgstr ""
 #: ui/templates/platform/k_radar/ks.html:86
 #: ui/templates/platform/k_radar/ks.html:212
 #: ui/templates/platform/k_rapor/index.html:618
+#: ui/templates/platform/sp/menu.html:34 ui/templates/platform/sp/swot.html:25
 msgid "SWOT Analizi"
 msgstr ""
 
@@ -4160,6 +4270,7 @@ msgstr ""
 #: ui/templates/platform/k_radar/ks.html:103
 #: ui/templates/platform/k_radar/ks.html:225
 #: ui/templates/platform/k_rapor/index.html:626
+#: ui/templates/platform/sp/menu.html:35 ui/templates/platform/sp/tows.html:25
 msgid "TOWS Matrisi"
 msgstr ""
 
@@ -4190,6 +4301,8 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:582
 #: ui/templates/platform/k_rapor/index.html:795
 #: ui/templates/platform/raporlar/initiative_bubble.html:94
+#: ui/templates/platform/sp/initiatives.html:60
+#: ui/templates/platform/sp/replan_triggers.html:95
 msgid "Kritik"
 msgstr ""
 
@@ -4228,6 +4341,7 @@ msgid "Strateji → Süreç Kapsama Özeti"
 msgstr ""
 
 #: ui/templates/platform/k_radar/ks.html:265
+#: ui/templates/platform/sp/okr.html:15
 msgid "OKR — Hedefler ve Anahtar Sonuçlar"
 msgstr ""
 
@@ -4236,6 +4350,7 @@ msgid "Hedef Ekle"
 msgstr ""
 
 #: ui/templates/platform/k_radar/ks.html:284
+#: ui/templates/platform/sp/okr.html:48
 msgid "Hedef Başlığı"
 msgstr ""
 
@@ -4244,6 +4359,8 @@ msgid "Nereye gitmek istiyoruz?"
 msgstr ""
 
 #: ui/templates/platform/k_radar/ks.html:288
+#: ui/templates/platform/sp/ceyreklik_review.html:37
+#: ui/templates/platform/sp/okr.html:57
 msgid "Çeyrek"
 msgstr ""
 
@@ -4280,6 +4397,14 @@ msgstr ""
 
 #: ui/templates/platform/k_radar/ks.html:302
 #: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/sp/blue_ocean.html:58
+#: ui/templates/platform/sp/blue_ocean.html:129
+#: ui/templates/platform/sp/blue_ocean.html:130
+#: ui/templates/platform/sp/initiatives.html:52
+#: ui/templates/platform/sp/okr.html:52
+#: ui/templates/platform/sp/projeler.html:61
+#: ui/templates/platform/sp/projeler.html:111
+#: ui/templates/platform/sp/replan_triggers.html:60
 #: ui/templates/platform/surec/index.html:572
 #: ui/templates/platform/surec/karne.html:621
 #: ui/templates/platform/surec/karne.html:645
@@ -4296,6 +4421,7 @@ msgid "Anahtar Sonuç Ekle"
 msgstr ""
 
 #: ui/templates/platform/k_radar/ks.html:324
+#: ui/templates/platform/sp/okr.html:107
 msgid "KR Başlığı"
 msgstr ""
 
@@ -4386,6 +4512,8 @@ msgstr ""
 #: ui/templates/platform/k_radar/risk_management.html:36
 #: ui/templates/platform/raporlar/early_warning.html:19
 #: ui/templates/platform/raporlar/initiative_bubble.html:95
+#: ui/templates/platform/sp/initiatives.html:61
+#: ui/templates/platform/sp/replan_triggers.html:94
 msgid "Yüksek"
 msgstr ""
 
@@ -4393,11 +4521,15 @@ msgstr ""
 #: ui/templates/platform/k_rapor/anomalies.html:32
 #: ui/templates/platform/raporlar/early_warning.html:20
 #: ui/templates/platform/raporlar/initiative_bubble.html:96
+#: ui/templates/platform/sp/initiatives.html:62
+#: ui/templates/platform/sp/replan_triggers.html:93
 msgid "Orta"
 msgstr ""
 
 #: ui/templates/platform/k_radar/risk_management.html:38
 #: ui/templates/platform/raporlar/initiative_bubble.html:97
+#: ui/templates/platform/sp/initiatives.html:63
+#: ui/templates/platform/sp/replan_triggers.html:92
 msgid "Düşük"
 msgstr ""
 
@@ -4414,6 +4546,7 @@ msgstr ""
 #: ui/templates/platform/k_radar/risk_management.html:91
 #: ui/templates/platform/kurum/ayarlar.html:108
 #: ui/templates/platform/kurum/ayarlar.html:138
+#: ui/templates/platform/sp/donemler.html:107
 msgid "Kapalı"
 msgstr ""
 
@@ -4421,6 +4554,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:104
 #: ui/templates/platform/raporlar/sektorel_detay.html:18
 #: ui/templates/platform/raporlar/sektorel_detay.html:53
+#: ui/templates/platform/sp/ceyreklik_review.html:80
 msgid "Risk"
 msgstr ""
 
@@ -4435,6 +4569,7 @@ msgid "RPN"
 msgstr ""
 
 #: ui/templates/platform/k_radar/risk_management.html:51
+#: ui/templates/platform/sp/replan_triggers.html:90
 msgid "Önem"
 msgstr ""
 
@@ -4669,6 +4804,7 @@ msgid "SWOT öğelerinin zaman içinde gelişimi"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:119
+#: ui/templates/platform/sp/replan_triggers.html:85
 msgid "Bildirim"
 msgstr ""
 
@@ -4742,6 +4878,7 @@ msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:237
 #: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/sp/projeler.html:128
 msgid "Bitiş"
 msgstr ""
 
@@ -4758,6 +4895,8 @@ msgid "İlerleme"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/sp/okr.html:116
+#: ui/templates/platform/sp/projeler.html:124
 msgid "Başlangıç"
 msgstr ""
 
@@ -4772,6 +4911,9 @@ msgid "Kullanıcı Bazlı PG Başarı Tablosu"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:271
+#: ui/templates/platform/sp/dynamic_flow.html:29
+#: ui/templates/platform/sp/strateji_haritasi.html:69
+#: ui/templates/platform/sp/strateji_haritasi.html:114
 msgid "PG"
 msgstr ""
 
@@ -4801,6 +4943,7 @@ msgstr ""
 #: ui/templates/platform/raporlar/op_istatistik.html:36
 #: ui/templates/platform/raporlar/sektorel_detay.html:46
 #: ui/templates/platform/raporlar/sektorel_detay.html:62
+#: ui/templates/platform/sp/initiatives.html:51
 msgid "Kod"
 msgstr ""
 
@@ -4815,6 +4958,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:286
 #: ui/templates/platform/k_rapor/index.html:437
 #: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/sp/index.html:445
 #: ui/templates/platform/surec/karne.html:916
 msgid "Gerçekleşen"
 msgstr ""
@@ -4929,6 +5073,7 @@ msgid "Bitiş tarihi geçmiş ve henüz tamamlanmamış"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/sp/projeler.html:80
 msgid "Bitiş Tarihi"
 msgstr ""
 
@@ -5072,6 +5217,8 @@ msgid ""
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:636
+#: ui/templates/platform/sp/menu.html:36
+#: ui/templates/platform/sp/pestel.html:27
 msgid "PESTEL Analizi"
 msgstr ""
 
@@ -5473,6 +5620,7 @@ msgid "Madde ekle"
 msgstr ""
 
 #: ui/templates/platform/kurum/index.html:68
+#: ui/templates/platform/sp/exec_dashboard.html:25
 #: ui/templates/platform/surec/karne.html:158
 msgid "AI YÖNETİCİ ÖZETİ"
 msgstr ""
@@ -5500,10 +5648,12 @@ msgid "Amaç"
 msgstr ""
 
 #: ui/templates/platform/kurum/index.html:159
+#: ui/templates/platform/sp/index.html:240
 msgid "Temel değerler"
 msgstr ""
 
 #: ui/templates/platform/kurum/index.html:179
+#: ui/templates/platform/sp/index.html:262
 msgid "Etik kurallar"
 msgstr ""
 
@@ -5549,6 +5699,7 @@ msgstr ""
 
 #: ui/templates/platform/kurum/index.html:272
 #: ui/templates/platform/kurum/index.html:337
+#: ui/templates/platform/sp/exec_dashboard.html:151
 msgid "Aktif PG"
 msgstr ""
 
@@ -5780,10 +5931,12 @@ msgstr ""
 
 #: ui/templates/platform/kurum/index.html:665
 #: ui/templates/platform/kurum/index.html:761
+#: ui/templates/platform/sp/index.html:349
 msgid "Ana Strateji Ekle"
 msgstr ""
 
 #: ui/templates/platform/kurum/index.html:692
+#: ui/templates/platform/sp/index.html:371
 msgid "Alt Ekle"
 msgstr ""
 
@@ -5898,6 +6051,7 @@ msgid "Gecikmiş"
 msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:204
+#: ui/templates/platform/sp/exec_dashboard.html:264
 msgid "Bugün"
 msgstr ""
 
@@ -5907,6 +6061,9 @@ msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:207
 #: ui/templates/platform/raporlar/pg_proje_etki.html:24
+#: ui/templates/platform/sp/dynamic_flow.html:33
+#: ui/templates/platform/sp/exec_dashboard.html:79
+#: ui/templates/platform/sp/strategy_project_matrix.html:27
 msgid "Yenile"
 msgstr ""
 
@@ -6652,6 +6809,7 @@ msgid "Renk = mevcut skor:"
 msgstr ""
 
 #: ui/templates/platform/raporlar/hizalama_sankey.html:53
+#: ui/templates/platform/sp/index.html:323
 msgid "≥75 sağlıklı"
 msgstr ""
 
@@ -6660,10 +6818,12 @@ msgid "50-74 izle"
 msgstr ""
 
 #: ui/templates/platform/raporlar/hizalama_sankey.html:55
+#: ui/templates/platform/sp/index.html:325
 msgid "&lt;50 kritik"
 msgstr ""
 
 #: ui/templates/platform/raporlar/hizalama_sankey.html:56
+#: ui/templates/platform/sp/index.html:326
 msgid "veri yok"
 msgstr ""
 
@@ -6996,6 +7156,7 @@ msgstr ""
 
 #: ui/templates/platform/raporlar/initiative_bubble.html:42
 #: ui/templates/platform/raporlar/initiative_bubble.html:111
+#: ui/templates/platform/sp/initiatives.html:76
 msgid "Toplam Bütçe"
 msgstr ""
 
@@ -7075,6 +7236,7 @@ msgstr ""
 
 #: ui/templates/platform/raporlar/initiative_bubble.html:110
 #: ui/templates/platform/raporlar/onay_zinciri.html:27
+#: ui/templates/platform/sp/initiatives.html:58
 msgid "Öncelik"
 msgstr ""
 
@@ -7758,11 +7920,1923 @@ msgid "Süreç liderlerinin liderlik ettiği süreçlerin ortalama performans sk
 msgstr ""
 
 #: ui/templates/platform/raporlar/yonetici_liderlik.html:26
+#: ui/templates/platform/sp/index.html:79
 msgid "Yönetici"
 msgstr ""
 
 #: ui/templates/platform/raporlar/yonetici_liderlik.html:28
 msgid "Liderlik Süreç"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:2
+msgid "Yapay Zeka Ayarları — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:3
+#: ui/templates/platform/sp/ai_settings.html:16
+msgid "Yapay Zeka Yapılandırması"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:19
+msgid ""
+"Kendi API anahtarınızı bağlayın (BYOK) veya Kokpitim'in ücretsiz sistem "
+"AI'sını kullanın."
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:25
+msgid "AI Kaynak Modu"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:29
+msgid "Kokpitim sistem AI'sı (ücretsiz, kotalı)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:31
+msgid "Günlük 50 / aylık 500 çağrı limitli, Gemini 2.0 Flash. Ek ücret yok."
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:37
+msgid "Kendi API anahtarımı kullan (sınırsız, kendi faturam)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:39
+msgid ""
+"Gemini, OpenAI, Anthropic, Groq veya OpenRouter — kendi sağlayıcınız, "
+"kendi faturanız."
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:46
+msgid "API Anahtarı Bilgileri"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:51
+msgid "Sağlayıcı"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:54
+msgid "Google Gemini"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:55
+msgid "OpenAI (ChatGPT)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:56
+msgid "Anthropic (Claude)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:57
+msgid "Groq (en hızlı, ücretsiz katman geniş)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:58
+msgid "OpenRouter (200+ model)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:64
+msgid "Model"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:68
+msgid "Boş bırakırsan sağlayıcının varsayılan modeli kullanılır."
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:74
+msgid "API Anahtarı"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:78
+msgid ""
+"Şifreli saklanır (Fernet). Görüntülenmez. Değiştirmek için yeni anahtar "
+"gir."
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:84
+msgid "Base URL"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:84
+#: ui/templates/platform/sp/donemler.html:182
+msgid "(opsiyonel)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:92
+msgid "KVKK — Hassas veri otomatik maskelensin (TC kimlik, IBAN vb.)"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:107
+msgid "Anahtarı Test Et"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:110
+msgid "BYOK Anahtarını Sil"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:2
+msgid "Mavi Okyanus — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:3
+msgid "Mavi Okyanus Stratejisi — Canvas & ERRC"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:10
+msgid "Blue Ocean"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:22
+msgid "Mavi Okyanus Stratejisi"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:25
+msgid ""
+"Strateji Tuvali (Değer Eğrisi) + ERRC Tablosu: rakipsiz pazar alanı "
+"tasarımı."
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:29
+#: ui/templates/platform/sp/blue_ocean.html:43
+msgid "Yeni Tuval"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:50
+msgid "Tuval adı"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:51
+msgid "Örn. 2026 Pazar Konumlandırma"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:55
+msgid "Örn. Yazılım / Üretim"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:59
+msgid "Kısa açıklama (opsiyonel)"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:62
+msgid "Rakipler"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:63
+msgid "Virgülle ayırın: Rakip A, Rakip B"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:78
+#: ui/templates/platform/sp/blue_ocean.html:103
+msgid "Faktör Ekle"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:85
+msgid ""
+"<b>Faktör</b>, sektördeki rekabet boyutudur (örn. <i>fiyat, hız, kalite, "
+"marka, kullanım kolaylığı</i>). Her faktörün <b>0-10 arası puanı</b>, o "
+"boyutta ne kadar güçlü olunduğunu temsil eder. Amaç: <b>kendi eğrinizi "
+"rakiplerden ayrıştırmak</b>."
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:88
+msgid "Faktör adı"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:89
+msgid "Örn: Fiyat, Hız, Kalite, Marka Bilinirliği…"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:92
+msgid "Bizim kurum puanı (0-10)"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:94
+msgid "0 = boyutta yokuz, 10 = sektör lideriyiz"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:97
+msgid "Rakip puanları (0-10)"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:113
+msgid "ERRC Öğesi Ekle"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:120
+msgid "Eylem"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:122
+msgid "❌ Kaldır"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:123
+msgid "⬇️ Azalt"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:124
+msgid "⬆️ Yükselt"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:125
+msgid "⭐ Yarat"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:135
+msgid "Yüksek etki"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:136
+msgid "Orta etki"
+msgstr ""
+
+#: ui/templates/platform/sp/blue_ocean.html:137
+msgid "Düşük etki"
+msgstr ""
+
+#: ui/templates/platform/sp/bsc.html:20 ui/templates/platform/sp/menu.html:38
+msgid "Dengeli Karne (BSC)"
+msgstr ""
+
+#: ui/templates/platform/sp/bsc.html:22
+msgid ""
+"Performans göstergelerini 4 BSC perspektifine dağıt — Finansal / Müşteri "
+"/ İç Süreçler / Öğrenme & Gelişim."
+msgstr ""
+
+#: ui/templates/platform/sp/bsc.html:25
+msgid "Otomatik sınıflandır"
+msgstr ""
+
+#: ui/templates/platform/sp/bsc.html:37
+msgid "Atanmamış Göstergeler"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:2
+msgid "Çeyreklik Değerlendirme — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:3
+msgid "Çeyreklik Strateji Değerlendirme"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:10
+#: ui/templates/platform/sp/exec_dashboard.html:106
+msgid "Çeyreklik Review"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:22
+#: ui/templates/platform/sp/menu.html:27
+msgid "Çeyreklik Değerlendirme"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:25
+msgid "Modern strateji ritmi: yıllık vizyon — çeyreklik ayarlama — aylık takip."
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:39
+msgid "Q1 (Oca-Mar)"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:40
+msgid "Q2 (Nis-Haz)"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:41
+msgid "Q3 (Tem-Eyl)"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:42
+msgid "Q4 (Eki-Ara)"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:46
+msgid "Değerlendirme Oluştur"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:60
+msgid "PG Durumu"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:62
+msgid "— / — PG'de veri"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:70
+msgid "OKR İlerleme"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:72
+msgid "— objektif"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:77
+msgid "— gecikmiş"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:82
+msgid "— kritik"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:87
+msgid "— orta"
+msgstr ""
+
+#: ui/templates/platform/sp/ceyreklik_review.html:97
+msgid "Aksiyon Önerileri"
+msgstr ""
+
+#: ui/templates/platform/sp/degerler.html:13
+#: ui/templates/platform/sp/index.html:221
+msgid "Değerler ve Etik Kurallar"
+msgstr ""
+
+#: ui/templates/platform/sp/degerler.html:17
+#: ui/templates/platform/sp/misyon.html:17
+#: ui/templates/platform/sp/vizyon.html:17
+msgid "Yapım aşamasında"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:2
+msgid "Stratejik Plan Dönemleri — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:3
+#: ui/templates/platform/sp/donemler.html:24
+msgid "Stratejik Plan Dönemleri"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:11
+msgid "Dönemler"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:25
+msgid "Dönem seçimi, yeni dönem oluşturma ve kapatma işlemleri"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:29
+msgid "Yeni Dönem"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:37
+msgid "Yıllık plan dönemleri bu kurum için etkinleştirilmemiş."
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:38
+msgid "'ndan açabilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:43
+msgid "Henüz plan dönemi tanımlanmamış"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:44
+msgid "Yeni Dönem butonu ile ilk stratejik plan dönemini oluşturun."
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:47
+msgid "Yeni Dönem Oluştur"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:58
+msgid "Aktif Dönem"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:65
+msgid "Oluşturuldu:"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:73
+msgid "Bu Dönemi Kapat"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:83
+msgid "Tüm Dönemler"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:100
+msgid "Seçili dönem"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:109
+msgid "Taslak"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:116
+msgid "Seç"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:119
+msgid "Seçili"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:135
+msgid "Dönem Karşılaştır"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:138
+msgid ""
+"İki stratejik plan dönemini seçin; strateji, süreç ve KPI hedefi "
+"farklarını görebilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:141
+msgid "1. Dönem"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:149
+msgid "2. Dönem"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:157
+#: ui/templates/platform/sp/scenarios_kiyas.html:31
+msgid "Karşılaştır"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:172
+msgid "Yeni Stratejik Plan Dönemi"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:179
+#, python-format
+msgid "ör. %(year)s"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:182
+msgid "Plan Adı"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:183
+#, python-format
+msgid "ör. %(year)s Stratejik Planı"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:186
+msgid "Kaynak Dönem (klonla)"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:188
+msgid "— Boş başlat —"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:190
+msgid "planından kopyala"
+msgstr ""
+
+#: ui/templates/platform/sp/donemler.html:193
+msgid "Seçilirse kaynak dönemin stratejileri, süreçleri ve KPI yapısı kopyalanır."
+msgstr ""
+
+#: ui/templates/platform/sp/dynamic_flow.html:2
+#: ui/templates/platform/sp/dynamic_flow.html:3
+msgid "Dinamik Strateji Grafiği"
+msgstr ""
+
+#: ui/templates/platform/sp/dynamic_flow.html:17
+#: ui/templates/platform/sp/flow.html:42
+#: ui/templates/platform/sp/index.html:178
+#: ui/templates/platform/sp/strateji_haritasi.html:96
+#: ui/templates/platform/sp/strateji_haritasi.html:110
+#: ui/templates/platform/sp/vizyon.html:13
+msgid "Vizyon"
+msgstr ""
+
+#: ui/templates/platform/sp/dynamic_flow.html:41
+msgid "Graf yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/sp/dynamic_flow.html:55
+msgid "Veri bulunamadı"
+msgstr ""
+
+#: ui/templates/platform/sp/dynamic_flow.html:56
+msgid "Henüz strateji verisi bulunmuyor."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:2
+msgid "Yönetici Paneli — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:3
+msgid "Stratejik Sağlık Paneli"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:56
+#: ui/templates/platform/sp/menu.html:26
+msgid "Yönetici Paneli"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:59
+msgid ""
+"PG · strateji · girişim · risk · anomali 360° görünümü — üst yönetim için"
+" optimize"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:67
+msgid "SP Yılı:"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:77
+msgid "Otomatik yenile (5 dk)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:82
+msgid "Haftalık PDF raporu"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:83
+msgid "Haftalık PDF"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:86
+msgid "AI Pivot Önerisi"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:100
+msgid "Strateji × Proje"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:103
+#: ui/templates/platform/sp/replan_triggers.html:10
+msgid "Replan Tetikleyiciler"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:134
+#: ui/templates/platform/sp/exec_dashboard.html:152
+#: ui/templates/platform/sp/exec_dashboard.html:163
+#: ui/templates/platform/sp/exec_dashboard.html:174
+msgid "Nasıl hesaplanıyor?"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:192
+msgid "Süreç & PG yönetimine git"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:194
+msgid "PG Hedef Üstü"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:202
+msgid "Girişim listesine git"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:204
+msgid "Girişim Sağlığı"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:212
+msgid "Süreçler ve gecikmiş faaliyetler"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:222
+msgid "Risk yönetimine git"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:232
+msgid "Anomali analizine git"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:242
+msgid "Replan tetikleyici yönetimi"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:244
+msgid "Aktif Tetikleyici"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:258
+msgid "K-Vektör Vizyon Puanı — Gelişim"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:260
+msgid ""
+"Ağırlıklandırılmış strateji + PG performansının 0-100 ölçekli bütüncül "
+"skoru"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:273
+msgid "Günlük (son 30 gün)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:280
+msgid "Aylık (son 12 ay)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:287
+msgid "Çeyreklik (son 8 çeyrek)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:294
+msgid "Yıllık (son 5 yıl)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:307
+msgid "Son 12 Ay PG Hedef Üstü Oranı"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:319
+#, python-format
+msgid "En İyi 5 Strateji (PG hedef üstü %%)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:326
+msgid "En Düşük 5 Strateji (öncelikli aksiyon)"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:336
+msgid "Bu Hafta Dikkat Edilmesi Gerekenler"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:347
+msgid "AI Pivot Önerileri"
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:358
+msgid "Veriler yüklenemedi."
+msgstr ""
+
+#: ui/templates/platform/sp/exec_dashboard.html:361
+msgid "Tekrar dene"
+msgstr ""
+
+#: ui/templates/platform/sp/flow.html:2 ui/templates/platform/sp/flow.html:3
+msgid "Stratejik Planlama Akışı"
+msgstr ""
+
+#: ui/templates/platform/sp/flow.html:11
+msgid "Stratejik Akış"
+msgstr ""
+
+#: ui/templates/platform/sp/flow.html:12
+msgid "Strateji–Süreç–PG bağlantı haritası"
+msgstr ""
+
+#: ui/templates/platform/sp/flow.html:15
+msgid "İnteraktif Grafik"
+msgstr ""
+
+#: ui/templates/platform/sp/flow.html:53
+msgid "Strateji–Süreç–PG bağlantılarını interaktif grafik olarak görüntüleyin."
+msgstr ""
+
+#: ui/templates/platform/sp/flow.html:56
+msgid "İnteraktif Grafiği Aç"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:62
+#, python-format
+msgid ""
+"Seçili dönemde veri bulunamadı — <strong>%(year)s dönemi verisi "
+"gösteriliyor</strong>."
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:63
+#, python-format
+msgid "Dönem yönetimi için <a href=\"%(url)s\">ana sayfaya</a> gidin."
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:73
+msgid ""
+"Misyon · Vizyon · Değerler · Ana/Alt stratejiler · Süreç ve bireysel "
+"hedef hizalaması"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:74
+msgid "dönemi"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:81
+msgid "Görüntüleyici"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:83
+msgid "Strateji hiyerarşisini öğren"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:84
+#: ui/templates/platform/sp/initiatives.html:30
+msgid "Hiyerarşi Rehberi"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:86
+msgid "SP araçlarına git"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:87
+msgid "SP Menüsü"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:100
+#, python-format
+msgid "%(n)s alt strateji"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:103
+msgid "Akış Olgunluğu"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:105
+#, python-format
+msgid "%(n)s/4 adım"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:109
+msgid "K-Vektör Vizyon"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:111
+msgid "/ 100 puan"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:116
+msgid "Plan Dönemi"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:118
+msgid "aktif yıl"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:122
+msgid "Etiketsiz Strateji"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:124
+msgid "plan yılı boş"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:127
+msgid "Kimlik"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:129
+msgid "Misyon var"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:129
+msgid "Misyon yok"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:130
+msgid "Vizyon var"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:130
+msgid "Vizyon yok"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:131
+msgid "Değerler var"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:131
+msgid "Değerler yok"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:133
+msgid "Misyon · Vizyon · Değerler"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:139
+msgid ""
+"Bu sayfada yalnızca görüntüleme yetkiniz var. Düzenleme yetkisi kurum "
+"yöneticisindedir."
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:149
+#: ui/templates/platform/sp/misyon.html:13
+msgid "Misyon"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:153
+#: ui/templates/platform/sp/index.html:182
+#: ui/templates/platform/sp/index.html:225
+#: ui/templates/platform/sp/initiatives.html:71
+#: ui/templates/platform/sp/projeler.html:69
+#: ui/templates/platform/sp/projeler.html:119
+#: ui/templates/platform/surec/index.html:535
+msgid "Tamamlandı"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:153
+#: ui/templates/platform/sp/index.html:182
+#: ui/templates/platform/sp/index.html:225
+msgid "Bekliyor"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:156
+msgid "Misyonu düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:162
+msgid "Misyon metnini düzenle veya görüntüle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:165
+msgid "Misyon özeti"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:167
+#: ui/templates/platform/sp/index.html:210
+msgid "Henüz eklenmemiş"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:185
+msgid "Vizyonu düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:191
+msgid "Vizyon metnini düzenle veya görüntüle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:194
+#, python-format
+msgid "K-Vektör vizyon puanı %(score)s üzerinden 100"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:196
+msgid "K-Vektör vizyon puanı"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:203
+#, python-format
+msgid "Hesap tarihi: %(date)s · Hedef ölçek 100"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:208
+msgid "Vizyon özeti"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:228
+msgid "Değerler ve etik kuralları düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:234
+msgid "Değerler ve etik kurallarını düzenle veya görüntüle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:241
+msgid "Temel değerler listesi"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:263
+msgid "Etik kurallar listesi"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:284
+msgid ""
+"Henüz eklenmemiş — temel değerler ve etik kurallar için düzenleyin veya "
+"detay sayfasına gidin."
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:299
+msgid "Strateji Ağırlık & Skor Görselleştirme"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:301
+msgid "Daire boyutu = K-Vektör ağırlığı · Renk = mevcut skor"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:310
+#, python-format
+msgid "%(title)s — ağırlık: %(w)s, skor: %(score)s"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:318
+msgid "ağırlık:"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:324
+msgid "50–74 izlenmeli"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:338
+msgid "Strateji Listesi (Ana Stratejiler → Alt Stratejiler)"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:342
+#, python-format
+msgid "%(n)s ana strateji"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:345
+msgid "Ana strateji ekle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:345
+msgid "Strateji listesini düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:361
+msgid "Ana"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:366
+msgid "Bu ana stratejiye bağlı alt strateji sayısı"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:367
+#, python-format
+msgid "%(n)s alt"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:395
+msgid "Ana strateji K-Vektör gerçekleşen katkısı"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:397
+msgid "Gerçekleşen K-Vektör"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:406
+msgid "Kotaya göre doluluk · Vizyon 100 içindeki pay"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:406
+msgid "Alt strateji yoksa veya kota atanmamışsa katkı gösterilmez."
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:411
+msgid "Bağlı alt stratejiler"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:430
+msgid "Alt stratejiyi düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:436
+msgid "Alt stratejiyi sil"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:443
+#, python-format
+msgid "Alt strateji K-Vektör skoru %(score)s üzerinden 100"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:456
+msgid "Henüz alt strateji tanımlanmamış."
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:464
+msgid "Henüz ana strateji yok"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:466
+msgid ""
+"Stratejik plan, kurumun yön kararlarını somutlaştıran ana başlıklarla "
+"başlar. Tipik bir Hoshin/BSC planında <b>4–8 ana strateji</b> yer alır "
+"(örnek: <i>Pazar Liderliği, Operasyonel Mükemmellik, Dijital Dönüşüm, "
+"Yetenek ve Kültür</i>)."
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:471
+msgid "İlk Ana Stratejiyi Ekle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:474
+msgid "Hazır Şablondan Başla"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:478
+msgid "SP Araç Kutusu"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:492
+msgid "Süreç İyileştirme Faaliyetleri"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:496
+msgid "Süreç modülüne git"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:496
+msgid "Süreçleri düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:502
+msgid "Süreç iyileştirme modülüne git"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:504
+msgid "İyileştirme aksiyonları ve uygulama faaliyetleri"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:514
+msgid "Bireysel Hedefler"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:519
+msgid "Bireysel hedeflere git"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:519
+msgid "Bireysel hedefleri düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:525
+msgid "Bireysel hedefler modülüne git"
+msgstr ""
+
+#: ui/templates/platform/sp/index.html:527
+msgid "Bireysel hedef kartları ve performans izleme"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:2
+msgid "Çok Yıllık Girişimler — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:3
+msgid "Çok Yıllık Stratejik Girişimler"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:22
+msgid "Stratejik Girişimler"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:25
+msgid ""
+"Birden çok yıla yayılan stratejik girişimler — yıllık plandan bağımsız "
+"yaşam döngüsü."
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:29
+msgid "Hiyerarşi rehberi"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:33
+#: ui/templates/platform/sp/initiatives.html:45
+msgid "Yeni Girişim"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:54
+msgid "Başlangıç Yılı"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:55
+msgid "Bitiş Yılı"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:68
+msgid "Planlanan"
+msgstr ""
+
+#: ui/templates/platform/sp/initiatives.html:69
+#: ui/templates/platform/sp/projeler.html:68
+#: ui/templates/platform/sp/projeler.html:118
+msgid "Devam Ediyor"
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:18
+msgid "LLM Kullanımı & Kota"
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:20
+msgid "Bu kurumun yapay zekâ çağrı/maliyet kullanımı ve kotaları."
+msgstr ""
+
+#: ui/templates/platform/sp/llm_usage.html:29
+msgid "Son Çağrılar"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:20
+msgid "Çalışmak istediğiniz stratejik planlama modülünü seçin."
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:25
+msgid "Genel Bakış"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:25
+msgid "Vizyon, misyon, stratejiler ve K-Vektör paneli"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:26
+msgid "Stratejik sağlık göstergeleri ve özet panel"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:27
+msgid "Üç aylık strateji değerlendirme döngüsü"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:28
+msgid "Çok yıllık stratejik girişim listesi"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:29
+#: ui/templates/platform/sp/scenarios.html:10
+msgid "Senaryolar"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:29
+msgid "İyimser, kötümser, temel senaryo varyasyonları"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:30
+#: ui/templates/platform/sp/replan_triggers.html:24
+msgid "Yeniden Planlama Tetikleyicileri"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:30
+msgid "Otomatik strateji yeniden değerlendirme kuralları"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:31
+msgid "Hoshin X-Matrisi"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:31
+msgid "Strateji ↔ Hedef ↔ Girişim ↔ KPI korelasyonu"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:32
+msgid "Mavi Okyanus"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:32
+msgid "Strateji tuvali ve ERRC tablosu"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:33 ui/templates/platform/sp/vrio.html:22
+msgid "VRIO Analizi"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:33
+msgid "Kaynak ve yetenek sınıflandırması"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:34
+msgid "Güçlü/zayıf yön, fırsat/tehdit"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:35
+msgid "SWOT türevli 4 strateji kombinasyonu"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:36
+msgid "Politik/ekonomik/sosyal/teknolojik/çevresel/yasal"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:37
+msgid "Porter 5 Güç"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:37
+msgid "Sektörel rekabet yoğunluğu analizi"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:38
+msgid "4 perspektifte KPI dengesi"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:39
+msgid "Haftalık Rapor (PDF)"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:39
+msgid "Haftalık strateji özet raporu"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:40
+msgid "Yapay Zeka Ayarları"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:40
+msgid "AI sağlayıcı, anahtar ve kota yapılandırması"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:41
+#: ui/templates/platform/sp/templates.html:2
+msgid "Plan Şablonları"
+msgstr ""
+
+#: ui/templates/platform/sp/menu.html:41
+msgid "Hazır plan yılı şablonlarından başla"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:18
+#, python-format
+msgid "%(year)s Plan Yılı"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:18
+msgid "Plan yılı seçilmemiş"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:23
+msgid "Yeni Hedef Ekle"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:32
+msgid "Henüz hedef tanımlanmamış"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:33
+msgid "İlk hedefi eklemek için yukarıdaki butona tıklayın."
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:41
+msgid "Yeni Hedef"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:59
+msgid "Yıllık (çeyrek seçme)"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:67
+msgid "Sorumlu / Ekip"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:74
+msgid "Bağlı Ana Strateji"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:76
+msgid "— Strateji yok —"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:80
+msgid "Bağlı Alt Strateji"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:82
+msgid "— Alt strateji yok —"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:99
+msgid "Yeni Anahtar Sonuç"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:112
+msgid "Metrik"
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:113
+#, python-format
+msgid "%%, adet, TL..."
+msgstr ""
+
+#: ui/templates/platform/sp/okr.html:124
+msgid "Güncel"
+msgstr ""
+
+#: ui/templates/platform/sp/pestel.html:29
+msgid ""
+"Politik/Ekonomik/Sosyal/Teknolojik/Çevresel/Yasal dış çevre faktörleri — "
+"aktif plan yılı bazlı."
+msgstr ""
+
+#: ui/templates/platform/sp/porter.html:26
+msgid "Porter 5 Güç Analizi"
+msgstr ""
+
+#: ui/templates/platform/sp/porter.html:28
+msgid ""
+"Sektörel rekabet yoğunluğu — her güç için 1 (düşük) – 5 (yüksek) baskı + "
+"maddeler. Aktif plan yılı bazlı."
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:2
+msgid "SP Projeler — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:3
+msgid "SP Projeler"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:10
+msgid "Projeler"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:23
+msgid "SP Projeleri için aktif bir SPDönemi gereklidir."
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:24
+msgid "sayfasından dönem oluşturun."
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:29
+msgid "Dönemi"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:33
+msgid "Yeni Proje"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:41
+msgid "Bu dönem için henüz proje yok."
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:51
+msgid "Proje Ekle"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:57
+msgid "Proje Adı *"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:58
+msgid "Proje adı"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:62
+msgid "Kısa açıklama..."
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:67
+#: ui/templates/platform/sp/projeler.html:117
+msgid "Planlandı"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:76
+msgid "Başlangıç Tarihi"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:85
+#, python-format
+msgid "İlerleme (%%)"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:100
+msgid "Görev Ekle"
+msgstr ""
+
+#: ui/templates/platform/sp/projeler.html:107
+msgid "Görev Adı *"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:2
+msgid "Yeniden Planlama Tetikleyicileri — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:3
+msgid "Otomatik Yeniden Planlama Tetikleyicileri"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:27
+msgid ""
+"Belirli koşullar gerçekleştiğinde otomatik strateji yeniden değerlendirme"
+" tetikleyicileri."
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:32
+msgid "Şimdi Değerlendir"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:35
+#: ui/templates/platform/sp/replan_triggers.html:54
+msgid "Yeni Tetikleyici"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:42
+msgid "Aktif Tetikleyiciler"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:46
+msgid "Son Ateşlemeler"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:61
+msgid "Tetikleyici Tipi"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:63
+msgid "PG Hedef Altında"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:64
+msgid "Gecikmiş Faaliyet Oranı"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:65
+msgid "Risk Skoru"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:66
+msgid "Anomali (Yüksek)"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:70
+msgid "Hedef PG ID"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:71
+msgid "Operatör"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:79
+msgid "Eşik"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:82
+msgid "Ardışık Dönem"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:83
+msgid "Aksiyon"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:86
+msgid "Pivot Öner"
+msgstr ""
+
+#: ui/templates/platform/sp/replan_triggers.html:87
+msgid "Review Aç"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:2
+msgid "Senaryolar — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:3
+#: ui/templates/platform/sp/scenarios.html:22
+msgid "Senaryo Dalları"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:25
+msgid ""
+"Bir plan yılından \"iyimser / kötümser / temel senaryo\" varyasyonları "
+"üret. Tüm strateji, performans göstergesi ve süreç kopyalanır; bağımsız "
+"düzenlenebilir."
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:29
+msgid "Senaryoları Kıyasla"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:36
+msgid "Kaynak Plan Yılı"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:40
+msgid "Senaryo Etiketi"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:42
+msgid "İyimser"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:43
+msgid "Kötümser"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:44
+msgid "Temel Senaryo"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios.html:48
+msgid "Senaryo Oluştur"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:2
+msgid "Senaryo Kıyas — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:3
+#: ui/templates/platform/sp/scenarios_kiyas.html:14
+msgid "Senaryo / What-if Kıyas"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:4
+msgid "Senaryo Kıyas"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:17
+msgid ""
+"Baseline ve senaryo plan yıllarını seç, vizyon skorlarını yan yana "
+"karşılaştır. Kaydırıcı ile iki senaryo arasını harmanla."
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:24
+msgid "Karşılaştırılacak plan yılları / senaryolar (2-6)"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:33
+msgid "En az 2 öğe seç."
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:40
+msgid "Vizyon skoru karşılaştırması"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:47
+msgid "What-if harmanı"
+msgstr ""
+
+#: ui/templates/platform/sp/scenarios_kiyas.html:55
+msgid "HARMANLANMIŞ VİZYON SKORU"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:2
+msgid "Yeni Yıla Geç — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:3
+msgid "Plan Yılı Geçiş Sihirbazı"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:10
+msgid "1. Yılı Seç"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:10
+msgid "2. Önizle"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:10
+msgid "3. Onayla"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:22
+msgid "Kaynak ve Hedef Yıl"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:25
+msgid "Kaynak Yıl (Taşınacak Veriler)"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:27
+msgid "— Seçiniz —"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:34
+msgid "Hedef Yıl (Yeni Dönem)"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:39
+msgid "Yeni Dönem Adı (isteğe bağlı)"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:40
+msgid "Plan 2027"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:43
+msgid "Önizlemeye Geç"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:56
+msgid "Onayla ve Uygula"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:64
+msgid "Geçiş Tamamlandı!"
+msgstr ""
+
+#: ui/templates/platform/sp/sihirbaz_yeni_yil.html:67
+msgid "Dönemlere Git"
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:2
+msgid "Strateji × Proje Matrisi — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:3
+#: ui/templates/platform/sp/strategy_project_matrix.html:18
+msgid "Strateji × Proje Hizalama Matrisi"
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:21
+msgid ""
+"Hangi projenin hangi ana stratejiye katkı verdiğini ısı haritası olarak "
+"gösterir."
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:36
+msgid ""
+"<b>Nasıl okunur?</b> Her hücre, ilgili projenin o ana stratejiye toplam "
+"<i>alt strateji ↔ süreç</i> bağ sayısıdır. Koyu = güçlü hizalama. Boş "
+"hücreler hizalanmamış demek. Hizalanmamış proje veya strateji listesi "
+"aşağıda."
+msgstr ""
+
+#: ui/templates/platform/sp/strategy_project_matrix.html:45
+msgid "Matris yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:2
+msgid "Strateji Haritası — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:24
+msgid "Strateji → Alt Strateji → Süreç → KPI ilişki ağı."
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:25
+#, python-format
+msgid "Aktif SP döneminde <strong>%(count)s</strong> ana strateji görüntülenir."
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:29
+msgid "Tüm grafiği sığdır"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:30
+msgid "Tümünü Göster"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:33
+msgid "SP Modülü"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:40
+msgid ""
+"<b>Nasıl kullanılır?</b> Düğüme tıklayınca bağlı tüm yol vurgulanır. "
+"Tekerlek ile yakınlaştırın, sürükleyerek kaydırın. Arama kutusuna yazarak"
+" düğüm bulabilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:40
+msgid "zoom."
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:77
+msgid "Str. Girişim"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:99
+msgid "Süreç / Girişim"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:100
+msgid "PG / Proje"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:107
+msgid "Düğüm ara…"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:107
+msgid "Haritada ara"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:120
+msgid "Yakınlaştır"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:121
+msgid "Uzaklaştır"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:122
+msgid "Sığdır"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:128
+msgid "Harita oluşturuluyor…"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:131
+msgid "Strateji ilişki grafiği"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:136
+msgid "Henüz strateji tanımlanmamış"
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:137
+msgid ""
+"Stratejik Planlama modülünden ana ve alt strateji ekledikten sonra harita"
+" burada görünecek."
+msgstr ""
+
+#: ui/templates/platform/sp/strateji_haritasi.html:139
+msgid "SP'ye Git"
+msgstr ""
+
+#: ui/templates/platform/sp/swot.html:27
+msgid "Güçlü/zayıf yönler ve dış fırsat/tehditler — aktif plan yılı bazlı."
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:3
+msgid "Plan Year Şablonları"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:13
+msgid "Hazır Plan Şablonları"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:16
+msgid ""
+"Sektör/kurum tipine göre hazır stratejik plan iskeletleri. Tek tıkla "
+"aktif plan yılına uygulanır."
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:26
+msgid "Şablonu Uygula"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:32
+msgid "Hedef Yıl"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:36
+msgid "Mevcut misyon/vizyon/değerleri ÜZERİNE YAZ"
+msgstr ""
+
+#: ui/templates/platform/sp/templates.html:39
+msgid ""
+"⚠️ Şablon, mevcut plan yılına ek strateji & alt strateji ekler. Aynı "
+"kodlu kayıt varsa atlanır."
+msgstr ""
+
+#: ui/templates/platform/sp/tows.html:27
+msgid "SWOT'tan türeyen 4 strateji kombinasyonu — aktif plan yılı bazlı."
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:6
+msgid "KOKPİTİM — Savaş Odası"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:112
+msgid "KOKPİTİM"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:112
+msgid "SAVAŞ ODASI"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:113
+msgid "Yönetici Kokpiti — canlı izleme"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:122
+msgid "güncelleniyor…"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:125
+msgid "⛶ Tam ekran"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:126
+msgid "✈️ Animasyonu kapat"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:127
+msgid "⚙️ Cepheleri düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:151
+msgid "Savaş Odası yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:157
+msgid "⚙️ Cepheleri Düzenle"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:158
+msgid ""
+"Cephe ekle/sil, yeniden adlandır, gösterilecek verileri seç. Ayarlar bu "
+"tarayıcıda saklanır."
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:160
+msgid "Sahne süresi (sn):"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:165
+msgid "+ Metrik panosu"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:166
+msgid "+ Sıralama cephesi"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:171
+msgid "Varsayılana dön"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:2
+msgid "VRIO Matrisi — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:3
+msgid "VRIO Analizi (Resource-Based View)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:10
+msgid "VRIO"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:25
+msgid ""
+"Barney çerçevesi — kurumunuzun kaynak ve yeteneklerini 4 soru ile "
+"sınıflandırıp <b>rekabet avantajı tipini</b> belirler."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:28
+msgid "Yeni Kaynak"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:34
+msgid "V — Değerli mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:35
+msgid ""
+"Bu kaynak müşteri için değer yaratıyor mu? Bir tehdidi azaltıyor veya "
+"fırsatı kullanmaya yarıyor mu?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:38
+msgid "R — Nadir mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:39
+msgid "Rakiplerin çoğunda bu kaynak yok mu? Az sayıda firma bu kaynağa sahip mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:42
+msgid "I — Taklit Edilemez mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:43
+msgid ""
+"Rakipler kopyalamaya çalışsa zorlanır mı? (yüksek maliyet, hukuki engel, "
+"kültürel bağ)"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:46
+msgid "O — Organize mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:47
+msgid "Kurum bu kaynağı sömürmek için süreç, yapı ve sistemlere sahip mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:56
+msgid "Kategori"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:57
+msgid "Değerli mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:58
+msgid "Nadir mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:59
+msgid "Taklit Edilemez mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:60
+msgid "Organize mi?"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:61
+msgid "Sonuç"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:71
+msgid "Sonuç Sınıflandırması"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:73
+msgid "Rekabetçi Dezavantaj"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:73
+msgid "Değerli değil → kaynak iş yaramıyor."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:74
+msgid "Rekabet Paritesi"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:74
+msgid "Değerli ama nadir değil → herkeste var."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:75
+msgid "Geçici Rekabet Avantajı"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:75
+msgid "Değerli + nadir ama taklit edilebilir."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:76
+msgid "Kullanılmayan Avantaj"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:76
+msgid "VRI ✓ ama organizasyon eksik — potansiyel kaybediliyor."
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:77
+msgid "Sürdürülebilir Rekabet Avantajı"
+msgstr ""
+
+#: ui/templates/platform/sp/vrio.html:77
+msgid "VRIO ✓✓✓✓ — kurumsal kale."
+msgstr ""
+
+#: ui/templates/platform/sp/xmatrix.html:20
+msgid "Hoshin Kanri X-Matrisi"
+msgstr ""
+
+#: ui/templates/platform/sp/xmatrix.html:23
+msgid ""
+"4 çeyrek: <b>Stratejiler ↔ Yıllık Hedefler ↔ Girişimler ↔ Performans "
+"Göstergeleri</b> — korelasyon dolu hücrelerle."
 msgstr ""
 
 #: ui/templates/platform/surec/faaliyetler.html:2
@@ -7913,10 +9987,6 @@ msgstr ""
 
 #: ui/templates/platform/surec/index.html:526
 msgid "Süreç Kodu"
-msgstr ""
-
-#: ui/templates/platform/surec/index.html:535
-msgid "Tamamlandı"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:543

@@ -14,40 +14,40 @@
 <div style="max-width:1100px; margin:0 auto;">
   <div style="margin-bottom:28px;">
     <h1 style="font-size:22px; font-weight:700; color:var(--text-default); margin:0 0 4px;" class="dark:text-white">
-      <i class="fas fa-bullseye" style="color:#4f46e5;"></i> Stratejik Planlama
+      <i class="fas fa-bullseye" style="color:#4f46e5;"></i> {{ _("Stratejik Planlama") }}
     </h1>
     <p style="font-size:13.5px; color:#64748b; margin:0;">
-      Çalışmak istediğiniz stratejik planlama modülünü seçin.
+      {{ _("Çalışmak istediğiniz stratejik planlama modülünü seçin.") }}
     </p>
   </div>
 
   {% set items = [
-    {'url': url_for('app_bp.sp'),                         'icon': 'fa-bullseye',        'color': '#4f46e5', 'bg': '#eef2ff', 'name': 'Genel Bakış',                       'desc': 'Vizyon, misyon, stratejiler ve K-Vektör paneli'},
-    {'url': url_for('app_bp.sp_exec_dashboard'),          'icon': 'fa-tachometer-alt',  'color': '#0ea5e9', 'bg': '#ecfeff', 'name': 'Yönetici Paneli',                   'desc': 'Stratejik sağlık göstergeleri ve özet panel'},
-    {'url': url_for('app_bp.sp_quarterly_review_page'),   'icon': 'fa-calendar-check',  'color': '#16a34a', 'bg': '#f0fdf4', 'name': 'Çeyreklik Değerlendirme',           'desc': 'Üç aylık strateji değerlendirme döngüsü'},
-    {'url': url_for('app_bp.sp_initiatives_page'),        'icon': 'fa-rocket',          'color': '#db2777', 'bg': '#fdf2f8', 'name': 'Girişimler',                        'desc': 'Çok yıllık stratejik girişim listesi'},
-    {'url': url_for('app_bp.sp_scenarios_page'),          'icon': 'fa-code-branch',     'color': '#7c3aed', 'bg': '#f5f3ff', 'name': 'Senaryolar',                        'desc': 'İyimser, kötümser, temel senaryo varyasyonları'},
-    {'url': url_for('app_bp.sp_replan_triggers_page'),    'icon': 'fa-bolt',            'color': '#f59e0b', 'bg': '#fffbeb', 'name': 'Yeniden Planlama Tetikleyicileri',  'desc': 'Otomatik strateji yeniden değerlendirme kuralları'},
-    {'url': url_for('app_bp.sp_xmatrix_page'),            'icon': 'fa-th',              'color': '#0891b2', 'bg': '#ecfeff', 'name': 'Hoshin X-Matrisi',                  'desc': 'Strateji ↔ Hedef ↔ Girişim ↔ KPI korelasyonu'},
-    {'url': url_for('app_bp.sp_blue_ocean_page'),         'icon': 'fa-water',           'color': '#2563eb', 'bg': '#eff6ff', 'name': 'Mavi Okyanus',                      'desc': 'Strateji tuvali ve ERRC tablosu'},
-    {'url': url_for('app_bp.sp_vrio_page'),               'icon': 'fa-gem',             'color': '#9333ea', 'bg': '#faf5ff', 'name': 'VRIO Analizi',                      'desc': 'Kaynak ve yetenek sınıflandırması'},
-    {'url': url_for('app_bp.sp_swot_page'),               'icon': 'fa-table-cells-large','color': '#6366f1', 'bg': '#eef2ff', 'name': 'SWOT Analizi',                      'desc': 'Güçlü/zayıf yön, fırsat/tehdit'},
-    {'url': url_for('app_bp.sp_tows_page'),               'icon': 'fa-arrows-to-circle','color': '#0891b2', 'bg': '#ecfeff', 'name': 'TOWS Matrisi',                      'desc': 'SWOT türevli 4 strateji kombinasyonu'},
-    {'url': url_for('app_bp.sp_pestel_page'),             'icon': 'fa-globe',           'color': '#16a34a', 'bg': '#f0fdf4', 'name': 'PESTEL Analizi',                    'desc': 'Politik/ekonomik/sosyal/teknolojik/çevresel/yasal'},
-    {'url': url_for('app_bp.sp_porter_page'),             'icon': 'fa-chess',           'color': '#ea580c', 'bg': '#fff7ed', 'name': 'Porter 5 Güç',                      'desc': 'Sektörel rekabet yoğunluğu analizi'},
-    {'url': url_for('app_bp.sp_bsc_page'),                'icon': 'fa-layer-group',     'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'Dengeli Karne (BSC)',               'desc': '4 perspektifte KPI dengesi'},
-    {'url': url_for('app_bp.sp_digest_pdf'),              'icon': 'fa-file-pdf',        'color': '#dc2626', 'bg': '#fef2f2', 'name': 'Haftalık Rapor (PDF)',              'desc': 'Haftalık strateji özet raporu'},
-    {'url': url_for('app_bp.sp_ai_settings_page'),        'icon': 'fa-robot',           'color': '#0d9488', 'bg': '#f0fdfa', 'name': 'Yapay Zeka Ayarları',               'desc': 'AI sağlayıcı, anahtar ve kota yapılandırması'},
-    {'url': url_for('app_bp.sp_templates_page'),          'icon': 'fa-store',           'color': '#65a30d', 'bg': '#f7fee7', 'name': 'Plan Şablonları',                   'desc': 'Hazır plan yılı şablonlarından başla'},
+    {'url': url_for('app_bp.sp'),                         'icon': 'fa-bullseye',        'color': '#4f46e5', 'bg': '#eef2ff', 'name': _('Genel Bakış'),                       'desc': _('Vizyon, misyon, stratejiler ve K-Vektör paneli')},
+    {'url': url_for('app_bp.sp_exec_dashboard'),          'icon': 'fa-tachometer-alt',  'color': '#0ea5e9', 'bg': '#ecfeff', 'name': _('Yönetici Paneli'),                   'desc': _('Stratejik sağlık göstergeleri ve özet panel')},
+    {'url': url_for('app_bp.sp_quarterly_review_page'),   'icon': 'fa-calendar-check',  'color': '#16a34a', 'bg': '#f0fdf4', 'name': _('Çeyreklik Değerlendirme'),           'desc': _('Üç aylık strateji değerlendirme döngüsü')},
+    {'url': url_for('app_bp.sp_initiatives_page'),        'icon': 'fa-rocket',          'color': '#db2777', 'bg': '#fdf2f8', 'name': _('Girişimler'),                        'desc': _('Çok yıllık stratejik girişim listesi')},
+    {'url': url_for('app_bp.sp_scenarios_page'),          'icon': 'fa-code-branch',     'color': '#7c3aed', 'bg': '#f5f3ff', 'name': _('Senaryolar'),                        'desc': _('İyimser, kötümser, temel senaryo varyasyonları')},
+    {'url': url_for('app_bp.sp_replan_triggers_page'),    'icon': 'fa-bolt',            'color': '#f59e0b', 'bg': '#fffbeb', 'name': _('Yeniden Planlama Tetikleyicileri'),  'desc': _('Otomatik strateji yeniden değerlendirme kuralları')},
+    {'url': url_for('app_bp.sp_xmatrix_page'),            'icon': 'fa-th',              'color': '#0891b2', 'bg': '#ecfeff', 'name': _('Hoshin X-Matrisi'),                  'desc': _('Strateji ↔ Hedef ↔ Girişim ↔ KPI korelasyonu')},
+    {'url': url_for('app_bp.sp_blue_ocean_page'),         'icon': 'fa-water',           'color': '#2563eb', 'bg': '#eff6ff', 'name': _('Mavi Okyanus'),                      'desc': _('Strateji tuvali ve ERRC tablosu')},
+    {'url': url_for('app_bp.sp_vrio_page'),               'icon': 'fa-gem',             'color': '#9333ea', 'bg': '#faf5ff', 'name': _('VRIO Analizi'),                      'desc': _('Kaynak ve yetenek sınıflandırması')},
+    {'url': url_for('app_bp.sp_swot_page'),               'icon': 'fa-table-cells-large','color': '#6366f1', 'bg': '#eef2ff', 'name': _('SWOT Analizi'),                      'desc': _('Güçlü/zayıf yön, fırsat/tehdit')},
+    {'url': url_for('app_bp.sp_tows_page'),               'icon': 'fa-arrows-to-circle','color': '#0891b2', 'bg': '#ecfeff', 'name': _('TOWS Matrisi'),                      'desc': _('SWOT türevli 4 strateji kombinasyonu')},
+    {'url': url_for('app_bp.sp_pestel_page'),             'icon': 'fa-globe',           'color': '#16a34a', 'bg': '#f0fdf4', 'name': _('PESTEL Analizi'),                    'desc': _('Politik/ekonomik/sosyal/teknolojik/çevresel/yasal')},
+    {'url': url_for('app_bp.sp_porter_page'),             'icon': 'fa-chess',           'color': '#ea580c', 'bg': '#fff7ed', 'name': _('Porter 5 Güç'),                      'desc': _('Sektörel rekabet yoğunluğu analizi')},
+    {'url': url_for('app_bp.sp_bsc_page'),                'icon': 'fa-layer-group',     'color': '#0d9488', 'bg': '#f0fdfa', 'name': _('Dengeli Karne (BSC)'),               'desc': _('4 perspektifte KPI dengesi')},
+    {'url': url_for('app_bp.sp_digest_pdf'),              'icon': 'fa-file-pdf',        'color': '#dc2626', 'bg': '#fef2f2', 'name': _('Haftalık Rapor (PDF)'),              'desc': _('Haftalık strateji özet raporu')},
+    {'url': url_for('app_bp.sp_ai_settings_page'),        'icon': 'fa-robot',           'color': '#0d9488', 'bg': '#f0fdfa', 'name': _('Yapay Zeka Ayarları'),               'desc': _('AI sağlayıcı, anahtar ve kota yapılandırması')},
+    {'url': url_for('app_bp.sp_templates_page'),          'icon': 'fa-store',           'color': '#65a30d', 'bg': '#f7fee7', 'name': _('Plan Şablonları'),                   'desc': _('Hazır plan yılı şablonlarından başla')},
   ] %}
 
   <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:16px;">
     {% for it in items %}
-    {% set slug = it.name | lower | replace(' ', '-') | replace('ı','i') | replace('ş','s') | replace('ç','c') | replace('ö','o') | replace('ü','u') | replace('ğ','g') | replace('(','') | replace(')','') %}
+    {% set slug = it.url | lower | replace('/', '-') | replace('?', '') | replace('=', '-') | trim('-') %}
     <a href="{{ it.url }}"
        class="mc-card mc-card-lift"
        data-tour="sp-card-{{ slug }}"
-       {% if it.name == 'Haftalık Rapor (PDF)' %}target="_blank"{% endif %}
+       {% if 'digest_pdf' in it.url or 'digest-pdf' in it.url %}target="_blank"{% endif %}
        style="display:flex; flex-direction:column; align-items:center; padding:28px 16px 20px; text-decoration:none; text-align:center; cursor:pointer;">
       <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:{{ it.bg }};">
         <i class="fas {{ it.icon }}" style="color:{{ it.color }};"></i>

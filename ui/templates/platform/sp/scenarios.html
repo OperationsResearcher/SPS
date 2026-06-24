@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}Senaryolar — Kokpitim{% endblock %}
-{% block page_title %}Senaryo Dalları{% endblock %}
+{% block title %}{{ _("Senaryolar — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Senaryo Dalları") }}{% endblock %}
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="sp_scenarios">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Stratejik Planlama', 'url': url_for('app_bp.sp_menu')}, {'label': 'Senaryolar', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Stratejik Planlama'), 'url': url_for('app_bp.sp_menu')}, {'label': _('Senaryolar'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -19,33 +19,33 @@
   <div class="mc-page-header" style="margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-start; gap:16px; flex-wrap:wrap;">
     <div>
       <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
-        <i class="fas fa-code-branch"></i> Senaryo Dalları
+        <i class="fas fa-code-branch"></i> {{ _("Senaryo Dalları") }}
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
-        Bir plan yılından "iyimser / kötümser / temel senaryo" varyasyonları üret. Tüm strateji, performans göstergesi ve süreç kopyalanır; bağımsız düzenlenebilir.
+        {{ _("Bir plan yılından \"iyimser / kötümser / temel senaryo\" varyasyonları üret. Tüm strateji, performans göstergesi ve süreç kopyalanır; bağımsız düzenlenebilir.") }}
       </p>
     </div>
     <a href="{{ url_for('app_bp.sp_scenarios_compare_page') }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="flex:0 0 auto;">
-      <i class="fas fa-code-compare"></i> Senaryoları Kıyasla
+      <i class="fas fa-code-compare"></i> {{ _("Senaryoları Kıyasla") }}
     </a>
   </div>
 
   <div class="mc-card" style="padding:16px; margin-bottom:20px;">
     <form id="sc-form" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Kaynak Plan Yılı</label>
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Kaynak Plan Yılı") }}</label>
         <select id="sc-base" class="mc-input" style="min-width:280px;"></select>
       </div>
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">Senaryo Etiketi</label>
+        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Senaryo Etiketi") }}</label>
         <select id="sc-label" class="mc-input" style="width:180px;">
-          <option value="optimistic">İyimser</option>
-          <option value="pessimistic">Kötümser</option>
-          <option value="baseline">Temel Senaryo</option>
+          <option value="optimistic">{{ _("İyimser") }}</option>
+          <option value="pessimistic">{{ _("Kötümser") }}</option>
+          <option value="baseline">{{ _("Temel Senaryo") }}</option>
         </select>
       </div>
       <button type="submit" class="mc-btn mc-btn-primary">
-        <i class="fas fa-plus"></i> Senaryo Oluştur
+        <i class="fas fa-plus"></i> {{ _("Senaryo Oluştur") }}
       </button>
     </form>
   </div>
