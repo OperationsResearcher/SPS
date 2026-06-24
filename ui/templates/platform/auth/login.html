@@ -3,7 +3,7 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Giriş Yap — Kokpitim</title>
+  <title>{{ _("Giriş Yap") }} — Kokpitim</title>
   <link href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css" rel="stylesheet">
   <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/sidebar.css') }}">
   <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/components.css') }}">
@@ -18,14 +18,14 @@
     <div style="text-align:center; margin-bottom:32px;">
       <div style="display:inline-flex; align-items:center; justify-content:center; width:64px; height:64px; border-radius:18px; background:linear-gradient(135deg,#6366f1,#8b5cf6); color:white; font-size:26px; font-weight:800; margin-bottom:16px; box-shadow:0 8px 24px rgba(99,102,241,0.35);">K</div>
       <h1 style="font-size:22px; font-weight:700; color:var(--text-default); margin:0;">Kokpitim</h1>
-      <p style="font-size:13px; color:#94a3b8; margin:4px 0 0;">Kurumsal Performans Yönetimi</p>
+      <p style="font-size:13px; color:#94a3b8; margin:4px 0 0;">{{ _("Kurumsal Performans Yönetimi") }}</p>
     </div>
 
     <!-- Kart -->
     <div class="mc-card">
       <div class="mc-card-body" style="padding:32px;">
-        <h2 style="font-size:18px; font-weight:700; color:var(--text-default); margin:0 0 4px;">Hoş Geldiniz</h2>
-        <p style="font-size:13px; color:#94a3b8; margin:0 0 24px;">Hesabınıza giriş yapın</p>
+        <h2 style="font-size:18px; font-weight:700; color:var(--text-default); margin:0 0 4px;">{{ _("Hoş Geldiniz") }}</h2>
+        <p style="font-size:13px; color:#94a3b8; margin:0 0 24px;">{{ _("Hesabınıza giriş yapın") }}</p>
 
         <!-- Flash mesajlar -->
         {% with messages = get_flashed_messages(with_categories=true) %}
@@ -43,7 +43,7 @@
           <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
 
           <div class="mc-form-group">
-            <label class="mc-label" for="email">E-posta</label>
+            <label class="mc-label" for="email">{{ _("E-posta") }}</label>
             <div style="position:relative;">
               <i class="fas fa-envelope" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
               <input type="email" id="email" name="email" class="mc-input" style="padding-left:36px;"
@@ -52,22 +52,22 @@
           </div>
 
           <div class="mc-form-group">
-            <label class="mc-label" for="password">Şifre</label>
+            <label class="mc-label" for="password">{{ _("Şifre") }}</label>
             <div style="position:relative;">
               <i class="fas fa-lock" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
               <input type="password" id="password" name="password" class="mc-input" style="padding-left:36px;"
-                     placeholder="Şifreniz" required>
+                     placeholder="{{ _('Şifreniz') }}" required>
             </div>
           </div>
 
           <button type="submit" class="mc-btn mc-btn-primary mc-btn-lg" style="width:100%; justify-content:center; margin-top:8px;">
-            Giriş Yap <i class="fas fa-arrow-right"></i>
+            {{ _("Giriş Yap") }} <i class="fas fa-arrow-right"></i>
           </button>
         </form>
       </div>
     </div>
 
-    <p style="text-align:center; font-size:12px; color:#cbd5e1; margin-top:24px;">&copy; 2026 Kokpitim — Tüm Hakları Saklıdır</p>
+    <p style="text-align:center; font-size:12px; color:#cbd5e1; margin-top:24px;">&copy; 2026 Kokpitim — {{ _("Tüm Hakları Saklıdır") }}</p>
   </div>
 
   <script src="{{ url_for('app_bp.static', filename='platform/js/auth.js') }}"></script>

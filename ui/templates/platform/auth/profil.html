@@ -1,6 +1,6 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Profilim — Kokpitim{% endblock %}
-{% block page_title %}Profilim{% endblock %}
+{% block title %}{{ _("Profilim") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Profilim") }}{% endblock %}
 
 {% block content %}
 <div class="profil-wrap"
@@ -25,13 +25,13 @@
         </div>
         <div style="margin-top:12px;display:flex;flex-direction:column;align-items:center;gap:6px;">
           <button type="button" id="btn-foto-yukle" class="mc-btn mc-btn-secondary mc-btn-sm">
-            <i class="fas fa-camera"></i> Fotoğraf Yükle
+            <i class="fas fa-camera"></i> {{ _("Fotoğraf Yükle") }}
           </button>
           <input type="file" id="profilePhotoInput"
                  accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
                  style="display:none;">
           <div id="photoUploadProgress" style="display:none;width:100%;text-align:center;">
-            <small>Yükleniyor...</small>
+            <small>{{ _("Yükleniyor...") }}</small>
           </div>
         </div>
       </div>
@@ -53,64 +53,64 @@
   <div class="mc-card">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-user-edit" style="color:#6366f1;margin-right:8px;"></i>Kişisel Bilgiler
+        <i class="fas fa-user-edit" style="color:#6366f1;margin-right:8px;"></i>{{ _("Kişisel Bilgiler") }}
       </span>
     </div>
     <div class="mc-card-body">
       <form id="profileForm">
         <div class="mc-grid-2" style="margin-bottom:16px;">
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-fname">Ad</label>
+            <label class="mc-label" for="pf-fname">{{ _("Ad") }}</label>
             <input type="text" id="pf-fname" class="mc-form-input" value="{{ current_user.first_name or '' }}">
           </div>
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-lname">Soyad</label>
+            <label class="mc-label" for="pf-lname">{{ _("Soyad") }}</label>
             <input type="text" id="pf-lname" class="mc-form-input" value="{{ current_user.last_name or '' }}">
           </div>
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-email">E-posta *</label>
+            <label class="mc-label" for="pf-email">{{ _("E-posta *") }}</label>
             <input type="email" id="pf-email" class="mc-form-input" required value="{{ current_user.email }}">
           </div>
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-phone">Telefon</label>
+            <label class="mc-label" for="pf-phone">{{ _("Telefon") }}</label>
             <input type="text" id="pf-phone" class="mc-form-input"
                    value="{{ current_user.phone_number or '' }}" placeholder="0555 123 45 67">
           </div>
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-title">Unvan</label>
+            <label class="mc-label" for="pf-title">{{ _("Unvan") }}</label>
             <input type="text" id="pf-title" class="mc-form-input"
-                   value="{{ current_user.job_title or '' }}" placeholder="Yazılım Geliştirici">
+                   value="{{ current_user.job_title or '' }}" placeholder="{{ _('Yazılım Geliştirici') }}">
           </div>
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-dept">Departman</label>
+            <label class="mc-label" for="pf-dept">{{ _("Departman") }}</label>
             <input type="text" id="pf-dept" class="mc-form-input"
-                   value="{{ current_user.department or '' }}" placeholder="Bilgi İşlem">
+                   value="{{ current_user.department or '' }}" placeholder="{{ _('Bilgi İşlem') }}">
           </div>
         </div>
 
         <hr class="mc-divider">
         <h4 class="profil-section-title">
-          <i class="fas fa-key" style="color:#94a3b8;"></i> Şifre Değiştir
+          <i class="fas fa-key" style="color:#94a3b8;"></i> {{ _("Şifre Değiştir") }}
         </h4>
         <div class="mc-grid-3" style="margin-bottom:20px;">
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-cur-pass">Mevcut Şifre</label>
-            <input type="password" id="pf-cur-pass" class="mc-form-input" placeholder="Mevcut şifreniz">
+            <label class="mc-label" for="pf-cur-pass">{{ _("Mevcut Şifre") }}</label>
+            <input type="password" id="pf-cur-pass" class="mc-form-input" placeholder="{{ _('Mevcut şifreniz') }}">
           </div>
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-new-pass">Yeni Şifre</label>
-            <input type="password" id="pf-new-pass" class="mc-form-input" placeholder="En az 6 karakter">
+            <label class="mc-label" for="pf-new-pass">{{ _("Yeni Şifre") }}</label>
+            <input type="password" id="pf-new-pass" class="mc-form-input" placeholder="{{ _('En az 6 karakter') }}">
           </div>
           <div class="mc-form-group">
-            <label class="mc-label" for="pf-confirm-pass">Yeni Şifre (Tekrar)</label>
-            <input type="password" id="pf-confirm-pass" class="mc-form-input" placeholder="Tekrar girin">
+            <label class="mc-label" for="pf-confirm-pass">{{ _("Yeni Şifre (Tekrar)") }}</label>
+            <input type="password" id="pf-confirm-pass" class="mc-form-input" placeholder="{{ _('Tekrar girin') }}">
           </div>
         </div>
 
         <div style="display:flex;justify-content:flex-end;gap:8px;">
-          <a href="{{ url_for('app_bp.masaustu') }}" class="mc-btn mc-btn-secondary">İptal</a>
+          <a href="{{ url_for('app_bp.masaustu') }}" class="mc-btn mc-btn-secondary">{{ _("İptal") }}</a>
           <button type="submit" class="mc-btn mc-btn-primary">
-            <i class="fas fa-save"></i> Değişiklikleri Kaydet
+            <i class="fas fa-save"></i> {{ _("Değişiklikleri Kaydet") }}
           </button>
         </div>
       </form>
@@ -126,19 +126,17 @@
     <div class="mc-card-header">
       <h3 style="margin:0;font-size:16px;color:var(--text-default);">
         <i class="fas fa-shield-alt" style="color:#4f46e5;margin-right:8px;"></i>
-        İki Faktörlü Kimlik Doğrulama (2FA)
+        {{ _("İki Faktörlü Kimlik Doğrulama (2FA)") }}
       </h3>
     </div>
     <div class="mc-card-body">
       <p style="font-size:13px;color:#64748b;margin:0 0 16px;">
-        Hesabınıza ek güvenlik katmanı ekleyin. Etkinleştirildiğinde her girişte şifreye ek olarak
-        telefon uygulamanızdan (Google Authenticator, Microsoft Authenticator, Authy) 6 haneli kod istenir.
-        <strong>Tamamen isteğe bağlıdır.</strong>
+        {{ _("Hesabınıza ek güvenlik katmanı ekleyin. Etkinleştirildiğinde her girişte şifreye ek olarak telefon uygulamanızdan (Google Authenticator, Microsoft Authenticator, Authy) 6 haneli kod istenir. <strong>Tamamen isteğe bağlıdır.</strong>") }}
       </p>
 
       {# Yükleniyor #}
       <div id="twofa-loading" style="color:#94a3b8;font-size:13px;">
-        <i class="fas fa-spinner fa-spin"></i> Durum yükleniyor…
+        <i class="fas fa-spinner fa-spin"></i> {{ _("Durum yükleniyor…") }}
       </div>
 
       {# Durum: 2FA KAPALI #}
@@ -146,11 +144,11 @@
         <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#f8fafc;border-radius:6px;border-left:3px solid #94a3b8;">
           <i class="fas fa-shield-alt" style="font-size:24px;color:#94a3b8;"></i>
           <div style="flex:1;">
-            <div style="font-weight:600;color:var(--text-default);">2FA devre dışı</div>
-            <div style="font-size:12px;color:#64748b;">Hesabınız sadece şifre ile korunuyor.</div>
+            <div style="font-weight:600;color:var(--text-default);">{{ _("2FA devre dışı") }}</div>
+            <div style="font-size:12px;color:#64748b;">{{ _("Hesabınız sadece şifre ile korunuyor.") }}</div>
           </div>
           <button class="mc-btn mc-btn-primary" id="twofa-enable-btn">
-            <i class="fas fa-lock"></i> Etkinleştir
+            <i class="fas fa-lock"></i> {{ _("Etkinleştir") }}
           </button>
         </div>
       </div>
@@ -160,13 +158,13 @@
         <div style="display:flex;align-items:center;gap:12px;padding:12px;background:#d1fae5;border-radius:6px;border-left:3px solid #10b981;">
           <i class="fas fa-check-circle" style="font-size:24px;color:#10b981;"></i>
           <div style="flex:1;">
-            <div style="font-weight:600;color:#065f46;">2FA etkin ✓</div>
+            <div style="font-weight:600;color:#065f46;">{{ _("2FA etkin ✓") }}</div>
             <div style="font-size:12px;color:#065f46;">
-              Yedek kod kalan: <strong id="twofa-backup-count">—</strong>
+              {{ _("Yedek kod kalan:") }} <strong id="twofa-backup-count">—</strong>
             </div>
           </div>
           <button class="mc-btn mc-btn-secondary" id="twofa-disable-btn" style="color:#dc2626;">
-            <i class="fas fa-unlock"></i> Devre Dışı Bırak
+            <i class="fas fa-unlock"></i> {{ _("Devre Dışı Bırak") }}
           </button>
         </div>
       </div>
@@ -181,29 +179,29 @@
     <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;display:flex;justify-content:space-between;align-items:center;">
       <h3 style="margin:0;font-size:16px;">
         <i class="fas fa-shield-alt" style="color:#4f46e5;"></i>
-        2FA Kurulum
+        {{ _("2FA Kurulum") }}
       </h3>
       <button class="mc-modal-close" id="twofa-setup-close" style="background:none;border:none;font-size:18px;cursor:pointer;color:#64748b;">✕</button>
     </div>
     <div class="mc-modal-body" style="padding:20px;">
       <ol style="font-size:13px;color:#475569;padding-left:18px;line-height:1.7;">
-        <li>Telefonunuzda <strong>Google Authenticator</strong>, <strong>Microsoft Authenticator</strong> veya <strong>Authy</strong> uygulamasını açın</li>
-        <li>"+" → "Hesap ekle" → "QR kod tara" seçin</li>
-        <li>Aşağıdaki QR kodu telefonunuzla tarayın</li>
-        <li>Uygulamanın gösterdiği 6 haneli kodu aşağıya yazın</li>
+        <li>{{ _("Telefonunuzda <strong>Google Authenticator</strong>, <strong>Microsoft Authenticator</strong> veya <strong>Authy</strong> uygulamasını açın") }}</li>
+        <li>{{ _('"+" → "Hesap ekle" → "QR kod tara" seçin') }}</li>
+        <li>{{ _("Aşağıdaki QR kodu telefonunuzla tarayın") }}</li>
+        <li>{{ _("Uygulamanın gösterdiği 6 haneli kodu aşağıya yazın") }}</li>
       </ol>
 
       <div style="text-align:center;margin:16px 0;">
         <img id="twofa-qr" alt="QR" style="max-width:200px;border:1px solid #e2e8f0;border-radius:8px;padding:8px;background:#fff;">
         <div style="font-size:12px;color:#64748b;margin-top:8px;">
-          QR taranamıyorsa kodu manuel girin:<br>
+          {{ _("QR taranamıyorsa kodu manuel girin:") }}<br>
           <code id="twofa-secret" style="background:#f1f5f9;padding:4px 10px;border-radius:4px;font-family:monospace;letter-spacing:1px;"></code>
         </div>
       </div>
 
       <div style="margin-bottom:12px;">
         <label style="display:block;font-size:12px;color:#64748b;margin-bottom:4px;font-weight:500;">
-          Doğrulama Kodu (6 hane)
+          {{ _("Doğrulama Kodu (6 hane)") }}
         </label>
         <input id="twofa-code-input" class="mc-form-input" maxlength="6" inputmode="numeric" pattern="[0-9]*"
                placeholder="123456" style="width:100%;font-size:18px;letter-spacing:4px;text-align:center;">
@@ -212,9 +210,9 @@
       <div id="twofa-setup-error" style="display:none;color:#dc2626;font-size:13px;margin-bottom:8px;"></div>
 
       <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button class="mc-btn mc-btn-secondary" id="twofa-setup-cancel">İptal</button>
+        <button class="mc-btn mc-btn-secondary" id="twofa-setup-cancel">{{ _("İptal") }}</button>
         <button class="mc-btn mc-btn-primary" id="twofa-setup-verify">
-          <i class="fas fa-check"></i> Doğrula ve Etkinleştir
+          <i class="fas fa-check"></i> {{ _("Doğrula ve Etkinleştir") }}
         </button>
       </div>
     </div>
@@ -227,21 +225,19 @@
     <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;">
       <h3 style="margin:0;font-size:16px;color:#10b981;">
         <i class="fas fa-check-circle"></i>
-        2FA etkinleştirildi!
+        {{ _("2FA etkinleştirildi!") }}
       </h3>
     </div>
     <div class="mc-modal-body" style="padding:20px;">
       <div class="mc-alert mc-alert-warning" style="padding:12px;margin-bottom:16px;background:#fef3c7;border-left:3px solid #f59e0b;border-radius:4px;">
-        <strong>⚠️ Önemli:</strong> Aşağıdaki yedek kodları güvenli bir yere kaydedin (parola yöneticisi veya yazdırın).
-        Telefonunuza erişiminizi kaybederseniz bu kodlarla giriş yapabilirsiniz.
-        Her kod <strong>yalnızca bir kez</strong> kullanılabilir.
+        {{ _("<strong>⚠️ Önemli:</strong> Aşağıdaki yedek kodları güvenli bir yere kaydedin (parola yöneticisi veya yazdırın). Telefonunuza erişiminizi kaybederseniz bu kodlarla giriş yapabilirsiniz. Her kod <strong>yalnızca bir kez</strong> kullanılabilir.") }}
       </div>
       <div id="twofa-backup-list" style="display:grid;grid-template-columns:1fr 1fr;gap:6px;font-family:monospace;font-size:14px;margin-bottom:12px;"></div>
       <div style="display:flex;gap:8px;justify-content:flex-end;">
         <button class="mc-btn mc-btn-secondary" id="twofa-backup-copy">
-          <i class="fas fa-copy"></i> Kopyala
+          <i class="fas fa-copy"></i> {{ _("Kopyala") }}
         </button>
-        <button class="mc-btn mc-btn-primary" id="twofa-backup-done">Anladım, kaydettim</button>
+        <button class="mc-btn mc-btn-primary" id="twofa-backup-done">{{ _("Anladım, kaydettim") }}</button>
       </div>
     </div>
   </div>
@@ -253,19 +249,19 @@
     <div class="mc-modal-header" style="padding:16px 20px;border-bottom:1px solid #e2e8f0;">
       <h3 style="margin:0;font-size:16px;color:#dc2626;">
         <i class="fas fa-unlock"></i>
-        2FA Devre Dışı Bırak
+        {{ _("2FA Devre Dışı Bırak") }}
       </h3>
     </div>
     <div class="mc-modal-body" style="padding:20px;">
       <p style="font-size:13px;color:#475569;margin:0 0 12px;">
-        Güvenlik için şifrenizi tekrar girmeniz gerekiyor. 2FA devre dışı bırakılırsa hesabınız yalnızca şifre ile korunur.
+        {{ _("Güvenlik için şifrenizi tekrar girmeniz gerekiyor. 2FA devre dışı bırakılırsa hesabınız yalnızca şifre ile korunur.") }}
       </p>
-      <input id="twofa-disable-password" type="password" class="mc-form-input" placeholder="Şifreniz" style="width:100%;margin-bottom:8px;">
+      <input id="twofa-disable-password" type="password" class="mc-form-input" placeholder="{{ _('Şifreniz') }}" style="width:100%;margin-bottom:8px;">
       <div id="twofa-disable-error" style="display:none;color:#dc2626;font-size:13px;margin-bottom:8px;"></div>
       <div style="display:flex;gap:8px;justify-content:flex-end;">
-        <button class="mc-btn mc-btn-secondary" id="twofa-disable-cancel">İptal</button>
+        <button class="mc-btn mc-btn-secondary" id="twofa-disable-cancel">{{ _("İptal") }}</button>
         <button class="mc-btn mc-btn-danger" id="twofa-disable-confirm">
-          <i class="fas fa-unlock"></i> Devre Dışı Bırak
+          <i class="fas fa-unlock"></i> {{ _("Devre Dışı Bırak") }}
         </button>
       </div>
     </div>

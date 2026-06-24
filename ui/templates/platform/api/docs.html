@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}API Dokümantasyonu{% endblock %}
-{% block page_title %}REST API Dokümantasyonu{% endblock %}
+{% block title %}{{ _("API Dokümantasyonu") }}{% endblock %}
+{% block page_title %}{{ _("REST API Dokümantasyonu") }}{% endblock %}
 
 {% block content %}
 <div style="max-width:960px; margin:0 auto;">
@@ -9,13 +9,13 @@
     <div>
       <h2 class="mc-page-title">REST API v1</h2>
       <p class="mc-page-subtitle">
-        Tüm endpoint'ler
+        {{ _("Tüm endpoint'ler") }}
         <code style="font-family:monospace; background:#f1f5f9; padding:2px 6px; border-radius:4px; font-size:12px;">@login_required</code>
-        ile korunur — kimlik doğrulamasız istekler HTTP 401 döndürür.
+        {{ _("ile korunur — kimlik doğrulamasız istekler HTTP 401 döndürür.") }}
       </p>
     </div>
     <span class="mc-badge mc-badge-success" style="font-size:12px; padding:6px 12px;">
-      <i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> v1 Aktif
+      <i class="fas fa-circle" style="font-size:8px; margin-right:4px;"></i> {{ _("v1 Aktif") }}
     </span>
   </div>
 
@@ -24,9 +24,9 @@
       <table class="mc-table">
         <thead>
           <tr>
-            <th style="width:72px;">Metod</th>
-            <th>URL</th>
-            <th>Açıklama</th>
+            <th style="width:72px;">{{ _("Metod") }}</th>
+            <th>{{ _("URL") }}</th>
+            <th>{{ _("Açıklama") }}</th>
           </tr>
         </thead>
         <tbody>
@@ -43,7 +43,7 @@
           {% else %}
           <tr>
             <td colspan="3" style="text-align:center; padding:40px; color:#94a3b8;">
-              Endpoint bulunamadı.
+              {{ _("Endpoint bulunamadı.") }}
             </td>
           </tr>
           {% endfor %}

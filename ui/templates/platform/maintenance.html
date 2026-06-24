@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Bakımda — Kokpitim</title>
+  <title>{{ _("Bakımda — Kokpitim") }}</title>
   <style>
     :root { color-scheme: light dark; }
     body {
@@ -23,10 +23,10 @@
   </style>
 </head>
 <body>
-  <h1>Şu anda bakımdayız</h1>
-  <p>Planlı güncelleme veya altyapı işleri nedeniyle sistem geçici olarak kullanıma kapalıdır. Lütfen bir süre sonra tekrar deneyin.</p>
+  <h1>{{ _("Şu anda bakımdayız") }}</h1>
+  <p>{{ _("Planlı güncelleme veya altyapı işleri nedeniyle sistem geçici olarak kullanıma kapalıdır. Lütfen bir süre sonra tekrar deneyin.") }}</p>
   {% if acil_erisim_tanimli %}
-  <p class="hint">Yetkili personel için acil erişim, kurum içi dokümantasyonda tanımlıdır.</p>
+  <p class="hint">{{ _("Yetkili personel için acil erişim, kurum içi dokümantasyonda tanımlıdır.") }}</p>
   {% endif %}
 </body>
 </html>

@@ -8,7 +8,7 @@ PY=".venv/Scripts/python.exe"
 [ -x "$PY" ] || PY="python"
 
 "$PY" -m babel.messages.frontend extract -F babel.cfg \
-  -k t -k _ -k gettext -k ngettext \
+  -k t -k _ -k _l -k gettext -k lazy_gettext -k ngettext \
   -o messages.pot .
 # .html içindeki <script> bloklarındaki t() çağrıları babel [javascript] extractor'ı
 # tarafından yakalanmaz (yalnız .js dosyaları). Bunları ayrıca topla:

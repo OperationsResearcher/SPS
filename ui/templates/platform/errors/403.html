@@ -1,6 +1,6 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Yetkisiz Erişim — Kokpitim{% endblock %}
-{% block page_title %}Erişim Reddedildi{% endblock %}
+{% block title %}{{ _("Yetkisiz Erişim — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Erişim Reddedildi") }}{% endblock %}
 
 {% block content %}
 <div style="display:flex; align-items:center; justify-content:center; min-height:60vh;">
@@ -14,18 +14,17 @@
     <!-- Hata kodu -->
     <div style="font-size:72px; font-weight:800; color:#f1f5f9; line-height:1; margin-bottom:8px;">403</div>
 
-    <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 8px;">Erişim Reddedildi</h2>
+    <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 8px;">{{ _("Erişim Reddedildi") }}</h2>
     <p style="font-size:14px; color:#64748b; margin:0 0 28px; line-height:1.6;">
-      Bu sayfayı görüntüleme yetkiniz bulunmuyor.<br>
-      Yöneticinizle iletişime geçin.
+      {{ _("Bu sayfayı görüntüleme yetkiniz bulunmuyor.<br>Yöneticinizle iletişime geçin.") }}
     </p>
 
     <div style="display:flex; gap:10px; justify-content:center;">
       <a href="{{ url_for('app_bp.launcher') }}" class="mc-btn mc-btn-primary">
-        <i class="fas fa-home"></i> Ana Sayfaya Dön
+        <i class="fas fa-home"></i> {{ _("Ana Sayfaya Dön") }}
       </a>
       <button onclick="history.back()" class="mc-btn mc-btn-secondary">
-        <i class="fas fa-arrow-left"></i> Geri Git
+        <i class="fas fa-arrow-left"></i> {{ _("Geri Git") }}
       </button>
     </div>
 

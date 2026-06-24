@@ -1,12 +1,12 @@
 ﻿{% extends "platform/base.html" %}
-{% block title %}Stratejik analiz — {{ project.name }}{% endblock %}
-{% block page_title %}Stratejik analiz{% endblock %}
+{% block title %}{{ _("Stratejik analiz") }} — {{ project.name }}{% endblock %}
+{% block page_title %}{{ _("Stratejik analiz") }}{% endblock %}
 
 {% block content %}
 <div style="max-width:960px; margin:0 auto;">
     <div style="margin-bottom:16px;">
-        <a href="{{ url_for('app_bp.project_portfolio') }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-arrow-left"></i> Portföy</a>
-        <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-tasks"></i> Görevler</a>
+        <a href="{{ url_for('app_bp.project_portfolio') }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-arrow-left"></i> {{ _("Portföy") }}</a>
+        <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-tasks"></i> {{ _("Görevler") }}</a>
     </div>
 
     <div class="mc-card" style="padding:18px; margin-bottom:16px;">
@@ -15,22 +15,22 @@
     </div>
 
     <div class="mc-card" style="padding:18px; margin-bottom:16px; text-align:center;">
-        <div style="font-size:12px; color:#64748b;">Toplam stratejik skor</div>
+        <div style="font-size:12px; color:#64748b;">{{ _("Toplam stratejik skor") }}</div>
         <div style="font-size:36px; font-weight:800; color:#4f46e5;">{{ total_strategic_score }}</div>
         <div style="font-size:13px; color:#64748b; margin-top:8px;">
-            Güçlü (A): {{ strong_relations }} · Zayıf (B): {{ weak_relations }}
+            {{ _("Güçlü (A):") }} {{ strong_relations }} · {{ _("Zayıf (B):") }} {{ weak_relations }}
         </div>
     </div>
 
     <div class="mc-card" style="padding:18px; margin-bottom:16px;">
-        <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">Bağlı süreçler ve puanlar</h3>
+        <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">{{ _("Bağlı süreçler ve puanlar") }}</h3>
         {% if project_processes %}
         <table style="width:100%; font-size:13px; border-collapse:collapse;">
             <thead>
                 <tr style="text-align:left; border-bottom:1px solid #e2e8f0;">
-                    <th style="padding:8px;">Kod</th>
-                    <th style="padding:8px;">Ad</th>
-                    <th style="padding:8px; text-align:center;">Puan</th>
+                    <th style="padding:8px;">{{ _("Kod") }}</th>
+                    <th style="padding:8px;">{{ _("Ad") }}</th>
+                    <th style="padding:8px; text-align:center;">{{ _("Puan") }}</th>
                 </tr>
             </thead>
             <tbody>
@@ -44,12 +44,12 @@
             </tbody>
         </table>
         {% else %}
-        <p style="color:#94a3b8;">Bu proje henüz süreçle ilişkilendirilmemiş.</p>
+        <p style="color:#94a3b8;">{{ _("Bu proje henüz süreçle ilişkilendirilmemiş.") }}</p>
         {% endif %}
     </div>
 
     <div class="mc-card" style="padding:18px;">
-        <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">Süreç bağlantılarını güncelle</h3>
+        <h3 style="font-size:15px; font-weight:600; margin-bottom:10px;">{{ _("Süreç bağlantılarını güncelle") }}</h3>
         <form method="post" action="{{ url_for('app_bp.project_strategy_processes', project_id=project.id) }}">
             <input type="hidden" name="csrf_token" value="{{ csrf_token() }}"/>
             <div style="max-height:240px; overflow:auto; border:1px solid #e2e8f0; border-radius:8px; padding:10px;">
@@ -63,7 +63,7 @@
                 </label>
                 {% endfor %}
             </div>
-            <button type="submit" class="mc-btn mc-btn-primary mt-3"><i class="fas fa-save"></i> Kaydet</button>
+            <button type="submit" class="mc-btn mc-btn-primary mt-3"><i class="fas fa-save"></i> {{ _("Kaydet") }}</button>
         </form>
     </div>
 </div>

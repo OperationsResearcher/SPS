@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}Modüller — Kokpitim{% endblock %}
-{% block page_title %}Modüller{% endblock %}
+{% block title %}{{ _("Modüller") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Modüller") }}{% endblock %}
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="masaustu">
@@ -8,17 +8,17 @@
 
 {% block content %}
 <div style="max-width:960px; margin:0 auto;">
-    {% set role_label = role_label_tr(current_user.role.name) if current_user.role else 'Kurum Kullanıcısı' %}
+    {% set role_label = role_label_tr(current_user.role.name) if current_user.role else _('Kurum Kullanıcısı') %}
 
     <!-- Karşılama -->
     <div style="margin-bottom:28px;">
         <h1 style="font-size:22px; font-weight:700; color:var(--text-default); margin:0 0 4px;" class="dark:text-white">
-            Hoş geldiniz, {{ current_user.first_name or current_user.email }} 👋
+            {{ _("Hoş geldiniz") }}, {{ current_user.first_name or current_user.email }} 👋
         </h1>
         <p style="font-size:13.5px; color:#64748b; margin:0;">
             {% if current_user.tenant %}{{ current_user.tenant.name }}{% endif %}
             {% if current_user.role %} &middot; {{ role_label }}{% endif %}
-            &middot; Çalışmak istediğiniz modülü seçin.
+            &middot; {{ _("Çalışmak istediğiniz modülü seçin.") }}
         </p>
     </div>
 
@@ -48,8 +48,8 @@
             <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:#f0fdfa;">
                 <i class="fas fa-calendar-days" style="color:#0ea5e9;"></i>
             </div>
-            <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">Takvim</span>
-            <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">Kurumun süreç ve proje takvimini görüntüleyin</span>
+            <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">{{ _("Takvim") }}</span>
+            <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">{{ _("Kurumun süreç ve proje takvimini görüntüleyin") }}</span>
         </a>
 
         {% if plan_year_feature %}
@@ -59,8 +59,8 @@
             <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:#eef2ff;">
                 <i class="fas fa-calendar-alt" style="color:#6366f1;"></i>
             </div>
-            <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">Plan Dönemleri</span>
-            <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">Stratejik plan dönemi seçimi ve yönetimi</span>
+            <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">{{ _("Plan Dönemleri") }}</span>
+            <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">{{ _("Stratejik plan dönemi seçimi ve yönetimi") }}</span>
         </a>
         {% endif %}
 
@@ -69,8 +69,8 @@
     {% if not modules %}
     <div class="mc-empty">
         <div class="mc-empty-icon">🔒</div>
-        <div class="mc-empty-title">Erişilebilir modül bulunamadı</div>
-        <div class="mc-empty-text">Yöneticinizle iletişime geçin.</div>
+        <div class="mc-empty-title">{{ _("Erişilebilir modül bulunamadı") }}</div>
+        <div class="mc-empty-text">{{ _("Yöneticinizle iletişime geçin.") }}</div>
     </div>
     {% endif %}
 </div>

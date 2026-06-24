@@ -141,8 +141,11 @@ def create_app(config_class=None):
         Template: {{ role_label_tr(user.role.name) }}
         JS gömme: {{ ROLE_LABELS_TR | tojson }}
         """
-        from app.constants.roles import role_label_tr, ROLE_LABELS_TR
-        return {"role_label_tr": role_label_tr, "ROLE_LABELS_TR": ROLE_LABELS_TR}
+        from app.constants.roles import role_label_tr, ROLE_LABELS_TR, role_labels_json
+        # ROLE_LABELS_TR değerleri lazy_gettext; JS'e tojson ile gömmek için
+        # role_labels_json() (düz-metin, aktif dilde) kullanılmalı.
+        return {"role_label_tr": role_label_tr, "ROLE_LABELS_TR": ROLE_LABELS_TR,
+                "role_labels_json": role_labels_json}
 
     @app.context_processor
     def _inject_component_visibility():

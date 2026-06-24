@@ -62,10 +62,10 @@
   // ── Rol etiketleri — backend İngilizce isim → Türkçe görünen ad ──────────
   const ROLE_LABELS = {
     "Admin":             "Admin",
-    "User":              "Kullanıcı",
-    "tenant_admin":      "Kurum Yöneticisi",
-    "executive_manager": "Kurum Üst Yönetimi",
-    "standard_user":     "Kurum Kullanıcısı",
+    "User":              t("Kullanıcı"),
+    "tenant_admin":      t("Kurum Yöneticisi"),
+    "executive_manager": t("Kurum Üst Yönetimi"),
+    "standard_user":     t("Kurum Kullanıcısı"),
   };
 
   // ═══════════════════════════════════════════════════════════════════════════

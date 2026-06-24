@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 13:22+0300\n"
+"POT-Creation-Date: 2026-06-24 14:05+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -28,6 +28,42 @@ msgstr ""
 
 #: app/api/routes.py:127
 msgid "Erişim reddedildi."
+msgstr ""
+
+#: app/constants/roles.py:32
+msgid "Sistem Yöneticisi"
+msgstr ""
+
+#: app/constants/roles.py:33 micro/modules/demo/routes.py:31
+msgid "Kurum Yöneticisi"
+msgstr ""
+
+#: app/constants/roles.py:34
+msgid "Üst Yönetim"
+msgstr ""
+
+#: app/constants/roles.py:35 app/constants/roles.py:37
+#: app/constants/roles.py:38 ui/templates/platform/launcher.html:11
+#: ui/templates/platform/masaustu/index.html:31
+msgid "Kurum Kullanıcısı"
+msgstr ""
+
+#: app/constants/roles.py:42 micro/modules/raporlar/routes_faz3.py:791
+#: ui/static/platform/js/project_form_transfer.js:222
+#: ui/templates/platform/admin/istatistikler.html:35
+#: ui/templates/platform/admin/istatistikler.html:69
+#: ui/templates/platform/admin/sub_tenants.html:79
+#: ui/templates/platform/admin/sub_tenants_usage.html:44
+#: ui/templates/platform/admin/sub_tenants_usage.html:73
+#: ui/templates/platform/admin/yonetim_paneli.html:114
+#: ui/templates/platform/admin/yonetim_paneli.html:142
+#: ui/templates/platform/ayarlar/index.html:33
+#: ui/templates/platform/base.html:324
+#: ui/templates/platform/k_rapor/index.html:271
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:25
+msgid "Kullanıcı"
 msgstr ""
 
 #: app/routes/admin.py:96
@@ -979,7 +1015,19 @@ msgid "Bireysel PG'ler, faaliyetler ve kişisel karne"
 msgstr ""
 
 #: micro/core/module_registry.py:47 ui/static/platform/js/command_palette.js:34
-#: ui/templates/platform/base.html:206
+#: ui/templates/platform/base.html:206 ui/templates/platform/proje/index.html:3
+#: ui/templates/platform/project/calendar.html:11
+#: ui/templates/platform/project/detail.html:10
+#: ui/templates/platform/project/form.html:10
+#: ui/templates/platform/project/kanban.html:10
+#: ui/templates/platform/project/kapasite.html:10
+#: ui/templates/platform/project/list.html:3
+#: ui/templates/platform/project/list.html:6
+#: ui/templates/platform/project/list.html:15
+#: ui/templates/platform/project/portfolio.html:6
+#: ui/templates/platform/project/raid.html:10
+#: ui/templates/platform/project/task_detail.html:6
+#: ui/templates/platform/project/task_form.html:6
 msgid "Proje Yönetimi"
 msgstr ""
 
@@ -1039,7 +1087,8 @@ msgstr ""
 msgid "Kullanıcı, kurum ve paket yönetimi"
 msgstr ""
 
-#: micro/core/module_registry.py:82 ui/templates/platform/base.html:280
+#: micro/core/module_registry.py:82 ui/templates/platform/api/docs.html:2
+#: ui/templates/platform/base.html:280
 msgid "API Dokümantasyonu"
 msgstr ""
 
@@ -1048,6 +1097,8 @@ msgid "REST API v1 endpoint referansı"
 msgstr ""
 
 #: micro/core/module_registry.py:89 ui/static/platform/js/command_palette.js:44
+#: ui/templates/platform/auth/ayarlar.html:2
+#: ui/templates/platform/auth/ayarlar.html:3
 #: ui/templates/platform/ayarlar/eposta.html:10
 #: ui/templates/platform/ayarlar/index.html:2
 #: ui/templates/platform/ayarlar/index.html:3
@@ -1586,10 +1637,6 @@ msgstr ""
 msgid "PDF oluşturulamadı."
 msgstr ""
 
-#: micro/modules/demo/routes.py:31
-msgid "Kurum Yöneticisi"
-msgstr ""
-
 #: micro/modules/demo/routes.py:37
 msgid ""
 "Tüm modüllere tam erişim. Stratejik plan, süreç, kullanıcı, PG "
@@ -2060,6 +2107,7 @@ msgstr ""
 #: micro/modules/raporlar/routes_faz0.py:477
 #: micro/modules/raporlar/routes_faz3.py:232
 #: micro/modules/raporlar/routes_faz3.py:455
+#: ui/templates/platform/_hierarchy_help.html:42
 #: ui/templates/platform/sp/dynamic_flow.html:17
 #: ui/templates/platform/sp/flow.html:42
 #: ui/templates/platform/sp/index.html:178
@@ -2076,6 +2124,7 @@ msgstr ""
 #: micro/modules/raporlar/routes_faz0.py:477
 #: micro/modules/raporlar/routes_faz3.py:242
 #: micro/modules/raporlar/routes_faz3.py:758
+#: ui/templates/platform/_hierarchy_help.html:44
 #: ui/templates/platform/admin/istatistikler.html:36
 #: ui/templates/platform/kurum/index.html:242
 #: ui/templates/platform/sp/flow.html:23 ui/templates/platform/sp/index.html:98
@@ -2085,6 +2134,7 @@ msgstr ""
 
 #: micro/modules/raporlar/routes_faz0.py:477
 #: micro/modules/raporlar/routes_faz3.py:758
+#: ui/templates/platform/_hierarchy_help.html:46
 #: ui/templates/platform/admin/istatistikler.html:37
 #: ui/templates/platform/k_rapor/index.html:492
 #: ui/templates/platform/sp/dynamic_flow.html:23
@@ -2100,8 +2150,11 @@ msgstr ""
 #: micro/modules/raporlar/routes_faz4.py:240
 #: micro/modules/raporlar/routes_faz4.py:260
 #: ui/static/platform/js/surec_vgs.js:579
+#: ui/templates/platform/_hierarchy_help.html:64
 #: ui/templates/platform/admin/istatistikler.html:38
 #: ui/templates/platform/admin/istatistikler.html:72
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:38
+#: ui/templates/platform/calendar/index.html:22
 #: ui/templates/platform/k_radar/kp_olgunluk.html:43
 #: ui/templates/platform/k_radar/risk_management.html:98
 #: ui/templates/platform/k_rapor/index.html:237
@@ -2112,6 +2165,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:464
 #: ui/templates/platform/k_rapor/index.html:727
 #: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/project/list.html:322
 #: ui/templates/platform/raporlar/sektorel_detay.html:16
 #: ui/templates/platform/raporlar/sektorel_detay.html:46
 #: ui/templates/platform/sp/dynamic_flow.html:26
@@ -2774,6 +2828,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:437
 #: ui/templates/platform/k_rapor/index.html:492
 #: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/project/strategy_detail.html:31
 #: ui/templates/platform/raporlar/initiative_bubble.html:107
 #: ui/templates/platform/raporlar/onay_zinciri.html:24
 #: ui/templates/platform/raporlar/op_istatistik.html:36
@@ -2792,7 +2847,9 @@ msgstr ""
 #: ui/templates/platform/admin/users.html:189
 #: ui/templates/platform/admin/users.html:239
 #: ui/templates/platform/admin/users.html:240
+#: ui/templates/platform/auth/profil.html:63
 #: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/project/strategy_detail.html:32
 #: ui/templates/platform/raporlar/onay_zinciri.html:25
 #: ui/templates/platform/sp/donemler.html:90
 #: ui/templates/platform/sp/initiatives.html:50
@@ -2828,6 +2885,8 @@ msgstr ""
 #: ui/templates/platform/admin/users.html:103
 #: ui/templates/platform/admin/yonetim_paneli.html:113
 #: ui/templates/platform/bireysel/karne.html:274
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:80
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:110
 #: ui/templates/platform/k_radar/risk_management.html:52
 #: ui/templates/platform/k_radar/risk_management.html:87
 #: ui/templates/platform/k_rapor/index.html:237
@@ -2838,6 +2897,8 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:574
 #: ui/templates/platform/k_rapor/index.html:603
 #: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/project/raid.html:118
+#: ui/templates/platform/project/task_form.html:22
 #: ui/templates/platform/raporlar/initiative_bubble.html:109
 #: ui/templates/platform/raporlar/op_istatistik.html:38
 #: ui/templates/platform/sp/donemler.html:91
@@ -3392,24 +3453,6 @@ msgid "Tarih"
 msgstr ""
 
 #: micro/modules/raporlar/routes_faz3.py:791
-#: ui/static/platform/js/project_form_transfer.js:222
-#: ui/templates/platform/admin/istatistikler.html:35
-#: ui/templates/platform/admin/istatistikler.html:69
-#: ui/templates/platform/admin/sub_tenants.html:79
-#: ui/templates/platform/admin/sub_tenants_usage.html:44
-#: ui/templates/platform/admin/sub_tenants_usage.html:73
-#: ui/templates/platform/admin/yonetim_paneli.html:114
-#: ui/templates/platform/admin/yonetim_paneli.html:142
-#: ui/templates/platform/ayarlar/index.html:33
-#: ui/templates/platform/base.html:324
-#: ui/templates/platform/k_rapor/index.html:271
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/raporlar/bireysel_hizalama.html:25
-msgid "Kullanıcı"
-msgstr ""
-
-#: micro/modules/raporlar/routes_faz3.py:791
 #: ui/templates/platform/sp/replan_triggers.html:83
 msgid "Aksiyon"
 msgstr ""
@@ -3567,6 +3610,11 @@ msgid "süreç sağlık skoru sıralı"
 msgstr ""
 
 #: micro/modules/raporlar/routes_faz4.py:248
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:119
+#: ui/templates/platform/project/form.html:39
+#: ui/templates/platform/project/list.html:276
+#: ui/templates/platform/project/list.html:399
+#: ui/templates/platform/project/task_form.html:30
 #: ui/templates/platform/raporlar/initiative_bubble.html:110
 #: ui/templates/platform/raporlar/onay_zinciri.html:27
 #: ui/templates/platform/sp/initiatives.html:58
@@ -3588,6 +3636,7 @@ msgstr ""
 
 #: micro/modules/raporlar/routes_faz4.py:260
 #: ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/_hierarchy_help.html:66
 #: ui/templates/platform/bireysel/karne.html:273
 #: ui/templates/platform/k_rapor/index.html:101
 #: ui/templates/platform/k_rapor/index.html:237
@@ -3616,6 +3665,7 @@ msgid "En çok ölçüm yapılan 10 PG"
 msgstr ""
 
 #: micro/modules/raporlar/routes_faz4.py:285
+#: ui/templates/platform/auth/profil.html:85
 #: ui/templates/platform/raporlar/bireysel_hizalama.html:26
 #: ui/templates/platform/raporlar/departman_performans.html:25
 #: ui/templates/platform/raporlar/yonetici_liderlik.html:27
@@ -3637,6 +3687,8 @@ msgstr ""
 #: micro/modules/raporlar/routes_faz4.py:294
 #: ui/templates/platform/k_radar/risk_management.html:50
 #: ui/templates/platform/k_rapor/index.html:104
+#: ui/templates/platform/project/list.html:97
+#: ui/templates/platform/project/raid.html:31
 #: ui/templates/platform/raporlar/sektorel_detay.html:18
 #: ui/templates/platform/raporlar/sektorel_detay.html:53
 #: ui/templates/platform/sp/ceyreklik_review.html:80
@@ -4119,12 +4171,20 @@ msgstr ""
 #: ui/templates/platform/admin/tenants.html:329
 #: ui/templates/platform/admin/users.html:218
 #: ui/templates/platform/admin/users.html:292
+#: ui/templates/platform/auth/profil.html:111
+#: ui/templates/platform/auth/profil.html:213
+#: ui/templates/platform/auth/profil.html:262
 #: ui/templates/platform/base.html:841
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:85
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:187
 #: ui/templates/platform/k_radar/ks.html:308
 #: ui/templates/platform/k_radar/ks.html:346
 #: ui/templates/platform/k_radar/ks.html:399
 #: ui/templates/platform/k_radar/risk_management.html:108
 #: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/project/detail.html:121
+#: ui/templates/platform/project/form.html:175
+#: ui/templates/platform/project/raid.html:127
 #: ui/templates/platform/sp/blue_ocean.html:67
 #: ui/templates/platform/sp/blue_ocean.html:102
 #: ui/templates/platform/sp/blue_ocean.html:142
@@ -4221,12 +4281,17 @@ msgstr ""
 #: ui/templates/platform/admin/tenants.html:331
 #: ui/templates/platform/admin/users.html:220
 #: ui/templates/platform/ayarlar/eposta.html:175
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:188
 #: ui/templates/platform/k_radar/index.html:90
 #: ui/templates/platform/k_radar/ks.html:309
 #: ui/templates/platform/k_radar/ks.html:347
 #: ui/templates/platform/k_radar/ks.html:400
 #: ui/templates/platform/k_radar/risk_management.html:109
 #: ui/templates/platform/kurum/ayarlar.html:201
+#: ui/templates/platform/project/form.html:174
+#: ui/templates/platform/project/raid.html:128
+#: ui/templates/platform/project/strategy_detail.html:66
+#: ui/templates/platform/project/task_form.html:67
 #: ui/templates/platform/sp/ai_settings.html:104
 #: ui/templates/platform/sp/initiatives.html:81
 #: ui/templates/platform/sp/okr.html:90 ui/templates/platform/sp/okr.html:132
@@ -4324,6 +4389,7 @@ msgstr ""
 #: ui/static/platform/js/k_radar.js:22 ui/static/platform/js/kurum.js:55
 #: ui/static/platform/js/project_raid.js:301 ui/static/platform/js/sp.js:55
 #: ui/static/platform/js/surec.js:140 ui/static/platform/js/surec.js:3748
+#: ui/templates/platform/project/detail.html:122
 msgid "Evet, sil"
 msgstr ""
 
@@ -4525,6 +4591,7 @@ msgid "Örn: %"
 msgstr ""
 
 #: ui/static/platform/js/bireysel.js:457
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:45
 msgid "Faaliyet adı"
 msgstr ""
 
@@ -4675,6 +4742,8 @@ msgstr ""
 #: ui/static/platform/js/command_palette.js:47
 #: ui/templates/platform/admin/users.html:10
 #: ui/templates/platform/base.html:253
+#: ui/templates/platform/project/form.html:127
+#: ui/templates/platform/project/form.html:151
 #: ui/templates/platform/surec/index.html:598
 #: ui/templates/platform/surec/index.html:618
 msgid "Kullanıcılar"
@@ -4720,6 +4789,8 @@ msgstr ""
 #: ui/templates/platform/admin/users.html:141
 #: ui/templates/platform/base.html:831
 #: ui/templates/platform/kurum/index.html:106
+#: ui/templates/platform/project/detail.html:23
+#: ui/templates/platform/project/task_detail.html:37
 msgid "Düzenle"
 msgstr ""
 
@@ -4861,6 +4932,7 @@ msgid "Ad:"
 msgstr ""
 
 #: ui/static/platform/js/k_radar.js:743
+#: ui/templates/platform/demo/_banner.html:23
 msgid "Rol:"
 msgstr ""
 
@@ -4895,8 +4967,10 @@ msgid "İyi"
 msgstr ""
 
 #: ui/static/platform/js/k_radar_ks.js:100 ui/static/platform/js/k_rapor.js:703
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:122
 #: ui/templates/platform/k_radar/risk_management.html:37
 #: ui/templates/platform/k_rapor/anomalies.html:32
+#: ui/templates/platform/project/raid.html:100
 #: ui/templates/platform/raporlar/early_warning.html:20
 #: ui/templates/platform/raporlar/initiative_bubble.html:96
 #: ui/templates/platform/sp/initiatives.html:62
@@ -4908,10 +4982,12 @@ msgstr ""
 #: ui/static/platform/js/k_radar_ks.js:764
 #: ui/static/platform/js/k_radar_ks.js:1501
 #: ui/static/platform/js/k_rapor.js:703
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:124
 #: ui/templates/platform/k_radar/ks.html:139
 #: ui/templates/platform/k_radar/risk_management.html:35
 #: ui/templates/platform/k_rapor/index.html:582
 #: ui/templates/platform/k_rapor/index.html:795
+#: ui/templates/platform/project/raid.html:102
 #: ui/templates/platform/raporlar/initiative_bubble.html:94
 #: ui/templates/platform/sp/initiatives.html:60
 #: ui/templates/platform/sp/replan_triggers.html:95
@@ -5106,6 +5182,7 @@ msgid "PESTLE kaydedildi."
 msgstr ""
 
 #: ui/static/platform/js/k_radar_ks.js:763
+#: ui/templates/platform/project/raid.html:121
 msgid "Devam ediyor"
 msgstr ""
 
@@ -5309,7 +5386,9 @@ msgid "Geciken"
 msgstr ""
 
 #: ui/static/platform/js/k_rapor.js:703
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:123
 #: ui/templates/platform/k_radar/risk_management.html:36
+#: ui/templates/platform/project/raid.html:101
 #: ui/templates/platform/raporlar/early_warning.html:19
 #: ui/templates/platform/raporlar/initiative_bubble.html:95
 #: ui/templates/platform/sp/initiatives.html:61
@@ -5318,7 +5397,9 @@ msgid "Yüksek"
 msgstr ""
 
 #: ui/static/platform/js/k_rapor.js:703
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:121
 #: ui/templates/platform/k_radar/risk_management.html:38
+#: ui/templates/platform/project/raid.html:99
 #: ui/templates/platform/raporlar/initiative_bubble.html:97
 #: ui/templates/platform/sp/initiatives.html:63
 #: ui/templates/platform/sp/replan_triggers.html:92
@@ -5338,6 +5419,7 @@ msgstr ""
 #: ui/templates/platform/k_radar/risk_management.html:89
 #: ui/templates/platform/kurum/ayarlar.html:109
 #: ui/templates/platform/kurum/ayarlar.html:139
+#: ui/templates/platform/project/raid.html:120
 msgid "Açık"
 msgstr ""
 
@@ -5402,6 +5484,7 @@ msgid "Devam"
 msgstr ""
 
 #: ui/static/platform/js/k_rapor.js:1265
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:82
 #: ui/templates/platform/sp/projeler.html:67
 #: ui/templates/platform/sp/projeler.html:117
 msgid "Planlandı"
@@ -5449,6 +5532,7 @@ msgstr ""
 
 #: ui/static/platform/js/k_rapor.js:1706
 #: ui/templates/platform/k_rapor/index.html:119
+#: ui/templates/platform/project/form.html:167
 #: ui/templates/platform/sp/replan_triggers.html:85
 msgid "Bildirim"
 msgstr ""
@@ -5548,6 +5632,7 @@ msgstr ""
 #: ui/static/platform/js/kurum.js:312
 #: ui/templates/platform/kurum/index.html:522
 #: ui/templates/platform/kurum/index.html:567
+#: ui/templates/platform/project/list.html:359
 msgid "Geciken görev"
 msgstr ""
 
@@ -5559,6 +5644,8 @@ msgstr ""
 #: ui/static/platform/js/kurum.js:312
 #: ui/templates/platform/kurum/index.html:530
 #: ui/templates/platform/kurum/index.html:575
+#: ui/templates/platform/project/list.html:74
+#: ui/templates/platform/project/list.html:375
 msgid "Açık RAID"
 msgstr ""
 
@@ -5920,6 +6007,10 @@ msgid "Karne verisi yüklenemedi."
 msgstr ""
 
 #: ui/static/platform/js/pg_tablo_modal.js:643
+#: ui/templates/platform/project/detail.html:26
+#: ui/templates/platform/project/task_detail.html:3
+#: ui/templates/platform/project/task_detail.html:6
+#: ui/templates/platform/project/task_form.html:3
 msgid "Görev"
 msgstr ""
 
@@ -6037,6 +6128,7 @@ msgid "Doğrulama"
 msgstr ""
 
 #: ui/static/platform/js/project_raid.js:103
+#: ui/templates/platform/project/raid.html:97
 msgid "Aciliyet"
 msgstr ""
 
@@ -6045,6 +6137,9 @@ msgstr ""
 #: ui/templates/platform/admin/packages.html:101
 #: ui/templates/platform/k_radar/cross_paydas.html:23
 #: ui/templates/platform/k_radar/kp_olgunluk.html:28
+#: ui/templates/platform/project/form.html:82
+#: ui/templates/platform/project/form.html:131
+#: ui/templates/platform/project/form.html:155
 #: ui/templates/platform/sp/blue_ocean.html:143
 #: ui/templates/platform/surec/index.html:602
 #: ui/templates/platform/surec/index.html:622
@@ -6182,6 +6277,7 @@ msgstr ""
 #: ui/templates/platform/admin/holding_drilldown.html:33
 #: ui/templates/platform/admin/sub_tenants.html:59
 #: ui/templates/platform/admin/sub_tenants_usage.html:62
+#: ui/templates/platform/base.html:580
 #: ui/templates/platform/bireysel/karne.html:251
 #: ui/templates/platform/k_radar/kp.html:57
 #: ui/templates/platform/k_radar/kp_deger_zinciri.html:29
@@ -6215,6 +6311,7 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:854
 #: ui/templates/platform/k_rapor/index.html:907
 #: ui/templates/platform/masaustu/index.html:63
+#: ui/templates/platform/project/kapasite.html:34
 #: ui/templates/platform/raporlar/esg_yonetim.html:34
 #: ui/templates/platform/raporlar/veri_kalitesi.html:32
 #: ui/templates/platform/sp/bsc.html:29
@@ -6363,6 +6460,7 @@ msgstr ""
 #: ui/static/platform/js/surec.js:280
 #: ui/templates/platform/bireysel/karne.html:243
 #: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/project/list.html:272
 #: ui/templates/platform/surec/faaliyetler.html:107
 #: ui/templates/platform/surec/karne.html:479
 msgid "Ara"
@@ -6563,6 +6661,7 @@ msgid "Aralık nasıl girilir?"
 msgstr ""
 
 #: ui/static/platform/js/surec.js:3058
+#: ui/templates/platform/_hierarchy_help.html:116
 msgid "Anladım"
 msgstr ""
 
@@ -6572,6 +6671,8 @@ msgstr ""
 
 #: ui/static/platform/js/surec.js:3140
 #: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/project/form.html:95
+#: ui/templates/platform/project/kapasite.html:38
 #: ui/templates/platform/sp/okr.html:116
 #: ui/templates/platform/sp/projeler.html:124
 msgid "Başlangıç"
@@ -6580,15 +6681,19 @@ msgstr ""
 #: ui/static/platform/js/surec.js:3140
 #: ui/templates/platform/k_rapor/index.html:237
 #: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/project/form.html:100
+#: ui/templates/platform/project/kapasite.html:38
 #: ui/templates/platform/sp/projeler.html:128
 msgid "Bitiş"
 msgstr ""
 
 #: ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:49
 msgid "İlişkili PG"
 msgstr ""
 
 #: ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:53
 msgid "Atananlar"
 msgstr ""
 
@@ -6615,6 +6720,7 @@ msgid "Süreci Düzenle"
 msgstr ""
 
 #: ui/static/platform/js/surec.js:3381
+#: ui/templates/platform/auth/profil.html:113
 msgid "Değişiklikleri Kaydet"
 msgstr ""
 
@@ -6845,6 +6951,240 @@ msgstr ""
 msgid "Pasif"
 msgstr ""
 
+#: ui/templates/platform/_hierarchy_help.html:13
+msgid "Strateji Hiyerarşisi — Hangi Katmanda Neyi Yapıyoruz?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:15
+#: ui/templates/platform/admin/tenants.html:192
+#: ui/templates/platform/admin/tenants.html:206
+#: ui/templates/platform/admin/users.html:183
+#: ui/templates/platform/admin/users.html:234
+#: ui/templates/platform/base.html:578
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:11
+#: ui/templates/platform/k_radar/ks.html:213
+#: ui/templates/platform/k_radar/ks.html:226
+#: ui/templates/platform/k_radar/ks.html:239
+#: ui/templates/platform/k_radar/ks.html:252
+#: ui/templates/platform/k_radar/ks.html:266
+#: ui/templates/platform/k_radar/ks.html:279
+#: ui/templates/platform/k_radar/ks.html:319
+#: ui/templates/platform/k_radar/ks.html:357
+#: ui/templates/platform/k_radar/ks.html:370
+#: ui/templates/platform/k_radar/ks.html:383
+#: ui/templates/platform/project/raid.html:55
+#: ui/templates/platform/surec/index.html:506
+#: ui/templates/platform/surec/karne.html:502
+#: ui/templates/platform/surec/karne.html:683
+#: ui/templates/platform/surec/karne.html:752
+#: ui/templates/platform/surec/karne.html:785
+#: ui/templates/platform/surec/karne.html:811
+#: ui/templates/platform/surec/karne.html:880
+#: ui/templates/platform/surec/karne.html:892
+#: ui/templates/platform/surec/karne.html:898
+#: ui/templates/platform/surec/karne.html:910
+#: ui/templates/platform/surec/karne.html:939
+#: ui/templates/platform/surec/karne.html:947
+msgid "Kapat"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:21
+msgid ""
+"Strateji bir piramittir: üstte <b>ortak yön katmanları</b>, altta ise Alt"
+" Strateji'den <b>iki kola ayrılan icra</b> vardır. Her katmanın amacı, "
+"süresi ve sorumlusu farklıdır."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:35
+msgid "Örnek:"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:42
+msgid "Nereye gidiyoruz?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:43
+msgid "Kurum yönü, süresiz. Nadiren değişir. Tüm kararların referansı."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:43
+msgid "\"2030'da Avrupa'da pazar lideri olmak\""
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:44
+msgid "Hangi yönlerden gideceğiz?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:45
+msgid "5-10 yıllık yön kararı, 4-8 adet. Bitiş tarihi YOK, bütçe YOK."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:45
+msgid "\"Pazar Liderliği ve Büyüme\", \"Operasyonel Mükemmellik\""
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:46
+msgid "Ana stratejiyi nasıl somutlaştırırız?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:47
+msgid ""
+"3-5 yıl, ana başlığın detaylı kırılımı. <b>Buradan icra iki kola ayrılır "
+"↓</b>"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:47
+msgid "\"Avrupa'da büyüme\", \"Süreçleri yalınlaştırma\""
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:52
+msgid "Alt Strateji buradan iki kola ayrılır"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:60
+msgid "Operasyonel Kol"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:61
+msgid "— mevcut işi yürüt"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:64
+msgid "Hangi işi tekrar tekrar yürütüyoruz?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:65
+msgid "Alt stratejiye katkı yüzdesiyle bağlanır. Sürekli işleyen iş akışı."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:65
+msgid "\"Tedarik süreci\", \"Müşteri onboarding\""
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:66
+msgid "Süreç içinde ne yapılır?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:67
+msgid "Süreç altında ölçülebilir iyileştirme/uygulama aksiyonu."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:67
+msgid "\"Tedarikçi denetimi\", \"Onboarding formu yenileme\""
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:68
+msgid "Bireysel Hedef"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:68
+msgid "Kişi neye katkı veriyor?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:69
+msgid "Çalışan düzeyinde, kurum stratejisiyle hizalı kişisel hedef."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:69
+msgid "\"Bu çeyrek 5 tedarikçi denetimi\""
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:76
+msgid "Atılım Kolu"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:77
+msgid "— değişimi getir"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:80
+msgid "Stratejik Girişim"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:80
+msgid "Bu dönem hangi atılımı yapacağız?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:81
+msgid ""
+"<b>1-3 yıl · BÜTÇELİ · sponsorlu</b>. Ana ve/veya alt stratejiye "
+"bağlanır. Hoshin \"breakthrough\" hamlesi."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:81
+msgid "\"Almanya pazarına giriş\", \"ERP geçişi\""
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:88
+msgid "Süreç&apos;ten ↘"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:90
+msgid "↙ Girişim&apos;den"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:97
+msgid "Köprü — bir Süreç&apos;e <b>VEYA</b> bir Girişim&apos;e bağlanır"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:100
+#: ui/templates/platform/admin/istatistikler.html:41
+#: ui/templates/platform/admin/istatistikler.html:75
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:97
+#: ui/templates/platform/calendar/index.html:23
+#: ui/templates/platform/k_radar/risk_management.html:99
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:597
+#: ui/templates/platform/project/detail.html:10
+#: ui/templates/platform/project/portfolio.html:58
+#: ui/templates/platform/sp/strateji_haritasi.html:86
+#: ui/templates/platform/sp/strateji_haritasi.html:116
+msgid "Proje"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:100
+msgid "Somut çıktıyla bitecek iş?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:101
+msgid ""
+"3-18 ay, belirli kapsam-bütçe-takvim. <b>Bir Stratejik Girişim'in altında"
+" VEYA doğrudan bir Süreç'e bağlı</b> olabilir (ikisi birden de mümkün)."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:101
+msgid "\"Münih ofis kuruluşu\" (girişim altı) · \"Hat yenileme\" (süreç altı)"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:103
+msgid "Proje Görevi"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:103
+msgid "Günlük yapılacak iş?"
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:104
+msgid ""
+"Saatler/günler süren, çalışana atanan tek aktivite. Bir projenin altında;"
+" bir süreç PG'sine de bağlanabilir."
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:104
+msgid "\"Kira sözleşmesi imzala\""
+msgstr ""
+
+#: ui/templates/platform/_hierarchy_help.html:111
+msgid ""
+"<b>İki kol farkı:</b> <b>Operasyonel kol</b> mevcut işi yürütür "
+"(süreçler, sürekli). <b>Atılım kolu</b> yeni bir değişim getirir "
+"(girişim, başı-sonu belli). <b>Proje köprüdür:</b> Tam ortada durur çünkü"
+" hem bir Stratejik Girişim'in altında hem de doğrudan bir Süreç'in "
+"altında konumlanabilir. <b>Girişim ≠ Proje:</b> Girişim \"Almanya'ya "
+"gireceğiz\" (3 yıllık hamle), Proje \"Münih ofisi kuracağız\" (6 aylık "
+"somut iş)."
+msgstr ""
+
 #: ui/templates/platform/base.html:145
 msgid "Ana Modüller"
 msgstr ""
@@ -6900,7 +7240,8 @@ msgstr ""
 msgid "Sistem"
 msgstr ""
 
-#: ui/templates/platform/base.html:336
+#: ui/templates/platform/auth/profil.html:2
+#: ui/templates/platform/auth/profil.html:3 ui/templates/platform/base.html:336
 msgid "Profilim"
 msgstr ""
 
@@ -6908,6 +7249,7 @@ msgstr ""
 msgid "Aydınlık Mod"
 msgstr ""
 
+#: ui/templates/platform/auth/ayarlar.html:82
 #: ui/templates/platform/base.html:343 ui/templates/platform/base.html:449
 msgid "Karanlık Mod"
 msgstr ""
@@ -6940,38 +7282,68 @@ msgstr ""
 msgid "Kart Bilgisi"
 msgstr ""
 
-#: ui/templates/platform/admin/tenants.html:192
-#: ui/templates/platform/admin/tenants.html:206
-#: ui/templates/platform/admin/users.html:183
-#: ui/templates/platform/admin/users.html:234
-#: ui/templates/platform/base.html:578
-#: ui/templates/platform/k_radar/ks.html:213
-#: ui/templates/platform/k_radar/ks.html:226
-#: ui/templates/platform/k_radar/ks.html:239
-#: ui/templates/platform/k_radar/ks.html:252
-#: ui/templates/platform/k_radar/ks.html:266
-#: ui/templates/platform/k_radar/ks.html:279
-#: ui/templates/platform/k_radar/ks.html:319
-#: ui/templates/platform/k_radar/ks.html:357
-#: ui/templates/platform/k_radar/ks.html:370
-#: ui/templates/platform/k_radar/ks.html:383
-#: ui/templates/platform/surec/index.html:506
-#: ui/templates/platform/surec/karne.html:502
-#: ui/templates/platform/surec/karne.html:683
-#: ui/templates/platform/surec/karne.html:752
-#: ui/templates/platform/surec/karne.html:785
-#: ui/templates/platform/surec/karne.html:811
-#: ui/templates/platform/surec/karne.html:880
-#: ui/templates/platform/surec/karne.html:892
-#: ui/templates/platform/surec/karne.html:898
-#: ui/templates/platform/surec/karne.html:910
-#: ui/templates/platform/surec/karne.html:939
-#: ui/templates/platform/surec/karne.html:947
-msgid "Kapat"
-msgstr ""
-
 #: ui/templates/platform/base.html:809
 msgid "Sayfa / strateji / PG / proje / süreç / kullanıcı ara…"
+msgstr ""
+
+#: ui/templates/platform/admin/packages.html:65
+#: ui/templates/platform/launcher.html:2 ui/templates/platform/launcher.html:3
+msgid "Modüller"
+msgstr ""
+
+#: ui/templates/platform/launcher.html:16
+msgid "Hoş geldiniz"
+msgstr ""
+
+#: ui/templates/platform/launcher.html:21
+msgid "Çalışmak istediğiniz modülü seçin."
+msgstr ""
+
+#: ui/templates/platform/calendar/index.html:3
+#: ui/templates/platform/launcher.html:51
+#: ui/templates/platform/project/calendar.html:2
+#: ui/templates/platform/project/calendar.html:3
+#: ui/templates/platform/project/calendar.html:11
+#: ui/templates/platform/project/calendar.html:20
+msgid "Takvim"
+msgstr ""
+
+#: ui/templates/platform/launcher.html:52
+msgid "Kurumun süreç ve proje takvimini görüntüleyin"
+msgstr ""
+
+#: ui/templates/platform/launcher.html:62
+msgid "Plan Dönemleri"
+msgstr ""
+
+#: ui/templates/platform/launcher.html:63
+msgid "Stratejik plan dönemi seçimi ve yönetimi"
+msgstr ""
+
+#: ui/templates/platform/launcher.html:72
+msgid "Erişilebilir modül bulunamadı"
+msgstr ""
+
+#: ui/templates/platform/launcher.html:73
+msgid "Yöneticinizle iletişime geçin."
+msgstr ""
+
+#: ui/templates/platform/maintenance.html:6
+msgid "Bakımda — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/maintenance.html:26
+msgid "Şu anda bakımdayız"
+msgstr ""
+
+#: ui/templates/platform/maintenance.html:27
+msgid ""
+"Planlı güncelleme veya altyapı işleri nedeniyle sistem geçici olarak "
+"kullanıma kapalıdır. Lütfen bir süre sonra tekrar deneyin."
+msgstr ""
+
+#: ui/templates/platform/maintenance.html:29
+msgid "Yetkili personel için acil erişim, kurum içi dokümantasyonda tanımlıdır."
 msgstr ""
 
 #: ui/templates/platform/admin/araclar.html:2
@@ -7077,6 +7449,7 @@ msgid "tomofiltest'i Kur / Yenile"
 msgstr ""
 
 #: ui/templates/platform/admin/hata_kontrolu.html:56
+#: ui/templates/platform/auth/profil.html:139
 msgid "Durum yükleniyor…"
 msgstr ""
 
@@ -7358,16 +7731,6 @@ msgstr ""
 msgid "PG Verisi"
 msgstr ""
 
-#: ui/templates/platform/admin/istatistikler.html:41
-#: ui/templates/platform/admin/istatistikler.html:75
-#: ui/templates/platform/k_radar/risk_management.html:99
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/k_rapor/index.html:597
-#: ui/templates/platform/sp/strateji_haritasi.html:86
-#: ui/templates/platform/sp/strateji_haritasi.html:116
-msgid "Proje"
-msgstr ""
-
 #: ui/templates/platform/admin/istatistikler.html:42
 #: ui/templates/platform/admin/istatistikler.html:76
 msgid "Proje Task"
@@ -7468,6 +7831,7 @@ msgstr ""
 #: ui/templates/platform/admin/kilavuz_olusturucu.html:112
 #: ui/templates/platform/admin/yonetim_paneli.html:123
 #: ui/templates/platform/admin/yonetim_paneli.html:148
+#: ui/templates/platform/auth/profil.html:34
 #: ui/templates/platform/k_radar/index.html:70
 #: ui/templates/platform/k_radar/index.html:77
 #: ui/templates/platform/k_radar/index.html:127
@@ -7572,8 +7936,10 @@ msgstr ""
 #: ui/templates/platform/admin/users.html:100
 #: ui/templates/platform/admin/users.html:196
 #: ui/templates/platform/admin/users.html:247
+#: ui/templates/platform/auth/login.html:46
 #: ui/templates/platform/ayarlar/eposta.html:10
 #: ui/templates/platform/kurum/ayarlar.html:74
+#: ui/templates/platform/project/form.html:170
 msgid "E-posta"
 msgstr ""
 
@@ -7702,6 +8068,9 @@ msgid "Tüm Durumlar"
 msgstr ""
 
 #: ui/templates/platform/admin/notifications.html:75
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:101
+#: ui/templates/platform/project/raid.html:60
+#: ui/templates/platform/project/task_form.html:16
 msgid "Başlık"
 msgstr ""
 
@@ -7723,6 +8092,7 @@ msgstr ""
 #: ui/templates/platform/k_radar/cross_paydas.html:39
 #: ui/templates/platform/k_radar/kp_olgunluk.html:43
 #: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/project/portfolio.html:61
 #: ui/templates/platform/sp/donemler.html:92
 #: ui/templates/platform/sp/vrio.html:62
 #: ui/templates/platform/surec/faaliyetler.html:109
@@ -7762,10 +8132,6 @@ msgstr ""
 
 #: ui/templates/platform/admin/packages.html:40
 msgid "Abonelik Paketleri"
-msgstr ""
-
-#: ui/templates/platform/admin/packages.html:65
-msgid "Modüller"
 msgstr ""
 
 #: ui/templates/platform/admin/packages.html:77
@@ -7880,12 +8246,14 @@ msgstr ""
 #: ui/templates/platform/admin/users.html:193
 #: ui/templates/platform/admin/users.html:243
 #: ui/templates/platform/admin/users.html:244
+#: ui/templates/platform/auth/profil.html:67
 msgid "Soyad"
 msgstr ""
 
 #: ui/templates/platform/admin/sub_tenants.html:154
 #: ui/templates/platform/admin/users.html:200
 #: ui/templates/platform/admin/users.html:201
+#: ui/templates/platform/auth/login.html:55
 #: ui/templates/platform/ayarlar/eposta.html:82
 msgid "Şifre"
 msgstr ""
@@ -7913,6 +8281,7 @@ msgid "Şifre:"
 msgstr ""
 
 #: ui/templates/platform/admin/sub_tenants.html:189
+#: ui/templates/platform/auth/profil.html:238
 msgid "Kopyala"
 msgstr ""
 
@@ -8091,6 +8460,7 @@ msgid "Faaliyet alanı"
 msgstr ""
 
 #: ui/templates/platform/admin/tenants.html:247
+#: ui/templates/platform/auth/profil.html:75
 #: ui/templates/platform/kurum/ayarlar.html:70
 msgid "Telefon"
 msgstr ""
@@ -8215,6 +8585,7 @@ msgid "— Tüm Kurumlar (%(n)s) —"
 msgstr ""
 
 #: ui/templates/platform/admin/users.html:52
+#: ui/templates/platform/project/list.html:163
 msgid "Filtreleri sıfırla"
 msgstr ""
 
@@ -8245,6 +8616,7 @@ msgid "Kullanıcı Düzenle"
 msgstr ""
 
 #: ui/templates/platform/admin/users.html:252
+#: ui/templates/platform/auth/profil.html:101
 msgid "Yeni Şifre"
 msgstr ""
 
@@ -8360,6 +8732,8 @@ msgid ""
 msgstr ""
 
 #: ui/templates/platform/admin/yedekleme.html:104
+#: ui/templates/platform/auth/login.html:59
+#: ui/templates/platform/auth/profil.html:259
 msgid "Şifreniz"
 msgstr ""
 
@@ -8558,14 +8932,323 @@ msgstr ""
 msgid "Yukarıdan bir süreç seçip \"Analiz Et\" butonuna tıklayın."
 msgstr ""
 
-#: ui/templates/platform/ayarlar/eposta.html:2
-#: ui/templates/platform/ayarlar/eposta.html:3
-msgid "E-posta Ayarları"
+#: ui/templates/platform/api/docs.html:3
+msgid "REST API Dokümantasyonu"
 msgstr ""
 
+#: ui/templates/platform/api/docs.html:12
+msgid "Tüm endpoint'ler"
+msgstr ""
+
+#: ui/templates/platform/api/docs.html:14
+msgid "ile korunur — kimlik doğrulamasız istekler HTTP 401 döndürür."
+msgstr ""
+
+#: ui/templates/platform/api/docs.html:18
+msgid "v1 Aktif"
+msgstr ""
+
+#: ui/templates/platform/api/docs.html:27
+msgid "Metod"
+msgstr ""
+
+#: ui/templates/platform/api/docs.html:28
+msgid "URL"
+msgstr ""
+
+#: ui/templates/platform/api/docs.html:29
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:89
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:105
+#: ui/templates/platform/k_radar/ks.html:302
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/project/form.html:36
+#: ui/templates/platform/project/raid.html:62
+#: ui/templates/platform/project/task_form.html:19
+#: ui/templates/platform/sp/blue_ocean.html:58
+#: ui/templates/platform/sp/blue_ocean.html:129
+#: ui/templates/platform/sp/blue_ocean.html:130
+#: ui/templates/platform/sp/initiatives.html:52
+#: ui/templates/platform/sp/okr.html:52
+#: ui/templates/platform/sp/projeler.html:61
+#: ui/templates/platform/sp/projeler.html:111
+#: ui/templates/platform/sp/replan_triggers.html:60
+#: ui/templates/platform/surec/index.html:572
+#: ui/templates/platform/surec/karne.html:621
+#: ui/templates/platform/surec/karne.html:645
+#: ui/templates/platform/surec/karne.html:920
+msgid "Açıklama"
+msgstr ""
+
+#: ui/templates/platform/api/docs.html:46
+msgid "Endpoint bulunamadı."
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:15
+#: ui/templates/platform/bildirim/index.html:85
+msgid "Bildirim Ayarları"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:20
 #: ui/templates/platform/ayarlar/eposta.html:21
 #: ui/templates/platform/ayarlar/index.html:99
 msgid "E-posta Bildirimleri"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:21
+msgid "Süreç Bildirimleri"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:22
+msgid "Görev Bildirimleri"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:23
+msgid "Son Tarih Hatırlatmaları"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:42
+msgid "Dil ve Bölge"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:48
+msgid "Dil"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:55
+msgid "Saat Dilimi"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:57
+msgid "İstanbul (GMT+3)"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:58
+msgid "Londra (GMT+0)"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:62
+msgid "Tarih Formatı"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:77
+#: ui/templates/platform/surec/karne.html:129
+msgid "Görünüm"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:83
+msgid "Üst bardaki kullanıcı menüsünden değiştirilebilir"
+msgstr ""
+
+#: ui/templates/platform/auth/ayarlar.html:90
+msgid "Ayarları Kaydet"
+msgstr ""
+
+#: ui/templates/platform/auth/login.html:6
+#: ui/templates/platform/auth/login.html:64
+msgid "Giriş Yap"
+msgstr ""
+
+#: ui/templates/platform/auth/login.html:21
+msgid "Kurumsal Performans Yönetimi"
+msgstr ""
+
+#: ui/templates/platform/auth/login.html:27
+msgid "Hoş Geldiniz"
+msgstr ""
+
+#: ui/templates/platform/auth/login.html:28
+msgid "Hesabınıza giriş yapın"
+msgstr ""
+
+#: ui/templates/platform/auth/login.html:70
+msgid "Tüm Hakları Saklıdır"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:28
+msgid "Fotoğraf Yükle"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:56
+msgid "Kişisel Bilgiler"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:71
+msgid "E-posta *"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:80
+msgid "Unvan"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:82
+msgid "Yazılım Geliştirici"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:87
+msgid "Bilgi İşlem"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:93
+msgid "Şifre Değiştir"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:97
+msgid "Mevcut Şifre"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:98
+msgid "Mevcut şifreniz"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:102
+msgid "En az 6 karakter"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:105
+msgid "Yeni Şifre (Tekrar)"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:106
+msgid "Tekrar girin"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:129
+msgid "İki Faktörlü Kimlik Doğrulama (2FA)"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:134
+msgid ""
+"Hesabınıza ek güvenlik katmanı ekleyin. Etkinleştirildiğinde her girişte "
+"şifreye ek olarak telefon uygulamanızdan (Google Authenticator, Microsoft"
+" Authenticator, Authy) 6 haneli kod istenir. <strong>Tamamen isteğe "
+"bağlıdır.</strong>"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:147
+msgid "2FA devre dışı"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:148
+msgid "Hesabınız sadece şifre ile korunuyor."
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:151
+msgid "Etkinleştir"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:161
+msgid "2FA etkin ✓"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:163
+msgid "Yedek kod kalan:"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:167
+#: ui/templates/platform/auth/profil.html:264
+msgid "Devre Dışı Bırak"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:182
+msgid "2FA Kurulum"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:188
+msgid ""
+"Telefonunuzda <strong>Google Authenticator</strong>, <strong>Microsoft "
+"Authenticator</strong> veya <strong>Authy</strong> uygulamasını açın"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:189
+msgid "\"+\" → \"Hesap ekle\" → \"QR kod tara\" seçin"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:190
+msgid "Aşağıdaki QR kodu telefonunuzla tarayın"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:191
+msgid "Uygulamanın gösterdiği 6 haneli kodu aşağıya yazın"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:197
+msgid "QR taranamıyorsa kodu manuel girin:"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:204
+msgid "Doğrulama Kodu (6 hane)"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:215
+msgid "Doğrula ve Etkinleştir"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:228
+msgid "2FA etkinleştirildi!"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:233
+msgid ""
+"<strong>⚠️ Önemli:</strong> Aşağıdaki yedek kodları güvenli bir yere "
+"kaydedin (parola yöneticisi veya yazdırın). Telefonunuza erişiminizi "
+"kaybederseniz bu kodlarla giriş yapabilirsiniz. Her kod <strong>yalnızca "
+"bir kez</strong> kullanılabilir."
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:240
+msgid "Anladım, kaydettim"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:252
+msgid "2FA Devre Dışı Bırak"
+msgstr ""
+
+#: ui/templates/platform/auth/profil.html:257
+msgid ""
+"Güvenlik için şifrenizi tekrar girmeniz gerekiyor. 2FA devre dışı "
+"bırakılırsa hesabınız yalnızca şifre ile korunur."
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:6
+#: ui/templates/platform/auth/totp_challenge.html:20
+msgid "İki Faktörlü Doğrulama"
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:22
+msgid "Telefonunuzdaki Authenticator uygulamasından 6 haneli kodu girin."
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:42
+msgid "Doğrulama Kodu"
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:54
+msgid "Yedek Kod"
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:58
+msgid "örn: ABCD-EFGH"
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:64
+msgid "Doğrula ve Giriş Yap"
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:70
+msgid "Telefonum yanımda yok — yedek kod kullan"
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:71
+msgid "← Doğrulama kodu kullan"
+msgstr ""
+
+#: ui/templates/platform/auth/totp_challenge.html:76
+msgid "← Farklı bir hesapla giriş yap"
+msgstr ""
+
+#: ui/templates/platform/ayarlar/eposta.html:2
+#: ui/templates/platform/ayarlar/eposta.html:3
+msgid "E-posta Ayarları"
 msgstr ""
 
 #: ui/templates/platform/ayarlar/eposta.html:22
@@ -8882,10 +9565,6 @@ msgstr ""
 msgid "Bildirim e-postası ve kanal ayarları"
 msgstr ""
 
-#: ui/templates/platform/bildirim/index.html:85
-msgid "Bildirim Ayarları"
-msgstr ""
-
 #: ui/templates/platform/bireysel/karne.html:36
 msgid "AI PERFORMANS ÖZETİ"
 msgstr ""
@@ -9012,6 +9691,429 @@ msgstr ""
 #: ui/templates/platform/surec/faaliyetler.html:96
 #: ui/templates/platform/surec/karne.html:431
 msgid "Faaliyet Ekle"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:7
+msgid "Takvime ne ekleyelim?"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:16
+msgid "Aynı formlar süreç karnesi ve proje görevi sayfalarındakiyle uyumludur."
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:19
+msgid "Süreç faaliyeti"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:20
+msgid ""
+"Karne «Yeni Faaliyet» ile aynı alanlar (PG, atananlar, tarih-saat, "
+"hatırlatma…)."
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:23
+msgid "Proje görevi"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:24
+msgid ""
+"Proje «Yeni görev» formu ile aynı (durum, öncelik, atanan, PG "
+"bağlantısı…)."
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:27
+msgid "Kendime görev"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:28
+msgid "Bireysel faaliyet; turuncu takvim, bireysel karne."
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:41
+msgid "Süreç bilgileri yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:42
+msgid "Önce süreç seçin; PG ve atananlar listesi yüklenecektir."
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:46
+msgid "Örn: Müşteri Ziyareti"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:55
+msgid "Süreç lideri birden fazla kişi seçebilir."
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:59
+msgid "Başlangıç tarihi / saat"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:63
+msgid "Bitiş tarihi / saat"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:68
+msgid "Hatırlatmalar (başlangıca göre)"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:70
+msgid "1 saat önce"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:71
+msgid "1 gün önce"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:72
+msgid "3 gün önce"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:73
+msgid "5 gün önce"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:77
+msgid "E-posta da gönder"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:83
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:113
+#: ui/templates/platform/sp/initiatives.html:69
+#: ui/templates/platform/sp/projeler.html:68
+#: ui/templates/platform/sp/projeler.html:118
+msgid "Devam Ediyor"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:84
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:115
+#: ui/templates/platform/project/kanban.html:52
+#: ui/templates/platform/sp/index.html:153
+#: ui/templates/platform/sp/index.html:182
+#: ui/templates/platform/sp/index.html:225
+#: ui/templates/platform/sp/initiatives.html:71
+#: ui/templates/platform/sp/projeler.html:69
+#: ui/templates/platform/sp/projeler.html:119
+#: ui/templates/platform/surec/index.html:535
+msgid "Tamamlandı"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:90
+msgid "Opsiyonel"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:112
+#: ui/templates/platform/project/kanban.html:26
+msgid "Yapılacak"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:114
+#: ui/templates/platform/k_radar/index.html:109
+#: ui/templates/platform/sp/initiatives.html:70
+#: ui/templates/platform/sp/projeler.html:71
+#: ui/templates/platform/surec/index.html:534
+msgid "Beklemede"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:129
+#: ui/templates/platform/project/task_form.html:39
+msgid "Atanan"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:136
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:161
+msgid "Başlangıç tarihi"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:140
+#: ui/templates/platform/project/task_form.html:49
+msgid "Bitiş tarihi"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:145
+#: ui/templates/platform/project/task_form.html:53
+msgid "Bağlı süreç PG (en fazla bir)"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:147
+#: ui/templates/platform/project/task_form.html:55
+msgid "— PG seçilmedi —"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:149
+msgid "Bu kurumda aktif süreç/PG bulunamadı."
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:154
+msgid "Bireysel karnenize kaydedilir; yalnızca siz görürsünüz."
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:156
+msgid "Görev başlığı"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:157
+msgid "Örn. Eğitim modülünü tamamla"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:165
+msgid "Bitiş / hedef tarihi"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:171
+msgid "Başlangıç saati"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:171
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:175
+#: ui/templates/platform/sp/ai_settings.html:84
+#: ui/templates/platform/sp/donemler.html:182
+msgid "(opsiyonel)"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:175
+msgid "Bitiş saati"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:180
+msgid "Detay / notlar"
+msgstr ""
+
+#: ui/templates/platform/calendar/_calendar_quick_create_modal.html:183
+msgid "Saatler açıklama metnine eklenir (hatırlatma notu olarak)."
+msgstr ""
+
+#: ui/templates/platform/calendar/index.html:2
+msgid "Takvim — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/calendar/index.html:20
+msgid "Kurum Takvimi"
+msgstr ""
+
+#: ui/templates/platform/calendar/index.html:24
+msgid "Kendime"
+msgstr ""
+
+#: ui/templates/platform/calendar/index.html:29
+msgid ""
+"Kurum yöneticisi ve üst yönetim dahil; boş güne tıklayın veya aralık "
+"seçin. Süreç faaliyeti ve proje görevi formları, süreç karnesi / proje "
+"görevi ekranlarıyla aynı alanları kullanır."
+msgstr ""
+
+#: ui/templates/platform/calendar/index.html:32
+#: ui/templates/platform/project/calendar.html:26
+msgid "Takvim yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:20
+msgid "DEMO MODU"
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:25
+msgid "Kalan süre:"
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:40
+msgid "Hesap Aç"
+msgstr ""
+
+#: ui/templates/platform/demo/_banner.html:52
+msgid "Çıkış"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:7
+msgid "Kokpitim Demo — Sistemi 60 Dakika Boyunca Deneyin"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:279
+msgid "Canlı Demo · Tomofil verisi"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:294
+msgid "DENEME ORTAMI"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:297
+msgid "Kokpitim'i <span class=\"accent\">gerçek veriyle</span> deneyin"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:300
+msgid ""
+"Tomofil'in 2020–2026 dönemine ait <b>99.000 satır</b> stratejik planlama "
+"verisi üzerinde tüm modülleri kullanabilirsiniz. Performans göstergesi "
+"girin, K-Vektör puanının nasıl değiştiğini izleyin, yıllar arası "
+"karşılaştırmaları açın, süreçleri yönetin."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:309
+msgid "Kayıt zorunluluğu yok"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:310
+msgid "Tek tıkla seçtiğiniz rolle giriş."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:316
+#, python-format
+msgid "%(min)s dakika"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:317
+msgid "Tüm sistemi keşfetmek için yeterli süre."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:323
+msgid "İzole ve geçici"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:324
+msgid "Çıkışta tüm verileriniz silinir."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:331
+msgid "Hangi rolle deneyimlemek istersiniz?"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:332
+msgid ""
+"Her rol farklı bir bakış sunar — Kokpitim'in tüm yüzlerini görmek için "
+"birkaçını sırayla deneyin."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:351
+#, python-format
+msgid "%(label)s olarak başla"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:360
+msgid "Demo nasıl davranır?"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:363
+msgid "Gerçek veri"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:364
+msgid ""
+"Tomofil'in 7 yıllık stratejik plan verisi — 71 süreç, 221 PG, 91.000+ "
+"ölçüm, 7 yıllık SWOT/PESTEL/OKR seti. Tam set."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:367
+msgid "Yazma erişimi açık"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:368
+msgid ""
+"PG verisi girin, yeni süreç ekleyin, dönem değiştirin. Skor motoru "
+"gerçekten çalışır, raporlar gerçekten hesaplanır."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:371
+msgid "Otomatik sonlanır"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:372
+#, python-format
+msgid ""
+"%(min)s dakika sonra session kapanır. İnaktif kalırsanız daha erken "
+"sonlanabilir. Üst banner kalan süreyi gösterir."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:375
+msgid "Veri silinir"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:376
+msgid ""
+"Demo bitiminde yaptığınız tüm değişiklikler temizlenir. Sıradaki "
+"ziyaretçi sıfırdan başlar. Tomofil'in orijinal verisi etkilenmez."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:379
+msgid "E-posta gönderilmez"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:380
+msgid ""
+"Demo modunda gerçek e-posta/SMS gönderimi devre dışıdır. \"Bildirim "
+"gönder\" dediğinizde içeriği görürsünüz ama kimseye ulaşmaz."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:383
+msgid "İstediğiniz an çıkın"
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:384
+msgid ""
+"Üst banner'daki \"Çıkış\" butonuyla session'ı erken bitirebilirsiniz. "
+"Verileriniz anında temizlenir."
+msgstr ""
+
+#: ui/templates/platform/demo/landing.html:392
+msgid "Sorularınız için"
+msgstr ""
+
+#: ui/templates/platform/errors/403.html:2
+msgid "Yetkisiz Erişim — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/errors/403.html:3
+#: ui/templates/platform/errors/403.html:17
+msgid "Erişim Reddedildi"
+msgstr ""
+
+#: ui/templates/platform/errors/403.html:19
+msgid ""
+"Bu sayfayı görüntüleme yetkiniz bulunmuyor.<br>Yöneticinizle iletişime "
+"geçin."
+msgstr ""
+
+#: ui/templates/platform/errors/403.html:24
+#: ui/templates/platform/errors/404.html:22
+#: ui/templates/platform/errors/500.html:29
+msgid "Ana Sayfaya Dön"
+msgstr ""
+
+#: ui/templates/platform/errors/403.html:27
+#: ui/templates/platform/errors/404.html:25
+msgid "Geri Git"
+msgstr ""
+
+#: ui/templates/platform/errors/404.html:2
+msgid "Sayfa Bulunamadı — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/errors/404.html:3
+#: ui/templates/platform/errors/404.html:15
+msgid "Sayfa Bulunamadı"
+msgstr ""
+
+#: ui/templates/platform/errors/404.html:17
+msgid "Aradığınız sayfa taşınmış, silinmiş ya da hiç var olmamış olabilir."
+msgstr ""
+
+#: ui/templates/platform/errors/500.html:2
+msgid "Sunucu Hatası — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/errors/500.html:3
+#: ui/templates/platform/errors/500.html:15
+msgid "Sunucu Hatası"
+msgstr ""
+
+#: ui/templates/platform/errors/500.html:17
+msgid "Beklenmedik bir hata oluştu. Teknik ekip bilgilendirildi."
+msgstr ""
+
+#: ui/templates/platform/errors/500.html:21
+msgid "Hata Kodu:"
+msgstr ""
+
+#: ui/templates/platform/errors/500.html:32
+msgid "Tekrar Dene"
 msgstr ""
 
 #: ui/templates/platform/k_radar/cross.html:12
@@ -9158,6 +10260,7 @@ msgstr ""
 
 #: ui/templates/platform/k_radar/cross_paydas.html:35
 #: ui/templates/platform/k_radar/kp_olgunluk.html:39
+#: ui/templates/platform/project/list.html:336
 #: ui/templates/platform/sp/templates.html:44
 msgid "Uygula"
 msgstr ""
@@ -9196,6 +10299,9 @@ msgstr ""
 #: ui/templates/platform/k_radar/hub.html:25
 #: ui/templates/platform/k_radar/index.html:106
 #: ui/templates/platform/masaustu/index.html:202
+#: ui/templates/platform/project/list.html:278
+#: ui/templates/platform/project/list.html:314
+#: ui/templates/platform/project/list.html:324
 #: ui/templates/platform/raporlar/hizalama_sankey.html:35
 msgid "Tümü"
 msgstr ""
@@ -9964,13 +11070,6 @@ msgstr ""
 msgid "Reddedildi"
 msgstr ""
 
-#: ui/templates/platform/k_radar/index.html:109
-#: ui/templates/platform/sp/initiatives.html:70
-#: ui/templates/platform/sp/projeler.html:71
-#: ui/templates/platform/surec/index.html:534
-msgid "Beklemede"
-msgstr ""
-
 #: ui/templates/platform/k_radar/index.html:113
 msgid "Kullanıcı ID:"
 msgstr ""
@@ -9988,16 +11087,19 @@ msgid "Filtrele"
 msgstr ""
 
 #: ui/templates/platform/k_radar/index.html:125
+#: ui/templates/platform/project/list.html:190
 msgid "CSV İndir"
 msgstr ""
 
 #: ui/templates/platform/k_radar/index.html:129
+#: ui/templates/platform/project/list.html:155
 #: ui/templates/platform/surec/karne.html:315
 #: ui/templates/platform/surec/karne.html:837
 msgid "Önceki"
 msgstr ""
 
 #: ui/templates/platform/k_radar/index.html:131
+#: ui/templates/platform/project/list.html:157
 #: ui/templates/platform/surec/karne.html:322
 #: ui/templates/platform/surec/karne.html:844
 msgid "Sonraki"
@@ -10508,23 +11610,6 @@ msgstr ""
 msgid "Kişi veya ekip"
 msgstr ""
 
-#: ui/templates/platform/k_radar/ks.html:302
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/sp/blue_ocean.html:58
-#: ui/templates/platform/sp/blue_ocean.html:129
-#: ui/templates/platform/sp/blue_ocean.html:130
-#: ui/templates/platform/sp/initiatives.html:52
-#: ui/templates/platform/sp/okr.html:52
-#: ui/templates/platform/sp/projeler.html:61
-#: ui/templates/platform/sp/projeler.html:111
-#: ui/templates/platform/sp/replan_triggers.html:60
-#: ui/templates/platform/surec/index.html:572
-#: ui/templates/platform/surec/karne.html:621
-#: ui/templates/platform/surec/karne.html:645
-#: ui/templates/platform/surec/karne.html:920
-msgid "Açıklama"
-msgstr ""
-
 #: ui/templates/platform/k_radar/ks.html:303
 msgid "Opsiyonel açıklama"
 msgstr ""
@@ -10618,6 +11703,7 @@ msgstr ""
 #: ui/templates/platform/k_radar/risk_management.html:91
 #: ui/templates/platform/kurum/ayarlar.html:108
 #: ui/templates/platform/kurum/ayarlar.html:138
+#: ui/templates/platform/project/raid.html:123
 #: ui/templates/platform/sp/donemler.html:107
 msgid "Kapalı"
 msgstr ""
@@ -10642,10 +11728,12 @@ msgid "Risk Başlığı"
 msgstr ""
 
 #: ui/templates/platform/k_radar/risk_management.html:77
+#: ui/templates/platform/project/raid.html:67
 msgid "Olasılık (1-5)"
 msgstr ""
 
 #: ui/templates/platform/k_radar/risk_management.html:81
+#: ui/templates/platform/project/raid.html:77
 msgid "Etki (1-5)"
 msgstr ""
 
@@ -11219,6 +12307,8 @@ msgid "A3 Raporları"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:697
+#: ui/templates/platform/project/list.html:97
+#: ui/templates/platform/project/raid.html:33
 msgid "Sorun"
 msgstr ""
 
@@ -11346,6 +12436,7 @@ msgid "Sorumlu Detay Tablosu"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:853
+#: ui/templates/platform/project/kapasite.html:38
 msgid "Kişi"
 msgstr ""
 
@@ -11779,6 +12870,7 @@ msgstr ""
 
 #: ui/templates/platform/kurum/index.html:518
 #: ui/templates/platform/kurum/index.html:563
+#: ui/templates/platform/project/list.html:354
 msgid "Açık görev"
 msgstr ""
 
@@ -11870,10 +12962,6 @@ msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:25
 msgid "Widget yönetimi"
-msgstr ""
-
-#: ui/templates/platform/masaustu/index.html:31
-msgid "Kurum Kullanıcısı"
 msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:34
@@ -12017,6 +13105,799 @@ msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:682
 msgid "Okunmamış bildirim yok."
+msgstr ""
+
+#: ui/templates/platform/proje/index.html:2
+msgid "Proje Yönetimi — Kokpitim"
+msgstr ""
+
+#: ui/templates/platform/proje/index.html:8
+#: ui/templates/platform/raporlar/sektorel.html:20
+msgid "Yakında"
+msgstr ""
+
+#: ui/templates/platform/proje/index.html:9
+msgid "Proje Yönetimi modülü geliştirme aşamasında."
+msgstr ""
+
+#: ui/templates/platform/project/calendar.html:19
+#: ui/templates/platform/project/kanban.html:18
+#: ui/templates/platform/project/kapasite.html:23
+#: ui/templates/platform/project/raid.html:18
+msgid "Projeye dön"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:18
+#: ui/templates/platform/project/list.html:350
+#: ui/templates/platform/sp/projeler.html:10
+msgid "Projeler"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:20
+#: ui/templates/platform/project/portfolio.html:72
+#: ui/templates/platform/project/strategy_detail.html:2
+#: ui/templates/platform/project/strategy_detail.html:3
+msgid "Stratejik analiz"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:34
+msgid "Geciken görev:"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:35
+#, python-format
+msgid "%(n)s adet"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:55
+msgid "Bu proje stratejik girişimin altındaki bir operasyonel çıktıdır"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:64
+msgid "Ekip"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:67
+msgid "Üyeler:"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:75
+msgid "Gözlemciler:"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:82
+msgid "Tanımlı üye/gözlemci yok — düzenlemeden ekleyebilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:88
+msgid "Görev özeti (durum)"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:89
+msgid "Tam Kanban panosu"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:110
+msgid "Yönetici: proje kalıcı silinebilir."
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:112
+#: ui/templates/platform/project/detail.html:117
+msgid "Projeyi sil"
+msgstr ""
+
+#: ui/templates/platform/project/detail.html:118
+#, python-format
+msgid "<strong>%(name)s</strong> kalıcı olarak silinecek. Emin misiniz?"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:2
+#: ui/templates/platform/project/form.html:3
+msgid "Projeyi düzenle"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:2
+#: ui/templates/platform/project/form.html:3
+#: ui/templates/platform/project/portfolio.html:35
+msgid "Yeni proje"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:10
+msgid "Yeni / Düzenle"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:19
+msgid "Liste"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:23
+#, python-format
+msgid ""
+"<strong>Benzer proje:</strong> «%(name)s» ayarlarıyla yeni proje "
+"oluşturuyorsunuz. Kayıtta yeni kayıt açılır."
+msgstr ""
+
+#: ui/templates/platform/project/form.html:33
+msgid "Proje adı *"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:48
+msgid "Bağlı Olduğu Stratejik Girişim"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:49
+msgid ""
+"Stratejik girişim = çok yıllık hamle. Bu proje hangi büyük hedefin "
+"altında? Opsiyonel."
+msgstr ""
+
+#: ui/templates/platform/project/form.html:54
+msgid "— Hiçbiri (bağımsız proje) —"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:64
+#, python-format
+msgid ""
+"Bu projeyi bir <a href=\"%(url)s\" target=\"_blank\" "
+"style=\"color:#6366f1;\">Stratejik Girişim</a>'in altında konumlandırır. "
+"\"Almanya pazarına giriş\" gibi 2-3 yıllık hamlenin somut çıktısı olarak "
+"işaretlenebilir."
+msgstr ""
+
+#: ui/templates/platform/project/form.html:69
+msgid "Proje liderleri (yöneticiler) *"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:71
+msgid ""
+"Birden fazla lider seçebilirsiniz: soldan seçip <strong>Ekle</strong> ile"
+" sağa alın. İlk sıradaki birincil lider kaydı olarak da kullanılır. Çift "
+"tıklama da ekler/çıkarır."
+msgstr ""
+
+#: ui/templates/platform/project/form.html:73
+msgid "Kurumda kullanıcı bulunamadı; lider atanamaz."
+msgstr ""
+
+#: ui/templates/platform/project/form.html:75
+msgid "Kullanıcılarda ara…"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:78
+msgid "Kurum kullanıcıları"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:82
+#: ui/templates/platform/surec/index.html:602
+msgid "Seçilenleri ekle"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:83
+#: ui/templates/platform/surec/index.html:603
+msgid "Seçilenleri çıkar"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:83
+#: ui/templates/platform/project/form.html:132
+#: ui/templates/platform/project/form.html:156
+#: ui/templates/platform/surec/index.html:603
+#: ui/templates/platform/surec/index.html:623
+msgid "Çıkar"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:86
+msgid "Seçilen liderler"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:106
+#: ui/templates/platform/project/portfolio.html:59
+msgid "Bağlı süreçler"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:120
+msgid "Proje üyeleri"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:122
+msgid ""
+"Görev ekleyebilen ekip. Süreç üyesi seçimi ile aynı: Ekle / Çıkar veya "
+"çift tıklama."
+msgstr ""
+
+#: ui/templates/platform/project/form.html:124
+msgid "Üyelerde ara…"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:135
+msgid "Seçilen üyeler"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:144
+msgid "Gözlemciler"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:146
+msgid "Salt okunur erişim. Üye olanlar gözlemci olarak seçilemez."
+msgstr ""
+
+#: ui/templates/platform/project/form.html:148
+msgid "Gözlemcilerde ara…"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:159
+msgid "Seçilen gözlemciler"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:167
+msgid "(yeni proje)"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:168
+msgid "Lidere / yöneticiye hatırlat"
+msgstr ""
+
+#: ui/templates/platform/project/form.html:169
+msgid "Gözlemcilere"
+msgstr ""
+
+#: ui/templates/platform/project/kanban.html:19
+msgid "Klasik Kanban"
+msgstr ""
+
+#: ui/templates/platform/project/kanban.html:32
+#: ui/templates/platform/project/kanban.html:45
+msgid "Bitiş:"
+msgstr ""
+
+#: ui/templates/platform/project/kanban.html:39
+msgid "Devam / Beklemede"
+msgstr ""
+
+#: ui/templates/platform/project/kanban.html:58
+msgid "Tamam:"
+msgstr ""
+
+#: ui/templates/platform/project/kapasite.html:10
+#: ui/templates/platform/project/kapasite.html:24
+msgid "Kapasite Planlama"
+msgstr ""
+
+#: ui/templates/platform/project/kapasite.html:30
+msgid ""
+"Ekip üyelerine haftalık kapasite (saat) ve dönem ata. Aşırı yüklenme "
+"takibi için temel."
+msgstr ""
+
+#: ui/templates/platform/project/kapasite.html:31
+msgid "Kapasite ekle"
+msgstr ""
+
+#: ui/templates/platform/project/kapasite.html:38
+msgid "Haftalık saat"
+msgstr ""
+
+#: ui/templates/platform/project/kapasite.html:43
+msgid "Henüz kapasite planı yok."
+msgstr ""
+
+#: ui/templates/platform/project/list.html:2
+#: ui/templates/platform/project/list.html:115
+#: ui/templates/platform/project/portfolio.html:28
+msgid "Proje listesi"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:20
+msgid ""
+"Proje portföyü · RAID kayıtları · görevler · Gantt/Kanban/Takvim "
+"görünümleri · stratejik hizalama."
+msgstr ""
+
+#: ui/templates/platform/project/list.html:26
+#: ui/templates/platform/project/portfolio.html:6
+msgid "Stratejik Portföy"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:29
+msgid "UTF-8 CSV (Excel uyumlu)"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:32
+msgid "Proje bitiş tarihleri"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:35
+#: ui/templates/platform/sp/index.html:83
+msgid "Strateji hiyerarşisini öğren"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:36
+#: ui/templates/platform/sp/index.html:84
+#: ui/templates/platform/sp/initiatives.html:30
+msgid "Hiyerarşi Rehberi"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:39
+#: ui/templates/platform/sp/projeler.html:33
+msgid "Yeni Proje"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:49
+msgid "Toplam Proje"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:52
+msgid "Sağlık:"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:56
+msgid "Açık Görev"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:58
+#, python-format
+msgid "%(n)s toplam"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:61
+msgid "Gecikmiş Görev"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:63
+msgid "acil eylem"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:66
+msgid "Bu Hafta Biten"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:68
+#, python-format
+msgid "görev · %(n)s proje"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:87
+msgid "Risk/Varsayım/Sorun/Bağımlılık dağılımı"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:97
+#: ui/templates/platform/project/raid.html:32
+msgid "Varsayım"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:97
+#: ui/templates/platform/project/raid.html:34
+msgid "Bağımlılık"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:108
+msgid "Kritik Sağlık"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:110
+msgid "sağlık &lt; 50"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:117
+msgid ""
+"Yaklaşık <strong>10 proje</strong> yüksekliği görünür; sayfadaki diğer "
+"kayıtlar için alanı <strong>aşağı kaydırın</strong> (kaydırma çubuğu)."
+msgstr ""
+
+#: ui/templates/platform/project/list.html:121
+msgid "Proje listesi, kaydırılabilir"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:145
+msgid "Benzer proje oluştur"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:145
+msgid "Kopya"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:146
+msgid "Aç"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:156
+#, python-format
+msgid "Sayfa %(p)s / %(t)s"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:162
+msgid "Filtreye uygun proje yok."
+msgstr ""
+
+#: ui/templates/platform/project/list.html:177
+msgid "proje seçildi"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:182
+msgid "E-posta Aç"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:186
+msgid "E-posta Kapat"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:189
+msgid "Seçili projeleri CSV olarak indir"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:194
+msgid "Seçimi Temizle"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:201
+msgid "Görünenleri seç"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:254
+msgid "Filtreler ve sıralama"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:255
+msgid "Aktif filtre"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:264
+msgid "Kapsam"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:266
+msgid "Tüm kurum projeleri"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:267
+msgid "Benim projelerim"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:273
+msgid "Ad / açıklama"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:285
+msgid "Sırala"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:287
+msgid "Son güncelleme"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:288
+msgid "Proje bitiş tarihi"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:289
+msgid "Ad (A-Z)"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:290
+msgid "Geciken görev (çoğa)"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:296
+msgid "Bitiş ≥"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:300
+msgid "Bitiş ≤"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:304
+msgid "Başlangıç ≥"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:308
+msgid "Başlangıç ≤"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:312
+msgid "Lider"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:332
+msgid "Yalnız geciken (görev veya plan)"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:333
+msgid "Yakında bitiş (≤7 gün)"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:337
+msgid "Sıfırla"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:343
+msgid "Proje operasyon özeti"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:345
+msgid "Operasyon özeti"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:363
+msgid "Görev ≤7g"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:367
+msgid "Plan geciken"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:371
+msgid "Proje ≤7g"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:379
+msgid "Sağlık Ø"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:387
+msgid "Haftalık tamamlanan"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:389
+msgid "Haftalık trend"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:390
+msgid "Görev yok"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:393
+msgid "Görev durumu"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:405
+msgid "RAID (açık)"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:408
+msgid "Açık RAID yok"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:411
+msgid "Tamamlanan görev — 4 hafta (ısı)"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:412
+msgid "Pzt→Paz; koyu = daha çok tamamlanan."
+msgstr ""
+
+#: ui/templates/platform/project/list.html:419
+msgid "Dikkat"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:427
+msgid "Plan"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:428
+#, python-format
+msgid "%(n)s görev"
+msgstr ""
+
+#: ui/templates/platform/project/list.html:435
+msgid "Gecikme yok."
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:2
+#: ui/templates/platform/project/portfolio.html:3
+#: ui/templates/platform/project/portfolio.html:17
+msgid "Stratejik proje portföyü"
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:19
+msgid "Süreç–strateji matrisi puanlarına göre sıralı"
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:21
+msgid "Kurum (Uygulama süreci)"
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:23
+msgid "Kurum (klasik matris)"
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:34
+msgid "Henüz proje tanımlanmamış."
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:43
+msgid "Program Zaman Çizelgesi"
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:44
+msgid "Tarihi olan projeler"
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:48
+msgid "Hiçbir projede başlangıç/bitiş tarihi tanımlı değil — çizelge boş."
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:60
+msgid "Skor"
+msgstr ""
+
+#: ui/templates/platform/project/portfolio.html:89
+#: ui/templates/platform/project/strategy_detail.html:9
+#: ui/templates/platform/raporlar/mobile.html:39
+msgid "Görevler"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:10
+msgid "RAID Kayıtları"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:25
+msgid "Bu araç hakkında bilgi"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:26
+msgid "Nasıl kullanılır?"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:38
+msgid "Riskler"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:39
+msgid "Varsayımlar"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:40
+msgid "Sorunlar"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:41
+msgid "Bağımlılıklar"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:54
+msgid "RAID öğesi"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:69
+#: ui/templates/platform/project/raid.html:79
+msgid "1 - Düşük"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:70
+msgid "2 - Az olası"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:71
+#: ui/templates/platform/project/raid.html:81
+msgid "3 - Orta"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:72
+msgid "4 - Olası"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:73
+msgid "5 - Yüksek"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:80
+msgid "2 - Az ciddi"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:82
+msgid "4 - Ciddi"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:83
+msgid "5 - Kritik"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:87
+msgid "Azaltma stratejisi"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:88
+msgid "Bu riski nasıl azaltacaksınız?"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:91
+msgid "Doğrulama tarihi"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:93
+msgid "Doğrulama notları"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:104
+msgid "Etkilenen çalışma"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:105
+msgid "Hangi çalışmaları etkiliyor?"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:108
+msgid "Bağımlılık tipi"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:110
+msgid "FS - Bitiş-Başlangıç"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:111
+msgid "SS - Başlangıç-Başlangıç"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:112
+msgid "FF - Bitiş-Bitiş"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:113
+msgid "SF - Başlangıç-Bitiş"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:115
+msgid "Bağımlı görev ID"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:116
+msgid "Görev numarası"
+msgstr ""
+
+#: ui/templates/platform/project/raid.html:122
+msgid "Azaltıldı"
+msgstr ""
+
+#: ui/templates/platform/project/strategy_detail.html:8
+msgid "Portföy"
+msgstr ""
+
+#: ui/templates/platform/project/strategy_detail.html:18
+msgid "Toplam stratejik skor"
+msgstr ""
+
+#: ui/templates/platform/project/strategy_detail.html:21
+msgid "Güçlü (A):"
+msgstr ""
+
+#: ui/templates/platform/project/strategy_detail.html:21
+msgid "Zayıf (B):"
+msgstr ""
+
+#: ui/templates/platform/project/strategy_detail.html:26
+msgid "Bağlı süreçler ve puanlar"
+msgstr ""
+
+#: ui/templates/platform/project/strategy_detail.html:33
+msgid "Puan"
+msgstr ""
+
+#: ui/templates/platform/project/strategy_detail.html:47
+msgid "Bu proje henüz süreçle ilişkilendirilmemiş."
+msgstr ""
+
+#: ui/templates/platform/project/strategy_detail.html:52
+msgid "Süreç bağlantılarını güncelle"
+msgstr ""
+
+#: ui/templates/platform/project/task_detail.html:26
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:28
+msgid "Bağlı PG"
+msgstr ""
+
+#: ui/templates/platform/project/task_form.html:2
+msgid "Görev düzenle"
+msgstr ""
+
+#: ui/templates/platform/project/task_form.html:2
+msgid "Yeni görev"
+msgstr ""
+
+#: ui/templates/platform/project/task_form.html:6
+msgid "Görev / Düzenle"
+msgstr ""
+
+#: ui/templates/platform/project/task_form.html:63
+msgid "Bu kurumda aktif süreç/PG bulunamadı (Süreç Yönetimi’nde PG tanımlayın)."
 msgstr ""
 
 #: ui/templates/platform/raporlar/ai_coach.html:4
@@ -12277,10 +14158,6 @@ msgstr ""
 
 #: ui/templates/platform/raporlar/bireysel_hizalama.html:15
 msgid "Kullanıcıların bireysel PG'lerinin kurum stratejisine bağlanma oranı"
-msgstr ""
-
-#: ui/templates/platform/raporlar/bireysel_hizalama.html:28
-msgid "Bağlı PG"
 msgstr ""
 
 #: ui/templates/platform/raporlar/bireysel_hizalama.html:29
@@ -13230,10 +15107,6 @@ msgstr ""
 msgid "Anasayfa"
 msgstr ""
 
-#: ui/templates/platform/raporlar/mobile.html:39
-msgid "Görevler"
-msgstr ""
-
 #: ui/templates/platform/raporlar/mobile.html:53
 msgid ""
 "<b>MVP:</b> Bu sayfa mobile arayüz önizlemesi. Full native app (React "
@@ -13565,10 +15438,6 @@ msgid ""
 msgstr ""
 
 #: ui/templates/platform/raporlar/sektorel.html:20
-msgid "Yakında"
-msgstr ""
-
-#: ui/templates/platform/raporlar/sektorel.html:20
 msgid "Bu sektör paketi henüz hazır değil — yol haritasında planlandı."
 msgstr ""
 
@@ -13867,11 +15736,6 @@ msgstr ""
 
 #: ui/templates/platform/sp/ai_settings.html:84
 msgid "Base URL"
-msgstr ""
-
-#: ui/templates/platform/sp/ai_settings.html:84
-#: ui/templates/platform/sp/donemler.html:182
-msgid "(opsiyonel)"
 msgstr ""
 
 #: ui/templates/platform/sp/ai_settings.html:92
@@ -14437,15 +16301,6 @@ msgstr ""
 msgid "Görüntüleyici"
 msgstr ""
 
-#: ui/templates/platform/sp/index.html:83
-msgid "Strateji hiyerarşisini öğren"
-msgstr ""
-
-#: ui/templates/platform/sp/index.html:84
-#: ui/templates/platform/sp/initiatives.html:30
-msgid "Hiyerarşi Rehberi"
-msgstr ""
-
 #: ui/templates/platform/sp/index.html:86
 msgid "SP araçlarına git"
 msgstr ""
@@ -14529,16 +16384,6 @@ msgstr ""
 #: ui/templates/platform/sp/index.html:149
 #: ui/templates/platform/sp/misyon.html:13
 msgid "Misyon"
-msgstr ""
-
-#: ui/templates/platform/sp/index.html:153
-#: ui/templates/platform/sp/index.html:182
-#: ui/templates/platform/sp/index.html:225
-#: ui/templates/platform/sp/initiatives.html:71
-#: ui/templates/platform/sp/projeler.html:69
-#: ui/templates/platform/sp/projeler.html:119
-#: ui/templates/platform/surec/index.html:535
-msgid "Tamamlandı"
 msgstr ""
 
 #: ui/templates/platform/sp/index.html:153
@@ -14798,12 +16643,6 @@ msgstr ""
 msgid "Planlanan"
 msgstr ""
 
-#: ui/templates/platform/sp/initiatives.html:69
-#: ui/templates/platform/sp/projeler.html:68
-#: ui/templates/platform/sp/projeler.html:118
-msgid "Devam Ediyor"
-msgstr ""
-
 #: ui/templates/platform/sp/llm_usage.html:18
 msgid "LLM Kullanımı & Kota"
 msgstr ""
@@ -14999,10 +16838,6 @@ msgstr ""
 msgid "SP Projeler"
 msgstr ""
 
-#: ui/templates/platform/sp/projeler.html:10
-msgid "Projeler"
-msgstr ""
-
 #: ui/templates/platform/sp/projeler.html:23
 msgid "SP Projeleri için aktif bir SPDönemi gereklidir."
 msgstr ""
@@ -15013,10 +16848,6 @@ msgstr ""
 
 #: ui/templates/platform/sp/projeler.html:29
 msgid "Dönemi"
-msgstr ""
-
-#: ui/templates/platform/sp/projeler.html:33
-msgid "Yeni Proje"
 msgstr ""
 
 #: ui/templates/platform/sp/projeler.html:41
@@ -15828,19 +17659,6 @@ msgstr ""
 msgid "Süreç Liderleri"
 msgstr ""
 
-#: ui/templates/platform/surec/index.html:602
-msgid "Seçilenleri ekle"
-msgstr ""
-
-#: ui/templates/platform/surec/index.html:603
-msgid "Seçilenleri çıkar"
-msgstr ""
-
-#: ui/templates/platform/surec/index.html:603
-#: ui/templates/platform/surec/index.html:623
-msgid "Çıkar"
-msgstr ""
-
 #: ui/templates/platform/surec/index.html:606
 msgid "Seçilen Liderler"
 msgstr ""
@@ -15871,10 +17689,6 @@ msgstr ""
 
 #: ui/templates/platform/surec/karne.html:120
 msgid "Görüntülenecek süreç"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:129
-msgid "Görünüm"
 msgstr ""
 
 #: ui/templates/platform/surec/karne.html:140
@@ -16506,10 +18320,6 @@ msgstr ""
 msgid "Risk kaydı yok."
 msgstr ""
 
-#: ui/templates/platform/admin/holding_drilldown.html:240
-msgid "Skor"
-msgstr ""
-
 #: ui/templates/platform/admin/kilavuz_olusturucu.html:158
 msgid "Kurum durumu alınamadı."
 msgstr ""
@@ -16962,10 +18772,6 @@ msgstr ""
 msgid "Anomali skoru:"
 msgstr ""
 
-#: ui/templates/platform/raporlar/pg_proje_etki.html:88
-msgid "Toplam Proje"
-msgstr ""
-
 #: ui/templates/platform/raporlar/pg_proje_etki.html:92
 msgid "PG'ye Bağlı Proje"
 msgstr ""
@@ -16998,20 +18804,12 @@ msgstr ""
 msgid "Hedef Üstü %"
 msgstr ""
 
-#: ui/templates/platform/raporlar/pg_proje_etki.html:129
-msgid "Sağlık:"
-msgstr ""
-
 #: ui/templates/platform/raporlar/pg_proje_etki.html:162
 msgid "Bu projenin etkilediği"
 msgstr ""
 
 #: ui/templates/platform/raporlar/pg_proje_etki.html:175
 msgid "hedef üstü"
-msgstr ""
-
-#: ui/templates/platform/raporlar/risk_heatmap.html:62
-msgid "Azaltıldı"
 msgstr ""
 
 #: ui/templates/platform/raporlar/risk_heatmap.html:62
@@ -17580,10 +19378,6 @@ msgstr ""
 
 #: ui/templates/platform/sp/scenarios_kiyas.html:107
 msgid "Henüz plan yılı/senaryo yok. Önce Senaryolar ekranından oluşturun."
-msgstr ""
-
-#: ui/templates/platform/sp/scenarios_kiyas.html:118
-msgid "Plan"
 msgstr ""
 
 #: ui/templates/platform/sp/scenarios_kiyas.html:129
