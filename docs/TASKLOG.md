@@ -2,6 +2,36 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-215 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 1 — base.html ortak iskelet çevirisi (sidebar, topbar, dropdown, modal)
+**Modül:** ui/base.html, translations/{tr,en}, babel.cfg, app/i18n
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 1. base.html'deki ~38 ortak UI metni {{ _() }} ile işaretlendi (her sayfada görünür
+sidebar menü, bölüm başlıkları, topbar, kullanıcı dropdown, breadcrumb, kart-bilgi/komut-paleti modalı).
+EN çevirileri UI-TERMINOLOJI'ye uygun dolduruldu (Kurum→Organization, Süreç→Process, PG→PI).
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/base.html` → ~38 metin {{ _() }} (Kokpitim marka adı korundu)
+- `babel.cfg` → obsolete jinja2.ext.autoescape/with_ extension satırı kaldırıldı (modern Jinja2 reddediyordu)
+- `translations/en/LC_MESSAGES/messages.po` → 38 string tam çevrildi (0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}` → güncellendi (TR=msgid)
+- `app/i18n.py` → **KRİTİK BUG FİX**: BABEL_TRANSLATION_DIRECTORIES göreli "translations" Flask-Babel'de
+  app.root_path'e (=.../app) göre çözülüp app/translations arıyordu → mutlak yola çevrildi (proje kökü)
+- `messages.pot` → extract şablonu (yeniden çeviri referansı)
+
+### Test
+force_locale render testi: EN → "Users | Process Management | Log Out", TR → "Kullanıcılar | Süreç
+Yönetimi" ✅. <html lang> en/tr doğru. Translations.load().gettext('Kullanıcılar')→'Users' byte-eşleşme OK.
+create_app OK, /health 200. (Authenticated sayfa testi şifre gerektirdiği için render testiyle kanıtlandı.)
+
+### Notlar
+KRİTİK ders: göreli translations yolu FAZ 0'da sessizce yanlıştı (gettext locale'i biliyor ama .mo'yu
+app/translations'da arıyor → çevirmiyor). Mutlak yol şart. Sıradaki: FAZ 3 modül modül (masaustu önce).
+Konsol UTF-8 yanılsamasına dikkat — gerçek doğrulama dosyaya UTF-8 yazıp okuyarak yapıldı.
+
 ## TASK-214 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 0 — Çoklu dil altyapısını canlıya bağla (paket + dil seçici + set-language)

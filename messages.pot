@@ -1,15 +1,17 @@
-# Turkish translations for Kokpitim (default locale)
-# Sprint 38: i18n kapsamı genişletme
+# Translations template for PROJECT.
+# Copyright (C) 2026 ORGANIZATION
+# This file is distributed under the same license as the PROJECT project.
+# FIRST AUTHOR <EMAIL@ADDRESS>, 2026.
+#
+#, fuzzy
 msgid ""
 msgstr ""
-"Project-Id-Version: Kokpitim 1.0.7\n"
+"Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
 "POT-Creation-Date: 2026-06-24 02:50+0300\n"
-"PO-Revision-Date: 2026-05-23 12:00+0300\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language: tr\n"
-"Language-Team: tr <LL@li.org>\n"
-"Plural-Forms: nplurals=1; plural=0;\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
@@ -25,20 +27,19 @@ msgstr ""
 
 #: ui/templates/platform/base.html:145
 msgid "Stratejik Planlama"
-msgstr "Stratejik Planlama"
+msgstr ""
 
 #: ui/templates/platform/base.html:150
 msgid "Kurum Paneli"
-msgstr "Kurum Paneli"
+msgstr ""
 
 #: ui/templates/platform/base.html:159
 msgid "Holding Görünümü"
 msgstr ""
 
 #: ui/templates/platform/base.html:171
-#, fuzzy
 msgid "Alt Kurum Yönetimi"
-msgstr "Kurum Paneli"
+msgstr ""
 
 #: ui/templates/platform/base.html:173
 msgid "Müşteri Kurumlarım"
@@ -61,14 +62,12 @@ msgid "Savaş Odası"
 msgstr ""
 
 #: ui/templates/platform/base.html:220
-#, fuzzy
 msgid "Bireysel Performans"
-msgstr "Bireysel Karne"
+msgstr ""
 
 #: ui/templates/platform/base.html:227
-#, fuzzy
 msgid "Performans Analitiği"
-msgstr "Performans Göstergeleri"
+msgstr ""
 
 #: ui/templates/platform/base.html:233
 msgid "Yönetim"
@@ -79,9 +78,8 @@ msgid "Kullanıcılar"
 msgstr ""
 
 #: ui/templates/platform/base.html:244
-#, fuzzy
 msgid "Kurumlar"
-msgstr "Kurum Paneli"
+msgstr ""
 
 #: ui/templates/platform/base.html:250
 msgid "Bildirim Merkezi"
@@ -109,16 +107,15 @@ msgstr ""
 
 #: ui/templates/platform/base.html:291
 msgid "Ayarlar"
-msgstr "Ayarlar"
+msgstr ""
 
 #: ui/templates/platform/base.html:309
 msgid "Kullanıcı"
 msgstr ""
 
 #: ui/templates/platform/base.html:321
-#, fuzzy
 msgid "Profilim"
-msgstr "Profil"
+msgstr ""
 
 #: ui/templates/platform/base.html:328 ui/templates/platform/base.html:434
 msgid "Aydınlık Mod"
@@ -129,9 +126,8 @@ msgid "Karanlık Mod"
 msgstr ""
 
 #: ui/templates/platform/base.html:334 ui/templates/platform/base.html:440
-#, fuzzy
 msgid "Çıkış Yap"
-msgstr "Çıkış"
+msgstr ""
 
 #: ui/templates/platform/base.html:351
 msgid "Menü"
@@ -167,78 +163,9 @@ msgstr ""
 
 #: ui/templates/platform/base.html:816
 msgid "Düzenle"
-msgstr "Düzenle"
+msgstr ""
 
 #: ui/templates/platform/base.html:826
 msgid "İptal"
-msgstr "İptal"
-
-#~ msgid "Hoş geldiniz"
-#~ msgstr "Hoş geldiniz"
-
-#~ msgid "Giriş"
-#~ msgstr "Giriş"
-
-#~ msgid "Kaydet"
-#~ msgstr "Kaydet"
-
-#~ msgid "Sil"
-#~ msgstr "Sil"
-
-#~ msgid "Ekle"
-#~ msgstr "Ekle"
-
-#~ msgid "Ara"
-#~ msgstr "Ara"
-
-#~ msgid "Süreçler"
-#~ msgstr "Süreçler"
-
-#~ msgid "Faaliyetler"
-#~ msgstr "Faaliyetler"
-
-#~ msgid "Projeler"
-#~ msgstr "Projeler"
-
-#~ msgid "Raporlar"
-#~ msgstr "Raporlar"
-
-#~ msgid "Profil başarıyla güncellendi."
-#~ msgstr "Profil başarıyla güncellendi."
-
-#~ msgid "Giriş başarılı."
-#~ msgstr "Giriş başarılı."
-
-#~ msgid "Geçersiz e-posta veya şifre."
-#~ msgstr "Geçersiz e-posta veya şifre."
-
-#~ msgid "Şifre boş olamaz."
-#~ msgstr "Şifre boş olamaz."
-
-#~ msgid "Çok fazla başarısız deneme. Hesap kilitlendi."
-#~ msgstr "Çok fazla başarısız deneme. Hesap kilitlendi."
-
-#~ msgid "Verilerimi İndir"
-#~ msgstr "Verilerimi İndir"
-
-#~ msgid "Hesabımı Sil"
-#~ msgstr "Hesabımı Sil"
-
-#~ msgid "İki faktörlü kimlik doğrulama"
-#~ msgstr "İki faktörlü kimlik doğrulama"
-
-#~ msgid "Doğrulama kodu hatalı."
-#~ msgstr "Doğrulama kodu hatalı."
-
-#~ msgid "Bu sayfayı görüntüleme yetkiniz yok."
-#~ msgstr "Bu sayfayı görüntüleme yetkiniz yok."
-
-#~ msgid "Yetkisiz"
-#~ msgstr "Yetkisiz"
-
-#~ msgid "KPI Anomali Tespiti"
-#~ msgstr "KPI Anomali Tespiti"
-
-#~ msgid "Anomali bulunamadı"
-#~ msgstr "Anomali bulunamadı"
+msgstr ""
 

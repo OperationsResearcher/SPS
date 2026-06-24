@@ -92,7 +92,11 @@ def init_babel(app):
     app.config.setdefault("BABEL_DEFAULT_LOCALE", "tr")
     app.config.setdefault("BABEL_DEFAULT_TIMEZONE", "Europe/Istanbul")
     app.config.setdefault("BABEL_SUPPORTED_LOCALES", ["tr", "en"])
-    app.config.setdefault("BABEL_TRANSLATION_DIRECTORIES", "translations")
+    # translations/ proje KÖKÜNDE (app.root_path = .../app, kök bir üst). Mutlak yol şart:
+    # göreli "translations" Flask-Babel'de app.root_path'e göre çözülür → app/translations (yanlış).
+    import os as _os
+    _trans_dir = _os.path.join(_os.path.dirname(app.root_path), "translations")
+    app.config.setdefault("BABEL_TRANSLATION_DIRECTORIES", _trans_dir)
 
     babel = Babel(app, locale_selector=get_locale)
     app.logger.info(f"[i18n] Babel başlatıldı. Default: {app.config['BABEL_DEFAULT_LOCALE']}")

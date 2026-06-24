@@ -1,115 +1,169 @@
 # English translations for Kokpitim
-# Sprint 31: i18n iskelet — temel UI string'leri
+# i18n FAZ 1: base.html ortak iskelet
 #
 msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
-"POT-Creation-Date: 2026-05-23 12:00+0300\n"
-"PO-Revision-Date: 2026-05-23 12:00+0300\n"
+"Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
+"POT-Creation-Date: 2026-06-24 02:50+0300\n"
+"PO-Revision-Date: 2026-06-24 03:00+0300\n"
+"Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
+"Language-Team: en <LL@li.org>\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "MIME-Version: 1.0\n"
-"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Type: text/plain; charset=utf-8\n"
 "Content-Transfer-Encoding: 8bit\n"
+"Generated-By: Babel 2.18.0\n"
 
-# Genel
-msgid "Hoş geldiniz"
-msgstr "Welcome"
+#: ui/templates/platform/base.html:130
+msgid "Ana Modüller"
+msgstr "Main Modules"
 
-msgid "Giriş"
-msgstr "Login"
+#: ui/templates/platform/base.html:137
+msgid "Masaüstüm"
+msgstr "My Desktop"
 
-msgid "Çıkış"
-msgstr "Logout"
-
-msgid "Profil"
-msgstr "Profile"
-
-msgid "Ayarlar"
-msgstr "Settings"
-
-msgid "Kaydet"
-msgstr "Save"
-
-msgid "İptal"
-msgstr "Cancel"
-
-msgid "Sil"
-msgstr "Delete"
-
-msgid "Düzenle"
-msgstr "Edit"
-
-msgid "Ekle"
-msgstr "Add"
-
-msgid "Ara"
-msgstr "Search"
-
-# Modüller
+#: ui/templates/platform/base.html:145
 msgid "Stratejik Planlama"
 msgstr "Strategic Planning"
 
-msgid "Süreçler"
-msgstr "Processes"
-
-msgid "Performans Göstergeleri"
-msgstr "Performance Indicators"
-
-msgid "Faaliyetler"
-msgstr "Activities"
-
-msgid "Projeler"
-msgstr "Projects"
-
-msgid "Bireysel Karne"
-msgstr "Individual Scorecard"
-
+#: ui/templates/platform/base.html:150
 msgid "Kurum Paneli"
 msgstr "Organization Panel"
 
-msgid "Raporlar"
-msgstr "Reports"
+#: ui/templates/platform/base.html:159
+msgid "Holding Görünümü"
+msgstr "Holding View"
 
-# Mesajlar
-msgid "Profil başarıyla güncellendi."
-msgstr "Profile updated successfully."
+#: ui/templates/platform/base.html:171
+msgid "Alt Kurum Yönetimi"
+msgstr "Sub-Organization Management"
 
-msgid "Giriş başarılı."
-msgstr "Login successful."
+#: ui/templates/platform/base.html:173
+msgid "Müşteri Kurumlarım"
+msgstr "My Client Organizations"
 
-msgid "Geçersiz e-posta veya şifre."
-msgstr "Invalid email or password."
+#: ui/templates/platform/base.html:183
+msgid "Süreç Yönetimi"
+msgstr "Process Management"
 
-msgid "Şifre boş olamaz."
-msgstr "Password cannot be empty."
+#: ui/templates/platform/base.html:191
+msgid "Proje Yönetimi"
+msgstr "Project Management"
 
-msgid "Çok fazla başarısız deneme. Hesap kilitlendi."
-msgstr "Too many failed attempts. Account locked."
+#: ui/templates/platform/base.html:206
+msgid "K-Analiz"
+msgstr "K-Analysis"
 
-# KVKK
-msgid "Verilerimi İndir"
-msgstr "Download My Data"
+#: ui/templates/platform/base.html:212
+msgid "Savaş Odası"
+msgstr "War Room"
 
-msgid "Hesabımı Sil"
-msgstr "Delete My Account"
+#: ui/templates/platform/base.html:220
+msgid "Bireysel Performans"
+msgstr "Individual Performance"
 
-# 2FA
-msgid "İki faktörlü kimlik doğrulama"
-msgstr "Two-factor authentication"
+#: ui/templates/platform/base.html:227
+msgid "Performans Analitiği"
+msgstr "Performance Analytics"
 
-msgid "Doğrulama kodu hatalı."
-msgstr "Invalid verification code."
+#: ui/templates/platform/base.html:233
+msgid "Yönetim"
+msgstr "Management"
 
-# Yetki
-msgid "Bu sayfayı görüntüleme yetkiniz yok."
-msgstr "You don't have permission to view this page."
+#: ui/templates/platform/base.html:238
+msgid "Kullanıcılar"
+msgstr "Users"
 
-msgid "Yetkisiz"
-msgstr "Unauthorized"
+#: ui/templates/platform/base.html:244
+msgid "Kurumlar"
+msgstr "Organizations"
 
-# Anomali
-msgid "KPI Anomali Tespiti"
-msgstr "KPI Anomaly Detection"
+#: ui/templates/platform/base.html:250
+msgid "Bildirim Merkezi"
+msgstr "Notification Center"
 
-msgid "Anomali bulunamadı"
-msgstr "No anomalies found"
+#: ui/templates/platform/base.html:257
+msgid "SaaS Paketler"
+msgstr "SaaS Packages"
+
+#: ui/templates/platform/base.html:265
+msgid "API Dokümantasyonu"
+msgstr "API Documentation"
+
+#: ui/templates/platform/base.html:272 ui/templates/platform/base.html:276
+msgid "Admin Araçları"
+msgstr "Admin Tools"
+
+#: ui/templates/platform/base.html:281
+msgid "Sistem"
+msgstr "System"
+
+#: ui/templates/platform/base.html:286 ui/templates/platform/base.html:393
+msgid "Bildirimler"
+msgstr "Notifications"
+
+#: ui/templates/platform/base.html:291
+msgid "Ayarlar"
+msgstr "Settings"
+
+#: ui/templates/platform/base.html:309
+msgid "Kullanıcı"
+msgstr "User"
+
+#: ui/templates/platform/base.html:321
+msgid "Profilim"
+msgstr "My Profile"
+
+#: ui/templates/platform/base.html:328 ui/templates/platform/base.html:434
+msgid "Aydınlık Mod"
+msgstr "Light Mode"
+
+#: ui/templates/platform/base.html:328 ui/templates/platform/base.html:434
+msgid "Karanlık Mod"
+msgstr "Dark Mode"
+
+#: ui/templates/platform/base.html:334 ui/templates/platform/base.html:440
+msgid "Çıkış Yap"
+msgstr "Log Out"
+
+#: ui/templates/platform/base.html:351
+msgid "Menü"
+msgstr "Menu"
+
+#: ui/templates/platform/base.html:361
+msgid "Ara — Ctrl+K"
+msgstr "Search — Ctrl+K"
+
+#: ui/templates/platform/base.html:364
+msgid "Sayfa, strateji, PG, proje ara…"
+msgstr "Search pages, strategies, PIs, projects…"
+
+#: ui/templates/platform/base.html:496
+msgid "Ana Sayfa"
+msgstr "Home"
+
+#: ui/templates/platform/base.html:554
+msgid "Sayfa ID (yalnız admin)"
+msgstr "Page ID (admin only)"
+
+#: ui/templates/platform/base.html:560
+msgid "Kart Bilgisi"
+msgstr "Card Info"
+
+#: ui/templates/platform/base.html:563
+msgid "Kapat"
+msgstr "Close"
+
+#: ui/templates/platform/base.html:794
+msgid "Sayfa / strateji / PG / proje / süreç / kullanıcı ara…"
+msgstr "Search page / strategy / PI / project / process / user…"
+
+#: ui/templates/platform/base.html:816
+msgid "Düzenle"
+msgstr "Edit"
+
+#: ui/templates/platform/base.html:826
+msgid "İptal"
+msgstr "Cancel"
