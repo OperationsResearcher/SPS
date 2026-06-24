@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 04:51+0300\n"
+"POT-Creation-Date: 2026-06-24 05:16+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -123,6 +123,9 @@ msgstr "Settings"
 
 #: ui/templates/platform/ayarlar/index.html:33
 #: ui/templates/platform/base.html:309
+#: ui/templates/platform/k_rapor/index.html:271
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:405
 msgid "Kullanıcı"
 msgstr "User"
 
@@ -192,6 +195,7 @@ msgid "Düzenle"
 msgstr "Edit"
 
 #: ui/templates/platform/base.html:826
+#: ui/templates/platform/k_rapor/index.html:753
 #: ui/templates/platform/surec/index.html:634
 #: ui/templates/platform/surec/karne.html:665
 #: ui/templates/platform/surec/karne.html:736
@@ -214,6 +218,7 @@ msgid "Trend frekansı"
 msgstr "Trend frequency"
 
 #: ui/templates/platform/analiz/index.html:43
+#: ui/templates/platform/k_rapor/index.html:195
 #: ui/templates/platform/surec/karne.html:306
 #: ui/templates/platform/surec/karne.html:559
 #: ui/templates/platform/surec/karne.html:828
@@ -221,6 +226,7 @@ msgid "Aylık"
 msgstr "Monthly"
 
 #: ui/templates/platform/analiz/index.html:44
+#: ui/templates/platform/k_rapor/index.html:194
 #: ui/templates/platform/surec/karne.html:305
 #: ui/templates/platform/surec/karne.html:560
 #: ui/templates/platform/surec/karne.html:827
@@ -306,6 +312,7 @@ msgid "Trend Analizi"
 msgstr "Trend Analysis"
 
 #: ui/templates/platform/analiz/index.html:105
+#: ui/templates/platform/k_rapor/index.html:80
 msgid "Excel İndir"
 msgstr "Download Excel"
 
@@ -359,13 +366,13 @@ msgid ""
 "<strong>Admin</strong> hesabının kurumunda kayıtlı özel SMTP (varsayılan "
 "çıkış). İsterseniz her zaman bu sayfadan kendi kurum SMTP’nizi açıp "
 "kullanabilirsiniz."
-msgstr ""
+msgstr "<strong>When custom SMTP is off</strong>, used in order: <code>MAIL_*</code> environment variables if set on the server; otherwise the custom SMTP registered in the platform <strong>Admin</strong> account's organization (default outbound). You can always enable and use your own organization SMTP from this page."
 
 #: ui/templates/platform/ayarlar/eposta.html:34
 msgid ""
 "«Test Maili Gönder» önce onay penceresi açar; <strong>Gönder</strong> "
 "dediğinizde işlem yapılır."
-msgstr ""
+msgstr "“Send Test Email” first opens a confirmation dialog; the action runs when you click <strong>Send</strong>."
 
 #: ui/templates/platform/ayarlar/eposta.html:41
 msgid ""
@@ -373,7 +380,7 @@ msgid ""
 "onunla, değilse <strong>Admin kurumunun</strong> kayıtlı SMTP’siyle "
 "yapılır. Yine de kendi alan adınızdan çıkış için buradan özel SMTP "
 "açmanız önerilir."
-msgstr ""
+msgstr "Your organization does not use custom SMTP; sending is done via <code>MAIL_*</code> if defined, otherwise with the <strong>Admin organization's</strong> registered SMTP. Still, enabling custom SMTP here is recommended for outbound from your own domain."
 
 #: ui/templates/platform/ayarlar/eposta.html:49
 msgid "Özel SMTP Sunucusu"
@@ -483,6 +490,7 @@ msgstr "no role"
 #: ui/templates/platform/ayarlar/index.html:38
 #: ui/templates/platform/ayarlar/index.html:40
 #: ui/templates/platform/ayarlar/index.html:92
+#: ui/templates/platform/k_rapor/index.html:795
 msgid "Kurum"
 msgstr "Organization"
 
@@ -578,7 +586,7 @@ msgstr "Login statistics and activity logs"
 msgid ""
 "Düzenli aralıklarla otomatik olarak e-posta ile gönderilecek raporları "
 "seçin. Tüm raporlar <b>%(email)s</b> adresine gönderilir."
-msgstr ""
+msgstr "Select reports to be automatically emailed at regular intervals. All reports are sent to <b>%(email)s</b>."
 
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:33
 msgid "Haftalık Strateji Özeti"
@@ -588,7 +596,7 @@ msgstr "Weekly Strategy Summary"
 msgid ""
 "Strateji sağlık skoru · PG performansı · gecikmiş faaliyetler · kritik "
 "riskler · girişim durumu. PDF eki ile gönderilir."
-msgstr ""
+msgstr "Strategy health score · PI performance · overdue activities · critical risks · initiative status. Sent with a PDF attachment."
 
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:41
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:81
@@ -652,7 +660,7 @@ msgstr "Morning Operational Summary"
 msgid ""
 "Bugün biten/bekleyen faaliyet, atanan görev, kritik PG'ler. İş gününe "
 "başlarken kısa özet."
-msgstr ""
+msgstr "Activities due/pending today, assigned tasks, critical PIs. A short summary to start the work day."
 
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:86
 msgid "Saat (her gün)"
@@ -666,7 +674,7 @@ msgstr "Risk & Anomaly Alert"
 msgid ""
 "Açık kritik riskler, yüksek öncelikli PG anomalileri, ateşlenmiş replan "
 "tetikleyicileri."
-msgstr ""
+msgstr "Open critical risks, high-priority PI anomalies, fired replan triggers."
 
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:114
 msgid "Sıklık"
@@ -680,7 +688,7 @@ msgstr "Monthly PI Report"
 msgid ""
 "Tüm PG'lerin ay sonu durumu: hedef üstü, hedef altı, veri eksikleri. "
 "Excel eki ile gönderilir."
-msgstr ""
+msgstr "Month-end status of all PIs: above target, below target, missing data. Sent with an Excel attachment."
 
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:141
 msgid "Ayın günü"
@@ -692,7 +700,7 @@ msgid ""
 "göre tetiklenir; geçmişe yönelik gönderim yapılmaz. E-posta gönderiminin "
 "etkin olabilmesi için sistemin <code>DIGEST_SCHEDULER_ENABLED</code> "
 "ayarı aktif olmalıdır."
-msgstr ""
+msgstr "<b>Note:</b> Preferences are saved immediately. The first email is triggered according to the schedule you selected; no retroactive sending is done. The system's <code>DIGEST_SCHEDULER_ENABLED</code> setting must be active for email sending to work."
 
 #: ui/templates/platform/bildirim/index.html:19
 #, python-format
@@ -712,7 +720,7 @@ msgid ""
 "Şu an okunmamış bildiriminiz bulunmuyor. Sisteme yeni bir aksiyon "
 "gerektiğinde (PG sınır aşımı, faaliyet gecikmesi, atanan görev, replan "
 "tetikleyici vb.) bildirimler burada görünür."
-msgstr ""
+msgstr "You have no unread notifications right now. When a new action is required in the system (PI threshold breach, activity delay, assigned task, replan trigger, etc.) notifications will appear here."
 
 #: ui/templates/platform/bildirim/index.html:84
 msgid "Bildirim e-postası ve kanal ayarları"
@@ -739,6 +747,7 @@ msgid "Kişisel PG ve faaliyet takibi"
 msgstr "Personal PI and activity tracking"
 
 #: ui/templates/platform/bireysel/karne.html:73
+#: ui/templates/platform/k_rapor/index.html:877
 #: ui/templates/platform/surec/faaliyetler.html:51
 #: ui/templates/platform/surec/karne.html:99
 #: ui/templates/platform/surec/karne.html:293
@@ -768,6 +777,7 @@ msgid "Toplam PG"
 msgstr "Total PIs"
 
 #: ui/templates/platform/bireysel/karne.html:166
+#: ui/templates/platform/k_rapor/index.html:795
 msgid "Veri Girilen"
 msgstr "Data Entered"
 
@@ -780,6 +790,8 @@ msgid "Faaliyetler"
 msgstr "Activities"
 
 #: ui/templates/platform/bireysel/karne.html:176
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
 #: ui/templates/platform/surec/faaliyetler.html:81
 #: ui/templates/platform/surec/karne.html:396
 msgid "Tamamlanan"
@@ -795,14 +807,15 @@ msgstr "A brief summary of data coverage and your indicators for the selected ye
 "A brief summary of data coverage and your indicators for the selected "
 "year.A brief summary of data coverage and your indicators for the "
 "selected year.A brief summary of data coverage and your indicators for "
-"the selected year."
+"the selected year.A brief summary of data coverage and your indicators "
+"for the selected year."
 
 #: ui/templates/platform/bireysel/karne.html:192
 msgid ""
 "Sarı uyarı pill’lerindeki “hedefe göre zayıf” ifadesi, son girilen aylık "
 "değer ile hedefi karşılaştıran <strong>bilgi amaçlı bir "
 "tahmindir</strong>; İK veya resmi ölçüm yerine geçmez."
-msgstr ""
+msgstr "The “weak against target” label in the yellow warning pills is an <strong>informational estimate</strong> comparing the last entered monthly value with the target; it does not replace HR or official measurement."
 
 #: ui/templates/platform/bireysel/karne.html:201
 msgid "Bu yıl ne yaptım?"
@@ -812,7 +825,7 @@ msgstr "What did I do this year?"
 msgid ""
 "Henüz kayıtlı bir hareket yok. PG verisi girin veya faaliyet aylarını "
 "işaretleyin."
-msgstr ""
+msgstr "No recorded activity yet. Enter PI data or mark activity months."
 
 #: ui/templates/platform/bireysel/karne.html:213
 #: ui/templates/platform/surec/faaliyetler.html:89
@@ -850,6 +863,9 @@ msgid "Gösterge"
 msgstr "Indicator"
 
 #: ui/templates/platform/bireysel/karne.html:239
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:727
 msgid "Hedef"
 msgstr "Target"
 
@@ -944,6 +960,7 @@ msgstr "Dec"
 
 #: ui/templates/platform/bireysel/karne.html:246
 #: ui/templates/platform/bireysel/karne.html:280
+#: ui/templates/platform/k_rapor/index.html:405
 #: ui/templates/platform/surec/faaliyetler.html:109
 #: ui/templates/platform/surec/karne.html:222
 #: ui/templates/platform/surec/karne.html:481
@@ -951,6 +968,25 @@ msgid "İşlem"
 msgstr "Action"
 
 #: ui/templates/platform/bireysel/karne.html:251
+#: ui/templates/platform/k_rapor/index.html:156
+#: ui/templates/platform/k_rapor/index.html:162
+#: ui/templates/platform/k_rapor/index.html:174
+#: ui/templates/platform/k_rapor/index.html:180
+#: ui/templates/platform/k_rapor/index.html:217
+#: ui/templates/platform/k_rapor/index.html:252
+#: ui/templates/platform/k_rapor/index.html:272
+#: ui/templates/platform/k_rapor/index.html:287
+#: ui/templates/platform/k_rapor/index.html:347
+#: ui/templates/platform/k_rapor/index.html:605
+#: ui/templates/platform/k_rapor/index.html:621
+#: ui/templates/platform/k_rapor/index.html:629
+#: ui/templates/platform/k_rapor/index.html:639
+#: ui/templates/platform/k_rapor/index.html:647
+#: ui/templates/platform/k_rapor/index.html:664
+#: ui/templates/platform/k_rapor/index.html:673
+#: ui/templates/platform/k_rapor/index.html:796
+#: ui/templates/platform/k_rapor/index.html:854
+#: ui/templates/platform/k_rapor/index.html:907
 #: ui/templates/platform/masaustu/index.html:63
 #: ui/templates/platform/surec/karne.html:727
 msgid "Yükleniyor…"
@@ -967,18 +1003,1069 @@ msgid "Faaliyet Ekle"
 msgstr "Add Activity"
 
 #: ui/templates/platform/bireysel/karne.html:273
+#: ui/templates/platform/k_rapor/index.html:101
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:464
 #: ui/templates/platform/surec/faaliyetler.html:104
 #: ui/templates/platform/surec/karne.html:476
 msgid "Faaliyet"
 msgstr "Activity"
 
 #: ui/templates/platform/bireysel/karne.html:274
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:574
+#: ui/templates/platform/k_rapor/index.html:603
+#: ui/templates/platform/k_rapor/index.html:827
 #: ui/templates/platform/surec/faaliyetler.html:105
 #: ui/templates/platform/surec/index.html:530
 #: ui/templates/platform/surec/karne.html:221
 #: ui/templates/platform/surec/karne.html:477
 msgid "Durum"
 msgstr "Status"
+
+#: ui/templates/platform/k_rapor/anomalies.html:2
+#: ui/templates/platform/k_rapor/anomalies.html:7
+msgid "KPI Anomali Tespiti"
+msgstr "KPI Anomaly Detection"
+
+#: ui/templates/platform/k_rapor/anomalies.html:8
+msgid ""
+"Z-score tabanlı sapma tespiti — tarihsel ortalamadan ±N standart sapma "
+"uzaktaki ölçümler."
+msgstr "Z-score based deviation detection — measurements that are ±N standard deviations away from the historical mean."
+
+#: ui/templates/platform/k_rapor/anomalies.html:16
+msgid "Z-Score eşiği"
+msgstr "Z-Score threshold"
+
+#: ui/templates/platform/k_rapor/anomalies.html:18
+msgid "1.5σ — geniş tespit"
+msgstr "1.5σ — broad detection"
+
+#: ui/templates/platform/k_rapor/anomalies.html:19
+#, python-format
+msgid "2.0σ — standart (%%95 dışı)"
+msgstr "2.0σ — standard (outside %%95)"
+
+#: ui/templates/platform/k_rapor/anomalies.html:20
+msgid "2.5σ — sıkı"
+msgstr "2.5σ — strict"
+
+#: ui/templates/platform/k_rapor/anomalies.html:21
+#, python-format
+msgid "3.0σ — sadece kritik (%%99.7 dışı)"
+msgstr "3.0σ — critical only (outside %%99.7)"
+
+#: ui/templates/platform/k_rapor/anomalies.html:25
+msgid "Slack webhook URL (opsiyonel)"
+msgstr "Slack webhook URL (optional)"
+
+#: ui/templates/platform/k_rapor/anomalies.html:29
+msgid "Önem Eşiği ≥"
+msgstr "Severity Threshold ≥"
+
+#: ui/templates/platform/k_rapor/anomalies.html:31
+msgid "Düşük (tümü)"
+msgstr "Low (all)"
+
+#: ui/templates/platform/k_rapor/anomalies.html:32
+msgid "Orta"
+msgstr "Medium"
+
+#: ui/templates/platform/k_rapor/anomalies.html:33
+msgid "Yüksek (sadece kritik)"
+msgstr "High (critical only)"
+
+#: ui/templates/platform/k_rapor/anomalies.html:38
+msgid "Tara"
+msgstr "Scan"
+
+#: ui/templates/platform/k_rapor/anomalies.html:41
+msgid "Slack'e Gönder"
+msgstr "Send to Slack"
+
+#: ui/templates/platform/k_rapor/anomalies.html:52
+msgid "Anomali bulunamadı"
+msgstr "No anomalies found"
+
+#: ui/templates/platform/k_rapor/anomalies.html:53
+msgid "Tüm KPI'lar tarihsel ortalamalar civarında."
+msgstr "All KPIs are around their historical averages."
+
+#: ui/templates/platform/k_rapor/index.html:9
+msgid "K-Rapor — Raporlama Merkezi"
+msgstr "K-Report — Reporting Center"
+
+#: ui/templates/platform/k_rapor/index.html:10
+msgid "K-Rapor"
+msgstr "K-Report"
+
+#: ui/templates/platform/k_rapor/index.html:79
+msgid "Aktif sekmeyi Excel olarak indir"
+msgstr "Download active tab as Excel"
+
+#: ui/templates/platform/k_rapor/index.html:90
+msgid "Sekme ara…"
+msgstr "Search tab…"
+
+#: ui/templates/platform/k_rapor/index.html:93
+msgid "%(n)s sekme"
+msgstr "%(n)s tabs"
+
+#: ui/templates/platform/k_rapor/index.html:98
+msgid "Kurumsal"
+msgstr "Corporate"
+
+#: ui/templates/platform/k_rapor/index.html:98
+msgid "Vizyon skoru ve strateji başarı tablosu"
+msgstr "Vision score and strategy success table"
+
+#: ui/templates/platform/k_rapor/index.html:99
+msgid "Süreç & PG"
+msgstr "Process & PI"
+
+#: ui/templates/platform/k_rapor/index.html:99
+msgid "Süreç bazlı PG performans tablosu"
+msgstr "Process-based PI performance table"
+
+#: ui/templates/platform/k_rapor/index.html:100
+msgid "Stratejik Uyum"
+msgstr "Strategic Alignment"
+
+#: ui/templates/platform/k_rapor/index.html:100
+msgid "Strateji ↔ süreç hizalama analizi"
+msgstr "Strategy ↔ process alignment analysis"
+
+#: ui/templates/platform/k_rapor/index.html:101
+msgid "Faaliyet durumu ve ilerleme dağılımı"
+msgstr "Activity status and progress distribution"
+
+#: ui/templates/platform/k_rapor/index.html:102
+msgid "Bireysel"
+msgstr "Individual"
+
+#: ui/templates/platform/k_rapor/index.html:102
+msgid "Bireysel performans karne özetleri"
+msgstr "Individual performance scorecard summaries"
+
+#: ui/templates/platform/k_rapor/index.html:103
+msgid "Veri Durumu"
+msgstr "Data Status"
+
+#: ui/templates/platform/k_rapor/index.html:103
+msgid "PG veri doluluk ve eksik kayıtlar"
+msgstr "PI data completeness and missing records"
+
+#: ui/templates/platform/k_rapor/index.html:104
+msgid "Risk"
+msgstr "Risk"
+
+#: ui/templates/platform/k_rapor/index.html:104
+msgid "Risk ısı haritası ve kritik kayıtlar"
+msgstr "Risk heatmap and critical records"
+
+#: ui/templates/platform/k_rapor/index.html:105
+msgid "Denetim"
+msgstr "Audit"
+
+#: ui/templates/platform/k_rapor/index.html:105
+msgid "Aktivite ve değişiklik denetim kayıtları"
+msgstr "Activity and change audit logs"
+
+#: ui/templates/platform/k_rapor/index.html:106
+msgid "Uyarı"
+msgstr "Alert"
+
+#: ui/templates/platform/k_rapor/index.html:106
+msgid "Aktif sistem uyarıları ve tetikleyiciler"
+msgstr "Active system alerts and triggers"
+
+#: ui/templates/platform/k_rapor/index.html:107
+#: ui/templates/platform/surec/index.html:126
+msgid "K-Vektör"
+msgstr "K-Vector"
+
+#: ui/templates/platform/k_rapor/index.html:107
+msgid "K-Vektör ağırlığı ve skor analizi"
+msgstr "K-Vector weight and score analysis"
+
+#: ui/templates/platform/k_rapor/index.html:108
+msgid "EVM"
+msgstr "EVM"
+
+#: ui/templates/platform/k_rapor/index.html:108
+msgid "Earned Value · PV/EV/AC, CPI/SPI"
+msgstr "Earned Value · PV/EV/AC, CPI/SPI"
+
+#: ui/templates/platform/k_rapor/index.html:109
+msgid "Stratejik Analiz"
+msgstr "Strategic Analysis"
+
+#: ui/templates/platform/k_rapor/index.html:109
+msgid "SWOT · TOWS · PESTEL · Porter 5 güç"
+msgstr "SWOT · TOWS · PESTEL · Porter 5 forces"
+
+#: ui/templates/platform/k_rapor/index.html:110
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "Paydaş"
+msgstr "Stakeholder"
+
+#: ui/templates/platform/k_rapor/index.html:110
+msgid "Paydaş haritası ve etkileşim analizi"
+msgstr "Stakeholder map and interaction analysis"
+
+#: ui/templates/platform/k_rapor/index.html:111
+msgid "Rekabet & A3"
+msgstr "Competition & A3"
+
+#: ui/templates/platform/k_rapor/index.html:111
+msgid "Rakip kıyaslama ve A3 problem analizi"
+msgstr "Competitor benchmarking and A3 problem analysis"
+
+#: ui/templates/platform/k_rapor/index.html:112
+msgid "PG Dağılım"
+msgstr "PI Distribution"
+
+#: ui/templates/platform/k_rapor/index.html:112
+msgid "PG performans bant dağılımı"
+msgstr "PI performance band distribution"
+
+#: ui/templates/platform/k_rapor/index.html:113
+msgid "Faaliyet Matris"
+msgstr "Activity Matrix"
+
+#: ui/templates/platform/k_rapor/index.html:113
+msgid "Sorumlu × faaliyet matrisi"
+msgstr "Responsible × activity matrix"
+
+#: ui/templates/platform/k_rapor/index.html:114
+msgid "Aktivite"
+msgstr "Activity"
+
+#: ui/templates/platform/k_rapor/index.html:114
+msgid "Aktivite zaman çizelgesi takvimi"
+msgstr "Activity timeline calendar"
+
+#: ui/templates/platform/k_rapor/index.html:115
+msgid "Kurum Kıyas"
+msgstr "Org Comparison"
+
+#: ui/templates/platform/k_rapor/index.html:115
+msgid "Kurum içi karşılaştırma raporları"
+msgstr "Intra-organization comparison reports"
+
+#: ui/templates/platform/k_rapor/index.html:116
+msgid "Str. Kapsama"
+msgstr "Str. Coverage"
+
+#: ui/templates/platform/k_rapor/index.html:116
+msgid "Strateji kapsama ve boşluk analizi"
+msgstr "Strategy coverage and gap analysis"
+
+#: ui/templates/platform/k_rapor/index.html:117
+msgid "Sorumlu"
+msgstr "Responsible"
+
+#: ui/templates/platform/k_rapor/index.html:117
+msgid "Sorumlu kişi yük ve performans dağılımı"
+msgstr "Responsible person load and performance distribution"
+
+#: ui/templates/platform/k_rapor/index.html:118
+msgid "SWOT Trend"
+msgstr "SWOT Trend"
+
+#: ui/templates/platform/k_rapor/index.html:118
+msgid "SWOT öğelerinin zaman içinde gelişimi"
+msgstr "Evolution of SWOT items over time"
+
+#: ui/templates/platform/k_rapor/index.html:119
+msgid "Bildirim"
+msgstr "Notification"
+
+#: ui/templates/platform/k_rapor/index.html:119
+msgid "Bildirim ve uyarı sıklığı raporu"
+msgstr "Notification and alert frequency report"
+
+#: ui/templates/platform/k_rapor/index.html:149
+msgid ""
+"<b>Kurumsal Performans:</b> Vizyon skoru ve strateji bazlı ağırlıklı "
+"ortalama performans özeti. Yıl seçici ile dönemler arası kıyas "
+"yapılabilir."
+msgstr "<b>Corporate Performance:</b> Vision score and strategy-based weighted average performance summary. Periods can be compared via the year selector."
+
+#: ui/templates/platform/k_rapor/index.html:152
+msgid "Vizyon Skoru"
+msgstr "Vision Score"
+
+#: ui/templates/platform/k_rapor/index.html:155
+msgid "Vizyon Başarı Skoru"
+msgstr "Vision Success Score"
+
+#: ui/templates/platform/k_rapor/index.html:160
+msgid "Strateji Bazlı Başarı"
+msgstr "Strategy-Based Success"
+
+#: ui/templates/platform/k_rapor/index.html:172
+msgid "En İyi 5 Süreç"
+msgstr "Top 5 Processes"
+
+#: ui/templates/platform/k_rapor/index.html:178
+msgid "En Düşük 5 Süreç"
+msgstr "Bottom 5 Processes"
+
+#: ui/templates/platform/k_rapor/index.html:188
+msgid ""
+"<b>Süreç & PG Tablosu:</b> Süreç × dönem ısı haritası — her süreç için PG"
+" hedef/gerçekleşme çapraz tablosu ve renk kodlu durum gösterimi."
+msgstr "<b>Process & PI Table:</b> Process × period heatmap — a cross table of PI target/actual for each process with color-coded status indicators."
+
+#: ui/templates/platform/k_rapor/index.html:191
+msgid "Süreç × Dönem Isı Haritası"
+msgstr "Process × Period Heatmap"
+
+#: ui/templates/platform/k_rapor/index.html:196
+#: ui/templates/platform/surec/karne.html:562
+msgid "Yıllık"
+msgstr "Annual"
+
+#: ui/templates/platform/k_rapor/index.html:210
+msgid ""
+"<b>Stratejik Uyum:</b> Strateji → süreç → PG katkı ağacı. Hangi "
+"stratejinin hangi süreçlere ve PG'lere bağlı olduğunu gösterir; "
+"bağlantısız alanlar boşluk olarak işaretlenir."
+msgstr "<b>Strategic Alignment:</b> Strategy → process → PI contribution tree. Shows which strategy is linked to which processes and PIs; unlinked areas are marked as gaps."
+
+#: ui/templates/platform/k_rapor/index.html:213
+msgid "Strateji → Süreç Katkı Ağacı"
+msgstr "Strategy → Process Contribution Tree"
+
+#: ui/templates/platform/k_rapor/index.html:224
+msgid ""
+"<b>Faaliyet Durumu:</b> Tüm faaliyetlerin durum ve ilerleme dağılımı — "
+"tamamlanan, devam eden, geciken ve planlanan faaliyetlerin süreç bazlı "
+"özeti."
+msgstr "<b>Activity Status:</b> Status and progress distribution of all activities — a process-based summary of completed, ongoing, delayed and planned activities."
+
+#: ui/templates/platform/k_rapor/index.html:230
+msgid "Aylık Tamamlanan"
+msgstr "Monthly Completed"
+
+#: ui/templates/platform/k_rapor/index.html:234
+#: ui/templates/platform/k_rapor/index.html:459
+msgid "Geciken Faaliyetler"
+msgstr "Overdue Activities"
+
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:308
+#: ui/templates/platform/k_rapor/index.html:320
+#: ui/templates/platform/k_rapor/index.html:370
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/surec/faaliyetler.html:60
+#: ui/templates/platform/surec/karne.html:691
+msgid "Süreç"
+msgstr "Process"
+
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:251
+msgid "Bitiş"
+msgstr "End"
+
+#: ui/templates/platform/k_rapor/index.html:246
+msgid "Proje Portföy Durumu"
+msgstr "Project Portfolio Status"
+
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:597
+msgid "Proje"
+msgstr "Project"
+
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/surec/karne.html:220
+msgid "İlerleme"
+msgstr "Progress"
+
+#: ui/templates/platform/k_rapor/index.html:251
+msgid "Başlangıç"
+msgstr "Start"
+
+#: ui/templates/platform/k_rapor/index.html:260
+msgid ""
+"<b>Bireysel Performans:</b> Kullanıcı bazlı bireysel PG sahipliği ve "
+"karne özetleri. Hedef hizalama yüzdesi ve üst yönetim karne görünümü."
+msgstr "<b>Individual Performance:</b> User-based individual PI ownership and scorecard summaries. Target alignment percentage and executive scorecard view."
+
+#: ui/templates/platform/k_rapor/index.html:267
+msgid "Kullanıcı Bazlı PG Başarı Tablosu"
+msgstr "User-Based PI Success Table"
+
+#: ui/templates/platform/k_rapor/index.html:271
+msgid "PG"
+msgstr "PI"
+
+#: ui/templates/platform/k_rapor/index.html:271
+msgid "Veri Girilmiş PG"
+msgstr "PIs with Data"
+
+#: ui/templates/platform/k_rapor/index.html:271
+msgid "Toplam Giriş"
+msgstr "Total Entries"
+
+#: ui/templates/platform/k_rapor/index.html:271
+msgid "Son Giriş"
+msgstr "Last Entry"
+
+#: ui/templates/platform/k_rapor/index.html:271
+#: ui/templates/platform/k_rapor/index.html:795
+msgid "Ort. Başarı"
+msgstr "Avg. Success"
+
+#: ui/templates/platform/k_rapor/index.html:271
+msgid "Performans"
+msgstr "Performance"
+
+#: ui/templates/platform/k_rapor/index.html:280
+msgid "Bireysel PG Detay Listesi"
+msgstr "Individual PI Detail List"
+
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:492
+#: ui/templates/platform/k_rapor/index.html:827
+msgid "Kod"
+msgstr "Code"
+
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:308
+#: ui/templates/platform/k_rapor/index.html:320
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:727
+msgid "PG Adı"
+msgstr "PI Name"
+
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/surec/karne.html:916
+msgid "Gerçekleşen"
+msgstr "Actual"
+
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:727
+msgid "Başarı %"
+msgstr "Success %"
+
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/k_rapor/index.html:697
+msgid "Kaynak"
+msgstr "Source"
+
+#: ui/templates/platform/k_rapor/index.html:296
+msgid ""
+"<b>Veri Durumu:</b> PG ölçüm veri doluluk raporu — hangi PG'lerin son "
+"dönemde güncel veri girişi yapıldığını, hangilerin boş kaldığını "
+"gösterir."
+msgstr "<b>Data Status:</b> PI measurement data completeness report — shows which PIs have recent data entered in the latest period and which remain empty."
+
+#: ui/templates/platform/k_rapor/index.html:303
+msgid "Veri Girilen PG'ler"
+msgstr "PIs with Data Entered"
+
+#: ui/templates/platform/k_rapor/index.html:308
+#: ui/templates/platform/k_rapor/index.html:320
+msgid "PG Kodu"
+msgstr "PI Code"
+
+#: ui/templates/platform/k_rapor/index.html:308
+msgid "Son Tarih"
+msgstr "Last Date"
+
+#: ui/templates/platform/k_rapor/index.html:308
+msgid "Değer"
+msgstr "Value"
+
+#: ui/templates/platform/k_rapor/index.html:308
+msgid "Giren"
+msgstr "Entered By"
+
+#: ui/templates/platform/k_rapor/index.html:315
+msgid "Veri Girilmeyen PG'ler"
+msgstr "PIs without Data Entered"
+
+#: ui/templates/platform/k_rapor/index.html:343
+msgid "Risk Tablosu (RPN Sıralı)"
+msgstr "Risk Table (RPN Sorted)"
+
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+msgid "Risk Başlığı"
+msgstr "Risk Title"
+
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+msgid "Olasılık"
+msgstr "Probability"
+
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "Etki"
+msgstr "Impact"
+
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+msgid "RPN"
+msgstr "RPN"
+
+#: ui/templates/platform/k_rapor/index.html:353
+msgid "Süreç Olgunluk Seviyeleri"
+msgstr "Process Maturity Levels"
+
+#: ui/templates/platform/k_rapor/index.html:365
+msgid "Darboğaz Geçmişi"
+msgstr "Bottleneck History"
+
+#: ui/templates/platform/k_rapor/index.html:366
+msgid "Süreçlerde tetiklenen darboğaz kayıtları"
+msgstr "Bottleneck records triggered in processes"
+
+#: ui/templates/platform/k_rapor/index.html:370
+msgid "Önem Derecesi"
+msgstr "Severity"
+
+#: ui/templates/platform/k_rapor/index.html:370
+msgid "Not / Açıklama"
+msgstr "Note / Description"
+
+#: ui/templates/platform/k_rapor/index.html:370
+msgid "Tetiklenme Tarihi"
+msgstr "Trigger Date"
+
+#: ui/templates/platform/k_rapor/index.html:370
+msgid "Çözüm Tarihi"
+msgstr "Resolution Date"
+
+#: ui/templates/platform/k_rapor/index.html:381
+msgid "İşlem Dağılımı"
+msgstr "Transaction Distribution"
+
+#: ui/templates/platform/k_rapor/index.html:386
+msgid "En Aktif Kullanıcılar"
+msgstr "Most Active Users"
+
+#: ui/templates/platform/k_rapor/index.html:402
+msgid "Son İşlemler"
+msgstr "Recent Transactions"
+
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/k_rapor/index.html:596
+#: ui/templates/platform/k_rapor/index.html:697
+msgid "Tarih"
+msgstr "Date"
+
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/surec/index.html:572
+#: ui/templates/platform/surec/karne.html:621
+#: ui/templates/platform/surec/karne.html:645
+#: ui/templates/platform/surec/karne.html:920
+msgid "Açıklama"
+msgstr "Description"
+
+#: ui/templates/platform/k_rapor/index.html:432
+msgid "Kritik Performans Göstergeleri"
+msgstr "Critical Performance Indicators"
+
+#: ui/templates/platform/k_rapor/index.html:433
+msgid "Başarı oranı %50'nin altında olanlar"
+msgstr "Those with a success rate below %50"
+
+#: ui/templates/platform/k_rapor/index.html:445
+msgid "Yüksek Riskler"
+msgstr "High Risks"
+
+#: ui/templates/platform/k_rapor/index.html:446
+msgid "RPN &gt; 10 olan öncelikli riskler"
+msgstr "Priority risks with RPN &gt; 10"
+
+#: ui/templates/platform/k_rapor/index.html:460
+msgid "Bitiş tarihi geçmiş ve henüz tamamlanmamış"
+msgstr "Past due date and not yet completed"
+
+#: ui/templates/platform/k_rapor/index.html:464
+msgid "Bitiş Tarihi"
+msgstr "End Date"
+
+#: ui/templates/platform/k_rapor/index.html:464
+msgid "Gecikme (gün)"
+msgstr "Delay (days)"
+
+#: ui/templates/platform/k_rapor/index.html:473
+msgid ""
+"<b>K-Vektör Skoru:</b> Her stratejiye verilen ağırlık (%) ile o "
+"stratejinin gerçekleşen skor karşılaştırması. Yüksek ağırlık + düşük skor"
+" = en kritik odak noktası."
+msgstr "<b>K-Vector Score:</b> A comparison of the weight (%) given to each strategy against that strategy's achieved score. High weight + low score = the most critical focus point."
+
+#: ui/templates/platform/k_rapor/index.html:476
+msgid "Ana Strateji Ağırlıkları"
+msgstr "Main Strategy Weights"
+
+#: ui/templates/platform/k_rapor/index.html:482
+msgid "Ağırlık Tablosu"
+msgstr "Weight Table"
+
+#: ui/templates/platform/k_rapor/index.html:489
+msgid "Alt Strateji Ağırlıkları"
+msgstr "Sub-Strategy Weights"
+
+#: ui/templates/platform/k_rapor/index.html:492
+msgid "Alt Strateji"
+msgstr "Sub-Strategy"
+
+#: ui/templates/platform/k_rapor/index.html:492
+msgid "Ham Ağırlık"
+msgstr "Raw Weight"
+
+#: ui/templates/platform/k_rapor/index.html:515
+msgid "Planlanan Değer"
+msgstr "Planned Value"
+
+#: ui/templates/platform/k_rapor/index.html:517
+msgid ""
+"Bu tarihe kadar <b>tamamlanması planlanan</b> işin parasal karşılığı. "
+"Plana göre nerede olmamız gerekirdi?"
+msgstr "The monetary value of the work <b>planned to be completed</b> by this date. Where should we be according to the plan?"
+
+#: ui/templates/platform/k_rapor/index.html:522
+msgid "Kazanılmış Değer"
+msgstr "Earned Value"
+
+#: ui/templates/platform/k_rapor/index.html:524
+msgid ""
+"Bu tarihe kadar <b>gerçekten tamamlanan</b> işin parasal değeri. Gerçekte"
+" nerede miyiz?"
+msgstr "The monetary value of the work <b>actually completed</b> by this date. Where are we really?"
+
+#: ui/templates/platform/k_rapor/index.html:529
+msgid "Fiili Maliyet"
+msgstr "Actual Cost"
+
+#: ui/templates/platform/k_rapor/index.html:531
+msgid "Bu tarihe kadar <b>gerçekten harcanan</b> tutar. Cebimizden ne çıktı?"
+msgstr "The amount <b>actually spent</b> by this date. What came out of our pocket?"
+
+#: ui/templates/platform/k_rapor/index.html:540
+msgid "Zaman Performans Endeksi"
+msgstr "Schedule Performance Index"
+
+#: ui/templates/platform/k_rapor/index.html:552
+msgid "Maliyet Performans Endeksi"
+msgstr "Cost Performance Index"
+
+#: ui/templates/platform/k_rapor/index.html:572
+msgid "SPI"
+msgstr "SPI"
+
+#: ui/templates/platform/k_rapor/index.html:573
+msgid "CPI"
+msgstr "CPI"
+
+#: ui/templates/platform/k_rapor/index.html:575
+msgid "Anlamı"
+msgstr "Meaning"
+
+#: ui/templates/platform/k_rapor/index.html:579
+msgid "İyi"
+msgstr "Good"
+
+#: ui/templates/platform/k_rapor/index.html:579
+msgid "Programın önünde + bütçenin altında — ideal"
+msgstr "Ahead of schedule + under budget — ideal"
+
+#: ui/templates/platform/k_rapor/index.html:580
+msgid "Pahalı"
+msgstr "Expensive"
+
+#: ui/templates/platform/k_rapor/index.html:580
+msgid "Hızlı ilerliyor ama bütçeyi aşıyor — kaynak verimliliği zayıf"
+msgstr "Progressing fast but over budget — weak resource efficiency"
+
+#: ui/templates/platform/k_rapor/index.html:581
+msgid "Yavaş"
+msgstr "Slow"
+
+#: ui/templates/platform/k_rapor/index.html:581
+msgid "Bütçe iyi ama program gerisinde — hız artırılmalı"
+msgstr "Budget is good but behind schedule — speed must increase"
+
+#: ui/templates/platform/k_rapor/index.html:582
+#: ui/templates/platform/k_rapor/index.html:795
+msgid "Kritik"
+msgstr "Critical"
+
+#: ui/templates/platform/k_rapor/index.html:582
+msgid "Hem geç hem pahalı — acil yeniden planlama"
+msgstr "Both late and expensive — urgent replanning"
+
+#: ui/templates/platform/k_rapor/index.html:590
+msgid "Kazanılmış Değer (EVM) — Proje Snapshot Tablosu"
+msgstr "Earned Value (EVM) — Project Snapshot Table"
+
+#: ui/templates/platform/k_rapor/index.html:591
+msgid "En güncel ölçüm her proje için bir satır"
+msgstr "One row per project with the latest measurement"
+
+#: ui/templates/platform/k_rapor/index.html:598
+msgid "PV (Planlanan)"
+msgstr "PV (Planned)"
+
+#: ui/templates/platform/k_rapor/index.html:599
+msgid "EV (Kazanılmış)"
+msgstr "EV (Earned)"
+
+#: ui/templates/platform/k_rapor/index.html:600
+msgid "AC (Fiili)"
+msgstr "AC (Actual)"
+
+#: ui/templates/platform/k_rapor/index.html:601
+msgid "SPI (Zaman)"
+msgstr "SPI (Schedule)"
+
+#: ui/templates/platform/k_rapor/index.html:602
+msgid "CPI (Maliyet)"
+msgstr "CPI (Cost)"
+
+#: ui/templates/platform/k_rapor/index.html:613
+msgid ""
+"<b>Stratejik Analiz Paketi:</b> SWOT · TOWS · PESTEL · Porter 5 Güç "
+"analizlerinin birleşik görünümü. Stratejik çevre taraması ve yönlendirici"
+" aksiyonlar."
+msgstr "<b>Strategic Analysis Package:</b> A combined view of SWOT · TOWS · PESTEL · Porter 5 Forces analyses. Strategic environment scanning and directive actions."
+
+#: ui/templates/platform/k_rapor/index.html:618
+msgid "SWOT Analizi"
+msgstr "SWOT Analysis"
+
+#: ui/templates/platform/k_rapor/index.html:626
+msgid "TOWS Matrisi"
+msgstr "TOWS Matrix"
+
+#: ui/templates/platform/k_rapor/index.html:636
+msgid "PESTEL Analizi"
+msgstr "PESTEL Analysis"
+
+#: ui/templates/platform/k_rapor/index.html:644
+msgid "Porter 5 Kuvvet"
+msgstr "Porter 5 Forces"
+
+#: ui/templates/platform/k_rapor/index.html:654
+msgid ""
+"<b>Paydaş Haritası:</b> Kilit paydaşların etki-ilgi matrisinde "
+"konumlandırılması. Yüksek etki + yüksek ilgi = aktif yönetim gerektiren "
+"paydaşlar."
+msgstr "<b>Stakeholder Map:</b> Positioning of key stakeholders on the power-interest matrix. High power + high interest = stakeholders requiring active management."
+
+#: ui/templates/platform/k_rapor/index.html:658
+msgid "Paydaş Haritası"
+msgstr "Stakeholder Map"
+
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "Rol"
+msgstr "Role"
+
+#: ui/templates/platform/k_rapor/index.html:663
+msgid "İlgi"
+msgstr "Interest"
+
+#: ui/templates/platform/k_rapor/index.html:663
+#: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/surec/karne.html:864
+msgid "Strateji"
+msgstr "Strategy"
+
+#: ui/templates/platform/k_rapor/index.html:670
+msgid "Paydaş Anket Özeti"
+msgstr "Stakeholder Survey Summary"
+
+#: ui/templates/platform/k_rapor/index.html:680
+msgid ""
+"<b>Rekabet & A3:</b> Rakip kıyas tablosu ve A3 problem analizi. Rekabetçi"
+" konumlandırma ve yapısal iyileştirme alanlarının görsel özeti."
+msgstr "<b>Competition & A3:</b> Competitor benchmarking table and A3 problem analysis. A visual summary of competitive positioning and structural improvement areas."
+
+#: ui/templates/platform/k_rapor/index.html:683
+msgid "Rekabetçi Analiz"
+msgstr "Competitive Analysis"
+
+#: ui/templates/platform/k_rapor/index.html:692
+msgid "A3 Raporları"
+msgstr "A3 Reports"
+
+#: ui/templates/platform/k_rapor/index.html:697
+msgid "Sorun"
+msgstr "Issue"
+
+#: ui/templates/platform/k_rapor/index.html:697
+msgid "Tedbirler"
+msgstr "Measures"
+
+#: ui/templates/platform/k_rapor/index.html:706
+msgid ""
+"<b>PG Bant Dağılımı:</b> Tüm performans göstergelerinin hedef bandına "
+"göre dağılımı — üstün (≥%110), normal (%90–110), gelişim (%70–90), kritik"
+" (&lt;%70)."
+msgstr "<b>PI Band Distribution:</b> Distribution of all performance indicators by target band — superior (≥%110), normal (%90–110), developing (%70–90), critical (&lt;%70)."
+
+#: ui/templates/platform/k_rapor/index.html:712
+msgid "Başarı Yüzdesi Dağılımı (Histogram)"
+msgstr "Success Percentage Distribution (Histogram)"
+
+#: ui/templates/platform/k_rapor/index.html:716
+msgid "PG Dağılım Grafiği"
+msgstr "PI Distribution Chart"
+
+#: ui/templates/platform/k_rapor/index.html:722
+msgid "En Düşük Performanslı PG'ler"
+msgstr "Lowest Performing PIs"
+
+#: ui/templates/platform/k_rapor/index.html:736
+msgid ""
+"<b>Faaliyet Matrisi:</b> Süreç bazlı faaliyet durum matrisi — her süreçte"
+" kaç faaliyet tamamlandı, devam ediyor, gecikti. Gecikme odaklı sıralama."
+msgstr "<b>Activity Matrix:</b> Process-based activity status matrix — how many activities were completed, are ongoing or delayed in each process. Delay-focused ordering."
+
+#: ui/templates/platform/k_rapor/index.html:739
+msgid "Süreç Bazlı Faaliyet Durumu"
+msgstr "Process-Based Activity Status"
+
+#: ui/templates/platform/k_rapor/index.html:743
+msgid "En Çok Geciken Süreçler"
+msgstr "Most Delayed Processes"
+
+#: ui/templates/platform/k_rapor/index.html:750
+msgid "Süreç Faaliyet Detay Tablosu"
+msgstr "Process Activity Detail Table"
+
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
+#: ui/templates/platform/surec/faaliyetler.html:77
+#: ui/templates/platform/surec/karne.html:392
+msgid "Toplam"
+msgstr "Total"
+
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
+msgid "Devam"
+msgstr "Ongoing"
+
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
+msgid "Geciken"
+msgstr "Delayed"
+
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
+msgid "Tamamlanma %"
+msgstr "Completion %"
+
+#: ui/templates/platform/k_rapor/index.html:762
+msgid ""
+"<b>Aktivite Takvimi:</b> GitHub commit haritası tarzında veri giriş "
+"yoğunluğu takvimi — hangi günlerde ne kadar ölçüm ve faaliyet aktivitesi "
+"yapıldığı."
+msgstr "<b>Activity Calendar:</b> A data entry intensity calendar in GitHub commit-map style — how much measurement and activity was done on which days."
+
+#: ui/templates/platform/k_rapor/index.html:768
+msgid "Günlük Veri Giriş Aktivitesi"
+msgstr "Daily Data Entry Activity"
+
+#: ui/templates/platform/k_rapor/index.html:776
+msgid "Son 30 Gün Trend"
+msgstr "Last 30 Days Trend"
+
+#: ui/templates/platform/k_rapor/index.html:783
+msgid ""
+"<b>Kurum Kıyas:</b> Aynı platform üzerindeki diğer kurumlarla anonim "
+"performans karşılaştırması — strateji ve süreç skor ortalamaları."
+msgstr "<b>Org Comparison:</b> Anonymous performance comparison with other organizations on the same platform — strategy and process score averages."
+
+#: ui/templates/platform/k_rapor/index.html:786
+msgid "Kurum Performans Karşılaştırması"
+msgstr "Organization Performance Comparison"
+
+#: ui/templates/platform/k_rapor/index.html:792
+msgid "Kurum Detay Tablosu"
+msgstr "Organization Detail Table"
+
+#: ui/templates/platform/k_rapor/index.html:795
+msgid "PG Sayısı"
+msgstr "PI Count"
+
+#: ui/templates/platform/k_rapor/index.html:795
+#: ui/templates/platform/surec/index.html:270
+#: ui/templates/platform/surec/karne.html:361
+msgid "Hedefte"
+msgstr "On Target"
+
+#: ui/templates/platform/k_rapor/index.html:795
+msgid "Riskli"
+msgstr "At Risk"
+
+#: ui/templates/platform/k_rapor/index.html:804
+msgid ""
+"<b>Strateji Kapsama:</b> Her stratejinin süreç ve PG ile kapsama oranı — "
+"bağlantısız (kapsanmamış) stratejiler boşluk analizi ile işaretlenir."
+msgstr "<b>Strategy Coverage:</b> Coverage ratio of each strategy by process and PI — unlinked (uncovered) strategies are marked via gap analysis."
+
+#: ui/templates/platform/k_rapor/index.html:810
+msgid "Strateji Kapsama Durumu"
+msgstr "Strategy Coverage Status"
+
+#: ui/templates/platform/k_rapor/index.html:815
+msgid "Stratejisiz Süreçler"
+msgstr "Processes without Strategy"
+
+#: ui/templates/platform/k_rapor/index.html:824
+msgid "Strateji Bazlı Kapsama Tablosu"
+msgstr "Strategy-Based Coverage Table"
+
+#: ui/templates/platform/k_rapor/index.html:827
+msgid "Alt Str."
+msgstr "Sub-Str."
+
+#: ui/templates/platform/k_rapor/index.html:827
+msgid "Bağlı Süreç"
+msgstr "Linked Process"
+
+#: ui/templates/platform/k_rapor/index.html:827
+msgid "Boş Alt Str."
+msgstr "Empty Sub-Str."
+
+#: ui/templates/platform/k_rapor/index.html:836
+msgid ""
+"<b>Sorumlu Analizi:</b> Kişi başına faaliyet yükü — her kullanıcının "
+"atandığı faaliyet sayısı, tamamlanma ve gecikme oranı. İş dağılımı "
+"dengesizlikleri görünür."
+msgstr "<b>Responsible Analysis:</b> Activity load per person — the number of activities assigned to each user, completion and delay rates. Workload distribution imbalances become visible."
+
+#: ui/templates/platform/k_rapor/index.html:839
+msgid "Kişi Başına Faaliyet Yükü"
+msgstr "Activity Load per Person"
+
+#: ui/templates/platform/k_rapor/index.html:843
+msgid "En Çok Geciken Kişiler"
+msgstr "Most Delayed People"
+
+#: ui/templates/platform/k_rapor/index.html:850
+msgid "Sorumlu Detay Tablosu"
+msgstr "Responsible Detail Table"
+
+#: ui/templates/platform/k_rapor/index.html:853
+msgid "Kişi"
+msgstr "Person"
+
+#: ui/templates/platform/k_rapor/index.html:853
+msgid "Gecikme %"
+msgstr "Delay %"
+
+#: ui/templates/platform/k_rapor/index.html:862
+msgid ""
+"<b>SWOT Trend:</b> SWOT ve TOWS madde sayılarının tüm yıllar boyunca "
+"değişimi. Stratejik odak evrimini ve güçlü/zayıf yön dengesini gösterir."
+msgstr "<b>SWOT Trend:</b> The change in SWOT and TOWS item counts across all years. Shows the evolution of strategic focus and the balance of strengths/weaknesses."
+
+#: ui/templates/platform/k_rapor/index.html:865
+msgid "SWOT Madde Sayısı Trendi"
+msgstr "SWOT Item Count Trend"
+
+#: ui/templates/platform/k_rapor/index.html:869
+msgid "TOWS Strateji Sayısı Trendi"
+msgstr "TOWS Strategy Count Trend"
+
+#: ui/templates/platform/k_rapor/index.html:874
+msgid "Yıllık SWOT/TOWS Özet Tablosu"
+msgstr "Annual SWOT/TOWS Summary Table"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "Güçlü"
+msgstr "Strengths"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "Zayıf"
+msgstr "Weaknesses"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "Fırsat"
+msgstr "Opportunities"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "Tehdit"
+msgstr "Threats"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "SWOT Toplam"
+msgstr "SWOT Total"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "SO"
+msgstr "SO"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "ST"
+msgstr "ST"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "WO"
+msgstr "WO"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "WT"
+msgstr "WT"
+
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "TOWS Toplam"
+msgstr "TOWS Total"
+
+#: ui/templates/platform/k_rapor/index.html:886
+msgid ""
+"<b>Bildirim Analizi:</b> Bildirim gönderim ve okuma istatistikleri — tür "
+"dağılımı, okunmayan sayısı, yaşlanma dağılımı ve en aktif bildirim "
+"kullanıcıları."
+msgstr "<b>Notification Analysis:</b> Notification send and read statistics — type distribution, unread count, aging distribution and the most active notification users."
+
+#: ui/templates/platform/k_rapor/index.html:892
+msgid "Bildirim Türü Dağılımı"
+msgstr "Notification Type Distribution"
+
+#: ui/templates/platform/k_rapor/index.html:896
+msgid "Son 30 Gün Bildirim Trendi"
+msgstr "Last 30 Days Notification Trend"
+
+#: ui/templates/platform/k_rapor/index.html:903
+msgid "Okunmayan Bildirimlerin Yaşlanması"
+msgstr "Aging of Unread Notifications"
+
+#: ui/templates/platform/k_rapor/index.html:904
+msgid "Kaç gündür okunmadı?"
+msgstr "How many days unread?"
+
+#: ui/templates/platform/k_rapor/index.html:912
+msgid "En Çok Bildirim Alan Kullanıcılar"
+msgstr "Users Receiving Most Notifications"
+
+#: ui/templates/platform/k_rapor/index.html:913
+msgid "İlk 10"
+msgstr "Top 10"
 
 #: ui/templates/platform/kurum/ayarlar.html:24
 msgid "Kurum bilgilerini ve logosunu güncelle."
@@ -1027,6 +2114,8 @@ msgstr "K-Vector (vision score)"
 #: ui/templates/platform/kurum/ayarlar.html:93
 msgid "Açıldığında vizyon skoru 1000 ölçeğinde hiyerarşik hesaplanır."
 msgstr "When enabled, the vision score is calculated hierarchically on a 1000 scale."
+"When enabled, the vision score is calculated hierarchically on a 1000 "
+"scale."
 
 #: ui/templates/platform/kurum/ayarlar.html:94
 #, python-format
@@ -1034,7 +2123,7 @@ msgid ""
 "<strong>Ana ve alt strateji ham ağırlıkları</strong> <a "
 "href=\"%(sp_url)s\">Stratejik Planlama</a> (/sp) sayfasından girilir ve "
 "düzenlenir."
-msgstr ""
+msgstr "<strong>Main and sub-strategy raw weights</strong> are entered and edited on the <a href=\"%(sp_url)s\">Strategic Planning</a> (/sp) page."
 
 #: ui/templates/platform/kurum/ayarlar.html:95
 #, python-format
@@ -1042,7 +2131,7 @@ msgid ""
 "<strong>Süreç–alt strateji katkı %%</strong> değerleri <a "
 "href=\"%(surec_url)s\">Süreç Yönetimi</a> (/process) üzerinden süreç "
 "kaydı açılarak girilir."
-msgstr ""
+msgstr "<strong>Process–sub-strategy contribution %%</strong> values are entered by opening a process record via <a href=\"%(surec_url)s\">Process Management</a> (/process)."
 
 #: ui/templates/platform/kurum/ayarlar.html:105
 msgid "K-Vektör kullanımını etkinleştir"
@@ -1051,6 +2140,8 @@ msgstr "Enable K-Vector usage"
 #: ui/templates/platform/kurum/ayarlar.html:106
 msgid "Kurum genelinde vizyon skoru ve hiyerarşik ağırlıklar devreye girer."
 msgstr "Vision score and hierarchical weights are activated across the organization."
+"Vision score and hierarchical weights are activated across the "
+"organization."
 
 #: ui/templates/platform/kurum/ayarlar.html:108
 #: ui/templates/platform/kurum/ayarlar.html:138
@@ -1067,7 +2158,7 @@ msgid ""
 "plan yılı için KPI hedefleri, ağırlıklar ve metodlar ayrı ayrı "
 "tanımlanabilir. Kapalı olduğunda tüm KPI hesapları mevcut "
 "<strong>ProcessKpi</strong> değerlerine göre yapılır."
-msgstr ""
+msgstr "When enabled, a year selector bar appears on the Strategic Planning page. KPI targets, weights and methods can be defined separately for each plan year. When off, all KPI calculations are based on the current <strong>ProcessKpi</strong> values."
 
 #: ui/templates/platform/kurum/ayarlar.html:135
 msgid "Yıllık dönem planlamasını etkinleştir"
@@ -1076,6 +2167,8 @@ msgstr "Enable annual period planning"
 #: ui/templates/platform/kurum/ayarlar.html:136
 msgid "SP sayfasına yıl seçici eklenir; KPI hedefleri yıl bazında ayrı tutulur."
 msgstr "A year selector is added to the SP page; KPI targets are kept separately per year."
+"A year selector is added to the SP page; KPI targets are kept separately "
+"per year."
 
 #: ui/templates/platform/kurum/ayarlar.html:147
 msgid "Geçmiş yılları dahil et"
@@ -1085,7 +2178,7 @@ msgstr "Include past years"
 msgid ""
 "Seçilen yıldan bugüne kadar tüm yıllar otomatik oluşturulur. Mevcut SP "
 "verisi her yıla kopyalanır; sonradan yıl bazında değiştirilebilir."
-msgstr ""
+msgstr "All years from the selected year to today are created automatically. Current SP data is copied to each year; it can later be changed per year."
 
 #: ui/templates/platform/kurum/ayarlar.html:154
 msgid "— Seçin —"
@@ -1146,7 +2239,7 @@ msgstr "AI EXECUTIVE SUMMARY"
 msgid ""
 "Süreç ve proje sayıları, <strong>size atanmış / erişiminiz olan</strong> "
 "kayıtlara göredir. Yöneticiler kurum genelini görür."
-msgstr ""
+msgstr "Process and project counts are based on records <strong>assigned to / accessible by you</strong>. Managers see the organization-wide view."
 
 #: ui/templates/platform/kurum/index.html:102
 msgid "Stratejik Kimlik"
@@ -1205,7 +2298,7 @@ msgstr "Summary Info"
 msgid ""
 "Erişim kapsamınızdaki süreçlere göre özet rakamlar. Grafikler için "
 "aşağıdaki panelleri açın."
-msgstr ""
+msgstr "Summary figures based on processes within your access scope. Open the panels below for charts."
 
 #: ui/templates/platform/kurum/index.html:264
 #: ui/templates/platform/kurum/index.html:333
@@ -1279,7 +2372,7 @@ msgid ""
 "Tüm aktif süreçler — üyelik filtresi uygulanmaz. Yalnızca "
 "<strong>tenant_admin</strong> / <strong>executive_manager</strong> / "
 "<strong>Admin</strong>."
-msgstr ""
+msgstr "All active processes — no membership filter applied. Only <strong>tenant_admin</strong> / <strong>executive_manager</strong> / <strong>Admin</strong>."
 
 #: ui/templates/platform/kurum/index.html:361
 msgid "30g veri (satır)"
@@ -1318,6 +2411,8 @@ msgstr "Operational volume"
 #: ui/templates/platform/kurum/index.html:428
 msgid "Aktif PG, veri giren süreç, açık faaliyet ve bu ay tamamlanan takip"
 msgstr "Active PIs, processes with data, open activities and tracking completed this month"
+"Active PIs, processes with data, open activities and tracking completed "
+"this month"
 
 #: ui/templates/platform/kurum/index.html:441
 msgid "Risk &amp; uyarı"
@@ -1328,7 +2423,7 @@ msgstr "Risk &amp; alert"
 msgid ""
 "PG için son geçerli veri <strong>%(days)s günden</strong> eskiyse "
 "“bayat”; geciken faaliyet; hedef/dönem eksik PG."
-msgstr ""
+msgstr "A PI's last valid data is “stale” if older than <strong>%(days)s days</strong>; overdue activities; PIs missing target/period."
 
 #: ui/templates/platform/kurum/index.html:469
 msgid "Performans (PG skoru)"
@@ -1339,7 +2434,7 @@ msgid ""
 "<code class=\"text-[10px] bg-slate-200/50 dark:bg-slate-700/50 px-1 "
 "rounded\">calculated_score</code> — düşük (&lt;50), skorlu (≥50), "
 "skorsuz."
-msgstr ""
+msgstr "<code class=\"text-[10px] bg-slate-200/50 dark:bg-slate-700/50 px-1 rounded\">calculated_score</code> — low (&lt;50), scored (≥50), unscored."
 
 #: ui/templates/platform/kurum/index.html:497
 msgid "Proje özeti"
@@ -1353,7 +2448,7 @@ msgstr "Summary info, organization-wide (manager) and accordion charts"
 msgid ""
 "Erişiminiz olan projelere göre özet. Grafikler için aşağıdaki panelleri "
 "açın."
-msgstr ""
+msgstr "Summary based on projects you can access. Open the panels below for charts."
 
 #: ui/templates/platform/kurum/index.html:506
 #: ui/templates/platform/kurum/index.html:551
@@ -1465,7 +2560,7 @@ msgid ""
 "Bu strateji için henüz alt strateji yok. <span class=\"not-italic font-"
 "medium text-violet-600 dark:text-violet-400\">«Alt»</span> ile "
 "ekleyebilirsiniz."
-msgstr ""
+msgstr "No sub-strategy for this strategy yet. You can add one with <span class=\"not-italic font-medium text-violet-600 dark:text-violet-400\">“Sub”</span>."
 
 #: ui/templates/platform/kurum/index.html:758
 msgid "Henüz strateji eklenmemiş"
@@ -1669,16 +2764,6 @@ msgstr "Document No"
 msgid "Revizyon"
 msgstr "Revision"
 
-#: ui/templates/platform/surec/faaliyetler.html:60
-#: ui/templates/platform/surec/karne.html:691
-msgid "Süreç"
-msgstr "Process"
-
-#: ui/templates/platform/surec/faaliyetler.html:77
-#: ui/templates/platform/surec/karne.html:392
-msgid "Toplam"
-msgstr "Total"
-
 #: ui/templates/platform/surec/faaliyetler.html:83
 msgid "Aylık işaretleme"
 msgstr "Monthly marking"
@@ -1721,10 +2806,6 @@ msgstr "Critical Process"
 msgid "skor &lt; 50"
 msgstr "score &lt; 50"
 
-#: ui/templates/platform/surec/index.html:126
-msgid "K-Vektör"
-msgstr "K-Vector"
-
 #: ui/templates/platform/surec/index.html:127
 #: ui/templates/platform/surec/index.html:532
 msgid "Aktif"
@@ -1754,11 +2835,6 @@ msgstr "Medium (50-79)"
 msgid "Kritik (&lt;50)"
 msgstr "Critical (&lt;50)"
 
-#: ui/templates/platform/surec/index.html:270
-#: ui/templates/platform/surec/karne.html:361
-msgid "Hedefte"
-msgstr "On Target"
-
 #: ui/templates/platform/surec/index.html:321
 #: ui/templates/platform/surec/karne.html:369
 msgid "Risk altında"
@@ -1782,13 +2858,13 @@ msgid ""
 "Süreç haritası, kurumun değer üreten akışlarını (örn. <i>Satış, Üretim, "
 "AR-GE, İK</i>) tanımlar. Her sürecin altında <b>Performans Göstergeleri "
 "(PG)</b> ile başarısı ölçülür. Tipik bir kurumda 8–15 kök süreç bulunur."
-msgstr ""
+msgstr "The process map defines the value-producing flows of the organization (e.g. <i>Sales, Production, R&D, HR</i>). Each process is measured by its <b>Performance Indicators (PIs)</b>. A typical organization has 8–15 root processes."
 
 #: ui/templates/platform/surec/index.html:479
 msgid ""
 "Size lider veya üye olarak atanan bir süreç olduğunda burada listelenir. "
 "Yöneticinizden süreç ataması talep edebilirsiniz."
-msgstr ""
+msgstr "Processes assigned to you as lead or member are listed here. You can request a process assignment from your manager."
 
 #: ui/templates/platform/surec/index.html:485
 msgid "İlk Süreci Ekle"
@@ -1802,14 +2878,14 @@ msgstr "Create New Process"
 msgid ""
 "Süreç en az bir <strong>alt stratejiye</strong> bağlanmalıdır (aşağıda). "
 "PG’ler ileride isteğe bağlı alt stratejiye bağlanabilir."
-msgstr ""
+msgstr "A process must be linked to at least one <strong>sub-strategy</strong> (below). PIs can optionally be linked to a sub-strategy later."
 
 #: ui/templates/platform/surec/index.html:516
 #, python-format
 msgid ""
 "<strong>K-Vektör:</strong> Her seçili alt strateji için katkı %% girin; "
 "toplam en fazla 100 olmalıdır."
-msgstr ""
+msgstr "<strong>K-Vector:</strong> Enter a contribution %% for each selected sub-strategy; the total must not exceed 100."
 
 #: ui/templates/platform/surec/index.html:522
 msgid "Süreç Adı"
@@ -1871,13 +2947,6 @@ msgstr "End Boundary"
 msgid "Sürecin bitiş noktası..."
 msgstr "The end point of the process..."
 
-#: ui/templates/platform/surec/index.html:572
-#: ui/templates/platform/surec/karne.html:621
-#: ui/templates/platform/surec/karne.html:645
-#: ui/templates/platform/surec/karne.html:920
-msgid "Açıklama"
-msgstr "Description"
-
 #: ui/templates/platform/surec/index.html:573
 msgid "İsteğe bağlı açıklama"
 msgstr "Optional description"
@@ -1896,7 +2965,7 @@ msgid ""
 "Seçili her alt strateji için <strong>katkı %%</strong> girin; toplam en "
 "fazla 100 olmalıdır. Ana/alt strateji <strong>ham ağırlıkları</strong> "
 "Stratejik Planlama (/sp) sayfasındadır."
-msgstr ""
+msgstr "Enter a <strong>contribution %%</strong> for each selected sub-strategy; the total must not exceed 100. The <strong>raw weights</strong> of main/sub-strategies are on the Strategic Planning (/sp) page."
 
 #: ui/templates/platform/surec/index.html:594
 msgid "Süreç Liderleri"
@@ -2013,10 +3082,6 @@ msgstr "Sub-process"
 #: ui/templates/platform/surec/karne.html:219
 msgid "Süreç lideri (özet)"
 msgstr "Process leader (summary)"
-
-#: ui/templates/platform/surec/karne.html:220
-msgid "İlerleme"
-msgstr "Progress"
 
 #: ui/templates/platform/surec/karne.html:265
 msgid "— PG seçin —"
@@ -2187,10 +3252,6 @@ msgstr "Measurement Period"
 msgid "6 ay"
 msgstr "6 months"
 
-#: ui/templates/platform/surec/karne.html:562
-msgid "Yıllık"
-msgstr "Annual"
-
 #: ui/templates/platform/surec/karne.html:566
 msgid "Hedef Yönü"
 msgstr "Target Direction"
@@ -2343,13 +3404,13 @@ msgid ""
 "anketin yapıldığı gün). <strong>Kaydet</strong> ile sisteme işlendiği "
 "tarih ve saat <strong>otomatik</strong> kaydedilir; yıl ve dönem bu veri "
 "tarihine göre PG ölçüm tipine uygun hesaplanır."
-msgstr ""
+msgstr "Select <strong>which day / event the data relates to</strong> (e.g. the day the survey was conducted). When you click <strong>Save</strong>, the date and time it was recorded into the system are saved <strong>automatically</strong>; the year and period are calculated according to this data date based on the PI measurement type."
 
 #: ui/templates/platform/surec/karne.html:709
 msgid ""
 "Veri, <strong>kendi adınıza</strong> süreç karnesine ve bireysel "
 "karnenize yazılır."
-msgstr ""
+msgstr "The data is written to the process scorecard and your individual scorecard <strong>under your own name</strong>."
 
 #: ui/templates/platform/surec/karne.html:712
 #: ui/templates/platform/surec/karne.html:760
@@ -2388,7 +3449,8 @@ msgstr "The data date does not change; only the actual value and description are
 "updated.The data date does not change; only the actual value and "
 "description are updated.The data date does not change; only the actual "
 "value and description are updated.The data date does not change; only the"
-" actual value and description are updated."
+" actual value and description are updated.The data date does not change; "
+"only the actual value and description are updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"
@@ -2398,7 +3460,7 @@ msgstr "Deactivate record"
 msgid ""
 "Kayıt <strong>kalıcı olarak silinmez</strong>. Pasif yapılır; skor ve "
 "raporlarda kullanılmaz."
-msgstr ""
+msgstr "The record is <strong>not permanently deleted</strong>. It is deactivated; it is not used in scores or reports."
 
 #: ui/templates/platform/surec/karne.html:791
 msgid "Silme işlemi <strong>sizin adınıza</strong> kayda geçer (kim / ne zaman)."
@@ -2415,10 +3477,6 @@ msgstr "Add PIV"
 #: ui/templates/platform/surec/karne.html:862
 msgid "Sütun gösterimi:"
 msgstr "Column display:"
-
-#: ui/templates/platform/surec/karne.html:864
-msgid "Strateji"
-msgstr "Strategy"
 
 #: ui/templates/platform/surec/karne.html:865
 msgid "Ağırlık"
@@ -2447,8 +3505,4 @@ msgstr "Period data detail"
 #: ui/templates/platform/surec/karne.html:908
 msgid "Veri düzenle"
 msgstr "Edit data"
-
-#: ui/templates/platform/surec/karne.html:916
-msgid "Gerçekleşen"
-msgstr "Actual"
 

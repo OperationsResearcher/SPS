@@ -1,11 +1,11 @@
 {% extends "platform/base.html" %}
-{% block title %}KPI Anomali Tespiti{% endblock %}
+{% block title %}{{ _("KPI Anomali Tespiti") }}{% endblock %}
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-exclamation-triangle"></i> KPI Anomali Tespiti</h2>
-            <p class="text-muted mb-0">Z-score tabanlı sapma tespiti — tarihsel ortalamadan ±N standart sapma uzaktaki ölçümler.</p>
+            <h2 class="mb-1"><i class="bi bi-exclamation-triangle"></i> {{ _("KPI Anomali Tespiti") }}</h2>
+            <p class="text-muted mb-0">{{ _("Z-score tabanlı sapma tespiti — tarihsel ortalamadan ±N standart sapma uzaktaki ölçümler.") }}</p>
         </div>
     </div>
 
@@ -13,32 +13,32 @@
         <div class="card-body">
             <div class="row g-2 align-items-end">
                 <div class="col-md-3">
-                    <label class="form-label small">Z-Score eşiği</label>
+                    <label class="form-label small">{{ _("Z-Score eşiği") }}</label>
                     <select class="form-select" id="threshold">
-                        <option value="1.5">1.5σ — geniş tespit</option>
-                        <option value="2.0" selected>2.0σ — standart (%95 dışı)</option>
-                        <option value="2.5">2.5σ — sıkı</option>
-                        <option value="3.0">3.0σ — sadece kritik (%99.7 dışı)</option>
+                        <option value="1.5">{{ _("1.5σ — geniş tespit") }}</option>
+                        <option value="2.0" selected>{{ _("2.0σ — standart (%%95 dışı)") }}</option>
+                        <option value="2.5">{{ _("2.5σ — sıkı") }}</option>
+                        <option value="3.0">{{ _("3.0σ — sadece kritik (%%99.7 dışı)") }}</option>
                     </select>
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small">Slack webhook URL (opsiyonel)</label>
+                    <label class="form-label small">{{ _("Slack webhook URL (opsiyonel)") }}</label>
                     <input type="text" class="form-control form-control-sm" id="slack-webhook" placeholder="https://hooks.slack.com/..." />
                 </div>
                 <div class="col-md-3">
-                    <label class="form-label small">Önem Eşiği ≥</label>
+                    <label class="form-label small">{{ _("Önem Eşiği ≥") }}</label>
                     <select class="form-select" id="severity-min">
-                        <option value="low">Düşük (tümü)</option>
-                        <option value="medium" selected>Orta</option>
-                        <option value="high">Yüksek (sadece kritik)</option>
+                        <option value="low">{{ _("Düşük (tümü)") }}</option>
+                        <option value="medium" selected>{{ _("Orta") }}</option>
+                        <option value="high">{{ _("Yüksek (sadece kritik)") }}</option>
                     </select>
                 </div>
                 <div class="col-md-3 d-flex gap-2">
                     <button class="btn btn-primary flex-grow-1" onclick="loadAnomalies()">
-                        <i class="bi bi-search"></i> Tara
+                        <i class="bi bi-search"></i> {{ _("Tara") }}
                     </button>
                     <button class="btn btn-outline-secondary" onclick="sendSlack()" id="btn-slack" disabled>
-                        <i class="bi bi-slack"></i> Slack'e Gönder
+                        <i class="bi bi-slack"></i> {{ _("Slack'e Gönder") }}
                     </button>
                 </div>
             </div>
@@ -49,8 +49,8 @@
     <div id="anomaly-list" class="row g-3"></div>
     <div id="anomaly-empty" class="text-center py-5 d-none">
         <i class="bi bi-check-circle text-success fs-1"></i>
-        <h4 class="text-success mt-3">Anomali bulunamadı</h4>
-        <p class="text-muted">Tüm KPI'lar tarihsel ortalamalar civarında.</p>
+        <h4 class="text-success mt-3">{{ _("Anomali bulunamadı") }}</h4>
+        <p class="text-muted">{{ _("Tüm KPI'lar tarihsel ortalamalar civarında.") }}</p>
     </div>
 </div>
 

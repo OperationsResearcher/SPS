@@ -495,6 +495,280 @@ T = {
     "Bu strateji için henüz alt strateji yok. <span class=\"not-italic font-medium text-violet-600 dark:text-violet-400\">«Alt»</span> ile ekleyebilirsiniz.":
         "No sub-strategy for this strategy yet. You can add one with <span class=\"not-italic font-medium text-violet-600 dark:text-violet-400\">“Sub”</span>.",
     "Henüz strateji eklenmemiş": "No strategy added yet",
+    # k_rapor/anomalies.html + index.html
+    "KPI Anomali Tespiti": "KPI Anomaly Detection",
+    "Z-score tabanlı sapma tespiti — tarihsel ortalamadan ±N standart sapma uzaktaki ölçümler.":
+        "Z-score based deviation detection — measurements that are ±N standard deviations away from the historical mean.",
+    "Z-Score eşiği": "Z-Score threshold",
+    "1.5σ — geniş tespit": "1.5σ — broad detection",
+    "2.0σ — standart (%%95 dışı)": "2.0σ — standard (outside %%95)",
+    "2.5σ — sıkı": "2.5σ — strict",
+    "3.0σ — sadece kritik (%%99.7 dışı)": "3.0σ — critical only (outside %%99.7)",
+    "Slack webhook URL (opsiyonel)": "Slack webhook URL (optional)",
+    "Önem Eşiği ≥": "Severity Threshold ≥",
+    "Düşük (tümü)": "Low (all)",
+    "Yüksek (sadece kritik)": "High (critical only)",
+    "Tara": "Scan",
+    "Slack'e Gönder": "Send to Slack",
+    "Anomali bulunamadı": "No anomalies found",
+    "Tüm KPI'lar tarihsel ortalamalar civarında.": "All KPIs are around their historical averages.",
+    "K-Rapor — Raporlama Merkezi": "K-Report — Reporting Center",
+    "K-Rapor": "K-Report",
+    "Aktif sekmeyi Excel olarak indir": "Download active tab as Excel",
+    "Sekme ara…": "Search tab…",
+    "%(n)s sekme": "%(n)s tabs",
+    # kr_tabs n/d
+    "Kurumsal": "Corporate",
+    "Vizyon skoru ve strateji başarı tablosu": "Vision score and strategy success table",
+    "Süreç & PG": "Process & PI",
+    "Süreç bazlı PG performans tablosu": "Process-based PI performance table",
+    "Stratejik Uyum": "Strategic Alignment",
+    "Strateji ↔ süreç hizalama analizi": "Strategy ↔ process alignment analysis",
+    "Faaliyet": "Activity",
+    "Faaliyet durumu ve ilerleme dağılımı": "Activity status and progress distribution",
+    "Bireysel": "Individual",
+    "Bireysel performans karne özetleri": "Individual performance scorecard summaries",
+    "Veri Durumu": "Data Status",
+    "PG veri doluluk ve eksik kayıtlar": "PI data completeness and missing records",
+    "Risk": "Risk",
+    "Risk ısı haritası ve kritik kayıtlar": "Risk heatmap and critical records",
+    "Denetim": "Audit",
+    "Aktivite ve değişiklik denetim kayıtları": "Activity and change audit logs",
+    "Uyarı": "Alert",
+    "Aktif sistem uyarıları ve tetikleyiciler": "Active system alerts and triggers",
+    "K-Vektör": "K-Vector",
+    "K-Vektör ağırlığı ve skor analizi": "K-Vector weight and score analysis",
+    "EVM": "EVM",
+    "Earned Value · PV/EV/AC, CPI/SPI": "Earned Value · PV/EV/AC, CPI/SPI",
+    "Stratejik Analiz": "Strategic Analysis",
+    "SWOT · TOWS · PESTEL · Porter 5 güç": "SWOT · TOWS · PESTEL · Porter 5 forces",
+    "Paydaş": "Stakeholder",
+    "Paydaş haritası ve etkileşim analizi": "Stakeholder map and interaction analysis",
+    "Rekabet & A3": "Competition & A3",
+    "Rakip kıyaslama ve A3 problem analizi": "Competitor benchmarking and A3 problem analysis",
+    "PG Dağılım": "PI Distribution",
+    "PG performans bant dağılımı": "PI performance band distribution",
+    "Faaliyet Matris": "Activity Matrix",
+    "Sorumlu × faaliyet matrisi": "Responsible × activity matrix",
+    "Aktivite": "Activity",
+    "Aktivite zaman çizelgesi takvimi": "Activity timeline calendar",
+    "Kurum Kıyas": "Org Comparison",
+    "Kurum içi karşılaştırma raporları": "Intra-organization comparison reports",
+    "Str. Kapsama": "Str. Coverage",
+    "Strateji kapsama ve boşluk analizi": "Strategy coverage and gap analysis",
+    "Sorumlu": "Responsible",
+    "Sorumlu kişi yük ve performans dağılımı": "Responsible person load and performance distribution",
+    "SWOT Trend": "SWOT Trend",
+    "SWOT öğelerinin zaman içinde gelişimi": "Evolution of SWOT items over time",
+    "Bildirim": "Notification",
+    "Bildirim ve uyarı sıklığı raporu": "Notification and alert frequency report",
+    # paneller / kart başlıkları / th / açıklamalar
+    "<b>Kurumsal Performans:</b> Vizyon skoru ve strateji bazlı ağırlıklı ortalama performans özeti. Yıl seçici ile dönemler arası kıyas yapılabilir.":
+        "<b>Corporate Performance:</b> Vision score and strategy-based weighted average performance summary. Periods can be compared via the year selector.",
+    "Vizyon Skoru": "Vision Score",
+    "Vizyon Başarı Skoru": "Vision Success Score",
+    "Strateji Bazlı Başarı": "Strategy-Based Success",
+    "En İyi 5 Süreç": "Top 5 Processes",
+    "En Düşük 5 Süreç": "Bottom 5 Processes",
+    "Excel İndir": "Download Excel",
+    "Kullanıcı Bazlı PG Başarı Tablosu": "User-Based PI Success Table",
+    "PG": "PI",
+    "Ort. Başarı": "Avg. Success",
+    "Başarı %": "Success %",
+    "Risk Başlığı": "Risk Title",
+    "Olasılık": "Probability",
+    "Etki": "Impact",
+    "RPN": "RPN",
+    "Risk Tablosu (RPN Sıralı)": "Risk Table (RPN Sorted)",
+    "<strong>RPN (Risk Öncelik Puanı)</strong> = Olasılık × Etki (1–5 arası).":
+        "<strong>RPN (Risk Priority Number)</strong> = Probability × Impact (1–5).",
+    "Süreçlerde tetiklenen darboğaz kayıtları": "Bottleneck records triggered in processes",
+    "Önem Derecesi": "Severity",
+    "Not / Açıklama": "Note / Description",
+    "Tetiklenme Tarihi": "Trigger Date",
+    "Çözüm Tarihi": "Resolution Date",
+    "Başarı oranı %50'nin altında olanlar": "Those with a success rate below %50",
+    "Yüksek Riskler": "High Risks",
+    "RPN &gt; 10 olan öncelikli riskler": "Priority risks with RPN &gt; 10",
+    "<strong>Uyarı Merkezi</strong> — Seçili yılda anlık müdahale gerektiren üç alarm kategorisi:":
+        "<strong>Alert Center</strong> — Three alarm categories requiring immediate action in the selected year:",
+    "Bitiş tarihi geçmiş ve henüz tamamlanmamış": "Past due date and not yet completed",
+    "Bitiş Tarihi": "End Date",
+    "Gecikme (gün)": "Delay (days)",
+    "Son 7 gün": "Last 7 days", "Son 30 gün": "Last 30 days", "Son 90 gün": "Last 90 days", "Son 180 gün": "Last 180 days",
+    "Planlanan Değer": "Planned Value",
+    "Bu tarihe kadar <b>tamamlanması planlanan</b> işin parasal karşılığı. Plana göre nerede olmamız gerekirdi?":
+        "The monetary value of the work <b>planned to be completed</b> by this date. Where should we be according to the plan?",
+    "Kazanılmış Değer": "Earned Value",
+    "Bu tarihe kadar <b>gerçekten tamamlanan</b> işin parasal değeri. Gerçekte nerede miyiz?":
+        "The monetary value of the work <b>actually completed</b> by this date. Where are we really?",
+    "Fiili Maliyet": "Actual Cost",
+    "Bu tarihe kadar <b>gerçekten harcanan</b> tutar. Cebimizden ne çıktı?":
+        "The amount <b>actually spent</b> by this date. What came out of our pocket?",
+    "Zaman Performans Endeksi": "Schedule Performance Index",
+    "Maliyet Performans Endeksi": "Cost Performance Index",
+    "Anlamı": "Meaning",
+    "İyi": "Good",
+    "Programın önünde + bütçenin altında — ideal": "Ahead of schedule + under budget — ideal",
+    "Pahalı": "Expensive",
+    "Hızlı ilerliyor ama bütçeyi aşıyor — kaynak verimliliği zayıf": "Progressing fast but over budget — weak resource efficiency",
+    "Yavaş": "Slow",
+    "Bütçe iyi ama program gerisinde — hız artırılmalı": "Budget is good but behind schedule — speed must increase",
+    "Kritik": "Critical",
+    "Hem geç hem pahalı — acil yeniden planlama": "Both late and expensive — urgent replanning",
+    "Kazanılmış Değer (EVM) — Proje Snapshot Tablosu": "Earned Value (EVM) — Project Snapshot Table",
+    "En güncel ölçüm her proje için bir satır": "One row per project with the latest measurement",
+    "PV (Planlanan)": "PV (Planned)",
+    "EV (Kazanılmış)": "EV (Earned)",
+    "AC (Fiili)": "AC (Actual)",
+    "SPI (Zaman)": "SPI (Schedule)",
+    "CPI (Maliyet)": "CPI (Cost)",
+    "Porter 5 Kuvvet": "Porter 5 Forces",
+    "Paydaş Haritası": "Stakeholder Map",
+    "Rol": "Role",
+    "İlgi": "Interest",
+    "Paydaş Anket Özeti": "Stakeholder Survey Summary",
+    "Sorun": "Issue",
+    "Tedbirler": "Measures",
+    "Başarı Yüzdesi Dağılımı (Histogram)": "Success Percentage Distribution (Histogram)",
+    "PG Dağılım Grafiği": "PI Distribution Chart",
+    "En Çok Geciken Süreçler": "Most Delayed Processes",
+    "Toplam": "Total",
+    "Tamamlanan": "Completed",
+    "Devam": "Ongoing",
+    "İptal": "Cancelled",
+    "Tamamlanma %": "Completion %",
+    "Günlük Veri Giriş Aktivitesi": "Daily Data Entry Activity",
+    "Son 30 Gün Trend": "Last 30 Days Trend",
+    "Kurum": "Organization",
+    "PG Sayısı": "PI Count",
+    "Veri Girilen": "Data Entered",
+    "Hedefte": "On Target",
+    "Riskli": "At Risk",
+    "Strateji": "Strategy",
+    "Alt Str.": "Sub-Str.",
+    "Bağlı Süreç": "Linked Process",
+    "Boş Alt Str.": "Empty Sub-Str.",
+    "En Çok Geciken Kişiler": "Most Delayed People",
+    "Kişi": "Person",
+    "Gecikme %": "Delay %",
+    "Sorumlu Detay Tablosu": "Responsible Detail Table",
+    "SWOT Madde Sayısı Trendi": "SWOT Item Count Trend",
+    "Güçlü": "Strengths",
+    "Zayıf": "Weaknesses",
+    "Fırsat": "Opportunities",
+    "Tehdit": "Threats",
+    "Yıllık SWOT/TOWS Özet Tablosu": "Annual SWOT/TOWS Summary Table",
+    "SWOT Toplam": "SWOT Total",
+    "TOWS Toplam": "TOWS Total",
+    "Son 30 Gün Bildirim Trendi": "Last 30 Days Notification Trend",
+    "Okunmayan Bildirimlerin Yaşlanması": "Aging of Unread Notifications",
+    "Kaç gündür okunmadı?": "How many days unread?",
+    "En Çok Bildirim Alan Kullanıcılar": "Users Receiving Most Notifications",
+    "İlk 10": "Top 10",
+    "Faaliyet Durumu": "Activity Status",
+    "Son Tarih": "Last Date",
+    "Değer": "Value",
+    "Giren": "Entered By",
+    "Veri Girilmiş PG": "PIs with Data",
+    "Toplam Giriş": "Total Entries",
+    "Son Giriş": "Last Entry",
+    "Performans": "Performance",
+    "Aylık Tamamlanan": "Monthly Completed",
+    "Geciken Faaliyetler": "Overdue Activities",
+    "Proje Portföy Durumu": "Project Portfolio Status",
+    "GitHub tarzı ısı haritası": "GitHub-style heatmap",
+    "SPI": "SPI", "CPI": "CPI", "SO": "SO", "WO": "WO", "WT": "WT",
+    "Z-score tabanlı sapma tespiti — tarihsel ortalamadan ±N standart sapma uzaktaki ölçümler.":
+        "Z-score based deviation detection — measurements that are ±N standard deviations away from the historical mean.",
+    "<b>Süreç & PG Tablosu:</b> Süreç × dönem ısı haritası — her süreç için PG hedef/gerçekleşme çapraz tablosu ve renk kodlu durum gösterimi.":
+        "<b>Process & PI Table:</b> Process × period heatmap — a cross table of PI target/actual for each process with color-coded status indicators.",
+    "<b>Stratejik Uyum:</b> Strateji → süreç → PG katkı ağacı. Hangi stratejinin hangi süreçlere ve PG'lere bağlı olduğunu gösterir; bağlantısız alanlar boşluk olarak işaretlenir.":
+        "<b>Strategic Alignment:</b> Strategy → process → PI contribution tree. Shows which strategy is linked to which processes and PIs; unlinked areas are marked as gaps.",
+    "<b>Faaliyet Durumu:</b> Tüm faaliyetlerin durum ve ilerleme dağılımı — tamamlanan, devam eden, geciken ve planlanan faaliyetlerin süreç bazlı özeti.":
+        "<b>Activity Status:</b> Status and progress distribution of all activities — a process-based summary of completed, ongoing, delayed and planned activities.",
+    "<b>Bireysel Performans:</b> Kullanıcı bazlı bireysel PG sahipliği ve karne özetleri. Hedef hizalama yüzdesi ve üst yönetim karne görünümü.":
+        "<b>Individual Performance:</b> User-based individual PI ownership and scorecard summaries. Target alignment percentage and executive scorecard view.",
+    "<b>Veri Durumu:</b> PG ölçüm veri doluluk raporu — hangi PG'lerin son dönemde güncel veri girişi yapıldığını, hangilerin boş kaldığını gösterir.":
+        "<b>Data Status:</b> PI measurement data completeness report — shows which PIs have recent data entered in the latest period and which remain empty.",
+    "<b>K-Vektör Skoru:</b> Her stratejiye verilen ağırlık (%) ile o stratejinin gerçekleşen skor karşılaştırması. Yüksek ağırlık + düşük skor = en kritik odak noktası.":
+        "<b>K-Vector Score:</b> A comparison of the weight (%) given to each strategy against that strategy's achieved score. High weight + low score = the most critical focus point.",
+    "Bu tarihe kadar <b>tamamlanması planlanan</b> işin parasal karşılığı. Plana göre nerede olmamız gerekirdi?":
+        "The monetary value of the work <b>planned to be completed</b> by this date. Where should we be according to the plan?",
+    "Bu tarihe kadar <b>gerçekten tamamlanan</b> işin parasal değeri. Gerçekte nerede miyiz?":
+        "The monetary value of the work <b>actually completed</b> by this date. Where are we really?",
+    "<b>Stratejik Analiz Paketi:</b> SWOT · TOWS · PESTEL · Porter 5 Güç analizlerinin birleşik görünümü. Stratejik çevre taraması ve yönlendirici aksiyonlar.":
+        "<b>Strategic Analysis Package:</b> A combined view of SWOT · TOWS · PESTEL · Porter 5 Forces analyses. Strategic environment scanning and directive actions.",
+    "<b>Paydaş Haritası:</b> Kilit paydaşların etki-ilgi matrisinde konumlandırılması. Yüksek etki + yüksek ilgi = aktif yönetim gerektiren paydaşlar.":
+        "<b>Stakeholder Map:</b> Positioning of key stakeholders on the power-interest matrix. High power + high interest = stakeholders requiring active management.",
+    "<b>Rekabet & A3:</b> Rakip kıyas tablosu ve A3 problem analizi. Rekabetçi konumlandırma ve yapısal iyileştirme alanlarının görsel özeti.":
+        "<b>Competition & A3:</b> Competitor benchmarking table and A3 problem analysis. A visual summary of competitive positioning and structural improvement areas.",
+    "<b>PG Bant Dağılımı:</b> Tüm performans göstergelerinin hedef bandına göre dağılımı — üstün (≥%110), normal (%90–110), gelişim (%70–90), kritik (&lt;%70).":
+        "<b>PI Band Distribution:</b> Distribution of all performance indicators by target band — superior (≥%110), normal (%90–110), developing (%70–90), critical (&lt;%70).",
+    "<b>Faaliyet Matrisi:</b> Süreç bazlı faaliyet durum matrisi — her süreçte kaç faaliyet tamamlandı, devam ediyor, gecikti. Gecikme odaklı sıralama.":
+        "<b>Activity Matrix:</b> Process-based activity status matrix — how many activities were completed, are ongoing or delayed in each process. Delay-focused ordering.",
+    "<b>Aktivite Takvimi:</b> GitHub commit haritası tarzında veri giriş yoğunluğu takvimi — hangi günlerde ne kadar ölçüm ve faaliyet aktivitesi yapıldığı.":
+        "<b>Activity Calendar:</b> A data entry intensity calendar in GitHub commit-map style — how much measurement and activity was done on which days.",
+    "<b>Kurum Kıyas:</b> Aynı platform üzerindeki diğer kurumlarla anonim performans karşılaştırması — strateji ve süreç skor ortalamaları.":
+        "<b>Org Comparison:</b> Anonymous performance comparison with other organizations on the same platform — strategy and process score averages.",
+    "<b>Strateji Kapsama:</b> Her stratejinin süreç ve PG ile kapsama oranı — bağlantısız (kapsanmamış) stratejiler boşluk analizi ile işaretlenir.":
+        "<b>Strategy Coverage:</b> Coverage ratio of each strategy by process and PI — unlinked (uncovered) strategies are marked via gap analysis.",
+    "<b>Sorumlu Analizi:</b> Kişi başına faaliyet yükü — her kullanıcının atandığı faaliyet sayısı, tamamlanma ve gecikme oranı. İş dağılımı dengesizlikleri görünür.":
+        "<b>Responsible Analysis:</b> Activity load per person — the number of activities assigned to each user, completion and delay rates. Workload distribution imbalances become visible.",
+    "<b>SWOT Trend:</b> SWOT ve TOWS madde sayılarının tüm yıllar boyunca değişimi. Stratejik odak evrimini ve güçlü/zayıf yön dengesini gösterir.":
+        "<b>SWOT Trend:</b> The change in SWOT and TOWS item counts across all years. Shows the evolution of strategic focus and the balance of strengths/weaknesses.",
+    "<b>Bildirim Analizi:</b> Bildirim gönderim ve okuma istatistikleri — tür dağılımı, okunmayan sayısı, yaşlanma dağılımı ve en aktif bildirim kullanıcıları.":
+        "<b>Notification Analysis:</b> Notification send and read statistics — type distribution, unread count, aging distribution and the most active notification users.",
+    "Verinin <strong>hangi güne / olaya ilişkin</strong> olduğunu seçin (ör. anketin yapıldığı gün). <strong>Kaydet</strong> ile sisteme işlendiği tarih ve saat <strong>otomatik</strong> kaydedilir; yıl ve dönem bu veri tarihine göre PG ölçüm tipine uygun hesaplanır.":
+        "Select <strong>which day / event the data relates to</strong> (e.g. the day the survey was conducted). When you click <strong>Save</strong>, the date and time it was recorded into the system are saved <strong>automatically</strong>; the year and period are calculated according to this data date based on the PI measurement type.",
+    "Veri, <strong>kendi adınıza</strong> süreç karnesine ve bireysel karnenize yazılır.":
+        "The data is written to the process scorecard and your individual scorecard <strong>under your own name</strong>.",
+    "Kayıt <strong>kalıcı olarak silinmez</strong>. Pasif yapılır; skor ve raporlarda kullanılmaz.":
+        "The record is <strong>not permanently deleted</strong>. It is deactivated; it is not used in scores or reports.",
+    # fuzzy düzeltmeleri (k_rapor th/başlık)
+    "Orta": "Medium",
+    "Süreç × Dönem Isı Haritası": "Process × Period Heatmap",
+    "Strateji → Süreç Katkı Ağacı": "Strategy → Process Contribution Tree",
+    "Bitiş": "End",
+    "Proje": "Project",
+    "Başlangıç": "Start",
+    "Bireysel PG Detay Listesi": "Individual PI Detail List",
+    "Kod": "Code",
+    "PG Adı": "PI Name",
+    "Kaynak": "Source",
+    "Veri Girilen PG'ler": "PIs with Data Entered",
+    "PG Kodu": "PI Code",
+    "Veri Girilmeyen PG'ler": "PIs without Data Entered",
+    "Süreç Olgunluk Seviyeleri": "Process Maturity Levels",
+    "Darboğaz Geçmişi": "Bottleneck History",
+    "İşlem Dağılımı": "Transaction Distribution",
+    "En Aktif Kullanıcılar": "Most Active Users",
+    "Son İşlemler": "Recent Transactions",
+    "Tarih": "Date",
+    "Kritik Performans Göstergeleri": "Critical Performance Indicators",
+    "Ana Strateji Ağırlıkları": "Main Strategy Weights",
+    "Ağırlık Tablosu": "Weight Table",
+    "Alt Strateji Ağırlıkları": "Sub-Strategy Weights",
+    "Alt Strateji": "Sub-Strategy",
+    "Ham Ağırlık": "Raw Weight",
+    "SWOT Analizi": "SWOT Analysis",
+    "TOWS Matrisi": "TOWS Matrix",
+    "PESTEL Analizi": "PESTEL Analysis",
+    "Rekabetçi Analiz": "Competitive Analysis",
+    "A3 Raporları": "A3 Reports",
+    "En Düşük Performanslı PG'ler": "Lowest Performing PIs",
+    "Süreç Bazlı Faaliyet Durumu": "Process-Based Activity Status",
+    "Süreç Faaliyet Detay Tablosu": "Process Activity Detail Table",
+    "Geciken": "Delayed",
+    "Kurum Performans Karşılaştırması": "Organization Performance Comparison",
+    "Kurum Detay Tablosu": "Organization Detail Table",
+    "Strateji Kapsama Durumu": "Strategy Coverage Status",
+    "Stratejisiz Süreçler": "Processes without Strategy",
+    "Strateji Bazlı Kapsama Tablosu": "Strategy-Based Coverage Table",
+    "Kişi Başına Faaliyet Yükü": "Activity Load per Person",
+    "TOWS Strateji Sayısı Trendi": "TOWS Strategy Count Trend",
+    "ST": "ST",
+    "Bildirim Türü Dağılımı": "Notification Type Distribution",
 }
 
 with open(PO, encoding="utf-8") as f:
@@ -540,7 +814,39 @@ while i < len(lines):
     out.append(line)
     i += 1
 
-with open(PO, "w", encoding="utf-8") as f:
-    f.write("\n".join(out))
+content2 = "\n".join(out)
 
-print(f"[i18n_fill_surec] {filled} msgstr dolduruldu")
+# --- 2. geçiş: çok-satır msgid bloklarını doldur ---
+# .po blokları boş satırla ayrılır. Her blokta msgid (bir/çok satır) + msgstr.
+def join_quoted(seg):
+    return "".join(re.findall(r'"((?:[^"\\]|\\.)*)"', seg))
+
+def unesc(s):
+    return s.replace('\\n', '\n').replace('\\t', '\t').replace('\\"', '"').replace('\\\\', '\\')
+
+blocks = content2.split("\n\n")
+multi = 0
+for bi, b in enumerate(blocks):
+    if "msgid" not in b or "msgstr" not in b:
+        continue
+    mm = re.search(r'(^msgid .*?)(^msgstr )', b + "\n", re.S | re.M)
+    if not mm:
+        continue
+    midseg = mm.group(1)
+    msseg = b[mm.end(2)-len("msgstr "):]
+    mid_u = unesc(join_quoted(midseg))
+    ms_val = join_quoted(b[mm.start(2):])
+    is_fuzzy = "fuzzy" in b
+    if (ms_val == "" or is_fuzzy) and mid_u in T:
+        en = T[mid_u]
+        new_block = re.sub(r'#, fuzzy\n', '', b)
+        # msgstr kısmını tek satıra yaz
+        new_block = re.sub(r'(?ms)^msgstr (?:".*?"\s*)+', 'msgstr "%s"' % esc(en).replace('\n','\\n'), new_block)
+        blocks[bi] = new_block.rstrip("\n")
+        multi += 1
+
+content3 = "\n\n".join(blocks)
+with open(PO, "w", encoding="utf-8") as f:
+    f.write(content3)
+
+print(f"[i18n_fill_surec] {filled} tek-satır + {multi} çok-satır msgstr dolduruldu")
