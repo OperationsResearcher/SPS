@@ -133,20 +133,20 @@
       if (family === "yillik") {
         period_type = "yillik";
         period_no = 1;
-        periodLabel = `${year} (yıllık)`;
+        periodLabel = `${year} ${t("(yıllık)")}`;
       } else if (family === "ceyrek") {
         const q = Math.floor((mon - 1) / 3) + 1;
         period_type = "ceyrek";
         period_no = q;
-        periodLabel = `${q}. çeyrek ${year}`;
+        periodLabel = `${q}. ${t("çeyrek")} ${year}`;
       } else if (family === "aylik") {
         period_type = "aylik";
         period_no = mon;
-        periodLabel = `${MONTHS[mon - 1] || "Ay " + mon} ${year}`;
+        periodLabel = `${MONTHS[mon - 1] || t("Ay") + " " + mon} ${year}`;
       } else if (family === "halfyear") {
         period_type = "halfyear";
         period_no = mon <= 6 ? 1 : 2;
-        periodLabel = period_no === 1 ? `1. yarıyıl ${year}` : `2. yarıyıl ${year}`;
+        periodLabel = period_no === 1 ? `${t("1. yarıyıl")} ${year}` : `${t("2. yarıyıl")} ${year}`;
       } else if (family === "haftalik") {
         period_type = "haftalik";
         period_month = mon;
@@ -161,7 +161,7 @@
         const q = Math.floor((mon - 1) / 3) + 1;
         period_type = "ceyrek";
         period_no = q;
-        periodLabel = `${q}. çeyrek ${year}`;
+        periodLabel = `${q}. ${t("çeyrek")} ${year}`;
       }
       return {
         year,
@@ -176,18 +176,18 @@
     function validateVgsEntryDate() {
       const raw = (document.getElementById("vgs-data-date")?.value || "").trim();
       if (!raw) {
-        showError("Veri tarihini seçin.");
+        showError(t("Veri tarihini seçin."));
         document.getElementById("vgs-data-date")?.focus();
         return false;
       }
       if (!parseIsoDate(raw)) {
-        showError("Geçerli bir tarih seçin.");
+        showError(t("Geçerli bir tarih seçin."));
         document.getElementById("vgs-data-date")?.focus();
         return false;
       }
       const p = derivePeriodFromEntryDate(raw, vgsState.periodFamily);
       if (!p) {
-        showError("Tarih işlenemedi.");
+        showError(t("Tarih işlenemedi."));
         return false;
       }
       return true;
@@ -197,7 +197,7 @@
       const valEl = document.getElementById("kpi-data-entry-value");
       const raw = valEl ? valEl.value.trim() : "";
       if (!raw) {
-        showError("Gerçekleşen değer zorunludur.");
+        showError(t("Gerçekleşen değer zorunludur."));
         valEl?.focus();
         return false;
       }
@@ -273,16 +273,16 @@
       empty?.classList.add("is-hidden");
       const head =
         "<thead><tr>" +
-        "<th>Veri tarihi</th><th>Veri girişi</th><th>Değer</th><th>Giren</th>" +
-        "<th>Son güncelleme</th><th>Durum</th><th>Silinme bilgisi</th><th class=\"vgs-history-actions\">İşlem</th>" +
+        `<th>${t("Veri tarihi")}</th><th>${t("Veri girişi")}</th><th>${t("Değer")}</th><th>${t("Giren")}</th>` +
+        `<th>${t("Son güncelleme")}</th><th>${t("Durum")}</th><th>${t("Silinme bilgisi")}</th><th class="vgs-history-actions">${t("İşlem")}</th>` +
         "</tr></thead>";
       const body =
         "<tbody>" +
         lastHistoryRows
           .map((r) => {
             const status = r.is_active
-              ? '<span class="vgs-history-badge vgs-history-badge--ok">Aktif</span>'
-              : '<span class="vgs-history-badge vgs-history-badge--off">Silindi</span>';
+              ? `<span class="vgs-history-badge vgs-history-badge--ok">${t("Aktif")}</span>`
+              : `<span class="vgs-history-badge vgs-history-badge--off">${t("Silindi")}</span>`;
             const delLine =
               !r.is_active && r.deleted_at
                 ? `${escHtml(formatTrDateTime(r.deleted_at))} — ${escHtml(r.deleted_by_name || "—")}`
@@ -292,10 +292,10 @@
               : "—";
             let actions = "";
             if (r.can_edit) {
-              actions += `<button type="button" class="mc-btn mc-btn-secondary mc-btn-sm vgs-history-edit" data-row-id="${r.id}">Düzenle</button> `;
+              actions += `<button type="button" class="mc-btn mc-btn-secondary mc-btn-sm vgs-history-edit" data-row-id="${r.id}">${t("Düzenle")}</button> `;
             }
             if (r.can_delete) {
-              actions += `<button type="button" class="mc-btn mc-btn-secondary mc-btn-sm vgs-history-del" data-row-id="${r.id}">Sil</button>`;
+              actions += `<button type="button" class="mc-btn mc-btn-secondary mc-btn-sm vgs-history-del" data-row-id="${r.id}">${t("Sil")}</button>`;
             }
             if (!actions) actions = "—";
             const entryLine = r.recorded_at
@@ -342,7 +342,7 @@
         renderVgsHistory(data.data || []);
       } catch (e) {
         if (errEl) {
-          errEl.textContent = "Geçmiş yüklenemedi: " + (e.message || String(e));
+          errEl.textContent = t("Geçmiş yüklenemedi:") + " " + (e.message || String(e));
           errEl.classList.remove("is-hidden");
         }
         renderVgsHistory([]);
@@ -395,14 +395,14 @@
     function openHistoryEditModal(row) {
       const u = expandKpiDataRowUrl(KPI_DATA_UPDATE_URL_TEMPLATE, row.id);
       if (!u || !modalHistoryEdit) {
-        showError("Güncelleme penceresi veya adres yüklenemedi.");
+        showError(t("Güncelleme penceresi veya adres yüklenemedi."));
         return;
       }
       historyEditUpdateUrl = u;
       const meta = document.getElementById("vgs-history-edit-meta");
       if (meta) {
         const entryTs = row.recorded_at ? formatTrDateTime(row.recorded_at) : "—";
-        meta.textContent = `Veri tarihi: ${formatTrDate(row.data_date)} · Veri girişi: ${entryTs} · Giren: ${row.entered_by_name || "—"}`;
+        meta.textContent = `${t("Veri tarihi:")} ${formatTrDate(row.data_date)} · ${t("Veri girişi:")} ${entryTs} · ${t("Giren:")} ${row.entered_by_name || "—"}`;
       }
       const av = document.getElementById("vgs-history-edit-actual");
       const dc = document.getElementById("vgs-history-edit-desc");
@@ -421,14 +421,14 @@
       const row = lastHistoryRows.find((x) => Number(x.id) === Number(rowId));
       const u = expandKpiDataRowUrl(KPI_DATA_DELETE_URL_TEMPLATE, rowId);
       if (!u || !modalHistoryDelete) {
-        showError("Silme penceresi veya adres yüklenemedi.");
+        showError(t("Silme penceresi veya adres yüklenemedi."));
         return;
       }
       historyDeleteUrl = u;
       const meta = document.getElementById("vgs-history-delete-meta");
       if (meta && row) {
         const entryTs = row.recorded_at ? formatTrDateTime(row.recorded_at) : "—";
-        meta.textContent = `Veri tarihi: ${formatTrDate(row.data_date)} · Veri girişi: ${entryTs} · Değer: ${row.actual_value ?? "—"} · Giren: ${row.entered_by_name || "—"}`;
+        meta.textContent = `${t("Veri tarihi:")} ${formatTrDate(row.data_date)} · ${t("Veri girişi:")} ${entryTs} · ${t("Değer:")} ${row.actual_value ?? "—"} · ${t("Giren:")} ${row.entered_by_name || "—"}`;
       } else if (meta) meta.textContent = "";
       if (modalHistoryDelete.parentElement !== document.body) {
         document.body.appendChild(modalHistoryDelete);
@@ -442,7 +442,7 @@
       const avEl = document.getElementById("vgs-history-edit-actual");
       const av = avEl ? avEl.value.trim() : "";
       if (!av) {
-        showError("Gerçekleşen değer zorunludur.");
+        showError(t("Gerçekleşen değer zorunludur."));
         avEl?.focus();
         return;
       }
@@ -456,15 +456,15 @@
           description: desc,
         });
         if (!out.success) {
-          showError(out.message || "Güncellenemedi.");
+          showError(out.message || t("Güncellenemedi."));
           return;
         }
         closeHistoryEditModal();
-        toastSuccess("Kayıt güncellendi.");
+        toastSuccess(t("Kayıt güncellendi."));
         await loadVgsHistory();
         loadKarne();
       } catch (err) {
-        showError(err.message || "Sunucu hatası.");
+        showError(err.message || t("Sunucu hatası."));
       } finally {
         if (btn) btn.disabled = false;
       }
@@ -477,15 +477,15 @@
       try {
         const out = await postJson(historyDeleteUrl, {});
         if (!out.success) {
-          showError(out.message || "Silinemedi.");
+          showError(out.message || t("Silinemedi."));
           return;
         }
         closeHistoryDeleteModal();
-        toastSuccess("Kayıt pasifleştirildi.");
+        toastSuccess(t("Kayıt pasifleştirildi."));
         await loadVgsHistory();
         loadKarne();
       } catch (err) {
-        showError(err.message || "Sunucu hatası.");
+        showError(err.message || t("Sunucu hatası."));
       } finally {
         if (btn) btn.disabled = false;
       }
@@ -494,7 +494,7 @@
     function openEditHistoryRow(rowId) {
       const row = lastHistoryRows.find((x) => Number(x.id) === Number(rowId));
       if (!row) {
-        showError("Düzenlenecek satır bulunamadı.");
+        showError(t("Düzenlenecek satır bulunamadı."));
         return;
       }
       openHistoryEditModal(row);
@@ -538,7 +538,7 @@
       const k = allKpis.find((x) => String(x.id) === String(selectedId));
       if (!k) return false;
       vgsState.kpiId = String(k.id);
-      vgsState.kpiName = k.name || "PG";
+      vgsState.kpiName = k.name || t("PG");
       vgsState.kpiCode = k.code || "";
       vgsState.kpiPeriod = k.period || "";
       vgsState.kpiTarget = k.target_value != null ? String(k.target_value) : "";
@@ -563,20 +563,20 @@
 
     function openDataEntryModal(kpiId, year, opts) {
       if (!canEnterPgvNow()) {
-        showError("PG verisi girme yetkiniz yok.");
+        showError(t("PG verisi girme yetkiniz yok."));
         return;
       }
       if (!modalKpiDataEntry || !formKpiDataEntry) {
-        showError("Veri girişi penceresi yüklenemedi.");
+        showError(t("Veri girişi penceresi yüklenemedi."));
         return;
       }
       const kpis = cachedKpisRef.kpis || [];
       const k = kpis.find((x) => String(x.id) === String(kpiId)) || (kpis.length ? kpis[0] : null);
       if (!k) {
-        showError("PG bulunamadı; sayfayı yenileyin.");
+        showError(t("PG bulunamadı; sayfayı yenileyin."));
         return;
       }
-      const procName = viewRoot.dataset.processName || "Süreç";
+      const procName = viewRoot.dataset.processName || t("Süreç");
       const family = inferPeriodFamily(k.period);
       const yearNum = parseInt(String(year), 10) || new Date().getFullYear();
       resetHistoryAccordion();
@@ -584,7 +584,7 @@
         kpiId: String(k.id),
         processId: String(viewRoot.dataset.processId || ""),
         processName: procName,
-        kpiName: k.name || "PG",
+        kpiName: k.name || t("PG"),
         kpiCode: k.code || "",
         kpiPeriod: k.period || "",
         kpiTarget: k.target_value != null ? String(k.target_value) : "",
@@ -650,7 +650,7 @@
       const rawDate = (document.getElementById("vgs-data-date")?.value || "").trim();
       const p = derivePeriodFromEntryDate(rawDate, vgsState.periodFamily);
       if (!p) {
-        showError("Tarih işlenemedi.");
+        showError(t("Tarih işlenemedi."));
         return;
       }
 
@@ -680,7 +680,7 @@
             process_kpi_id: parseInt(vgsState.kpiId, 10),
           });
           if (!ens.success) {
-            showError(ens.message || "Bireysel PG eşlemesi oluşturulamadı.");
+            showError(ens.message || t("Bireysel PG eşlemesi oluşturulamadı."));
             return;
           }
           indivPgId = ens.id;
@@ -688,7 +688,7 @@
 
         const data = await postJson(KPI_DATA_ADD_URL, bodyKpi);
         if (!data.success) {
-          showError(data.message || "Süreç verisi kaydedilemedi.");
+          showError(data.message || t("Süreç verisi kaydedilemedi."));
           return;
         }
 
@@ -709,7 +709,7 @@
           if (!d2.success) {
             showError(
               d2.message ||
-                "Süreç verisi kaydedildi; bireysel karne kaydı başarısız. Bireysel modülünü kontrol edin."
+                t("Süreç verisi kaydedildi; bireysel karne kaydı başarısız. Bireysel modülünü kontrol edin.")
             );
             closeKpiDataEntryModal();
             loadKarne();
@@ -718,10 +718,10 @@
         }
 
         closeKpiDataEntryModal();
-        toastSuccess("Veri kaydedildi (süreç + bireysel).");
+        toastSuccess(t("Veri kaydedildi (süreç + bireysel)."));
         loadKarne();
       } catch (err) {
-        showError("Sunucu hatası: " + (err && err.message ? err.message : String(err)));
+        showError(t("Sunucu hatası:") + " " + (err && err.message ? err.message : String(err)));
       } finally {
         if (btn) btn.disabled = false;
       }
@@ -736,7 +736,7 @@
       const nextId = String(e.target?.value || "").trim();
       if (!nextId) return;
       if (!syncVgsSelectedKpi(nextId)) {
-        showError("Seçilen PG bulunamadı.");
+        showError(t("Seçilen PG bulunamadı."));
         return;
       }
       resetHistoryAccordion();

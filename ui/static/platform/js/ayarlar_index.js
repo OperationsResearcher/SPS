@@ -3,7 +3,7 @@
   const themeEl = document.getElementById('ayarlar-stat-theme');
   if (themeEl) {
     const t = document.documentElement.getAttribute('data-theme') || 'light';
-    themeEl.textContent = t === 'dark' ? 'Karanlık' : 'Aydınlık';
+    themeEl.textContent = t === 'dark' ? window.t('Karanlık') : window.t('Aydınlık');
   }
 
   // Zamanlanmış rapor sayısı
@@ -36,7 +36,7 @@
       const prevH = grid.previousElementSibling;
       if (prevH && prevH.tagName === 'H3') prevH.style.display = anyVisible ? '' : 'none';
     });
-    if (countLbl) countLbl.textContent = q ? `${shown} ayar` : '';
+    if (countLbl) countLbl.textContent = q ? `${shown} ${window.t('ayar')}` : '';
   }
 
   search.addEventListener('input', apply);

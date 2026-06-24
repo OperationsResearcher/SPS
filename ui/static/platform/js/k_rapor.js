@@ -47,16 +47,16 @@
   }
 
   function errHtml(e) {
-    return `<div class="kr-loading" style="color:#ef4444;">Hata: ${esc(String(e))}</div>`;
+    return `<div class="kr-loading" style="color:#ef4444;">${t("Hata:")} ${esc(String(e))}</div>`;
   }
   function errRow(n, e) {
-    return `<tr><td colspan="${n}" style="text-align:center;padding:16px;color:#ef4444;font-size:11px;">Hata: ${esc(String(e))}</td></tr>`;
+    return `<tr><td colspan="${n}" style="text-align:center;padding:16px;color:#ef4444;font-size:11px;">${t("Hata:")} ${esc(String(e))}</td></tr>`;
   }
 
-  const EMPTY_HTML    = '<div class="kr-loading">Veri yok.</div>';
-  const ERROR_HTML    = '<div class="kr-loading" style="color:#ef4444;">Yüklenemedi.</div>';
-  const EMPTY_ROW_1   = n => `<tr><td colspan="${n}" style="text-align:center;padding:24px;color:#94a3b8;">Kayıt yok.</td></tr>`;
-  const ERROR_ROW_1   = n => `<tr><td colspan="${n}" style="text-align:center;padding:24px;color:#ef4444;">Yüklenemedi.</td></tr>`;
+  const EMPTY_HTML    = `<div class="kr-loading">${t("Veri yok.")}</div>`;
+  const ERROR_HTML    = `<div class="kr-loading" style="color:#ef4444;">${t("Yüklenemedi.")}</div>`;
+  const EMPTY_ROW_1   = n => `<tr><td colspan="${n}" style="text-align:center;padding:24px;color:#94a3b8;">${t("Kayıt yok.")}</td></tr>`;
+  const ERROR_ROW_1   = n => `<tr><td colspan="${n}" style="text-align:center;padding:24px;color:#ef4444;">${t("Yüklenemedi.")}</td></tr>`;
 
   function fetchJson(url, params) {
     if (!url) return Promise.reject(new Error("empty url"));
@@ -167,7 +167,7 @@
 
         if (!res.success) {
           setHtml("kr-vizyon-gauge", "—");
-          setHtml("kr-strateji-bars", `<div class="kr-loading" style="color:#ef4444;">${esc(res.message || "Yüklenemedi.")}</div>`);
+          setHtml("kr-strateji-bars", `<div class="kr-loading" style="color:#ef4444;">${esc(res.message || t("Yüklenemedi."))}</div>`);
           setHtml("kr-top5",    ERROR_HTML);
           setHtml("kr-bottom5", ERROR_HTML);
           return;
@@ -205,21 +205,21 @@
           setHtml("kr-pg-saglik", `
             <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_kurumsal.hedefte">
               <div class="mc-stat-icon"><i class="fas fa-circle-check"></i></div>
-              <div class="mc-stat-label">Hedefte</div>
+              <div class="mc-stat-label">${t("Hedefte")}</div>
               <div class="mc-stat-value">${saglik.yesil}</div>
-              <div class="mc-stat-sub">≥%80 başarı (${Math.round(saglik.yesil/saglik.toplam*100)}%)</div>
+              <div class="mc-stat-sub">≥%80 ${t("başarı")} (${Math.round(saglik.yesil/saglik.toplam*100)}%)</div>
             </div>
             <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_kurumsal.riskli">
               <div class="mc-stat-icon"><i class="fas fa-circle-half-stroke"></i></div>
-              <div class="mc-stat-label">Riskli</div>
+              <div class="mc-stat-label">${t("Riskli")}</div>
               <div class="mc-stat-value">${saglik.sari}</div>
-              <div class="mc-stat-sub">%50–79 başarı (${Math.round(saglik.sari/saglik.toplam*100)}%)</div>
+              <div class="mc-stat-sub">%50–79 ${t("başarı")} (${Math.round(saglik.sari/saglik.toplam*100)}%)</div>
             </div>
             <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_kurumsal.kritik">
               <div class="mc-stat-icon" style="color:#ef4444;"><i class="fas fa-circle-xmark"></i></div>
-              <div class="mc-stat-label">Kritik</div>
+              <div class="mc-stat-label">${t("Kritik")}</div>
               <div class="mc-stat-value" style="color:#ef4444;">${saglik.kirmizi}</div>
-              <div class="mc-stat-sub">&lt;%50 başarı (${Math.round(saglik.kirmizi/saglik.toplam*100)}%)</div>
+              <div class="mc-stat-sub">&lt;%50 ${t("başarı")} (${Math.round(saglik.kirmizi/saglik.toplam*100)}%)</div>
             </div>`);
         } else {
           setHtml("kr-pg-saglik", "");
@@ -255,13 +255,13 @@
   // ── Rapor 2: Süreç-PG Isı Haritası ──────────────────────────────────────────
   function loadSurecPg() {
     const period = document.getElementById("kr-pg-period")?.value || "ceyrek";
-    setHtml("kr-heat-table", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
+    setHtml("kr-heat-table", `<div class="kr-loading" style="padding:24px;">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("surec-pg"), { year, period })
       .then(res => {
-        if (!res.success) { setHtml("kr-heat-table", `<div class="kr-loading" style="padding:24px;color:#ef4444;">${esc(res.message || "Yüklenemedi.")}</div>`); return; }
+        if (!res.success) { setHtml("kr-heat-table", `<div class="kr-loading" style="padding:24px;color:#ef4444;">${esc(res.message || t("Yüklenemedi."))}</div>`); return; }
         renderHeatMap(res.data, res.labels);
       })
-      .catch(() => setHtml("kr-heat-table", `<div class="kr-loading" style="padding:24px;color:#ef4444;">Yüklenemedi.</div>`));
+      .catch(() => setHtml("kr-heat-table", `<div class="kr-loading" style="padding:24px;color:#ef4444;">${t("Yüklenemedi.")}</div>`));
   }
 
   const pgPeriod = document.getElementById("kr-pg-period");
@@ -270,8 +270,8 @@
   function renderHeatMap(rows, labels) {
     const el = document.getElementById("kr-heat-table");
     if (!el) return;
-    if (!rows || !rows.length) { el.innerHTML = '<div class="kr-loading" style="padding:24px;">Süreç verisi yok.</div>'; return; }
-    const thead = `<tr><th class="kr-ht-proc">Süreç</th>${(labels || []).map(l => `<th>${esc(l)}</th>`).join("")}<th>PG</th></tr>`;
+    if (!rows || !rows.length) { el.innerHTML = `<div class="kr-loading" style="padding:24px;">${t("Süreç verisi yok.")}</div>`; return; }
+    const thead = `<tr><th class="kr-ht-proc">${t("Süreç")}</th>${(labels || []).map(l => `<th>${esc(l)}</th>`).join("")}<th>${t("PG")}</th></tr>`;
     const tbody = rows.map(row => {
       const cells = (row.cells || []).map(c => {
         if (!c.has_data) return `<td><span class="kr-heat-cell no-data">—</span></td>`;
@@ -279,7 +279,7 @@
       }).join("");
       return `<tr>
         <td class="kr-ht-proc-name">
-          <span class="kr-ht-proc-link" data-proc-id="${row.id}" title="Trend görüntüle">${esc((row.code ? row.code + " " : "") + row.name)}</span>
+          <span class="kr-ht-proc-link" data-proc-id="${row.id}" title="${t("Trend görüntüle")}">${esc((row.code ? row.code + " " : "") + row.name)}</span>
         </td>
         ${cells}
         <td style="text-align:center;font-size:11px;color:#94a3b8;">${row.kpi_count}</td>
@@ -299,7 +299,7 @@
     const overlay = document.getElementById("kr-trend-modal");
     if (!overlay) return;
     document.getElementById("kr-trend-modal-title").textContent = procName;
-    setHtml("kr-trend-modal-body", '<div class="kr-loading" style="padding:32px;">Yükleniyor…</div>');
+    setHtml("kr-trend-modal-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
     overlay.classList.add("open");
 
     const trendBase = ROOT.dataset.apiTrend || "";
@@ -310,7 +310,7 @@
         if (!res.success) throw new Error(res.message);
         const proc = (res.data || []).find(r => String(r.id) === String(procId));
         if (!proc || !proc.kpi_ids || !proc.kpi_ids.length) {
-          setHtml("kr-trend-modal-body", '<div class="kr-loading">Bu süreç için PG verisi yok.</div>');
+          setHtml("kr-trend-modal-body", `<div class="kr-loading">${t("Bu süreç için PG verisi yok.")}</div>`);
           return;
         }
         return fetchJson(`/k-rapor/api/trend/${proc.kpi_ids[0]}`, { frequency: "monthly" });
@@ -333,8 +333,8 @@
             data: {
               labels,
               datasets: [
-                { label: "Gerçekleşen", data: actuals, borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,0.1)", tension: 0.3, fill: true, pointRadius: 4 },
-                { label: "Hedef",       data: targets, borderColor: "#10b981", borderDash: [5,4], tension: 0.3, fill: false, pointRadius: 0 },
+                { label: t("Gerçekleşen"), data: actuals, borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,0.1)", tension: 0.3, fill: true, pointRadius: 4 },
+                { label: t("Hedef"),       data: targets, borderColor: "#10b981", borderDash: [5,4], tension: 0.3, fill: false, pointRadius: 0 },
               ]
             },
             options: { responsive: true, plugins: { legend: { position: "bottom" } }, scales: { y: { beginAtZero: false } } }
@@ -358,15 +358,15 @@
 
   // ── Rapor 4: Stratejik Uyum Ağacı ────────────────────────────────────────────
   function loadUyum() {
-    setHtml("kr-uyum-tree", '<div class="kr-loading">Yükleniyor…</div>');
+    setHtml("kr-uyum-tree", `<div class="kr-loading">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("uyum"), { year })
       .then(res => {
         const badge = document.getElementById("kr-uyum-vizyon");
         if (!res.success) {
-          setHtml("kr-uyum-tree", `<div class="kr-loading" style="color:#ef4444;">${esc(res.message || "Yüklenemedi.")}</div>`);
+          setHtml("kr-uyum-tree", `<div class="kr-loading" style="color:#ef4444;">${esc(res.message || t("Yüklenemedi."))}</div>`);
           return;
         }
-        if (badge) badge.textContent = `Vizyon Skoru: ${(res.vision_score || 0).toFixed(1)}`;
+        if (badge) badge.textContent = `${t("Vizyon Skoru:")} ${(res.vision_score || 0).toFixed(1)}`;
         const el = document.getElementById("kr-uyum-tree");
         if (!el) return;
         if (!res.data || !res.data.length) { el.innerHTML = EMPTY_HTML; return; }
@@ -391,7 +391,7 @@
           <span class="kr-tree-ss-title">${esc(ss.title)}</span>
           <span class="kr-tree-ss-score" style="color:${scoreColor(ss.score)}">${ss.score}</span>
         </div>
-        <div class="kr-tree-proc-list">${procs || '<span style="font-size:11px;color:#94a3b8;">Bağlı süreç yok</span>'}</div>
+        <div class="kr-tree-proc-list">${procs || `<span style="font-size:11px;color:#94a3b8;">${t("Bağlı süreç yok")}</span>`}</div>
       </div>`;
     }).join("");
     return `<div class="kr-tree-strategy">
@@ -406,11 +406,11 @@
 
   // ── Rapor 5: Faaliyet ────────────────────────────────────────────────────────
   function loadFaaliyet() {
-    setHtml("kr-fal-stats", '<div class="kr-loading" style="grid-column:span 4;padding:24px;">Yükleniyor…</div>');
+    setHtml("kr-fal-stats", `<div class="kr-loading" style="grid-column:span 4;padding:24px;">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("faaliyet"), { year })
       .then(res => {
         if (!res.success) {
-          setHtml("kr-fal-stats", `<div class="kr-loading" style="grid-column:span 4;color:#ef4444;">${esc(res.message || "Yüklenemedi.")}</div>`);
+          setHtml("kr-fal-stats", `<div class="kr-loading" style="grid-column:span 4;color:#ef4444;">${esc(res.message || t("Yüklenemedi."))}</div>`);
           setHtml("kr-geciken-body", ERROR_ROW_1(4));
           return;
         }
@@ -418,24 +418,24 @@
 
         setHtml("kr-fal-stats", `
           <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_faaliyet.tamamlanan">
-            <div class="mc-stat-label">Tamamlanan</div>
+            <div class="mc-stat-label">${t("Tamamlanan")}</div>
             <div class="mc-stat-value">${d.tamamlanan}</div>
-            <div class="mc-stat-sub">%${d.tamamlanma_orani} tamamlandı</div>
+            <div class="mc-stat-sub">%${d.tamamlanma_orani} ${t("tamamlandı")}</div>
           </div>
           <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_faaliyet.devam_ediyor">
-            <div class="mc-stat-label">Devam Ediyor</div>
+            <div class="mc-stat-label">${t("Devam Ediyor")}</div>
             <div class="mc-stat-value">${d.devam}</div>
-            <div class="mc-stat-sub">Aktif faaliyet</div>
+            <div class="mc-stat-sub">${t("Aktif faaliyet")}</div>
           </div>
           <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_faaliyet.geciken">
-            <div class="mc-stat-label">Geciken</div>
+            <div class="mc-stat-label">${t("Geciken")}</div>
             <div class="mc-stat-value" style="color:#ef4444;">${d.geciken}</div>
-            <div class="mc-stat-sub">Teslim tarihi geçmiş</div>
+            <div class="mc-stat-sub">${t("Teslim tarihi geçmiş")}</div>
           </div>
           <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_faaliyet.toplam">
-            <div class="mc-stat-label">Toplam</div>
+            <div class="mc-stat-label">${t("Toplam")}</div>
             <div class="mc-stat-value">${d.toplam}</div>
-            <div class="mc-stat-sub">Tüm faaliyetler</div>
+            <div class="mc-stat-sub">${t("Tüm faaliyetler")}</div>
           </div>`);
 
         const canvas = document.getElementById("kr-fal-chart");
@@ -445,7 +445,7 @@
             type: "bar",
             data: {
               labels: ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"],
-              datasets: [{ label: "Tamamlanan", data: d.aylik_tamamlanan || [], backgroundColor: "rgba(99,102,241,0.7)", borderRadius: 4 }]
+              datasets: [{ label: t("Tamamlanan"), data: d.aylik_tamamlanan || [], backgroundColor: "rgba(99,102,241,0.7)", borderRadius: 4 }]
             },
             options: { responsive: true, maintainAspectRatio: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
           });
@@ -467,10 +467,10 @@
         const badges = document.getElementById("kr-proje-ozet-badges");
         if (badges && oz.toplam) {
           badges.innerHTML = `
-            <span class="mc-badge mc-badge-indigo">Toplam: ${oz.toplam}</span>
-            <span class="mc-badge mc-badge-success">Tamamlanan: ${oz.tamamlanan}</span>
-            <span class="mc-badge mc-badge-warning">Devam: ${oz.devam}</span>
-            ${oz.geciken ? `<span class="mc-badge mc-badge-danger">Geciken: ${oz.geciken}</span>` : ""}`;
+            <span class="mc-badge mc-badge-indigo">${t("Toplam")}: ${oz.toplam}</span>
+            <span class="mc-badge mc-badge-success">${t("Tamamlanan")}: ${oz.tamamlanan}</span>
+            <span class="mc-badge mc-badge-warning">${t("Devam")}: ${oz.devam}</span>
+            ${oz.geciken ? `<span class="mc-badge mc-badge-danger">${t("Geciken")}: ${oz.geciken}</span>` : ""}`;
         }
         const projBody = document.getElementById("kr-proje-body");
         if (projBody) {
@@ -492,7 +492,7 @@
         }
       })
       .catch(() => {
-        setHtml("kr-fal-stats", `<div class="kr-loading" style="grid-column:span 4;color:#ef4444;">Yüklenemedi.</div>`);
+        setHtml("kr-fal-stats", `<div class="kr-loading" style="grid-column:span 4;color:#ef4444;">${t("Yüklenemedi.")}</div>`);
         setHtml("kr-geciken-body", ERROR_ROW_1(4));
         setHtml("kr-proje-body", ERROR_ROW_1(5));
       });
@@ -500,9 +500,9 @@
 
   // ── Rapor 6: Bireysel ────────────────────────────────────────────────────────
   function loadBireysel() {
-    setHtml("kr-bireysel-body", `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
-    setHtml("kr-ipi-body", `<tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
-    setHtml("kr-bir-saglik", `<div class="kr-loading" style="grid-column:span 4;padding:12px;">Yükleniyor…</div>`);
+    setHtml("kr-bireysel-body", `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
+    setHtml("kr-ipi-body", `<tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
+    setHtml("kr-bir-saglik", `<div class="kr-loading" style="grid-column:span 4;padding:12px;">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("bireysel"), { year })
       .then(res => {
         if (!res.success) {
@@ -517,25 +517,25 @@
         const toplam = res.toplam_pg || 0;
         setHtml("kr-bir-saglik", toplam ? `
           <div class="mc-stat-card mc-stat-emerald">
-            <div class="mc-stat-label">Hedefte (≥%80)</div>
+            <div class="mc-stat-label">${t("Hedefte")} (≥%80)</div>
             <div class="mc-stat-value">${sk.yesil || 0}</div>
           </div>
           <div class="mc-stat-card mc-stat-amber">
-            <div class="mc-stat-label">Riskli (%50–79)</div>
+            <div class="mc-stat-label">${t("Riskli")} (%50–79)</div>
             <div class="mc-stat-value">${sk.sari || 0}</div>
           </div>
           <div class="mc-stat-card" style="background:#fef2f2;">
-            <div class="mc-stat-label" style="color:#ef4444;">Kritik (&lt;%50)</div>
+            <div class="mc-stat-label" style="color:#ef4444;">${t("Kritik")} (&lt;%50)</div>
             <div class="mc-stat-value" style="color:#ef4444;">${sk.kirmizi || 0}</div>
           </div>
           <div class="mc-stat-card mc-stat-indigo">
-            <div class="mc-stat-label">Toplam PG</div>
+            <div class="mc-stat-label">${t("Toplam PG")}</div>
             <div class="mc-stat-value">${toplam}</div>
-            <div class="mc-stat-sub">${sk.veri_yok || 0} veri yok</div>
+            <div class="mc-stat-sub">${sk.veri_yok || 0} ${t("veri yok")}</div>
           </div>` : "");
 
         const birToplam = document.getElementById("kr-bir-toplam");
-        if (birToplam) birToplam.textContent = `${res.ipi_detail?.length || 0} PG`;
+        if (birToplam) birToplam.textContent = `${res.ipi_detail?.length || 0} ${t("PG")}`;
 
         // Kullanıcı özet
         if (!res.data || !res.data.length) {
@@ -592,11 +592,11 @@
 
   // ── Rapor 7: Veri Giriş Durumu ───────────────────────────────────────────────
   function loadVeriDurumu() {
-    setHtml("kr-vd-stats", '<div class="kr-loading" style="grid-column:span 3;padding:24px;">Yükleniyor…</div>');
+    setHtml("kr-vd-stats", `<div class="kr-loading" style="grid-column:span 3;padding:24px;">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("veri-durumu"), { year })
       .then(res => {
         if (!res.success) {
-          setHtml("kr-vd-stats", `<div class="kr-loading" style="grid-column:span 3;color:#ef4444;">${esc(res.message || "Yüklenemedi.")}</div>`);
+          setHtml("kr-vd-stats", `<div class="kr-loading" style="grid-column:span 3;color:#ef4444;">${esc(res.message || t("Yüklenemedi."))}</div>`);
           setHtml("kr-vd-girilen", ERROR_ROW_1(6));
           setHtml("kr-vd-girilmeyen", ERROR_ROW_1(3));
           return;
@@ -605,18 +605,18 @@
 
         setHtml("kr-vd-stats", `
           <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_veri_durumu.toplam_pg">
-            <div class="mc-stat-label">Toplam PG</div>
+            <div class="mc-stat-label">${t("Toplam PG")}</div>
             <div class="mc-stat-value">${d.toplam}</div>
           </div>
           <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_veri_durumu.veri_girilmis">
-            <div class="mc-stat-label">Veri Girilmiş</div>
+            <div class="mc-stat-label">${t("Veri Girilmiş")}</div>
             <div class="mc-stat-value">${d.girilen_sayisi}</div>
-            <div class="mc-stat-sub">%${d.tamamlanma_orani} tamamlandı</div>
+            <div class="mc-stat-sub">%${d.tamamlanma_orani} ${t("tamamlandı")}</div>
           </div>
           <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_veri_durumu.eksik">
-            <div class="mc-stat-label">Eksik</div>
+            <div class="mc-stat-label">${t("Eksik")}</div>
             <div class="mc-stat-value">${d.girilmeyen_sayisi}</div>
-            <div class="mc-stat-sub">Veri girilmemiş PG</div>
+            <div class="mc-stat-sub">${t("Veri girilmemiş PG")}</div>
           </div>`);
 
         const cntGir = document.getElementById("kr-vd-girilen-cnt");
@@ -639,10 +639,10 @@
             <td style="font-size:11px;color:#ef4444;">${esc(r.kpi_code)}</td>
             <td>${esc(r.kpi_name)}</td>
             <td style="font-size:11px;">${esc(r.surec_name)}</td>
-          </tr>`).join("") || `<tr><td colspan="3" style="text-align:center;padding:20px;color:#94a3b8;">Eksik PG yok.</td></tr>`);
+          </tr>`).join("") || `<tr><td colspan="3" style="text-align:center;padding:20px;color:#94a3b8;">${t("Eksik PG yok.")}</td></tr>`);
       })
       .catch(() => {
-        setHtml("kr-vd-stats", `<div class="kr-loading" style="grid-column:span 3;color:#ef4444;">Yüklenemedi.</div>`);
+        setHtml("kr-vd-stats", `<div class="kr-loading" style="grid-column:span 3;color:#ef4444;">${t("Yüklenemedi.")}</div>`);
         setHtml("kr-vd-girilen", ERROR_ROW_1(6));
         setHtml("kr-vd-girilmeyen", ERROR_ROW_1(3));
       });
@@ -650,9 +650,9 @@
 
   // ── Rapor 8: Risk ────────────────────────────────────────────────────────────
   function loadRisk() {
-    setHtml("kr-risk-body",    `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
-    setHtml("kr-olgunluk-list", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
-    setHtml("kr-bn-body",      `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
+    setHtml("kr-risk-body",    `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
+    setHtml("kr-olgunluk-list", `<div class="kr-loading" style="padding:24px;">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-bn-body",      `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
 
     fetchJson(apiUrl("risk"))
       .then(res => {
@@ -667,7 +667,7 @@
         setHtml("kr-risk-body", (d.risk_listesi || []).map(r => {
           const rpn = r.rpn || 0;
           const rpnColor = rpn >= 15 ? "#ef4444" : rpn >= 8 ? "#f59e0b" : "#10b981";
-          const rpnLabel = rpn >= 15 ? "Kritik" : rpn >= 8 ? "Yüksek" : rpn >= 4 ? "Orta" : "Düşük";
+          const rpnLabel = rpn >= 15 ? t("Kritik") : rpn >= 8 ? t("Yüksek") : rpn >= 4 ? t("Orta") : t("Düşük");
           const statusClass = r.status === "Açık" ? "mc-badge-danger" : r.status === "Azaltıldı" ? "mc-badge-warning" : "mc-badge-success";
           return `<tr>
             <td>${esc(r.title)}</td>
@@ -686,7 +686,7 @@
             <td><span class="mc-badge ${sevClass}">${esc(b.severity)}</span></td>
             <td style="font-size:11px;">${esc(b.note)}</td>
             <td style="white-space:nowrap;font-size:11px;">${esc(b.triggered_at || "")}</td>
-            <td>${b.cozuldu ? `<span style="color:#10b981;">${esc(b.resolved_at || "Çözüldü")}</span>` : '<span style="color:#f59e0b;">Açık</span>'}</td>
+            <td>${b.cozuldu ? `<span style="color:#10b981;">${esc(b.resolved_at || t("Çözüldü"))}</span>` : `<span style="color:#f59e0b;">${t("Açık")}</span>`}</td>
           </tr>`;
         }).join("") || EMPTY_ROW_1(5));
 
@@ -711,8 +711,8 @@
   // ── Rapor 9: Denetim ─────────────────────────────────────────────────────────
   function loadDenetim() {
     const gun = document.getElementById("kr-denetim-gun")?.value || 30;
-    setHtml("kr-aktif-users",  '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
-    setHtml("kr-denetim-body", `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
+    setHtml("kr-aktif-users",  `<div class="kr-loading" style="padding:24px;">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-denetim-body", `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
 
     fetchJson(apiUrl("denetim"), { gun })
       .then(res => {
@@ -770,10 +770,10 @@
 
   // ── Rapor 10: Uyarı Merkezi ──────────────────────────────────────────────────
   function loadUyari() {
-    setHtml("kr-uyari-stats",       `<div class="kr-loading" style="grid-column:span 3;padding:12px;">Yükleniyor…</div>`);
-    setHtml("kr-kritik-pg-body",    `<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">Yükleniyor…</td></tr>`);
-    setHtml("kr-geciken-faal-body", `<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">Yükleniyor…</td></tr>`);
-    setHtml("kr-uyari-risk-body",   `<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">Yükleniyor…</td></tr>`);
+    setHtml("kr-uyari-stats",       `<div class="kr-loading" style="grid-column:span 3;padding:12px;">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-kritik-pg-body",    `<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
+    setHtml("kr-geciken-faal-body", `<tr><td colspan="6" style="text-align:center;padding:20px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
+    setHtml("kr-uyari-risk-body",   `<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
 
     fetchJson(apiUrl("uyari"), { year })
       .then(res => {
@@ -790,19 +790,19 @@
         setHtml("kr-uyari-stats", `
           <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_uyari.kritik_pg">
             <div class="mc-stat-icon" style="color:#ef4444;"><i class="fas fa-circle-exclamation"></i></div>
-            <div class="mc-stat-label">Kritik PG</div>
+            <div class="mc-stat-label">${t("Kritik PG")}</div>
             <div class="mc-stat-value" style="color:#ef4444;">${oz.kritik_pg_sayisi || 0}</div>
-            <div class="mc-stat-sub">Başarı &lt;%50</div>
+            <div class="mc-stat-sub">${t("Başarı")} &lt;%50</div>
           </div>
           <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_uyari.geciken_faaliyet">
             <div class="mc-stat-icon"><i class="fas fa-hourglass-end"></i></div>
-            <div class="mc-stat-label">Geciken Faaliyet</div>
+            <div class="mc-stat-label">${t("Geciken Faaliyet")}</div>
             <div class="mc-stat-value">${oz.geciken_faaliyet_sayisi || 0}</div>
-            <div class="mc-stat-sub">Bitiş tarihi geçmiş</div>
+            <div class="mc-stat-sub">${t("Bitiş tarihi geçmiş")}</div>
           </div>
           <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_uyari.yuksek_risk">
             <div class="mc-stat-icon"><i class="fas fa-fire"></i></div>
-            <div class="mc-stat-label">Yüksek Risk</div>
+            <div class="mc-stat-label">${t("Yüksek Risk")}</div>
             <div class="mc-stat-value">${oz.yuksek_risk_sayisi || 0}</div>
             <div class="mc-stat-sub">RPN &gt; 10</div>
           </div>`);
@@ -833,7 +833,7 @@
             <td style="font-size:12px;">${esc(a.name)}</td>
             <td style="font-size:11px;">${esc(a.surec)}</td>
             <td style="white-space:nowrap;font-size:11px;">${esc(a.end_date)}</td>
-            <td style="font-weight:700;color:#ef4444;">${a.gecikme_gun} gün</td>
+            <td style="font-weight:700;color:#ef4444;">${a.gecikme_gun} ${t("gün")}</td>
             <td><span class="mc-badge mc-badge-warning">${esc(a.status)}</span></td>
             <td>
               <div class="kr-perf-bar-wrap" style="min-width:80px;">
@@ -853,7 +853,7 @@
 
   // ── Rapor 11: K-Vektör ───────────────────────────────────────────────────────
   function loadKVektor() {
-    setHtml("kr-kv-bars", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
+    setHtml("kr-kv-bars", `<div class="kr-loading" style="padding:24px;">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("k-vektor"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-kv-bars", ERROR_HTML); setHtml("kr-kv-sub-body", ERROR_ROW_1(3)); return; }
@@ -899,7 +899,7 @@
   }
 
   function loadEvm() {
-    setHtml("kr-evm-body", `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
+    setHtml("kr-evm-body", `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
     fetchJson(apiUrl("evm"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-evm-body", ERROR_ROW_1(8)); return; }
@@ -915,19 +915,19 @@
             <td style="font-size:12px;">${r.ac ?? "—"}</td>
             <td style="font-weight:700;color:${spiColor}">${r.spi ?? "—"}</td>
             <td style="font-weight:700;color:${cpiColor}">${r.cpi ?? "—"}</td>
-            <td style="font-size:11px;color:#94a3b8;">${r.spi != null ? (r.spi >= 1 ? "Zamanında" : "Geride") : "—"}</td>
+            <td style="font-size:11px;color:#94a3b8;">${r.spi != null ? (r.spi >= 1 ? t("Zamanında") : t("Geride")) : "—"}</td>
           </tr>`;
-        }).join("") || `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">Kayıt yok.</td></tr>`);
+        }).join("") || `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">${t("Kayıt yok.")}</td></tr>`);
       })
       .catch(() => setHtml("kr-evm-body", ERROR_ROW_1(8)));
   }
 
   // ── Rapor 12: Stratejik Analiz ───────────────────────────────────────────────
   function loadStratejikAnaliz() {
-    setHtml("kr-sa-swot",   '<div class="kr-loading">Yükleniyor…</div>');
-    setHtml("kr-sa-tows",   '<div class="kr-loading">Yükleniyor…</div>');
-    setHtml("kr-sa-pestel", '<div class="kr-loading">Yükleniyor…</div>');
-    setHtml("kr-sa-porter", '<div class="kr-loading">Yükleniyor…</div>');
+    setHtml("kr-sa-swot",   `<div class="kr-loading">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-sa-tows",   `<div class="kr-loading">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-sa-pestel", `<div class="kr-loading">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-sa-porter", `<div class="kr-loading">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("stratejik-analiz"), { year })
       .then(res => {
         if (!res.success) {
@@ -943,12 +943,12 @@
         if (swotDate) swotDate.textContent = sw.year_label ? `${sw.year_label} — ${sw.guncelleme || ""}` : (sw.guncelleme || "");
         if (swotEl) {
           swotEl.innerHTML = sw.mevcut ? `<div class="mc-grid-2" style="gap:8px;">
-            ${[["Güçlü Yön","strengths","#10b981"],["Zayıf Yön","weaknesses","#ef4444"],["Fırsat","opportunities","#3b82f6"],["Tehdit","threats","#f59e0b"]].map(([lbl,k,c]) =>
+            ${[[t("Güçlü Yön"),"strengths","#10b981"],[t("Zayıf Yön"),"weaknesses","#ef4444"],[t("Fırsat"),"opportunities","#3b82f6"],[t("Tehdit"),"threats","#f59e0b"]].map(([lbl,k,c]) =>
               `<div style="text-align:center;padding:16px;border-radius:8px;background:#f8fafc;">
                 <div style="font-size:24px;font-weight:700;color:${c};">${sw[k]}</div>
                 <div style="font-size:12px;color:#64748b;margin-top:4px;">${lbl}</div>
               </div>`).join("")}
-          </div>` : '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Bu yıl için SWOT analizi yok.</div>';
+          </div>` : `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">${t("Bu yıl için SWOT analizi yok.")}</div>`;
         }
 
         // TOWS
@@ -958,12 +958,12 @@
         if (towsDate) towsDate.textContent = tw.year_label ? `${tw.year_label} — ${tw.guncelleme || ""}` : (tw.guncelleme || "");
         if (towsEl) {
           towsEl.innerHTML = tw.mevcut ? `<div class="mc-grid-2" style="gap:8px;">
-            ${[["SO Stratejileri","so","#10b981"],["ST Stratejileri","st","#6366f1"],["WO Stratejileri","wo","#3b82f6"],["WT Stratejileri","wt","#ef4444"]].map(([lbl,k,c]) =>
+            ${[[t("SO Stratejileri"),"so","#10b981"],[t("ST Stratejileri"),"st","#6366f1"],[t("WO Stratejileri"),"wo","#3b82f6"],[t("WT Stratejileri"),"wt","#ef4444"]].map(([lbl,k,c]) =>
               `<div style="text-align:center;padding:16px;border-radius:8px;background:#f8fafc;">
                 <div style="font-size:24px;font-weight:700;color:${c};">${tw[k]}</div>
                 <div style="font-size:12px;color:#64748b;margin-top:4px;">${lbl}</div>
               </div>`).join("")}
-          </div>` : '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Bu yıl için TOWS matrisi yok.</div>';
+          </div>` : `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">${t("Bu yıl için TOWS matrisi yok.")}</div>`;
         }
 
         // PESTEL
@@ -973,15 +973,15 @@
         if (pestelDate) pestelDate.textContent = pe.year_label ? `${pe.year_label} — ${pe.guncelleme || ""}` : (pe.guncelleme || "");
         if (pestelEl) {
           pestelEl.innerHTML = pe.mevcut ? [
-            ["P","political","Siyasi","#6366f1"],["E","economic","Ekonomik","#10b981"],
-            ["S","social","Sosyal","#f59e0b"],["T","technological","Teknolojik","#3b82f6"],
-            ["E","environmental","Çevresel","#84cc16"],["L","legal","Yasal","#ef4444"]
+            ["P","political",t("Siyasi"),"#6366f1"],["E","economic",t("Ekonomik"),"#10b981"],
+            ["S","social",t("Sosyal"),"#f59e0b"],["T","technological",t("Teknolojik"),"#3b82f6"],
+            ["E","environmental",t("Çevresel"),"#84cc16"],["L","legal",t("Yasal"),"#ef4444"]
           ].map(([abbr,k,lbl,c]) => `
             <div class="kr-bar-row" style="padding:6px 12px;">
               <div class="kr-bar-label" style="min-width:100px;"><span style="font-weight:700;color:${c};">${abbr}</span> ${lbl}</div>
               <div class="kr-bar-track"><div class="kr-bar-fill" style="width:${Math.min(100, (pe[k] || 0) * 20)}%;background:${c};"></div></div>
               <div class="kr-bar-pct">${pe[k]}</div>
-            </div>`).join("") : '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Bu yıl için PESTEL analizi yok.</div>';
+            </div>`).join("") : `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">${t("Bu yıl için PESTEL analizi yok.")}</div>`;
         }
 
         // Porter
@@ -991,8 +991,8 @@
         if (porterDate) porterDate.textContent = po.year_label ? `${po.year_label} — ${po.guncelleme || ""}` : (po.guncelleme || "");
         if (porterEl) {
           porterEl.innerHTML = po.mevcut ? [
-            ["rivalry","Rekabet Yoğunluğu"],["supplier","Tedarikçi Gücü"],["buyer","Alıcı Gücü"],
-            ["new_entrant","Yeni Giriş Tehdidi"],["substitute","İkame Tehdidi"]
+            ["rivalry",t("Rekabet Yoğunluğu")],["supplier",t("Tedarikçi Gücü")],["buyer",t("Alıcı Gücü")],
+            ["new_entrant",t("Yeni Giriş Tehdidi")],["substitute",t("İkame Tehdidi")]
           ].map(([k,lbl]) => {
             const sc = po[k];
             const w = sc != null ? sc / 5 * 100 : 0;
@@ -1002,7 +1002,7 @@
               <div class="kr-bar-track"><div class="kr-bar-fill" style="width:${w}%;background:${c};"></div></div>
               <div class="kr-bar-pct" style="color:${c}">${sc ?? "—"}</div>
             </div>`;
-          }).join("") : '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Bu yıl için Porter analizi yok.</div>';
+          }).join("") : `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">${t("Bu yıl için Porter analizi yok.")}</div>`;
         }
       })
       .catch(() => ["kr-sa-swot","kr-sa-tows","kr-sa-pestel","kr-sa-porter"].forEach(id => setHtml(id, ERROR_HTML)));
@@ -1010,17 +1010,17 @@
 
   // ── Rapor 13: Paydaş ─────────────────────────────────────────────────────────
   function loadPaydas() {
-    setHtml("kr-pd-body",  `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
-    setHtml("kr-pd-anket", '<div class="kr-loading">Yükleniyor…</div>');
+    setHtml("kr-pd-body",  `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
+    setHtml("kr-pd-anket", `<div class="kr-loading">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("paydas"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-pd-body", ERROR_ROW_1(5)); setHtml("kr-pd-anket", ERROR_HTML); return; }
         const d = res.data;
 
         const toplam = document.getElementById("kr-pd-toplam");
-        if (toplam) toplam.textContent = `${d.toplam_paydas} paydaş`;
+        if (toplam) toplam.textContent = `${d.toplam_paydas} ${t("paydaş")}`;
         const anketToplam = document.getElementById("kr-pd-anket-toplam");
-        if (anketToplam) anketToplam.textContent = `${d.toplam_anket} anket`;
+        if (anketToplam) anketToplam.textContent = `${d.toplam_anket} ${t("anket")}`;
 
         setHtml("kr-pd-body", (d.paydas_listesi || []).map(s => {
           const infBar = s.influence != null ? `<div style="display:flex;align-items:center;gap:4px;"><div style="height:6px;border-radius:3px;background:#6366f1;width:${s.influence * 10}px;"></div><span style="font-size:11px;">${s.influence}</span></div>` : "—";
@@ -1042,7 +1042,7 @@
               <div class="kr-bar-label" style="min-width:120px;">${esc(a.tip)}</div>
               <div class="kr-bar-track"><div class="kr-bar-fill" style="width:${a.ort_skor * 20}%;background:${scoreColor(a.ort_skor * 20)};"></div></div>
               <div class="kr-bar-pct" style="color:${scoreColor(a.ort_skor * 20)}">${a.ort_skor} <span style="font-size:10px;color:#94a3b8;">(${a.sayi})</span></div>
-            </div>`).join("") : '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Anket verisi yok.</div>';
+            </div>`).join("") : `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">${t("Anket verisi yok.")}</div>`;
         }
       })
       .catch(() => { setHtml("kr-pd-body", ERROR_ROW_1(5)); setHtml("kr-pd-anket", ERROR_HTML); });
@@ -1050,23 +1050,23 @@
 
   // ── Rapor 14: Rekabet & A3 ───────────────────────────────────────────────────
   function loadRekabet() {
-    setHtml("kr-rek-content", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
-    setHtml("kr-a3-body", `<tr><td colspan="4" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>`);
+    setHtml("kr-rek-content", `<div class="kr-loading" style="padding:24px;">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-a3-body", `<tr><td colspan="4" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
     fetchJson(apiUrl("rekabet"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-rek-content", ERROR_HTML); setHtml("kr-a3-body", ERROR_ROW_1(4)); return; }
         const d = res.data;
 
         const rekToplam = document.getElementById("kr-rek-toplam");
-        if (rekToplam) rekToplam.textContent = `${d.toplam_rakip} rakip`;
+        if (rekToplam) rekToplam.textContent = `${d.toplam_rakip} ${t("rakip")}`;
         const a3Toplam = document.getElementById("kr-a3-toplam");
-        if (a3Toplam) a3Toplam.textContent = `${d.toplam_a3} rapor`;
+        if (a3Toplam) a3Toplam.textContent = `${d.toplam_a3} ${t("rapor")}`;
 
         const rekEl = document.getElementById("kr-rek-content");
         if (rekEl) {
           const list = d.rekabet_listesi || [];
           if (!list.length) {
-            rekEl.innerHTML = '<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">Rekabetçi analiz verisi yok.</div>';
+            rekEl.innerHTML = `<div style="text-align:center;padding:24px;color:#94a3b8;font-size:13px;">${t("Rekabetçi analiz verisi yok.")}</div>`;
           } else {
             rekEl.innerHTML = list.map(c => `
               <div style="padding:12px 16px;border-bottom:1px solid #f1f5f9;">
@@ -1120,8 +1120,8 @@
 
   let pgdHistChart = null, pgdBarChart = null;
   function loadPgDagilim() {
-    setHtml("kr-pgd-ozet", '<div class="kr-loading" style="grid-column:span 4;padding:12px;">Yükleniyor…</div>');
-    setHtml("kr-pgd-body", '<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>');
+    setHtml("kr-pgd-ozet", `<div class="kr-loading" style="grid-column:span 4;padding:12px;">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-pgd-body", `<tr><td colspan="5" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
     fetchJson(apiUrl("pg-dagilim"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-pgd-ozet", ERROR_HTML); setHtml("kr-pgd-body", ERROR_ROW_1(5)); return; }
@@ -1129,25 +1129,25 @@
         const oz = d.ozet || {};
         setHtml("kr-pgd-ozet", oz.toplam ? `
           <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_pg_dagilim.toplam_pg">
-            <div class="mc-stat-label">Toplam PG</div>
+            <div class="mc-stat-label">${t("Toplam PG")}</div>
             <div class="mc-stat-value">${oz.toplam}</div>
-            <div class="mc-stat-sub">${oz.veri_yok} veri yok</div>
+            <div class="mc-stat-sub">${oz.veri_yok} ${t("veri yok")}</div>
           </div>
           <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_pg_dagilim.ort_basari">
-            <div class="mc-stat-label">Ort. Başarı</div>
+            <div class="mc-stat-label">${t("Ort. Başarı")}</div>
             <div class="mc-stat-value" style="color:${scoreColor(oz.ort)}">${oz.ort}%</div>
-            <div class="mc-stat-sub">Medyan: ${oz.medyan}%</div>
+            <div class="mc-stat-sub">${t("Medyan:")} ${oz.medyan}%</div>
           </div>
           <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_pg_dagilim.hedefte_80">
-            <div class="mc-stat-label">Hedefte (≥%80)</div>
+            <div class="mc-stat-label">${t("Hedefte")} (≥%80)</div>
             <div class="mc-stat-value">${oz.yesil}</div>
             <div class="mc-stat-sub">${oz.toplam ? Math.round(oz.yesil/oz.toplam*100) : 0}%</div>
           </div>
           <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_pg_dagilim.kritik_50">
-            <div class="mc-stat-label">Kritik (&lt;%50)</div>
+            <div class="mc-stat-label">${t("Kritik")} (&lt;%50)</div>
             <div class="mc-stat-value" style="color:#ef4444;">${oz.kirmizi}</div>
             <div class="mc-stat-sub">${oz.toplam ? Math.round(oz.kirmizi/oz.toplam*100) : 0}%</div>
-          </div>` : '<div class="kr-loading" style="grid-column:span 4;">Veri yok.</div>');
+          </div>` : `<div class="kr-loading" style="grid-column:span 4;">${t("Veri yok.")}</div>`);
 
         const buckets = d.buckets || [];
         const hCanvas = document.getElementById("kr-pgd-histogram");
@@ -1156,7 +1156,7 @@
           const colors = buckets.map(b => b.min >= 80 ? "rgba(16,185,129,0.8)" : b.min >= 50 ? "rgba(245,158,11,0.8)" : "rgba(239,68,68,0.8)");
           pgdHistChart = new Chart(hCanvas, {
             type: "bar",
-            data: { labels: buckets.map(b => b.label), datasets: [{ label: "PG Sayısı", data: buckets.map(b => b.count), backgroundColor: colors, borderRadius: 4 }] },
+            data: { labels: buckets.map(b => b.label), datasets: [{ label: t("PG Sayısı"), data: buckets.map(b => b.count), backgroundColor: colors, borderRadius: 4 }] },
             options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
           });
         }
@@ -1170,14 +1170,14 @@
             type: "bar",
             data: {
               labels: top20.map(r => r.kpi_name.length > 20 ? r.kpi_name.slice(0,20)+"…" : r.kpi_name),
-              datasets: [{ label: "Başarı %", data: top20.map(r => r.pct), backgroundColor: top20.map(r => scoreColor(r.pct) + "cc"), borderRadius: 4 }]
+              datasets: [{ label: t("Başarı %"), data: top20.map(r => r.pct), backgroundColor: top20.map(r => scoreColor(r.pct) + "cc"), borderRadius: 4 }]
             },
             options: { indexAxis: "y", responsive: true, plugins: { legend: { display: false } }, scales: { x: { beginAtZero: true, max: 100 } } }
           });
         }
 
         const el = document.getElementById("kr-pgd-toplam");
-        if (el) el.textContent = scatter.length + " PG";
+        if (el) el.textContent = scatter.length + " " + t("PG");
         setHtml("kr-pgd-body", scatter.slice(0, 30).map(r => `
           <tr>
             <td style="font-size:12px;">${esc(r.kpi_name)}</td>
@@ -1193,8 +1193,8 @@
   // ── Yeni Rapor 2: Faaliyet Matris ────────────────────────────────────────────
   let fmChart = null;
   function loadFaaliyetMatris() {
-    setHtml("kr-fm-geciken-list", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
-    setHtml("kr-fm-body", '<tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>');
+    setHtml("kr-fm-geciken-list", `<div class="kr-loading" style="padding:24px;">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-fm-body", `<tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
     fetchJson(apiUrl("faaliyet-matris"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-fm-geciken-list", ERROR_HTML); setHtml("kr-fm-body", ERROR_ROW_1(7)); return; }
@@ -1210,10 +1210,10 @@
             data: {
               labels: top15.map(r => (r.code ? r.code + " " : "") + (r.name.length > 22 ? r.name.slice(0,22)+"…" : r.name)),
               datasets: [
-                { label: "Tamamlanan", data: top15.map(r => r.tamamlanan), backgroundColor: "rgba(16,185,129,0.8)", borderRadius: 3 },
-                { label: "Devam",      data: top15.map(r => r.devam),      backgroundColor: "rgba(99,102,241,0.8)", borderRadius: 3 },
-                { label: "Geciken",    data: top15.map(r => r.geciken),    backgroundColor: "rgba(239,68,68,0.8)",  borderRadius: 3 },
-                { label: "Planlandı",  data: top15.map(r => r.planlandi),  backgroundColor: "rgba(148,163,184,0.6)", borderRadius: 3 },
+                { label: t("Tamamlanan"), data: top15.map(r => r.tamamlanan), backgroundColor: "rgba(16,185,129,0.8)", borderRadius: 3 },
+                { label: t("Devam"),      data: top15.map(r => r.devam),      backgroundColor: "rgba(99,102,241,0.8)", borderRadius: 3 },
+                { label: t("Geciken"),    data: top15.map(r => r.geciken),    backgroundColor: "rgba(239,68,68,0.8)",  borderRadius: 3 },
+                { label: t("Planlandı"),  data: top15.map(r => r.planlandi),  backgroundColor: "rgba(148,163,184,0.6)", borderRadius: 3 },
               ]
             },
             options: {
@@ -1231,8 +1231,8 @@
             <div class="kr-rank-item">
               <div class="kr-rank-code">${esc(r.code)}</div>
               <div class="kr-rank-name" title="${esc(r.name)}">${esc(r.name)}</div>
-              <div class="kr-rank-score low">${r.geciken} geciken</div>
-            </div>`).join("") : '<div class="kr-loading">Geciken faaliyet yok.</div>';
+              <div class="kr-rank-score low">${r.geciken} ${t("geciken")}</div>
+            </div>`).join("") : `<div class="kr-loading">${t("Geciken faaliyet yok.")}</div>`;
         }
 
         setHtml("kr-fm-body", rows.map(r => {
@@ -1257,27 +1257,27 @@
   // ── Yeni Rapor 3: Aktivite Takvimi ───────────────────────────────────────────
   let atChart = null;
   function loadAktiviteTakvim() {
-    setHtml("kr-at-stats", '<div class="kr-loading" style="grid-column:span 3;padding:12px;">Yükleniyor…</div>');
-    setHtml("kr-at-heatmap", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
+    setHtml("kr-at-stats", `<div class="kr-loading" style="grid-column:span 3;padding:12px;">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-at-heatmap", `<div class="kr-loading" style="padding:24px;">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("aktivite-takvim"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-at-stats", ERROR_HTML); setHtml("kr-at-heatmap", ERROR_HTML); return; }
         const d = res.data;
         setHtml("kr-at-stats", `
           <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_aktivite_takvim.toplam_giris">
-            <div class="mc-stat-label">Toplam Giriş</div>
+            <div class="mc-stat-label">${t("Toplam Giriş")}</div>
             <div class="mc-stat-value">${d.toplam_giris}</div>
-            <div class="mc-stat-sub">${year} yılı</div>
+            <div class="mc-stat-sub">${year} ${t("yılı")}</div>
           </div>
           <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_aktivite_takvim.aktif_gun">
-            <div class="mc-stat-label">Aktif Gün</div>
+            <div class="mc-stat-label">${t("Aktif Gün")}</div>
             <div class="mc-stat-value">${d.toplam_gun}</div>
-            <div class="mc-stat-sub">Veri girilen gün sayısı</div>
+            <div class="mc-stat-sub">${t("Veri girilen gün sayısı")}</div>
           </div>
           <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_aktivite_takvim.gunluk_ort">
-            <div class="mc-stat-label">Günlük Ort.</div>
+            <div class="mc-stat-label">${t("Günlük Ort.")}</div>
             <div class="mc-stat-value">${d.toplam_gun ? Math.round(d.toplam_giris / d.toplam_gun) : 0}</div>
-            <div class="mc-stat-sub">Aktif günlerde</div>
+            <div class="mc-stat-sub">${t("Aktif günlerde")}</div>
           </div>`);
 
         // GitHub tarzı takvim heatmap
@@ -1305,14 +1305,14 @@
             const key = cur.toISOString().slice(0, 10);
             const cnt = daily[key] || 0;
             const intensity = cnt === 0 ? 0 : Math.ceil(cnt / maxVal * 4);
-            html += `<span class="kr-cal-cell kr-cal-l${intensity}" title="${key}: ${cnt} giriş"></span>`;
+            html += `<span class="kr-cal-cell kr-cal-l${intensity}" title="${key}: ${cnt} ${t("giriş")}"></span>`;
             cur.setDate(cur.getDate() + 1);
           }
           html += '</div></div>';
           // Renk skalası
-          html += '<div class="kr-cal-legend"><span style="font-size:11px;color:#94a3b8;">Az</span>';
+          html += `<div class="kr-cal-legend"><span style="font-size:11px;color:#94a3b8;">${t("Az")}</span>`;
           for (let i = 0; i <= 4; i++) html += `<span class="kr-cal-cell kr-cal-l${i}"></span>`;
-          html += '<span style="font-size:11px;color:#94a3b8;">Çok</span></div>';
+          html += `<span style="font-size:11px;color:#94a3b8;">${t("Çok")}</span></div>`;
           calEl.innerHTML = html;
         }
 
@@ -1330,7 +1330,7 @@
           if (atChart) atChart.destroy();
           atChart = new Chart(canvas, {
             type: "line",
-            data: { labels, datasets: [{ label: "Giriş", data: vals, borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,0.1)", fill: true, tension: 0.3, pointRadius: 2 }] },
+            data: { labels, datasets: [{ label: t("Giriş"), data: vals, borderColor: "#6366f1", backgroundColor: "rgba(99,102,241,0.1)", fill: true, tension: 0.3, pointRadius: 2 }] },
             options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { ticks: { maxTicksLimit: 10 } } } }
           });
         }
@@ -1341,13 +1341,13 @@
   // ── Yeni Rapor 4: Kurum Karşılaştırma ────────────────────────────────────────
   let kkChart = null;
   function loadKurumKarsilastirma() {
-    setHtml("kr-kk-body", '<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>');
+    setHtml("kr-kk-body", `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
     fetchJson(apiUrl("kurum-karsilastirma"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-kk-body", ERROR_ROW_1(8)); return; }
         const rows = res.data || [];
         const badge = document.getElementById("kr-kk-badge");
-        if (badge) badge.textContent = rows.length + " kurum";
+        if (badge) badge.textContent = rows.length + " " + t("kurum");
 
         const canvas = document.getElementById("kr-kk-chart");
         if (canvas && rows.length) {
@@ -1357,7 +1357,7 @@
             type: "bar",
             data: {
               labels: rows.map(r => r.name),
-              datasets: [{ label: "Ort. Başarı %", data: rows.map(r => r.ort_basari ?? 0), backgroundColor: colors.map(c => c + "cc"), borderRadius: 6 }]
+              datasets: [{ label: t("Ort. Başarı %"), data: rows.map(r => r.ort_basari ?? 0), backgroundColor: colors.map(c => c + "cc"), borderRadius: 6 }]
             },
             options: {
               responsive: true,
@@ -1387,8 +1387,8 @@
   // ── Yeni Rapor 5: Strateji Kapsama ───────────────────────────────────────────
   let skChart = null;
   function loadStratejiKapsama() {
-    setHtml("kr-sk-ozet", '<div class="kr-loading" style="grid-column:span 3;padding:12px;">Yükleniyor…</div>');
-    setHtml("kr-sk-body", '<tr><td colspan="6" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>');
+    setHtml("kr-sk-ozet", `<div class="kr-loading" style="grid-column:span 3;padding:12px;">${t("Yükleniyor…")}</div>`);
+    setHtml("kr-sk-body", `<tr><td colspan="6" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
     fetchJson(apiUrl("strateji-kapsama"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-sk-ozet", ERROR_HTML); setHtml("kr-sk-body", ERROR_ROW_1(6)); return; }
@@ -1397,19 +1397,19 @@
 
         setHtml("kr-sk-ozet", `
           <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_strateji_kapsama.tam_kapsamli">
-            <div class="mc-stat-label">Tam Kapsamlı</div>
+            <div class="mc-stat-label">${t("Tam Kapsamlı")}</div>
             <div class="mc-stat-value">${oz.tam_kapsamli}</div>
-            <div class="mc-stat-sub">Tüm alt str. bağlı</div>
+            <div class="mc-stat-sub">${t("Tüm alt str. bağlı")}</div>
           </div>
           <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_strateji_kapsama.kismi">
-            <div class="mc-stat-label">Kısmi</div>
+            <div class="mc-stat-label">${t("Kısmi")}</div>
             <div class="mc-stat-value">${oz.kismi_kapsamli}</div>
-            <div class="mc-stat-sub">Bazı alt str. boş</div>
+            <div class="mc-stat-sub">${t("Bazı alt str. boş")}</div>
           </div>
           <div class="mc-stat-card" style="background:#fef2f2;" data-card-code="k_rapor_strateji_kapsama.bos_strateji">
-            <div class="mc-stat-label">Boş Strateji</div>
+            <div class="mc-stat-label">${t("Boş Strateji")}</div>
             <div class="mc-stat-value" style="color:#ef4444;">${oz.bos_strateji}</div>
-            <div class="mc-stat-sub">Hiç süreç yok</div>
+            <div class="mc-stat-sub">${t("Hiç süreç yok")}</div>
           </div>`);
 
         // Donut chart
@@ -1419,7 +1419,7 @@
           skChart = new Chart(canvas, {
             type: "doughnut",
             data: {
-              labels: ["Tam Kapsamlı", "Kısmi", "Boş"],
+              labels: [t("Tam Kapsamlı"), t("Kısmi"), t("Boş")],
               datasets: [{ data: [oz.tam_kapsamli, oz.kismi_kapsamli, oz.bos_strateji], backgroundColor: ["#10b981","#f59e0b","#ef4444"], borderWidth: 2 }]
             },
             options: { responsive: true, plugins: { legend: { position: "bottom" } } }
@@ -1436,16 +1436,16 @@
             <div class="kr-rank-item">
               <div class="kr-rank-code">${esc(p.code)}</div>
               <div class="kr-rank-name">${esc(p.name)}</div>
-            </div>`).join("") : '<div class="kr-loading">Tüm süreçler stratejiye bağlı.</div>';
+            </div>`).join("") : `<div class="kr-loading">${t("Tüm süreçler stratejiye bağlı.")}</div>`;
         }
 
         const stratejiler = d.stratejiler || [];
         setHtml("kr-sk-body", stratejiler.map(s => {
           const durumBadge = s.durum === "tam"
-            ? '<span class="mc-badge mc-badge-success">Tam</span>'
+            ? `<span class="mc-badge mc-badge-success">${t("Tam")}</span>`
             : s.durum === "kismi"
-            ? '<span class="mc-badge mc-badge-warning">Kısmi</span>'
-            : '<span class="mc-badge mc-badge-danger">Boş</span>';
+            ? `<span class="mc-badge mc-badge-warning">${t("Kısmi")}</span>`
+            : `<span class="mc-badge mc-badge-danger">${t("Boş")}</span>`;
           return `<tr>
             <td style="font-size:11px;color:#6366f1;font-weight:600;">${esc(s.code)}</td>
             <td>${esc(s.title)}</td>
@@ -1462,8 +1462,8 @@
   // ── Yeni Rapor 6: Sorumlu Analizi ────────────────────────────────────────────
   let sa2Chart = null;
   function loadSorumluAnaliz() {
-    setHtml("kr-sa2-body", '<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>');
-    setHtml("kr-sa2-geciken-list", '<div class="kr-loading" style="padding:24px;">Yükleniyor…</div>');
+    setHtml("kr-sa2-body", `<tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
+    setHtml("kr-sa2-geciken-list", `<div class="kr-loading" style="padding:24px;">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("sorumlu-analiz"), { year })
       .then(res => {
         if (!res.success) { setHtml("kr-sa2-body", ERROR_ROW_1(8)); setHtml("kr-sa2-geciken-list", ERROR_HTML); return; }
@@ -1479,9 +1479,9 @@
             data: {
               labels: top12.map(r => r.ad.length > 18 ? r.ad.slice(0,18)+"…" : r.ad),
               datasets: [
-                { label: "Tamamlanan", data: top12.map(r => r.tamamlanan), backgroundColor: "rgba(16,185,129,0.8)", borderRadius: 3 },
-                { label: "Devam",      data: top12.map(r => r.devam),      backgroundColor: "rgba(99,102,241,0.8)", borderRadius: 3 },
-                { label: "Geciken",    data: top12.map(r => r.geciken),    backgroundColor: "rgba(239,68,68,0.8)",  borderRadius: 3 },
+                { label: t("Tamamlanan"), data: top12.map(r => r.tamamlanan), backgroundColor: "rgba(16,185,129,0.8)", borderRadius: 3 },
+                { label: t("Devam"),      data: top12.map(r => r.devam),      backgroundColor: "rgba(99,102,241,0.8)", borderRadius: 3 },
+                { label: t("Geciken"),    data: top12.map(r => r.geciken),    backgroundColor: "rgba(239,68,68,0.8)",  borderRadius: 3 },
               ]
             },
             options: {
@@ -1498,8 +1498,8 @@
           gecEl.innerHTML = geciken.length ? geciken.map(r => `
             <div class="kr-rank-item">
               <div class="kr-rank-name">${esc(r.ad)}</div>
-              <div class="kr-rank-score low">${r.geciken} geciken</div>
-            </div>`).join("") : '<div class="kr-loading">Geciken faaliyet yok.</div>';
+              <div class="kr-rank-score low">${r.geciken} ${t("geciken")}</div>
+            </div>`).join("") : `<div class="kr-loading">${t("Geciken faaliyet yok.")}</div>`;
         }
 
         setHtml("kr-sa2-body", rows.map((r, i) => `
@@ -1526,7 +1526,7 @@
   // ── Yeni Rapor 7: SWOT/TOWS Trend ────────────────────────────────────────────
   let stSwotChart = null, stTowsChart = null;
   function loadSwotTrend() {
-    setHtml("kr-st-body", '<tr><td colspan="11" style="text-align:center;padding:24px;color:#94a3b8;">Yükleniyor…</td></tr>');
+    setHtml("kr-st-body", `<tr><td colspan="11" style="text-align:center;padding:24px;color:#94a3b8;">${t("Yükleniyor…")}</td></tr>`);
     fetchJson(apiUrl("swot-trend"))
       .then(res => {
         if (!res.success) { setHtml("kr-st-body", ERROR_ROW_1(11)); return; }
@@ -1543,10 +1543,10 @@
             data: {
               labels,
               datasets: [
-                { label: "Güçlü",  data: trend.map(t => t.strengths),     backgroundColor: "rgba(16,185,129,0.8)",  borderRadius: 3 },
-                { label: "Zayıf",  data: trend.map(t => t.weaknesses),    backgroundColor: "rgba(239,68,68,0.8)",   borderRadius: 3 },
-                { label: "Fırsat", data: trend.map(t => t.opportunities), backgroundColor: "rgba(59,130,246,0.8)",  borderRadius: 3 },
-                { label: "Tehdit", data: trend.map(t => t.threats),       backgroundColor: "rgba(245,158,11,0.8)",  borderRadius: 3 },
+                { label: t("Güçlü"),  data: trend.map(t => t.strengths),     backgroundColor: "rgba(16,185,129,0.8)",  borderRadius: 3 },
+                { label: t("Zayıf"),  data: trend.map(t => t.weaknesses),    backgroundColor: "rgba(239,68,68,0.8)",   borderRadius: 3 },
+                { label: t("Fırsat"), data: trend.map(t => t.opportunities), backgroundColor: "rgba(59,130,246,0.8)",  borderRadius: 3 },
+                { label: t("Tehdit"), data: trend.map(t => t.threats),       backgroundColor: "rgba(245,158,11,0.8)",  borderRadius: 3 },
               ]
             },
             options: { responsive: true, plugins: { legend: { position: "bottom", labels: { font: { size: 11 } } } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } } } }
@@ -1589,7 +1589,7 @@
   // ── Yeni Rapor 8: Bildirim Analizi ───────────────────────────────────────────
   let baPieChart = null, baTrendChart = null;
   function loadBildirimAnaliz() {
-    setHtml("kr-ba-stats", '<div class="kr-loading" style="grid-column:span 4;padding:12px;">Yükleniyor…</div>');
+    setHtml("kr-ba-stats", `<div class="kr-loading" style="grid-column:span 4;padding:12px;">${t("Yükleniyor…")}</div>`);
     fetchJson(apiUrl("bildirim-analiz"))
       .then(res => {
         if (!res.success) { setHtml("kr-ba-stats", ERROR_HTML); return; }
@@ -1598,23 +1598,23 @@
         const okunmaColor = d.okunma_orani >= 80 ? "#10b981" : d.okunma_orani >= 50 ? "#f59e0b" : "#ef4444";
         setHtml("kr-ba-stats", `
           <div class="mc-stat-card mc-stat-indigo" data-card-code="k_rapor_bildirim_analiz.toplam_bildirim">
-            <div class="mc-stat-label">Toplam Bildirim</div>
+            <div class="mc-stat-label">${t("Toplam Bildirim")}</div>
             <div class="mc-stat-value">${d.toplam}</div>
           </div>
           <div class="mc-stat-card mc-stat-emerald" data-card-code="k_rapor_bildirim_analiz.okunan">
-            <div class="mc-stat-label">Okunan</div>
+            <div class="mc-stat-label">${t("Okunan")}</div>
             <div class="mc-stat-value">${d.okunan}</div>
-            <div class="mc-stat-sub" style="color:${okunmaColor};">%${d.okunma_orani} okunma oranı</div>
+            <div class="mc-stat-sub" style="color:${okunmaColor};">%${d.okunma_orani} ${t("okunma oranı")}</div>
           </div>
           <div class="mc-stat-card mc-stat-amber" data-card-code="k_rapor_bildirim_analiz.okunmayan">
-            <div class="mc-stat-label">Okunmayan</div>
+            <div class="mc-stat-label">${t("Okunmayan")}</div>
             <div class="mc-stat-value">${d.okunmayan}</div>
-            <div class="mc-stat-sub">Son 30 günde: ${d.okunmayan_30_gun || 0}</div>
+            <div class="mc-stat-sub">${t("Son 30 günde:")} ${d.okunmayan_30_gun || 0}</div>
           </div>
           <div class="mc-stat-card mc-stat-purple" data-card-code="k_rapor_bildirim_analiz.son_7_gun">
-            <div class="mc-stat-label">Son 7 Gün</div>
+            <div class="mc-stat-label">${t("Son 7 Gün")}</div>
             <div class="mc-stat-value">${d.son_7_gun}</div>
-            <div class="mc-stat-sub">yeni bildirim</div>
+            <div class="mc-stat-sub">${t("yeni bildirim")}</div>
           </div>`);
 
         const pieCanvas = document.getElementById("kr-ba-pie");
@@ -1638,7 +1638,7 @@
             type: "bar",
             data: {
               labels: d.gunluk.map(g => g.tarih.slice(5)),
-              datasets: [{ label: "Bildirim", data: d.gunluk.map(g => g.sayi), backgroundColor: "rgba(99,102,241,0.7)", borderRadius: 3 }]
+              datasets: [{ label: t("Bildirim"), data: d.gunluk.map(g => g.sayi), backgroundColor: "rgba(99,102,241,0.7)", borderRadius: 3 }]
             },
             options: { responsive: true, plugins: { legend: { display: false } }, scales: { y: { beginAtZero: true, ticks: { precision: 0 } }, x: { ticks: { maxTicksLimit: 10 } } } }
           });
@@ -1648,7 +1648,7 @@
         const yasEl = document.getElementById("kr-ba-yaslanma");
         if (yasEl) {
           if (!d.yaslanma || !d.yaslanma.length) {
-            yasEl.innerHTML = '<div style="color:#10b981;font-size:13px;">Tüm bildirimler okundu.</div>';
+            yasEl.innerHTML = `<div style="color:#10b981;font-size:13px;">${t("Tüm bildirimler okundu.")}</div>`;
           } else {
             const maxYas = Math.max(...d.yaslanma.map(y => y.sayi));
             const ageColors = {"0-3 gün": "#10b981", "4-7 gün": "#f59e0b", "8-30 gün": "#f97316", "30+ gün": "#ef4444"};
@@ -1658,7 +1658,7 @@
               return `<div style="margin-bottom:10px;">
                 <div style="display:flex;justify-content:space-between;font-size:12px;margin-bottom:3px;">
                   <span style="font-weight:600;color:${c};">${esc(y.aralik)}</span>
-                  <span style="color:#64748b;">${y.sayi} bildirim</span>
+                  <span style="color:#64748b;">${y.sayi} ${t("bildirim")}</span>
                 </div>
                 <div style="background:#f1f5f9;border-radius:4px;height:8px;"><div style="background:${c};width:${pct}%;height:8px;border-radius:4px;transition:width 0.3s;"></div></div>
               </div>`;
@@ -1670,7 +1670,7 @@
         const kulEl = document.getElementById("kr-ba-kullanicilar");
         if (kulEl) {
           if (!d.kullanici_top || !d.kullanici_top.length) {
-            kulEl.innerHTML = '<div class="kr-loading" style="padding:16px;">Veri yok.</div>';
+            kulEl.innerHTML = `<div class="kr-loading" style="padding:16px;">${t("Veri yok.")}</div>`;
           } else {
             const maxKul = d.kullanici_top[0].sayi || 1;
             kulEl.innerHTML = d.kullanici_top.map(u => `

@@ -67,7 +67,7 @@
     postJson(URLS.init).then(j => {
       if (!j.success) {
         if (window.Swal) Swal.fire({ toast: true, position: "top-end", icon: "error", title: j.message, showConfirmButton: false, timer: 3000 });
-        else alert(j.message || "Hata");
+        else alert(j.message || t("Hata"));
         return;
       }
       document.getElementById("twofa-qr").src = j.qr_code;
@@ -89,20 +89,20 @@
     const errEl = document.getElementById("twofa-setup-error");
     errEl.style.display = "none";
     if (!/^\d{6}$/.test(code)) {
-      errEl.textContent = "Lütfen 6 haneli doğrulama kodunu girin.";
+      errEl.textContent = t("Lütfen 6 haneli doğrulama kodunu girin.");
       errEl.style.display = "block";
       return;
     }
     const btn = this;
     btn.disabled = true;
     const orig = btn.innerHTML;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Doğrulanıyor…';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t("Doğrulanıyor…");
     postForm(URLS.verify, { code: code })
       .then(j => {
         btn.disabled = false;
         btn.innerHTML = orig;
         if (!j.success) {
-          errEl.textContent = j.message || "Doğrulama hatalı.";
+          errEl.textContent = j.message || t("Doğrulama hatalı.");
           errEl.style.display = "block";
           return;
         }
@@ -126,7 +126,7 @@
     navigator.clipboard.writeText(codes).then(() => {
       const btn = this;
       const orig = btn.innerHTML;
-      btn.innerHTML = '<i class="fas fa-check"></i> Kopyalandı';
+      btn.innerHTML = '<i class="fas fa-check"></i> ' + t("Kopyalandı");
       setTimeout(() => btn.innerHTML = orig, 1500);
     });
   });
@@ -149,7 +149,7 @@
     const errEl = document.getElementById("twofa-disable-error");
     errEl.style.display = "none";
     if (!pw) {
-      errEl.textContent = "Şifrenizi girin.";
+      errEl.textContent = t("Şifrenizi girin.");
       errEl.style.display = "block";
       return;
     }
@@ -159,12 +159,12 @@
       .then(j => {
         btn.disabled = false;
         if (!j.success) {
-          errEl.textContent = j.message || "Hata";
+          errEl.textContent = j.message || t("Hata");
           errEl.style.display = "block";
           return;
         }
         document.getElementById("twofa-disable-modal").style.display = "none";
-        if (window.Swal) Swal.fire({ toast: true, position: "top-end", icon: "info", title: "2FA devre dışı bırakıldı", showConfirmButton: false, timer: 2500 });
+        if (window.Swal) Swal.fire({ toast: true, position: "top-end", icon: "info", title: t("2FA devre dışı bırakıldı"), showConfirmButton: false, timer: 2500 });
         loadStatus();
       });
   });

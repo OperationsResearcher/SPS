@@ -70,6 +70,39 @@ def get_locale() -> str:
     return current_app.config.get("BABEL_DEFAULT_LOCALE", "tr")
 
 
+def js_i18n_map() -> dict:
+    """Aktif locale için {kaynak_msgid: çeviri} sözlüğü.
+
+    JS tarafında window.t() helper'ı bu map'i kullanır (FAZ 4). Yalnızca
+    aktif dilde gerçek çevirisi olan (msgstr dolu) girdiler döner; default
+    dil (tr) için boş sözlük döner çünkü JS literal'leri zaten Türkçe.
+    """
+    from flask import current_app
+    default = current_app.config.get("BABEL_DEFAULT_LOCALE", "tr")
+    try:
+        # Babel'in aktif locale'i (force_locale dahil doğru değer) — bizim
+        # session-tabanlı get_locale() force_locale'i görmez.
+        from flask_babel import get_locale as _babel_locale
+        locale = str(_babel_locale() or default)
+    except Exception:
+        locale = default
+    if locale == default:
+        return {}
+    try:
+        from flask_babel import get_translations, gettext
+        gettext("")  # lazy catalog yüklemesini tetikle
+        trans = get_translations()  # aktif locale'in gettext.GNUTranslations'ı
+        catalog = getattr(trans, "_catalog", {}) or {}
+        out = {}
+        for key, val in catalog.items():
+            # _catalog: {msgid: msgstr} ve {(msgid, idx): plural}. Sadece düz string id'ler.
+            if isinstance(key, str) and key and isinstance(val, str) and val and key != val:
+                out[key] = val
+        return out
+    except Exception:
+        return {}
+
+
 def init_babel(app):
     """Babel'i app'e kaydet."""
     # get_locale her durumda template'lerde kullanılabilir olsun (Babel yoksa da fallback döner).
@@ -80,7 +113,7 @@ def init_babel(app):
                 return get_locale()
             except Exception:
                 return app.config.get("BABEL_DEFAULT_LOCALE", "tr")
-        return {"get_locale": _safe_locale}
+        return {"get_locale": _safe_locale, "js_i18n_map": js_i18n_map}
 
     try:
         from flask_babel import Babel

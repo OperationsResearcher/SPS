@@ -55,8 +55,8 @@
     fab.id = "kule-fab";
     fab.className = "kule-fab";
     fab.type = "button";
-    fab.title = "Kule — sayfa yardımı";
-    fab.setAttribute("aria-label", "Kule yardımcısını aç");
+    fab.title = t("Kule — sayfa yardımı");
+    fab.setAttribute("aria-label", t("Kule yardımcısını aç"));
     fab.dataset.tourKey = tourKey || "";
     fab.innerHTML = await fetchSvg();
     fab.addEventListener("click", onFabClick);
@@ -69,8 +69,8 @@
     const tourKey = fab && fab.dataset.tourKey;
     if (!tourKey) {
       showStandaloneMessage(
-        "Bu sayfa henüz turlu değil",
-        "Bu sayfa için Kule turu henüz hazırlanmadı. Stratejik Planlama, Süreçler veya Masaüstü gibi sayfalarda beni dene."
+        t("Bu sayfa henüz turlu değil"),
+        t("Bu sayfa için Kule turu henüz hazırlanmadı. Stratejik Planlama, Süreçler veya Masaüstü gibi sayfalarda beni dene.")
       );
       return;
     }
@@ -78,8 +78,8 @@
     const r1 = await api("POST", `/${tourKey}/restart`);
     if (!r1 || !r1.success) {
       showStandaloneMessage(
-        "Tur başlatılamadı",
-        "Sunucuya ulaşılamadı. Sayfayı yenileyip tekrar dene."
+        t("Tur başlatılamadı"),
+        t("Sunucuya ulaşılamadı. Sayfayı yenileyip tekrar dene.")
       );
       return;
     }
@@ -97,13 +97,13 @@
       <div class="kule-welcome-header">
         <div class="kule-welcome-avatar">${svg}</div>
         <div>
-          <div class="kule-welcome-prefix">📡 Kule'den</div>
+          <div class="kule-welcome-prefix">📡 ${t("Kule'den")}</div>
           <div class="kule-welcome-title">${escapeHtml(title)}</div>
         </div>
       </div>
       <div class="kule-welcome-body">${renderBody(body)}</div>
       <div class="kule-welcome-actions">
-        <button type="button" class="kule-btn kule-btn-primary" data-kule-action="close">Tamam</button>
+        <button type="button" class="kule-btn kule-btn-primary" data-kule-action="close">${t("Tamam")}</button>
       </div>
     `;
     document.body.appendChild(el);
@@ -127,17 +127,17 @@
       <div class="kule-welcome-header">
         <div class="kule-welcome-avatar">${svg}</div>
         <div>
-          <div class="kule-welcome-prefix">📡 Kule'den</div>
-          <div class="kule-welcome-title">${escapeHtml(w.title || tour.title || "Hoş geldin")}</div>
+          <div class="kule-welcome-prefix">📡 ${t("Kule'den")}</div>
+          <div class="kule-welcome-title">${escapeHtml(w.title || tour.title || t("Hoş geldin"))}</div>
         </div>
       </div>
       <div class="kule-welcome-body">${renderBody(w.body || "")}</div>
       <div class="kule-welcome-actions">
         <button type="button" class="kule-btn kule-btn-secondary" data-kule-action="dismiss">
-          ${escapeHtml(w.cta_secondary || "Şimdi değil")}
+          ${escapeHtml(w.cta_secondary || t("Şimdi değil"))}
         </button>
         <button type="button" class="kule-btn kule-btn-primary" data-kule-action="start">
-          ${escapeHtml(w.cta_primary || "Başlayalım")}
+          ${escapeHtml(w.cta_primary || t("Başlayalım"))}
         </button>
       </div>
     `;
@@ -164,8 +164,8 @@
     if (!driverFn) {
       console.warn("[kule] driver.js yüklü değil — global.driver:", global.driver);
       showStandaloneMessage(
-        "Tur kütüphanesi yüklenemedi",
-        "Driver.js CDN'i engellenmiş olabilir. İnternet bağlantını veya ağ engellerini kontrol et."
+        t("Tur kütüphanesi yüklenemedi"),
+        t("Driver.js CDN'i engellenmiş olabilir. İnternet bağlantını veya ağ engellerini kontrol et.")
       );
       return;
     }
@@ -188,9 +188,9 @@
       allowClose: true,
       stagePadding: 6,
       popoverClass: "kule-theme",
-      nextBtnText: "Devam →",
-      prevBtnText: "← Geri",
-      doneBtnText: "Tamam",
+      nextBtnText: t("Devam →"),
+      prevBtnText: t("← Geri"),
+      doneBtnText: t("Tamam"),
       progressText: "{{current}} / {{total}}",
       steps: steps,
       onDestroyed: async () => {
@@ -213,13 +213,13 @@
       <div class="kule-welcome-header">
         <div class="kule-welcome-avatar">${svg}</div>
         <div>
-          <div class="kule-welcome-prefix">📡 Kule'den</div>
-          <div class="kule-welcome-title">${escapeHtml(f.title || "Hazırsın")}</div>
+          <div class="kule-welcome-prefix">📡 ${t("Kule'den")}</div>
+          <div class="kule-welcome-title">${escapeHtml(f.title || t("Hazırsın"))}</div>
         </div>
       </div>
       <div class="kule-welcome-body">${renderBody(f.body || "")}</div>
       <div class="kule-welcome-actions">
-        <button type="button" class="kule-btn kule-btn-primary" data-kule-action="close">Tamam</button>
+        <button type="button" class="kule-btn kule-btn-primary" data-kule-action="close">${t("Tamam")}</button>
       </div>
     `;
     document.body.appendChild(el);
@@ -235,8 +235,8 @@
       console.info(`[kule] tur yüklenemedi: ${tourKey}`, res);
       if (force) {
         showStandaloneMessage(
-          "Tur yüklenemedi",
-          (res && res.message) || "Sunucudan tur tanımı alınamadı."
+          t("Tur yüklenemedi"),
+          (res && res.message) || t("Sunucudan tur tanımı alınamadı.")
         );
       }
       return;

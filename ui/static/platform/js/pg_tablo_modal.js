@@ -97,18 +97,18 @@
   }
 
   const AYLAR_TR_FULL = [
-    "Ocak",
-    "Şubat",
-    "Mart",
-    "Nisan",
-    "Mayıs",
-    "Haziran",
-    "Temmuz",
-    "Ağustos",
-    "Eylül",
-    "Ekim",
-    "Kasım",
-    "Aralık",
+    t("Ocak"),
+    t("Şubat"),
+    t("Mart"),
+    t("Nisan"),
+    t("Mayıs"),
+    t("Haziran"),
+    t("Temmuz"),
+    t("Ağustos"),
+    t("Eylül"),
+    t("Ekim"),
+    t("Kasım"),
+    t("Aralık"),
   ];
 
   function haftalikRangeLabelTr(year, month, week) {
@@ -138,31 +138,31 @@
   }
 
   const ALTI_AY_PERIODS = [
-    { key: "halfyear_1", label: "Ocak – Haziran" },
-    { key: "halfyear_2", label: "Temmuz – Aralık" },
+    { key: "halfyear_1", label: t("Ocak – Haziran") },
+    { key: "halfyear_2", label: t("Temmuz – Aralık") },
   ];
 
   const PERIOD_CONFIG = {
     ceyrek: [
-      { key: "ceyrek_1", label: "I. Çeyrek" },
-      { key: "ceyrek_2", label: "II. Çeyrek" },
-      { key: "ceyrek_3", label: "III. Çeyrek" },
-      { key: "ceyrek_4", label: "IV. Çeyrek" },
+      { key: "ceyrek_1", label: t("I. Çeyrek") },
+      { key: "ceyrek_2", label: t("II. Çeyrek") },
+      { key: "ceyrek_3", label: t("III. Çeyrek") },
+      { key: "ceyrek_4", label: t("IV. Çeyrek") },
     ],
-    yillik: [{ key: "yillik_1", label: "Yıl Sonu" }],
+    yillik: [{ key: "yillik_1", label: t("Yıl Sonu") }],
     aylik: [
-      { key: "aylik_1", label: "Ocak" },
-      { key: "aylik_2", label: "Şubat" },
-      { key: "aylik_3", label: "Mart" },
-      { key: "aylik_4", label: "Nisan" },
-      { key: "aylik_5", label: "Mayıs" },
-      { key: "aylik_6", label: "Haziran" },
-      { key: "aylik_7", label: "Temmuz" },
-      { key: "aylik_8", label: "Ağustos" },
-      { key: "aylik_9", label: "Eylül" },
-      { key: "aylik_10", label: "Ekim" },
-      { key: "aylik_11", label: "Kasım" },
-      { key: "aylik_12", label: "Aralık" },
+      { key: "aylik_1", label: t("Ocak") },
+      { key: "aylik_2", label: t("Şubat") },
+      { key: "aylik_3", label: t("Mart") },
+      { key: "aylik_4", label: t("Nisan") },
+      { key: "aylik_5", label: t("Mayıs") },
+      { key: "aylik_6", label: t("Haziran") },
+      { key: "aylik_7", label: t("Temmuz") },
+      { key: "aylik_8", label: t("Ağustos") },
+      { key: "aylik_9", label: t("Eylül") },
+      { key: "aylik_10", label: t("Ekim") },
+      { key: "aylik_11", label: t("Kasım") },
+      { key: "aylik_12", label: t("Aralık") },
     ],
   };
 
@@ -243,18 +243,18 @@
     function updatePeriyotLabel() {
       if (!navLabel) return;
       const names = {
-        ceyrek: "Çeyreklik",
-        yillik: "Yıllık",
-        aylik: "Aylık",
-        haftalik: "Haftalık",
-        gunluk: "Günlük",
-        alti_ay: "6 aylık",
+        ceyrek: t("Çeyreklik"),
+        yillik: t("Yıllık"),
+        aylik: t("Aylık"),
+        haftalik: t("Haftalık"),
+        gunluk: t("Günlük"),
+        alti_ay: t("6 aylık"),
       };
       const y = getViewedYear();
       if (currentPeriyot === "gunluk") {
-        navLabel.textContent = `${gunlukViewYear} — Günlük görünümü`;
+        navLabel.textContent = `${gunlukViewYear} — ${t("Günlük görünümü")}`;
       } else {
-        navLabel.textContent = `${y} — ${names[currentPeriyot] || currentPeriyot} görünümü`;
+        navLabel.textContent = `${y} — ${names[currentPeriyot] || currentPeriyot} ${t("görünümü")}`;
       }
       if (navSub) {
         // Alt bilgi sadece günlükte gösterilsin: ay adı.
@@ -290,28 +290,15 @@
       const favSet = new Set(favoriteKpiIds || []);
       const periods = getPeriodsForPeriyot();
       const isGunluk = currentPeriyot === "gunluk" && periods.length > 0 && periods[0].isDay;
-      const aylar = [
-        "Ocak",
-        "Şubat",
-        "Mart",
-        "Nisan",
-        "Mayıs",
-        "Haziran",
-        "Temmuz",
-        "Ağustos",
-        "Eylül",
-        "Ekim",
-        "Kasım",
-        "Aralık",
-      ];
+      const aylar = AYLAR_TR_FULL;
       const monthName = isGunluk ? aylar[(getViewedMonth() || 1) - 1] : "";
 
       if (isGunluk) {
         let row1 =
-          '<tr><th rowspan="2" class="col-code">Kodu</th><th rowspan="2" class="col-strategy">Ana Strateji</th><th rowspan="2" class="col-strategy">Alt Strateji</th><th rowspan="2">Performans Adı</th><th rowspan="2" class="col-weight">Ağırlık (%)</th><th rowspan="2" class="col-unit">Birim</th><th rowspan="2" class="col-period">Ölçüm Per.</th><th rowspan="2" class="col-target-main">Yıllık Hedef</th><th rowspan="2" class="col-prev-year">Önceki Yıl</th>';
+          `<tr><th rowspan="2" class="col-code">${t("Kodu")}</th><th rowspan="2" class="col-strategy">${t("Ana Strateji")}</th><th rowspan="2" class="col-strategy">${t("Alt Strateji")}</th><th rowspan="2">${t("Performans Adı")}</th><th rowspan="2" class="col-weight">${t("Ağırlık (%)")}</th><th rowspan="2" class="col-unit">${t("Birim")}</th><th rowspan="2" class="col-period">${t("Ölçüm Per.")}</th><th rowspan="2" class="col-target-main">${t("Yıllık Hedef")}</th><th rowspan="2" class="col-prev-year">${t("Önceki Yıl")}</th>`;
         row1 += `<th colspan="${periods.length}" class="text-center">${escHtml(monthName)}</th>`;
         row1 +=
-          '<th rowspan="2" class="col-target">Yıllık Gerçekleşme</th><th rowspan="2" class="col-target col-weighted-basari">Ağırlıklı Başarı Puanı</th><th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr><tr>';
+          `<th rowspan="2" class="col-target">${t("Yıllık Gerçekleşme")}</th><th rowspan="2" class="col-target col-weighted-basari">${t("Ağırlıklı Başarı Puanı")}</th><th rowspan="2" class="col-target">${t("Başarı Puanı")}</th><th rowspan="2" class="col-actions no-print">${t("İşlemler")}</th></tr><tr>`;
         periods.forEach((p) => {
           row1 += `<th class="col-quarter text-center kpi-day-col">${escHtml(p.label)}</th>`;
         });
@@ -319,21 +306,21 @@
         thead.innerHTML = row1;
       } else {
         let thRow1 =
-          '<tr><th rowspan="2" class="col-code">Kodu</th><th rowspan="2" class="col-strategy">Ana Strateji</th><th rowspan="2" class="col-strategy">Alt Strateji</th><th rowspan="2">Performans Adı</th><th rowspan="2" class="col-weight">Ağırlık (%)</th><th rowspan="2" class="col-unit">Birim</th><th rowspan="2" class="col-period">Ölçüm Per.</th><th rowspan="2" class="col-target-main">Yıllık Hedef</th><th rowspan="2" class="col-prev-year">Önceki Yıl</th>';
+          `<tr><th rowspan="2" class="col-code">${t("Kodu")}</th><th rowspan="2" class="col-strategy">${t("Ana Strateji")}</th><th rowspan="2" class="col-strategy">${t("Alt Strateji")}</th><th rowspan="2">${t("Performans Adı")}</th><th rowspan="2" class="col-weight">${t("Ağırlık (%)")}</th><th rowspan="2" class="col-unit">${t("Birim")}</th><th rowspan="2" class="col-period">${t("Ölçüm Per.")}</th><th rowspan="2" class="col-target-main">${t("Yıllık Hedef")}</th><th rowspan="2" class="col-prev-year">${t("Önceki Yıl")}</th>`;
         let thRow2 = "<tr>";
         periods.forEach((p) => {
           thRow1 += `<th colspan="3" class="text-center">${escHtml(p.label)}</th>`;
-          thRow2 += '<th class="col-quarter">Hedef</th><th class="col-quarter">Gerç.</th><th class="col-quarter">Durum</th>';
+          thRow2 += `<th class="col-quarter">${t("Hedef")}</th><th class="col-quarter">${t("Gerç.")}</th><th class="col-quarter">${t("Durum")}</th>`;
         });
         thRow1 +=
-          '<th rowspan="2" class="col-target">Yıllık Gerçekleşme</th><th rowspan="2" class="col-target col-weighted-basari">Ağırlıklı Başarı Puanı</th><th rowspan="2" class="col-target">Başarı Puanı</th><th rowspan="2" class="col-actions no-print">İşlemler</th></tr>';
+          `<th rowspan="2" class="col-target">${t("Yıllık Gerçekleşme")}</th><th rowspan="2" class="col-target col-weighted-basari">${t("Ağırlıklı Başarı Puanı")}</th><th rowspan="2" class="col-target">${t("Başarı Puanı")}</th><th rowspan="2" class="col-actions no-print">${t("İşlemler")}</th></tr>`;
         thead.innerHTML = thRow1 + thRow2;
       }
 
       if (!kpis || kpis.length === 0) {
         const periodCols = isGunluk ? periods.length : periods.length * 3;
         const colspan = 9 + periodCols + 4;
-        tbody.innerHTML = `<tr><td colspan="${colspan}" class="micro-pg-empty-cell">Henüz performans göstergesi yok.</td></tr>`;
+        tbody.innerHTML = `<tr><td colspan="${colspan}" class="micro-pg-empty-cell">${t("Henüz performans göstergesi yok.")}</td></tr>`;
         applyColumnVisibility();
         return;
       }
@@ -368,7 +355,7 @@
         if (fromPgv && rollup != null && !Number.isNaN(Number(rollup))) {
           const n = Number(rollup);
           const disp = Number.isInteger(n) ? String(n) : n.toFixed(2);
-          const tip = "Bu veri önceki yıldan hesaplanmıştır.";
+          const tip = t("Bu veri önceki yıldan hesaplanmıştır.");
           prevYearTd = `<td class="col-prev-year text-center"><span class="micro-pg-prev-year-val">${escHtml(disp)}</span><i class="fas fa-star micro-pg-prev-year-star" title="${escHtml(tip)}" aria-label="${escHtml(tip)}"></i></td>`;
         } else if (manualOy != null && manualOy !== "" && !Number.isNaN(Number(manualOy))) {
           const n = Number(manualOy);
@@ -465,11 +452,11 @@
         const delName = (k.name || "").replace(/\\/g, "\\\\").replace(/'/g, "\\'");
         const actions = canCrudPg
           ? `<div class="micro-pg-row-actions">
-            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm karne-fav-kpi-btn ${isFav ? "karne-fav-kpi-btn--on" : ""}" data-kpi-id="${k.id}" title="Favori"><i class="${favIconClass}" aria-hidden="true"></i></button>
-            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-kpi-edit" data-kpi-id="${k.id}" title="Düzenle"><i class="fas fa-pen" aria-hidden="true"></i></button>
-            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-kpi-delete" data-kpi-id="${k.id}" title="Sil"><i class="fas fa-trash" aria-hidden="true"></i></button>
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm karne-fav-kpi-btn ${isFav ? "karne-fav-kpi-btn--on" : ""}" data-kpi-id="${k.id}" title="${t("Favori")}"><i class="${favIconClass}" aria-hidden="true"></i></button>
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-kpi-edit" data-kpi-id="${k.id}" title="${t("Düzenle")}"><i class="fas fa-pen" aria-hidden="true"></i></button>
+            <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-kpi-delete" data-kpi-id="${k.id}" title="${t("Sil")}"><i class="fas fa-trash" aria-hidden="true"></i></button>
           </div>`
-          : `<button type="button" class="mc-btn mc-btn-secondary mc-btn-sm karne-fav-kpi-btn ${isFav ? "karne-fav-kpi-btn--on" : ""}" data-kpi-id="${k.id}" title="Favori"><i class="${favIconClass}" aria-hidden="true"></i></button>`;
+          : `<button type="button" class="mc-btn mc-btn-secondary mc-btn-sm karne-fav-kpi-btn ${isFav ? "karne-fav-kpi-btn--on" : ""}" data-kpi-id="${k.id}" title="${t("Favori")}"><i class="${favIconClass}" aria-hidden="true"></i></button>`;
 
         const hl = highlightKpiId && Number(k.id) === Number(highlightKpiId) ? " micro-pg-row--highlight" : "";
         return `<tr class="micro-pg-data-row${hl}" data-kpi-id="${k.id}">${fixedCols}${periodCells}<td class="col-target text-center">${escHtml(yillikGerceklesenHtml)}</td><td class="col-target col-weighted-basari text-center">${escHtml(agirlikliBasariHtml)}</td><td class="col-target text-center">${skorHtml}</td><td class="col-actions no-print">${actions}</td></tr>`;
@@ -499,7 +486,7 @@
         rebuildPGTableByPeriyot(res.kpis || [], res.favorite_kpi_ids || []);
       } catch (e) {
         console.error(e);
-        showError("Karne verisi yüklenemedi.");
+        showError(t("Karne verisi yüklenemedi."));
       }
     }
 
@@ -574,13 +561,13 @@
 
     function periodLabelForKey(periodKey, yearForHafta) {
       const map = {
-        ceyrek_1: "I. Çeyrek",
-        ceyrek_2: "II. Çeyrek",
-        ceyrek_3: "III. Çeyrek",
-        ceyrek_4: "IV. Çeyrek",
-        yillik_1: "Yıl Sonu",
-        halfyear_1: "Ocak – Haziran",
-        halfyear_2: "Temmuz – Aralık",
+        ceyrek_1: t("I. Çeyrek"),
+        ceyrek_2: t("II. Çeyrek"),
+        ceyrek_3: t("III. Çeyrek"),
+        ceyrek_4: t("IV. Çeyrek"),
+        yillik_1: t("Yıl Sonu"),
+        halfyear_1: t("Ocak – Haziran"),
+        halfyear_2: t("Temmuz – Aralık"),
       };
       if (map[periodKey]) return map[periodKey];
       const hm = periodKey.match(/^haftalik_(\d+)_(\d+)$/);
@@ -599,7 +586,7 @@
 
     async function loadVeriDetayContent(kpiId, periodKey) {
       if (!veriDetayContent || !kpiDetailUrl) return;
-      veriDetayContent.innerHTML = '<p class="karne-field-hint">Yükleniyor…</p>';
+      veriDetayContent.innerHTML = `<p class="karne-field-hint">${t("Yükleniyor…")}</p>`;
       _veriDetayKpiId = kpiId;
       _veriDetayPeriodKey = periodKey;
       const y = getViewedYear();
@@ -608,14 +595,14 @@
         const r = await fetch(url, { credentials: "same-origin", headers: { Accept: "application/json" } });
         const res = await r.json();
         if (!res.success) {
-          veriDetayContent.innerHTML = `<p class="karne-field-hint">${escHtml(res.message || "Hata")}</p>`;
+          veriDetayContent.innerHTML = `<p class="karne-field-hint">${escHtml(res.message || t("Hata"))}</p>`;
           return;
         }
         const pl = periodLabelForKey(periodKey, y);
         let html = `<h6 class="micro-veri-detay-head">${escHtml(res.kpi_name)} — <span class="micro-pg-badge-period">${escHtml(pl)}</span> <span class="micro-pg-year-badge">${y}</span></h6>`;
 
         if (res.entries && res.entries.length > 0) {
-          html += '<div class="micro-pg-table-scroll"><table class="micro-pg-mini-table"><thead><tr><th>Veri tarihi</th><th>Giriş</th><th>Gerçekleşen</th><th>Açıklama</th><th>Kullanıcı</th><th></th></tr></thead><tbody>';
+          html += `<div class="micro-pg-table-scroll"><table class="micro-pg-mini-table"><thead><tr><th>${t("Veri tarihi")}</th><th>${t("Giriş")}</th><th>${t("Gerçekleşen")}</th><th>${t("Açıklama")}</th><th>${t("Kullanıcı")}</th><th></th></tr></thead><tbody>`;
           res.entries.forEach((e) => {
             const vd = e.data_date ? new Date(e.data_date).toLocaleDateString("tr-TR") : "—";
             const gd = e.created_at ? new Date(e.created_at).toLocaleString("tr-TR") : "—";
@@ -626,18 +613,18 @@
               <td><small>${escHtml(String(e.description || "—"))}</small></td>
               <td><small>${escHtml(String(e.user || ""))}</small></td>
               <td>
-                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm micro-btn-edit-veri" data-entry-id="${e.id}" data-actual="${String(e.actual_value ?? "").replace(/"/g, "&quot;")}" data-desc="${String(e.description ?? "").replace(/"/g, "&quot;")}">Düzenle</button>
-                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm micro-btn-del-veri" data-entry-id="${e.id}">Sil</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm micro-btn-edit-veri" data-entry-id="${e.id}" data-actual="${String(e.actual_value ?? "").replace(/"/g, "&quot;")}" data-desc="${String(e.description ?? "").replace(/"/g, "&quot;")}">${t("Düzenle")}</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm micro-btn-del-veri" data-entry-id="${e.id}">${t("Sil")}</button>
               </td>
             </tr>`;
           });
           html += "</tbody></table></div>";
         } else {
-          html += '<p class="karne-field-hint">Bu periyot için kayıt yok.</p>';
+          html += `<p class="karne-field-hint">${t("Bu periyot için kayıt yok.")}</p>`;
         }
 
         if (res.audits && res.audits.length > 0) {
-          html += '<h6 class="micro-veri-audit-head">İşlem geçmişi</h6><div class="micro-pg-table-scroll"><table class="micro-pg-mini-table"><thead><tr><th>Tarih</th><th>İşlem</th><th>Kullanıcı</th><th>Eski</th><th>Yeni</th></tr></thead><tbody>';
+          html += `<h6 class="micro-veri-audit-head">${t("İşlem geçmişi")}</h6><div class="micro-pg-table-scroll"><table class="micro-pg-mini-table"><thead><tr><th>${t("Tarih")}</th><th>${t("İşlem")}</th><th>${t("Kullanıcı")}</th><th>${t("Eski")}</th><th>${t("Yeni")}</th></tr></thead><tbody>`;
           res.audits.forEach((a) => {
             const d = a.created_at ? new Date(a.created_at).toLocaleString("tr-TR") : "—";
             html += `<tr><td><small>${escHtml(d)}</small></td><td>${escHtml(a.action_label || a.action_type)}</td><td>${escHtml(a.user || "")}</td><td><small>${escHtml(String(a.old_value ?? "—"))}</small></td><td><small>${escHtml(String(a.new_value ?? "—"))}</small></td></tr>`;
@@ -645,7 +632,7 @@
           html += "</tbody></table></div>";
         }
 
-        html += '<p class="karne-field-hint micro-proje-gorev-hint"><strong>Proje görevleri:</strong> <span id="micro-pg-proje-list">…</span></p>';
+        html += `<p class="karne-field-hint micro-proje-gorev-hint"><strong>${t("Proje görevleri:")}</strong> <span id="micro-pg-proje-list">…</span></p>`;
         veriDetayContent.innerHTML = html;
         const listEl = document.getElementById("micro-pg-proje-list");
         if (listEl && kpiProjeUrl) {
@@ -653,15 +640,15 @@
             .then((x) => x.json())
             .then((pr) => {
               if (pr.success && pr.gorevler && pr.gorevler.length) {
-                listEl.textContent = pr.gorevler.map((g) => g.title || g.ad || "Görev").join(", ");
-              } else listEl.textContent = "Bağlı görev yok.";
+                listEl.textContent = pr.gorevler.map((g) => g.title || g.ad || t("Görev")).join(", ");
+              } else listEl.textContent = t("Bağlı görev yok.");
             })
             .catch(() => {
-              listEl.textContent = "Yüklenemedi.";
+              listEl.textContent = t("Yüklenemedi.");
             });
         }
       } catch (_e) {
-        veriDetayContent.innerHTML = '<p class="karne-field-hint">Yükleme hatası.</p>';
+        veriDetayContent.innerHTML = `<p class="karne-field-hint">${t("Yükleme hatası.")}</p>`;
       }
     }
 
@@ -707,11 +694,11 @@
           const id = parseInt(del.dataset.entryId, 10);
           if (!id) return;
           Swal.fire({
-            title: "Veriyi pasifleştir?",
+            title: t("Veriyi pasifleştir?"),
             icon: "warning",
             showCancelButton: true,
-            confirmButtonText: "Evet",
-            cancelButtonText: "İptal",
+            confirmButtonText: t("Evet"),
+            cancelButtonText: t("İptal"),
             confirmButtonColor: "#b45309",
             customClass: { container: "swal-above-nested-modal" },
             didOpen: () => {
@@ -724,11 +711,11 @@
             if (!url) return;
             const out = await postJson(url, {});
             if (out.success) {
-              toastSuccess(out.message || "Silindi.");
+              toastSuccess(out.message || t("Silindi."));
               loadVeriDetayContent(_veriDetayKpiId, _veriDetayPeriodKey);
               loadKarneData();
               if (typeof onAfterMutation === "function") onAfterMutation();
-            } else showError(out.message || "Hata");
+            } else showError(out.message || t("Hata"));
           });
         }
       });
@@ -744,13 +731,13 @@
       if (!url) return;
       const out = await postJson(url, { actual_value: av, description: ds });
       if (out.success) {
-        toastSuccess(out.message || "Güncellendi.");
+        toastSuccess(out.message || t("Güncellendi."));
         modal.classList.remove("open");
         modal.setAttribute("aria-hidden", "true");
         loadVeriDetayContent(_veriDetayKpiId, _veriDetayPeriodKey);
         loadKarneData();
         if (typeof onAfterMutation === "function") onAfterMutation();
-      } else showError(out.message || "Hata");
+      } else showError(out.message || t("Hata"));
     });
 
     document.getElementById("btn-micro-veri-duzenle-cancel")?.addEventListener("click", () => {
@@ -786,15 +773,15 @@
     document.getElementById("btn-micro-pg-tablo-add-pgv")?.addEventListener("click", () => {
       const canEnterPgv = typeof getCanEnterPgv === "function" ? !!getCanEnterPgv() : false;
       if (!canEnterPgv) {
-        showError("PG verisi girme yetkiniz yok.");
+        showError(t("PG verisi girme yetkiniz yok."));
         return;
       }
       if (typeof openDataEntryModal !== "function") {
-        showError("Veri girişi sihirbazı şu an kullanılamıyor.");
+        showError(t("Veri girişi sihirbazı şu an kullanılamıyor."));
         return;
       }
       if (!lastLoadedKpis.length) {
-        showError("Önce bu sürece performans göstergesi ekleyin.");
+        showError(t("Önce bu sürece performans göstergesi ekleyin."));
         return;
       }
 

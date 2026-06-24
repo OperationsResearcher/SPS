@@ -45,7 +45,7 @@
   }
   function toastErr(msg) {
     if (window.Swal) {
-      Swal.fire({ icon: "error", title: "Hata", text: msg });
+      Swal.fire({ icon: "error", title: t("Hata"), text: msg });
     }
   }
 
@@ -60,10 +60,10 @@
           // Sayfayı yenile — strateji ağacı vb. yıla göre sunucu tarafında render ediliyor
           window.location.reload();
         } else {
-          toastErr(data.message || "Yıl değiştirilemedi.");
+          toastErr(data.message || t("Yıl değiştirilemedi."));
         }
       } catch (e) {
-        toastErr("Bağlantı hatası.");
+        toastErr(t("Bağlantı hatası."));
       }
     });
   }
@@ -77,12 +77,12 @@
 
       const result = await Swal.fire({
         icon: "warning",
-        title: `${year} Yılını Kapat`,
-        html: `<p>${year} stratejik plan yılı kapatılacak. Kapalı yıllar artık düzenlenemez.</p>
-               <p><strong>Bu işlem geri alınamaz.</strong></p>`,
+        title: `${year} ${t("Yılını Kapat")}`,
+        html: `<p>${year} ${t("stratejik plan yılı kapatılacak. Kapalı yıllar artık düzenlenemez.")}</p>
+               <p><strong>${t("Bu işlem geri alınamaz.")}</strong></p>`,
         showCancelButton: true,
-        confirmButtonText: "Evet, Kapat",
-        cancelButtonText: "Vazgeç",
+        confirmButtonText: t("Evet, Kapat"),
+        cancelButtonText: t("Vazgeç"),
         confirmButtonColor: "#dc2626",
       });
       if (!result.isConfirmed) return;
@@ -90,13 +90,13 @@
       try {
         const data = await postJson(closeUrl, {});
         if (data.success) {
-          toastOk(data.message || `${year} kapatıldı.`);
+          toastOk(data.message || `${year} ${t("kapatıldı.")}`);
           setTimeout(() => window.location.reload(), 1200);
         } else {
-          toastErr(data.message || "Yıl kapatılamadı.");
+          toastErr(data.message || t("Yıl kapatılamadı."));
         }
       } catch (e) {
-        toastErr("Bağlantı hatası.");
+        toastErr(t("Bağlantı hatası."));
       }
     });
   }
@@ -131,7 +131,7 @@
       const fromYear = fromYearInput ? parseInt(fromYearInput.value, 10) || null : null;
 
       if (!newYear || newYear < 2000 || newYear > 2100) {
-        toastErr("Geçerli bir yıl girin (2000-2100).");
+        toastErr(t("Geçerli bir yıl girin (2000-2100)."));
         return;
       }
 
@@ -143,14 +143,14 @@
 
         const data = await postJson(CREATE_URL, payload);
         if (data.success) {
-          toastOk(data.message || `${newYear} yılı planı oluşturuldu.`);
+          toastOk(data.message || `${newYear} ${t("yılı planı oluşturuldu.")}`);
           closePynModal();
           setTimeout(() => window.location.reload(), 1200);
         } else {
-          toastErr(data.message || "Plan yılı oluşturulamadı.");
+          toastErr(data.message || t("Plan yılı oluşturulamadı."));
         }
       } catch (e) {
-        toastErr("Bağlantı hatası.");
+        toastErr(t("Bağlantı hatası."));
       } finally {
         btnNewSave.disabled = false;
       }

@@ -31,15 +31,15 @@
     const opts = STRATEJI_SECENEKLERI.map(
       (s) => `<option value="${s.id}" ${String(s.id) === String(strategyId) ? "selected" : ""}>${escHtml(s.baslik)}</option>`
     ).join("");
-    return `<div><label class="block text-xs text-gray-500 mb-1">Katman</label>
+    return `<div><label class="block text-xs text-gray-500 mb-1">${t("Katman")}</label>
         <select id="pg-katman" class="swal2-select" style="display:block;width:100%;">
-          <option value="Standart" ${!isStr ? "selected" : ""}>Standart (rutin/operasyonel)</option>
-          <option value="Stratejik" ${isStr ? "selected" : ""}>Stratejik (kuruma bağlı)</option>
+          <option value="Standart" ${!isStr ? "selected" : ""}>${t("Standart (rutin/operasyonel)")}</option>
+          <option value="Stratejik" ${isStr ? "selected" : ""}>${t("Stratejik (kuruma bağlı)")}</option>
         </select></div>
       <div id="pg-strateji-wrap" style="display:${isStr ? "block" : "none"};">
-        <label class="block text-xs text-gray-500 mb-1">Bağlı strateji (opsiyonel)</label>
+        <label class="block text-xs text-gray-500 mb-1">${t("Bağlı strateji (opsiyonel)")}</label>
         <select id="pg-strategy-id" class="swal2-select" style="display:block;width:100%;">
-          <option value="">— Seçilmedi —</option>${opts}
+          <option value="">${t("— Seçilmedi —")}</option>${opts}
         </select></div>`;
   }
 
@@ -99,7 +99,7 @@
   }
 
   function showError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
   }
 
   async function confirmDelete(title, text) {
@@ -110,8 +110,8 @@
       showCancelButton: true,
       confirmButtonColor: "#dc2626",
       cancelButtonColor: "#6b7280",
-      confirmButtonText: "Evet, sil",
-      cancelButtonText: "İptal",
+      confirmButtonText: t("Evet, sil"),
+      cancelButtonText: t("İptal"),
     });
     return r.isConfirmed;
   }
@@ -183,7 +183,7 @@
     insightsStrip.innerHTML = "";
     if (!pgs || !pgs.length) {
       insightsStrip.innerHTML =
-        `<span class="karne-insight-pill">Henüz PG yok — ilk göstergenizi ekleyin.</span>`;
+        `<span class="karne-insight-pill">${t("Henüz PG yok — ilk göstergenizi ekleyin.")}</span>`;
       return;
     }
 
@@ -202,11 +202,11 @@
     const pills = [];
     pills.push({
       cls: "karne-insight-pill",
-      html: `<i class="fas fa-calendar-check"></i> ${monthsHit.size}/12 ayda en az bir PG verisi`,
+      html: `<i class="fas fa-calendar-check"></i> ${monthsHit.size}/12 ${t("ayda en az bir PG verisi")}`,
     });
     pills.push({
       cls: pgNoYearData ? "karne-insight-pill karne-insight-pill--warn" : "karne-insight-pill karne-insight-pill--ok",
-      html: `<i class="fas fa-bullseye"></i> ${pgNoYearData} gösterge bu yıl henüz veri almadı`,
+      html: `<i class="fas fa-bullseye"></i> ${pgNoYearData} ${t("gösterge bu yıl henüz veri almadı")}`,
     });
 
     let lowSignal = 0;
@@ -229,8 +229,8 @@
     if (lowSignal > 0) {
       pills.push({
         cls: "karne-insight-pill karne-insight-pill--warn",
-        html: `<i class="fas fa-triangle-exclamation"></i> ${lowSignal} gösterge son veride hedefe göre zayıf görünüyor
-          <small style="display:block;font-weight:500;margin-top:4px;opacity:0.92;">Tahmini göstergedir; resmi performans değerlendirmesi değildir. Hedef ve yön bilgisine bağlıdır.</small>`,
+        html: `<i class="fas fa-triangle-exclamation"></i> ${lowSignal} ${t("gösterge son veride hedefe göre zayıf görünüyor")}
+          <small style="display:block;font-weight:500;margin-top:4px;opacity:0.92;">${t("Tahmini göstergedir; resmi performans değerlendirmesi değildir. Hedef ve yön bilgisine bağlıdır.")}</small>`,
       });
     }
 
@@ -259,14 +259,14 @@
         return `<div class="karne-spark-bar" style="height:${h}px" title="${escHtml(String(v))}"></div>`;
       })
       .join("");
-    return `<div class="karne-spark-wrap" aria-hidden="true">${bars}</div><div class="mc-page-subtitle" style="margin-top:6px;">Aylık gerçekleşen (mini özet)</div>`;
+    return `<div class="karne-spark-wrap" aria-hidden="true">${bars}</div><div class="mc-page-subtitle" style="margin-top:6px;">${t("Aylık gerçekleşen (mini özet)")}</div>`;
   }
 
   async function openPgDetailModal(pg, year) {
     try {
       const res = await fetch(seriesUrl(pg.id, year));
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Detay alınamadı");
+      if (!data.success) throw new Error(data.message || t("Detay alınamadı"));
       const rows = (data.series || [])
         .map(
           (r) =>
@@ -274,19 +274,19 @@
         )
         .join("");
       const table = rows
-        ? `<table class="mc-table" style="font-size:12px;width:100%;"><thead><tr><th>Tarih</th><th>Değer</th><th>Not</th></tr></thead><tbody>${rows}</tbody></table>`
-        : `<p class="mc-page-subtitle">Bu yıl için kayıtlı veri yok.</p>`;
+        ? `<table class="mc-table" style="font-size:12px;width:100%;"><thead><tr><th>${t("Tarih")}</th><th>${t("Değer")}</th><th>${t("Not")}</th></tr></thead><tbody>${rows}</tbody></table>`
+        : `<p class="mc-page-subtitle">${t("Bu yıl için kayıtlı veri yok.")}</p>`;
       const spark = buildSparkHtml(data.monthly || {});
       await Swal.fire({
         title: escHtml(data.pg.name || "PG"),
         width: 640,
         html: `<div class="text-left" style="max-height:70vh;overflow:auto;">
-          <p class="mc-page-subtitle" style="margin:0 0 8px;">Hedef: <strong>${escHtml(data.pg.target_value || "—")}</strong> ${data.pg.unit ? escHtml(data.pg.unit) : ""}</p>
+          <p class="mc-page-subtitle" style="margin:0 0 8px;">${t("Hedef:")} <strong>${escHtml(data.pg.target_value || "—")}</strong> ${data.pg.unit ? escHtml(data.pg.unit) : ""}</p>
           ${spark}
-          <h4 style="margin:16px 0 8px;font-size:14px;">Kayıtlar</h4>
+          <h4 style="margin:16px 0 8px;font-size:14px;">${t("Kayıtlar")}</h4>
           ${table}
         </div>`,
-        confirmButtonText: "Kapat",
+        confirmButtonText: t("Kapat"),
         confirmButtonColor: "#4f46e5",
       });
     } catch (e) {
@@ -303,7 +303,7 @@
     try {
       const res = await fetch(`${KARNE_API}?year=${year}`);
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Veri alınamadı.");
+      if (!data.success) throw new Error(data.message || t("Veri alınamadı."));
       lastPgs = data.pgs || [];
       updateStats(data.pgs, data.activities);
       renderInsights(data.pgs, year);
@@ -311,7 +311,7 @@
       renderPgTable(data.pgs, year);
       renderFaaliyetTable(data.activities, year);
     } catch (err) {
-      showError("Karne verileri yüklenirken hata: " + err.message);
+      showError(t("Karne verileri yüklenirken hata:") + " " + err.message);
     } finally {
       if (loadingEl) loadingEl.style.display = "none";
     }
@@ -339,7 +339,7 @@
 
   function renderPgTable(pgs, year) {
     if (!pgs || !pgs.length) {
-      pgTbody.innerHTML = `<tr><td colspan="17" class="text-center py-8 text-gray-400">Henüz PG eklenmemiş.</td></tr>`;
+      pgTbody.innerHTML = `<tr><td colspan="17" class="text-center py-8 text-gray-400">${t("Henüz PG eklenmemiş.")}</td></tr>`;
       return;
     }
     pgTbody.innerHTML = pgs
@@ -359,7 +359,7 @@
         <td class="px-3 py-2 text-gray-400">${i + 1}</td>
         <td class="px-3 py-2 font-medium text-gray-800 dark:text-gray-100">${escHtml(pg.name)}
           ${pg.code ? `<span class="process-code-badge">${escHtml(pg.code)}</span>` : ""}
-          ${pg.katman === "Stratejik" ? `<span class="inline-flex items-center gap-1 ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" title="${pg.strategy_baslik ? escHtml(pg.strategy_baslik) : "Stratejik hedef"}"><i class="fas fa-bullseye text-[9px]"></i>Stratejik</span>` : ""}
+          ${pg.katman === "Stratejik" ? `<span class="inline-flex items-center gap-1 ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" title="${pg.strategy_baslik ? escHtml(pg.strategy_baslik) : t("Stratejik hedef")}"><i class="fas fa-bullseye text-[9px]"></i>${t("Stratejik")}</span>` : ""}
         </td>
         <td class="px-3 py-2 text-center">${escHtml(pg.target_value || "—")}</td>
         <td class="px-3 py-2 text-center text-gray-500">${escHtml(pg.unit || "—")}</td>
@@ -376,7 +376,7 @@
 
   function renderFaaliyetTable(activities, year) {
     if (!activities || !activities.length) {
-      faaliyetTbody.innerHTML = `<tr><td colspan="16" class="text-center py-8 text-gray-400">Henüz faaliyet eklenmemiş.</td></tr>`;
+      faaliyetTbody.innerHTML = `<tr><td colspan="16" class="text-center py-8 text-gray-400">${t("Henüz faaliyet eklenmemiş.")}</td></tr>`;
       return;
     }
     faaliyetTbody.innerHTML = activities
@@ -406,26 +406,26 @@
 
   document.getElementById("btn-pg-add")?.addEventListener("click", async () => {
     const { value: vals } = await Swal.fire({
-      title: "Yeni Performans Göstergesi",
+      title: t("Yeni Performans Göstergesi"),
       html: `<div class="text-left space-y-3">
-        <div><label class="block text-xs text-gray-500 mb-1">Ad <span class="text-red-500">*</span></label>
-          <input id="pg-name" class="swal2-input" placeholder="PG adı"></div>
-        <div><label class="block text-xs text-gray-500 mb-1">Hedef Değer</label>
-          <input id="pg-target" class="swal2-input" placeholder="Örn: 95"></div>
-        <div><label class="block text-xs text-gray-500 mb-1">Birim</label>
-          <input id="pg-unit" class="swal2-input" placeholder="Örn: %"></div>
+        <div><label class="block text-xs text-gray-500 mb-1">${t("Ad")} <span class="text-red-500">*</span></label>
+          <input id="pg-name" class="swal2-input" placeholder="${t("PG adı")}"></div>
+        <div><label class="block text-xs text-gray-500 mb-1">${t("Hedef Değer")}</label>
+          <input id="pg-target" class="swal2-input" placeholder="${t("Örn: 95")}"></div>
+        <div><label class="block text-xs text-gray-500 mb-1">${t("Birim")}</label>
+          <input id="pg-unit" class="swal2-input" placeholder="${t("Örn: %")}"></div>
         ${katmanFormHtml("Standart", null)}
       </div>`,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "Kaydet",
-      cancelButtonText: "İptal",
+      confirmButtonText: t("Kaydet"),
+      cancelButtonText: t("İptal"),
       confirmButtonColor: "#4f46e5",
       didOpen: bindKatmanToggle,
       preConfirm: () => {
         const name = document.getElementById("pg-name").value.trim();
         if (!name) {
-          Swal.showValidationMessage("Ad zorunludur.");
+          Swal.showValidationMessage(t("Ad zorunludur."));
           return false;
         }
         return {
@@ -440,32 +440,32 @@
     try {
       const d = await postJson(PG_ADD_URL, vals);
       if (d.success) {
-        toastSuccess("PG eklendi.");
+        toastSuccess(t("PG eklendi."));
         loadKarne();
-      } else showError(d.message || "Kayıt başarısız.");
+      } else showError(d.message || t("Kayıt başarısız."));
     } catch (e) {
-      showError("Sunucu hatası: " + e.message);
+      showError(t("Sunucu hatası:") + " " + e.message);
     }
   });
 
   document.getElementById("btn-faaliyet-add")?.addEventListener("click", async () => {
     const { value: vals } = await Swal.fire({
-      title: "Yeni Faaliyet",
+      title: t("Yeni Faaliyet"),
       html: `<div class="text-left space-y-3">
-        <div><label class="block text-xs text-gray-500 mb-1">Ad <span class="text-red-500">*</span></label>
-          <input id="fa-name" class="swal2-input" placeholder="Faaliyet adı"></div>
-        <div><label class="block text-xs text-gray-500 mb-1">Açıklama</label>
-          <textarea id="fa-desc" class="swal2-textarea" placeholder="Kısa açıklama"></textarea></div>
+        <div><label class="block text-xs text-gray-500 mb-1">${t("Ad")} <span class="text-red-500">*</span></label>
+          <input id="fa-name" class="swal2-input" placeholder="${t("Faaliyet adı")}"></div>
+        <div><label class="block text-xs text-gray-500 mb-1">${t("Açıklama")}</label>
+          <textarea id="fa-desc" class="swal2-textarea" placeholder="${t("Kısa açıklama")}"></textarea></div>
       </div>`,
       focusConfirm: false,
       showCancelButton: true,
-      confirmButtonText: "Kaydet",
-      cancelButtonText: "İptal",
+      confirmButtonText: t("Kaydet"),
+      cancelButtonText: t("İptal"),
       confirmButtonColor: "#4f46e5",
       preConfirm: () => {
         const name = document.getElementById("fa-name").value.trim();
         if (!name) {
-          Swal.showValidationMessage("Ad zorunludur.");
+          Swal.showValidationMessage(t("Ad zorunludur."));
           return false;
         }
         return { name, description: document.getElementById("fa-desc").value.trim() || null };
@@ -475,11 +475,11 @@
     try {
       const d = await postJson(FAALIYET_ADD_URL, vals);
       if (d.success) {
-        toastSuccess("Faaliyet eklendi.");
+        toastSuccess(t("Faaliyet eklendi."));
         loadKarne();
-      } else showError(d.message || "Kayıt başarısız.");
+      } else showError(d.message || t("Kayıt başarısız."));
     } catch (e) {
-      showError("Sunucu hatası: " + e.message);
+      showError(t("Sunucu hatası:") + " " + e.message);
     }
   });
 
@@ -495,15 +495,15 @@
     const btn = e.target.closest(".btn-veri-gir");
     if (btn) {
       const { value: val } = await Swal.fire({
-        title: "Veri Gir",
+        title: t("Veri Gir"),
         input: "text",
-        inputLabel: "Gerçekleşen Değer",
-        inputPlaceholder: "Örn: 92.5",
+        inputLabel: t("Gerçekleşen Değer"),
+        inputPlaceholder: t("Örn: 92.5"),
         showCancelButton: true,
-        confirmButtonText: "Kaydet",
-        cancelButtonText: "İptal",
+        confirmButtonText: t("Kaydet"),
+        cancelButtonText: t("İptal"),
         confirmButtonColor: "#4f46e5",
-        inputValidator: (v) => !v && "Değer boş bırakılamaz.",
+        inputValidator: (v) => !v && t("Değer boş bırakılamaz."),
       });
       if (!val) return;
       try {
@@ -515,23 +515,23 @@
           actual_value: val,
         });
         if (d.success) {
-          toastSuccess("Veri kaydedildi.");
+          toastSuccess(t("Veri kaydedildi."));
           loadKarne();
-        } else showError(d.message || "Kayıt başarısız.");
+        } else showError(d.message || t("Kayıt başarısız."));
       } catch (err) {
-        showError("Sunucu hatası: " + err.message);
+        showError(t("Sunucu hatası:") + " " + err.message);
       }
       return;
     }
 
     const btnPgDel = e.target.closest(".btn-pg-delete");
     if (btnPgDel) {
-      const ok = await confirmDelete("PG silinsin mi?", "Performans göstergesi pasife alınacak.");
+      const ok = await confirmDelete(t("PG silinsin mi?"), t("Performans göstergesi pasife alınacak."));
       if (!ok) return;
       try {
         const d = await postJson(`${PG_DEL_BASE}${btnPgDel.dataset.pgId}`, {});
         if (d.success) {
-          toastSuccess("PG silindi.");
+          toastSuccess(t("PG silindi."));
           loadKarne();
         } else showError(d.message);
       } catch (err) {
@@ -542,12 +542,12 @@
 
     const btnFaDel = e.target.closest(".btn-faaliyet-delete");
     if (btnFaDel) {
-      const ok = await confirmDelete("Faaliyet silinsin mi?", "Faaliyet pasife alınacak.");
+      const ok = await confirmDelete(t("Faaliyet silinsin mi?"), t("Faaliyet pasife alınacak."));
       if (!ok) return;
       try {
         const d = await postJson(`${FAALIYET_DEL_BASE}${btnFaDel.dataset.actId}`, {});
         if (d.success) {
-          toastSuccess("Faaliyet silindi.");
+          toastSuccess(t("Faaliyet silindi."));
           loadKarne();
         } else showError(d.message);
       } catch (err) {
@@ -567,7 +567,7 @@
       });
       if (!d.success) {
         cb.checked = !cb.checked;
-        showError(d.message || "Takip güncellenemedi.");
+        showError(d.message || t("Takip güncellenemedi."));
       }
     } catch (err) {
       cb.checked = !cb.checked;

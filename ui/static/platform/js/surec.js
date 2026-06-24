@@ -30,7 +30,7 @@
 
   async function parseJsonOrThrow(res) {
     if (isLikelyLoginRedirect(res) || res.status === 401) {
-      const err = new Error("Oturum süresi doldu. Lütfen yeniden giriş yapın.");
+      const err = new Error(t("Oturum süresi doldu. Lütfen yeniden giriş yapın."));
       err.code = "AUTH_REQUIRED";
       throw err;
     }
@@ -39,7 +39,7 @@
       try {
         return await res.json();
       } catch (_) {
-        throw new Error(`Sunucu JSON yanıtı okunamadı (HTTP ${res.status}).`);
+        throw new Error(`${t("Sunucu JSON yanıtı okunamadı")} (HTTP ${res.status}).`);
       }
     }
 
@@ -52,20 +52,20 @@
     }
 
     if (res.status === 429) {
-      throw new Error("İstek limiti aşıldı. Lütfen bir süre sonra tekrar deneyin.");
+      throw new Error(t("İstek limiti aşıldı. Lütfen bir süre sonra tekrar deneyin."));
     }
     if (res.status === 403) {
-      throw new Error("Bu işlem için yetkiniz yok (403).");
+      throw new Error(t("Bu işlem için yetkiniz yok (403)."));
     }
     if (res.status === 404) {
-      throw new Error("İstenen kayıt bulunamadı (404).");
+      throw new Error(t("İstenen kayıt bulunamadı (404)."));
     }
     if (res.status >= 500) {
-      throw new Error(`Sunucu hatası oluştu (HTTP ${res.status}).`);
+      throw new Error(`${t("Sunucu hatası oluştu")} (HTTP ${res.status}).`);
     }
 
     const short = raw ? raw.replace(/\s+/g, " ").slice(0, 120) : "";
-    throw new Error(short || `Sunucudan beklenmeyen yanıt alındı (HTTP ${res.status}).`);
+    throw new Error(short || `${t("Sunucudan beklenmeyen yanıt alındı")} (HTTP ${res.status}).`);
   }
 
   async function postJson(url, body) {
@@ -114,7 +114,7 @@
     openModals.forEach(m => m.style.zIndex = "1");
     Swal.fire({
       icon: "error",
-      title: "Hata",
+      title: t("Hata"),
       text: msg,
       confirmButtonColor: "#dc2626",
     }).then(() => {
@@ -125,14 +125,14 @@
   // ── Yardımcı: Silme onayı ─────────────────────────────────────────────────
   async function confirmDelete(title, text) {
     const result = await Swal.fire({
-      title: title || "Emin misiniz?",
-      text: text || "Bu işlem geri alınamaz.",
+      title: title || t("Emin misiniz?"),
+      text: text || t("Bu işlem geri alınamaz."),
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#dc2626",
       cancelButtonColor: "#6b7280",
-      confirmButtonText: "Evet, sil",
-      cancelButtonText: "İptal",
+      confirmButtonText: t("Evet, sil"),
+      cancelButtonText: t("İptal"),
     });
     return result.isConfirmed;
   }
@@ -222,20 +222,20 @@
     if (!line1El) return;
     const view = getPgKarneView();
     const names = {
-      ceyrek: "Çeyreklik",
-      yillik: "Yıllık",
-      aylik: "Aylık",
-      haftalik: "Haftalık",
-      gunluk: "Günlük",
-      alti_ay: "6 aylık",
+      ceyrek: t("Çeyreklik"),
+      yillik: t("Yıllık"),
+      aylik: t("Aylık"),
+      haftalik: t("Haftalık"),
+      gunluk: t("Günlük"),
+      alti_ay: t("6 aylık"),
     };
     const y = getDataYearForKarneLoad();
     const ctx = getKanbanPeriodContextForMain(String(y), view);
     if (view === "gunluk") {
       const m = karneGunlukViewMonth != null ? karneGunlukViewMonth : new Date().getMonth() + 1;
-      line1El.textContent = `${y} — ${AYLAR_TR_FULL_KB[m - 1]} — Günlük`;
+      line1El.textContent = `${y} — ${AYLAR_TR_FULL_KB[m - 1]} — ${t("Günlük")}`;
     } else {
-      line1El.textContent = `${y} — ${names[view] || view} görünümü`;
+      line1El.textContent = `${y} — ${names[view] || view} ${t("görünümü")}`;
     }
     if (subEl) subEl.textContent = formatPeriodBadgeSubline(ctx, view, y);
   }
@@ -268,20 +268,20 @@
   const activityViewModeSelect = document.getElementById("activity-view-mode");
   const loadingEl = document.getElementById("karne-loading");
 
-  const MONTHS = ["Oca","Şub","Mar","Nis","May","Haz","Tem","Ağu","Eyl","Eki","Kas","Ara"];
+  const MONTHS = [t("Oca"),t("Şub"),t("Mar"),t("Nis"),t("May"),t("Haz"),t("Tem"),t("Ağu"),t("Eyl"),t("Eki"),t("Kas"),t("Ara")];
   const AYLAR_TR_FULL_KB = [
-    "Ocak",
-    "Şubat",
-    "Mart",
-    "Nisan",
-    "Mayıs",
-    "Haziran",
-    "Temmuz",
-    "Ağustos",
-    "Eylül",
-    "Ekim",
-    "Kasım",
-    "Aralık",
+    t("Ocak"),
+    t("Şubat"),
+    t("Mart"),
+    t("Nisan"),
+    t("Mayıs"),
+    t("Haziran"),
+    t("Temmuz"),
+    t("Ağustos"),
+    t("Eylül"),
+    t("Ekim"),
+    t("Kasım"),
+    t("Aralık"),
   ];
 
   function haftalikRangeLabelKb(year, month, week) {
@@ -313,15 +313,15 @@
 
   /** Kök pgTabloCard — çeyrek anahtarları (KpiData → entries) */
   const QUARTER_PERIODS = [
-    { key: "ceyrek_1", label: "I. Çeyrek", periodNo: 1 },
-    { key: "ceyrek_2", label: "II. Çeyrek", periodNo: 2 },
-    { key: "ceyrek_3", label: "III. Çeyrek", periodNo: 3 },
-    { key: "ceyrek_4", label: "IV. Çeyrek", periodNo: 4 },
+    { key: "ceyrek_1", label: t("I. Çeyrek"), periodNo: 1 },
+    { key: "ceyrek_2", label: t("II. Çeyrek"), periodNo: 2 },
+    { key: "ceyrek_3", label: t("III. Çeyrek"), periodNo: 3 },
+    { key: "ceyrek_4", label: t("IV. Çeyrek"), periodNo: 4 },
   ];
 
   const YARIYIL_PERIODS = [
-    { key: "halfyear_1", label: "Ocak – Haziran" },
-    { key: "halfyear_2", label: "Temmuz – Aralık" },
+    { key: "halfyear_1", label: t("Ocak – Haziran") },
+    { key: "halfyear_2", label: t("Temmuz – Aralık") },
   ];
 
   let lastFavoriteKpiIds = [];
@@ -366,7 +366,7 @@
     }
     if (periyot === "yillik") {
       return {
-        periods: [{ key: "yillik_1", label: "Yıl Sonu" }],
+        periods: [{ key: "yillik_1", label: t("Yıl Sonu") }],
         isGunluk: false,
         gosterimPeriyot: "yillik",
         gunlukAy,
@@ -513,7 +513,7 @@
 
   function buildKpiOptionsHtml(selectedId) {
     const list = Array.isArray(cachedKpis) ? cachedKpis : [];
-    const opts = ['<option value="">Bağımsız</option>'];
+    const opts = [`<option value="">${t("Bağımsız")}</option>`];
     list.forEach((k) => {
       const sel = String(selectedId || "") === String(k.id) ? " selected" : "";
       const code = (k.code || "").trim();
@@ -539,7 +539,7 @@
       );
     });
     if (!rows.length) {
-      return `<div style="font-size:12px;color:#94a3b8;">Süreçte atanabilir kullanıcı bulunamadı.</div>`;
+      return `<div style="font-size:12px;color:#94a3b8;">${t("Süreçte atanabilir kullanıcı bulunamadı.")}</div>`;
     }
     return `<div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:8px;max-height:220px;overflow:auto;padding:4px;">${rows.join("")}</div>`;
   }
@@ -555,11 +555,11 @@
 
   async function openAddActivityModal() {
     if (!canCrudActivity) {
-      showError("Faaliyet ekleme yetkiniz yok.");
+      showError(t("Faaliyet ekleme yetkiniz yok."));
       return;
     }
     if (typeof window.openMcFormModal !== "function") {
-      showError("Form modali yüklenemedi.");
+      showError(t("Form modali yüklenemedi."));
       return;
     }
     if ((!Array.isArray(cachedKpis) || cachedKpis.length === 0) || (!Array.isArray(cachedProcessUsers) || cachedProcessUsers.length === 0)) {
@@ -575,82 +575,82 @@
     const bodyHtml = `
       <div style="display:flex;flex-direction:column;gap:12px;">
         <div class="mc-form-field" style="width:100%;">
-          <label class="mc-form-label">Faaliyet Adı *</label>
-          <input id="mc-act-name" class="mc-form-input" type="text" placeholder="Örn: Müşteri Ziyareti">
+          <label class="mc-form-label">${t("Faaliyet Adı *")}</label>
+          <input id="mc-act-name" class="mc-form-input" type="text" placeholder="${t("Örn: Müşteri Ziyareti")}">
         </div>
         <div class="mc-form-field" style="width:100%;">
-          <label class="mc-form-label">İlişkili PG</label>
+          <label class="mc-form-label">${t("İlişkili PG")}</label>
           <select id="mc-act-kpi" class="mc-form-input">${buildKpiOptionsHtml("")}</select>
         </div>
         <div class="mc-form-field" style="width:100%;">
-          <label class="mc-form-label">Atananlar *</label>
+          <label class="mc-form-label">${t("Atananlar *")}</label>
           ${buildAssigneeCheckboxHtml([currentUserId])}
-          <small style="color:#94a3b8;">Süreç lideri birden fazla kişi seçebilir.</small>
+          <small style="color:#94a3b8;">${t("Süreç lideri birden fazla kişi seçebilir.")}</small>
         </div>
         <div style="display:grid;grid-template-columns:1fr 1fr;gap:10px;">
         <div class="mc-form-field" style="width:100%;">
-          <label class="mc-form-label">Başlangıç Tarihi</label>
+          <label class="mc-form-label">${t("Başlangıç Tarihi")}</label>
           <input id="mc-act-start" class="mc-form-input" type="datetime-local">
         </div>
         <div class="mc-form-field" style="width:100%;">
-          <label class="mc-form-label">Bitiş Tarihi</label>
+          <label class="mc-form-label">${t("Bitiş Tarihi")}</label>
           <input id="mc-act-end" class="mc-form-input" type="datetime-local">
         </div>
         </div>
         <div class="mc-form-field">
-          <label class="mc-form-label">Hatırlatmalar (başlangıca göre)</label>
+          <label class="mc-form-label">${t("Hatırlatmalar (başlangıca göre)")}</label>
           <div style="display:flex;flex-wrap:wrap;gap:8px;">
-            <label><input id="mc-act-rem-60" type="checkbox" value="60"> 1 saat önce</label>
-            <label><input id="mc-act-rem-1440" type="checkbox" value="1440"> 1 gün önce</label>
-            <label><input id="mc-act-rem-4320" type="checkbox" value="4320"> 3 gün önce</label>
-            <label><input id="mc-act-rem-7200" type="checkbox" value="7200"> 5 gün önce</label>
+            <label><input id="mc-act-rem-60" type="checkbox" value="60"> ${t("1 saat önce")}</label>
+            <label><input id="mc-act-rem-1440" type="checkbox" value="1440"> ${t("1 gün önce")}</label>
+            <label><input id="mc-act-rem-4320" type="checkbox" value="4320"> ${t("3 gün önce")}</label>
+            <label><input id="mc-act-rem-7200" type="checkbox" value="7200"> ${t("5 gün önce")}</label>
           </div>
         </div>
         <div class="mc-form-field">
-          <label class="mc-form-label"><input id="mc-act-notify-email" type="checkbox"> E-posta da gönder</label>
+          <label class="mc-form-label"><input id="mc-act-notify-email" type="checkbox"> ${t("E-posta da gönder")}</label>
         </div>
         <div class="mc-form-field" style="width:100%;">
-          <label class="mc-form-label">Durum</label>
+          <label class="mc-form-label">${t("Durum")}</label>
           <select id="mc-act-status" class="mc-form-input">
-            <option value="Planlandı">Planlandı</option>
-            <option value="Devam Ediyor">Devam Ediyor</option>
-            <option value="Tamamlandı">Tamamlandı</option>
-            <option value="İptal">İptal</option>
+            <option value="Planlandı">${t("Planlandı")}</option>
+            <option value="Devam Ediyor">${t("Devam Ediyor")}</option>
+            <option value="Tamamlandı">${t("Tamamlandı")}</option>
+            <option value="İptal">${t("İptal")}</option>
           </select>
         </div>
         <div class="mc-form-field" style="width:100%;">
-          <label class="mc-form-label">Açıklama</label>
-          <textarea id="mc-act-desc" class="mc-form-input" rows="3" placeholder="Opsiyonel"></textarea>
+          <label class="mc-form-label">${t("Açıklama")}</label>
+          <textarea id="mc-act-desc" class="mc-form-input" rows="3" placeholder="${t("Opsiyonel")}"></textarea>
         </div>
       </div>
     `;
 
     const payload = await window.openMcFormModal({
-      title: "Yeni Faaliyet",
+      title: t("Yeni Faaliyet"),
       iconClass: "fas fa-list-check",
       bodyHtml,
-      confirmText: "Kaydet",
+      confirmText: t("Kaydet"),
       onConfirm: ({ showValidation }) => {
         const name = (document.getElementById("mc-act-name")?.value || "").trim();
         if (!name) {
-          showValidation("Faaliyet adı zorunludur.");
+          showValidation(t("Faaliyet adı zorunludur."));
           return false;
         }
         const startAt = document.getElementById("mc-act-start")?.value || null;
         const endAt = document.getElementById("mc-act-end")?.value || null;
         if (!startAt || !endAt) {
-          showValidation("Başlangıç ve bitiş tarih/saat zorunludur.");
+          showValidation(t("Başlangıç ve bitiş tarih/saat zorunludur."));
           return false;
         }
         if (endAt < startAt) {
-          showValidation("Bitiş tarihi başlangıç tarihinden önce olamaz.");
+          showValidation(t("Bitiş tarihi başlangıç tarihinden önce olamaz."));
           return false;
         }
         const assigneeIds = Array.from(document.querySelectorAll(".mc-act-assignee-chk:checked"))
           .map((o) => parseInt(o.value, 10))
           .filter((x) => !Number.isNaN(x));
         if (!assigneeIds.length) {
-          showValidation("En az bir atanan seçiniz.");
+          showValidation(t("En az bir atanan seçiniz."));
           return false;
         }
         return {
@@ -671,13 +671,13 @@
     if (!payload) return;
     try {
       const data = await postJson("/process/api/activity/add", payload);
-      if (!data.success) throw new Error(data.message || "Faaliyet kaydedilemedi.");
-      const successMsg = data.message || "Faaliyet eklendi.";
+      if (!data.success) throw new Error(data.message || t("Faaliyet kaydedilemedi."));
+      const successMsg = data.message || t("Faaliyet eklendi.");
       const noticeLbl = data.notice && data.notice.label;
       toastSuccess(noticeLbl ? `${successMsg} (${noticeLbl})` : successMsg);
       await loadKarne();
     } catch (err) {
-      showError(err.message || "Faaliyet eklenemedi.");
+      showError(err.message || t("Faaliyet eklenemedi."));
     }
   }
 
@@ -713,7 +713,7 @@
 
     try {
       const data = await getJson(`${KARNE_API}?year=${year}`);
-      if (!data.success) throw new Error(data.message || "Veri alınamadı.");
+      if (!data.success) throw new Error(data.message || t("Veri alınamadı."));
       if (data.permissions) {
         canCrudPg = !!data.permissions.can_crud_pg;
         canEnterPgv = !!data.permissions.can_enter_pgv;
@@ -743,7 +743,7 @@
         redirectToLogin();
         return;
       }
-      showError("Veriler yüklenirken hata oluştu: " + err.message);
+      showError(t("Veriler yüklenirken hata oluştu:") + " " + err.message);
     } finally {
       if (loadingEl) loadingEl.style.display = "none";
     }
@@ -770,8 +770,8 @@
     if (sum) {
       sum.textContent =
         totalPg === 0
-          ? "Henüz PG tanımlı değil"
-          : `${totalPg} PG · ${filledPg} tanesinde seçili yılda veri var`;
+          ? t("Henüz PG tanımlı değil")
+          : `${totalPg} PG · ${filledPg} ${t("tanesinde seçili yılda veri var")}`;
     }
   }
 
@@ -1060,12 +1060,12 @@
 
   function sapmaCellHtml(pct) {
     if (pct == null) {
-      return `<span class="karne-sapma karne-sapma--na" title="Hedef sayısal değil veya veri yok">—</span>`;
+      return `<span class="karne-sapma karne-sapma--na" title="${t("Hedef sayısal değil veya veri yok")}">—</span>`;
     }
     const sign = pct > 0 ? "+" : "";
     const cls =
       pct >= 3 ? "karne-sapma karne-sapma--good" : pct <= -3 ? "karne-sapma karne-sapma--bad" : "karne-sapma karne-sapma--mid";
-    return `<span class="${cls}" title="Yıllık hedef ÷ 12 ile aylık hedef; verili ayların ortalama sapması">${sign}${pct}%</span>`;
+    return `<span class="${cls}" title="${t("Yıllık hedef ÷ 12 ile aylık hedef; verili ayların ortalama sapması")}">${sign}${pct}%</span>`;
   }
 
   /** Seçili yıl aylık girişlerinden özet + hedefe göre başarı yüzdesi */
@@ -1095,11 +1095,11 @@
   }
 
   function healthBand(score) {
-    if (score == null) return { label: "Veri yok", cls: "karne-health-na" };
-    if (score >= 85) return { label: "Çok iyi", cls: "karne-health-high" };
-    if (score >= 70) return { label: "İyi", cls: "karne-health-good" };
-    if (score >= 50) return { label: "Orta", cls: "karne-health-mid" };
-    return { label: "Geliştirilmeli", cls: "karne-health-low" };
+    if (score == null) return { label: t("Veri yok"), cls: "karne-health-na" };
+    if (score >= 85) return { label: t("Çok iyi"), cls: "karne-health-high" };
+    if (score >= 70) return { label: t("İyi"), cls: "karne-health-good" };
+    if (score >= 50) return { label: t("Orta"), cls: "karne-health-mid" };
+    return { label: t("Geliştirilmeli"), cls: "karne-health-low" };
   }
 
   function successPillClass(pct) {
@@ -1146,10 +1146,10 @@
     const legend = document.getElementById("kpi-donut-legend");
     if (legend) {
       legend.innerHTML = [
-        `<li><span class="lgd lgd--ok"></span> Başarılı (≥70%): <strong>${basarili}</strong></li>`,
-        `<li><span class="lgd lgd--mid"></span> Orta (40–69%): <strong>${orta}</strong></li>`,
-        `<li><span class="lgd lgd--bad"></span> Kritik (&lt;40%): <strong>${kritik}</strong></li>`,
-        `<li><span class="lgd lgd--na"></span> Hedef/veri eksik: <strong>${belirsiz}</strong></li>`,
+        `<li><span class="lgd lgd--ok"></span> ${t("Başarılı (≥70%):")} <strong>${basarili}</strong></li>`,
+        `<li><span class="lgd lgd--mid"></span> ${t("Orta (40–69%):")} <strong>${orta}</strong></li>`,
+        `<li><span class="lgd lgd--bad"></span> ${t("Kritik (&lt;40%):")} <strong>${kritik}</strong></li>`,
+        `<li><span class="lgd lgd--na"></span> ${t("Hedef/veri eksik:")} <strong>${belirsiz}</strong></li>`,
       ].join("");
     }
 
@@ -1168,7 +1168,7 @@
         kpiDonutChart = new Chart(canvas, {
           type: "doughnut",
           data: {
-            labels: ["Başarılı", "Orta", "Kritik", "Tanımsız"],
+            labels: [t("Başarılı"), t("Orta"), t("Kritik"), t("Tanımsız")],
             datasets: [
               {
                 data: dataVals,
@@ -1216,8 +1216,8 @@
       const done = doneCount;
       hint.textContent =
         acts.length === 0
-          ? "Tanımlı faaliyet yok"
-          : `${acts.length} faaliyet · ${done} tamamlanmış (ilerleme %100)`;
+          ? t("Tanımlı faaliyet yok")
+          : `${acts.length} ${t("faaliyet")} · ${done} ${t("tamamlanmış (ilerleme %100)")}`;
     }
   }
 
@@ -1322,12 +1322,12 @@
       const section2InactiveAccordion =
         inactiveBas > 0
           ? `<details class="kv-analiz-accordion">
-          <summary class="kv-analiz-accordion-summary">Aktif değil PG’ler (<strong>${inactiveBas}</strong>) — listeyi aç / kapat</summary>
+          <summary class="kv-analiz-accordion-summary">${t("Aktif değil PG’ler")} (<strong>${inactiveBas}</strong>) — ${t("listeyi aç / kapat")}</summary>
           <div class="kv-analiz-accordion-body">
-            <ul class="kv-analiz-ul kv-analiz-ul-inactive" aria-label="Başarı puanı yapılandırması aktif olmayan performans göstergeleri">${basariInactiveItems.join("")}</ul>
+            <ul class="kv-analiz-ul kv-analiz-ul-inactive" aria-label="${t("Başarı puanı yapılandırması aktif olmayan performans göstergeleri")}">${basariInactiveItems.join("")}</ul>
           </div>
         </details>`
-          : '<p class="karne-field-hint kv-analiz-no-inactive">Başarı puanı aralığı tanımlanmamış PG yok; tüm PG’ler en az bir aralıkla yapılandırılmış.</p>';
+          : `<p class="karne-field-hint kv-analiz-no-inactive">${t("Başarı puanı aralığı tanımlanmamış PG yok; tüm PG’ler en az bir aralıkla yapılandırılmış.")}</p>`;
       const rowsW = (kpis || [])
         .map((k) => {
           const w = k.weight != null && String(k.weight).trim() !== "" ? escHtml(String(k.weight)) : "—";
@@ -1347,21 +1347,21 @@
         const ivs = parseBasariIntervalsForKv(o || {});
         if (ivs.length === 0) {
           basariBadLines.push(
-            `<li class="kv-analiz-li kv-analiz-li--bad">${pgHead}<div class="kv-analiz-pg-detail">Tanımlı aralık okunamadı veya boş.</div></li>`,
+            `<li class="kv-analiz-li kv-analiz-li--bad">${pgHead}<div class="kv-analiz-pg-detail">${t("Tanımlı aralık okunamadı veya boş.")}</div></li>`,
           );
           return;
         }
         const { gaps, ambig } = analyzeBasariCoveragePct(ivs);
         if (gaps.length === 0 && ambig.length === 0) {
           basariOkLines.push(
-            `<li class="kv-analiz-li kv-analiz-li--ok">${pgHead}<div class="kv-analiz-pg-detail kv-analiz-pg-detail--muted">0–100 tam sayı yüzdeleri tek başarı puanına eşleniyor.</div></li>`,
+            `<li class="kv-analiz-li kv-analiz-li--ok">${pgHead}<div class="kv-analiz-pg-detail kv-analiz-pg-detail--muted">${t("0–100 tam sayı yüzdeleri tek başarı puanına eşleniyor.")}</div></li>`,
           );
         } else {
           const gTxt = gaps.length ? compressIntRanges([...new Set(gaps)].sort((a, b) => a - b)) : "";
           const aTxt = ambig.length ? compressIntRanges([...new Set(ambig)].sort((a, b) => a - b)) : "";
           let msg = "";
-          if (gaps.length) msg += `Karşılıksız tam sayı yüzdeler: ${gTxt}. `;
-          if (ambig.length) msg += `Birden fazla başarı puanına düşen yüzdeler: ${aTxt}.`;
+          if (gaps.length) msg += `${t("Karşılıksız tam sayı yüzdeler:")} ${gTxt}. `;
+          if (ambig.length) msg += `${t("Birden fazla başarı puanına düşen yüzdeler:")} ${aTxt}.`;
           basariBadLines.push(
             `<li class="kv-analiz-li kv-analiz-li--bad">${pgHead}<div class="kv-analiz-pg-detail">${escHtml(msg.trim())}</div></li>`,
           );
@@ -1370,53 +1370,53 @@
       let section3Html = "";
       if (activeBas === 0) {
         section3Html =
-          '<p class="karne-field-hint kv-analiz-empty-active">Aktif yapılandırılmış (en az bir aralık tanımlı) PG yok; aralık analizi uygulanmadı.</p>';
+          `<p class="karne-field-hint kv-analiz-empty-active">${t("Aktif yapılandırılmış (en az bir aralık tanımlı) PG yok; aralık analizi uygulanmadı.")}</p>`;
       } else if (basariBadLines.length === 0) {
-        section3Html = `<div class="kv-analiz-alert kv-analiz-alert--ok" role="status">Aktif yapılandırılmış <strong>${activeBas}</strong> PG’nin tamamında 0–100 tam sayı yüzdeleri doğru kapsanıyor.</div>
-          <h5 class="kv-analiz-h5 kv-analiz-h5--ok">PG listesi</h5>
+        section3Html = `<div class="kv-analiz-alert kv-analiz-alert--ok" role="status">${t("Aktif yapılandırılmış")} <strong>${activeBas}</strong> ${t("PG’nin tamamında 0–100 tam sayı yüzdeleri doğru kapsanıyor.")}</div>
+          <h5 class="kv-analiz-h5 kv-analiz-h5--ok">${t("PG listesi")}</h5>
           <ul class="kv-analiz-ul kv-analiz-ul--ok">${basariOkLines.join("")}</ul>`;
       } else {
-        section3Html = `<p class="kv-analiz-summary kv-analiz-summary--bad"><strong>${basariBadLines.length}</strong> aktif PG’de aralık hatası var${
-          basariOkLines.length ? ` · <strong>${basariOkLines.length}</strong> PG sorunsuz` : ""
+        section3Html = `<p class="kv-analiz-summary kv-analiz-summary--bad"><strong>${basariBadLines.length}</strong> ${t("aktif PG’de aralık hatası var")}${
+          basariOkLines.length ? ` · <strong>${basariOkLines.length}</strong> ${t("PG sorunsuz")}` : ""
         }.</p>
-          <h5 class="kv-analiz-h5 kv-analiz-h5--bad">Hatalı PG’ler</h5>
-          <ul class="kv-analiz-ul kv-analiz-ul--bad" aria-label="Aralık hatası olan performans göstergeleri">${basariBadLines.join("")}</ul>`;
+          <h5 class="kv-analiz-h5 kv-analiz-h5--bad">${t("Hatalı PG’ler")}</h5>
+          <ul class="kv-analiz-ul kv-analiz-ul--bad" aria-label="${t("Aralık hatası olan performans göstergeleri")}">${basariBadLines.join("")}</ul>`;
         if (basariOkLines.length) {
-          section3Html += `<h5 class="kv-analiz-h5 kv-analiz-h5--ok">Sorunsuz PG’ler</h5>
-          <ul class="kv-analiz-ul kv-analiz-ul--ok" aria-label="Aralık analizinde sorun çıkmayan PG’ler">${basariOkLines.join("")}</ul>`;
+          section3Html += `<h5 class="kv-analiz-h5 kv-analiz-h5--ok">${t("Sorunsuz PG’ler")}</h5>
+          <ul class="kv-analiz-ul kv-analiz-ul--ok" aria-label="${t("Aralık analizinde sorun çıkmayan PG’ler")}">${basariOkLines.join("")}</ul>`;
         }
       }
       kvBody.innerHTML = `
         <section class="kv-analiz-section">
-          <h4 class="kv-analiz-h4">1. PG ağırlık (%) toplamı</h4>
-          <p class="kv-analiz-line"><strong>Toplam:</strong> %${wsum.displayTotal} <span class="kv-analiz-meta">(${wsum.count} PG · ağırlık girilen: ${wsum.filled} · boş: ${wsum.missing})</span></p>
+          <h4 class="kv-analiz-h4">${t("1. PG ağırlık (%) toplamı")}</h4>
+          <p class="kv-analiz-line"><strong>${t("Toplam:")}</strong> %${wsum.displayTotal} <span class="kv-analiz-meta">(${wsum.count} PG · ${t("ağırlık girilen:")} ${wsum.filled} · ${t("boş:")} ${wsum.missing})</span></p>
           ${
             wsum.mode === "none"
-              ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">Hiçbir PG için ağırlık girilmemiş.</div>`
+              ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">${t("Hiçbir PG için ağırlık girilmemiş.")}</div>`
               : weightNot100
-                ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">K-Vektör tutarlılığı için bu süreçteki PG ağırlıklarının toplamı %100 olmalıdır.</div>`
+                ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">${t("K-Vektör tutarlılığı için bu süreçteki PG ağırlıklarının toplamı %100 olmalıdır.")}</div>`
                 : weightOk
-                  ? `<div class="kv-analiz-alert kv-analiz-alert--ok" role="status">Ağırlık toplamı %100.</div>`
+                  ? `<div class="kv-analiz-alert kv-analiz-alert--ok" role="status">${t("Ağırlık toplamı %100.")}</div>`
                   : ""
           }
           ${
             wsum.missing > 0 && wsum.mode !== "none"
-              ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">${wsum.missing} PG için ağırlık alanı boş; toplam yalnızca girilen değerlere göre hesaplandı.</div>`
+              ? `<div class="kv-analiz-alert kv-analiz-alert--warn" role="alert">${wsum.missing} ${t("PG için ağırlık alanı boş; toplam yalnızca girilen değerlere göre hesaplandı.")}</div>`
               : ""
           }
-          <p class="kv-analiz-tools"><button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" id="btn-kv-toggle-weights">PG ağırlıklarını göster</button></p>
+          <p class="kv-analiz-tools"><button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" id="btn-kv-toggle-weights">${t("PG ağırlıklarını göster")}</button></p>
           <div id="kv-analiz-weights-wrap" class="kv-analiz-weights-wrap is-hidden">
-            <table class="mc-table kv-analiz-table"><thead><tr><th>Kod</th><th>Ad</th><th>Ağırlık (%)</th></tr></thead><tbody>${rowsW}</tbody></table>
+            <table class="mc-table kv-analiz-table"><thead><tr><th>${t("Kod")}</th><th>${t("Ad")}</th><th>${t("Ağırlık (%)")}</th></tr></thead><tbody>${rowsW}</tbody></table>
           </div>
         </section>
         <section class="kv-analiz-section">
-          <h4 class="kv-analiz-h4">2. Başarı puanı yapılandırması (opsiyonel)</h4>
-          <p class="kv-analiz-line">Aktif (en az bir aralık tanımlı): <strong>${activeBas}</strong> · Aktif değil: <strong>${inactiveBas}</strong></p>
+          <h4 class="kv-analiz-h4">${t("2. Başarı puanı yapılandırması (opsiyonel)")}</h4>
+          <p class="kv-analiz-line">${t("Aktif (en az bir aralık tanımlı):")} <strong>${activeBas}</strong> · ${t("Aktif değil:")} <strong>${inactiveBas}</strong></p>
           ${section2InactiveAccordion}
         </section>
         <section class="kv-analiz-section">
-          <h4 class="kv-analiz-h4">3. Aktif PG’lerde aralık analizi (0–100 tam sayı %)</h4>
-          <p class="karne-field-hint">Hesaplanan gerçekleşme yüzdesinin her tam sayı değeri (0–100) tam olarak bir başarı puanına ait olmalı; boşluk veya farklı puanlara çakışan değer hata sayılır.</p>
+          <h4 class="kv-analiz-h4">${t("3. Aktif PG’lerde aralık analizi (0–100 tam sayı %)")}</h4>
+          <p class="karne-field-hint">${t("Hesaplanan gerçekleşme yüzdesinin her tam sayı değeri (0–100) tam olarak bir başarı puanına ait olmalı; boşluk veya farklı puanlara çakışan değer hata sayılır.")}</p>
           ${section3Html}
         </section>`;
       document.getElementById("btn-kv-toggle-weights")?.addEventListener("click", () => {
@@ -1427,7 +1427,7 @@
     }
     async function openKvAnaliz() {
       if (!kvOverlay || !kvBody) return;
-      kvBody.innerHTML = '<p class="karne-field-hint">Yükleniyor…</p>';
+      kvBody.innerHTML = `<p class="karne-field-hint">${t("Yükleniyor…")}</p>`;
       kvOverlay.classList.add("open");
       kvOverlay.setAttribute("aria-hidden", "false");
       try {
@@ -1458,13 +1458,13 @@
     const iconEl = document.getElementById("btn-kpi-add-modal-save-icon");
     const saveText = document.getElementById("btn-kpi-add-modal-save-text");
     if (titleEl) {
-      titleEl.textContent = isEdit ? "Performans göstergesini düzenle" : "Yeni Performans Göstergesi";
+      titleEl.textContent = isEdit ? t("Performans göstergesini düzenle") : t("Yeni Performans Göstergesi");
     }
     if (iconEl) {
       iconEl.className = isEdit ? "fas fa-save" : "fas fa-plus-circle";
       iconEl.setAttribute("aria-hidden", "true");
     }
-    if (saveText) saveText.textContent = isEdit ? "Güncelle" : "Kaydet";
+    if (saveText) saveText.textContent = isEdit ? t("Güncelle") : t("Kaydet");
   }
 
   /** KPI API’den gelen başarı puanı JSON / objesini forma yazar */
@@ -1521,13 +1521,13 @@
     if (Number.isNaN(id)) return;
     const url = expandKpiUrl(KPI_GET_TEMPLATE, id);
     if (!url) {
-      showError("Düzenleme adresi tanımlı değil.");
+      showError(t("Düzenleme adresi tanımlı değil."));
       return;
     }
     try {
       const res = await getJson(url);
       if (!res.success || !res.kpi) {
-        showError(res.message || "PG bilgisi alınamadı.");
+        showError(res.message || t("PG bilgisi alınamadı."));
         return;
       }
       const k = res.kpi;
@@ -1569,7 +1569,7 @@
       const first = document.getElementById("kpi-add-name");
       if (first) setTimeout(() => first.focus(), 50);
     } catch (err) {
-      showError(err.message || "PG yüklenemedi.");
+      showError(err.message || t("PG yüklenemedi."));
     }
   }
 
@@ -1587,7 +1587,7 @@
     const nameEl = document.getElementById("kpi-add-name");
     const name = nameEl ? nameEl.value.trim() : "";
     if (!name) {
-      showError("Gösterge adı zorunludur.");
+      showError(t("Gösterge adı zorunludur."));
       if (nameEl) nameEl.focus();
       return;
     }
@@ -1636,14 +1636,14 @@
     };
     body.sub_strategy_id = ss ? parseInt(ss, 10) : null;
     if (body.weight < 0 || body.weight > 100) {
-      showError("Skor ağırlığı 0 ile 100 arasında olmalıdır.");
+      showError(t("Skor ağırlığı 0 ile 100 arasında olmalıdır."));
       document.getElementById("kpi-add-weight")?.focus();
       return;
     }
     const isEdit = editingKpiId != null;
     const postUrl = isEdit ? expandKpiUrl(KPI_UPDATE_TEMPLATE, editingKpiId) : KPI_ADD_URL;
     if (isEdit && !postUrl) {
-      showError("Güncelleme adresi tanımlı değil.");
+      showError(t("Güncelleme adresi tanımlı değil."));
       return;
     }
     const payload = { ...body };
@@ -1656,13 +1656,13 @@
       const data = await postJson(postUrl, payload);
       if (data.success) {
         closeAddKpiModal();
-        toastSuccess(isEdit ? "Performans göstergesi güncellendi." : "Performans göstergesi eklendi.");
+        toastSuccess(isEdit ? t("Performans göstergesi güncellendi.") : t("Performans göstergesi eklendi."));
         loadKarne();
       } else {
-        showError(data.message || "Kayıt başarısız.");
+        showError(data.message || t("Kayıt başarısız."));
       }
     } catch (err) {
-      showError(err.message || "Sunucu hatası.");
+      showError(err.message || t("Sunucu hatası."));
     } finally {
       if (saveBtn) saveBtn.disabled = false;
     }
@@ -1682,7 +1682,7 @@
   function populateTrendSelect(kpis) {
     const sel = document.getElementById('trend-kpi-select');
     if (!sel) return;
-    sel.innerHTML = '<option value="">— PG Seçin —</option>';
+    sel.innerHTML = `<option value="">${t("— PG Seçin —")}</option>`;
     (kpis || []).forEach(k => {
       const opt = document.createElement('option');
       opt.value = k.id;
@@ -1703,7 +1703,7 @@
     canvas.style.display = '';
     if (empty) empty.style.display = 'none';
 
-    const labels = ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'];
+    const labels = [t('Oca'),t('Şub'),t('Mar'),t('Nis'),t('May'),t('Haz'),t('Tem'),t('Ağu'),t('Eyl'),t('Eki'),t('Kas'),t('Ara')];
     const data = labels.map((_, i) => {
       const val = kpi.entries[`aylik_${i + 1}`];
       return val ? parseFloat(val) : null;
@@ -1886,9 +1886,9 @@
     if (view === "yillik") {
       return {
         periodKey: "yillik_1",
-        label: `Yıl sonu ${y}`,
+        label: `${t("Yıl sonu")} ${y}`,
         gosterimPeriyot: "yillik",
-        metaPeriodLabel: "Yıllık",
+        metaPeriodLabel: t("Yıllık"),
       };
     }
     if (view === "ceyrek") {
@@ -1923,9 +1923,9 @@
       else d = 1;
       return {
         periodKey: `gunluk_${d}_${mo}`,
-        label: `Gün ${d} — ${MONTHS[mo - 1]} ${y}`,
+        label: `${t("Gün")} ${d} — ${MONTHS[mo - 1]} ${y}`,
         gosterimPeriyot: "gunluk",
-        metaPeriodLabel: `Günlük · ${MONTHS[mo - 1]}`,
+        metaPeriodLabel: `${t("Günlük")} · ${MONTHS[mo - 1]}`,
       };
     }
     if (view === "haftalik") {
@@ -1949,13 +1949,13 @@
       let meta;
       if (y < cy) {
         halfKey = "halfyear_2";
-        meta = "2. yarıyıl";
+        meta = t("2. yarıyıl");
       } else if (y > cy) {
         halfKey = "halfyear_1";
-        meta = "1. yarıyıl";
+        meta = t("1. yarıyıl");
       } else {
         halfKey = cm <= 6 ? "halfyear_1" : "halfyear_2";
-        meta = cm <= 6 ? "1. yarıyıl" : "2. yarıyıl";
+        meta = cm <= 6 ? t("1. yarıyıl") : t("2. yarıyıl");
       }
       return {
         periodKey: halfKey,
@@ -1970,7 +1970,7 @@
   /** Rozet alt satırı: hangi çeyrek / ay / hafta aralığı / yarıyıl vb. */
   function formatPeriodBadgeSubline(ctx, view, dataYearNum) {
     if (!ctx || !view) return "—";
-    if (view === "yillik") return "Yıl sonu";
+    if (view === "yillik") return t("Yıl sonu");
     if (view === "aylik" && ctx.periodKey) {
       const mm = ctx.periodKey.match(/^aylik_(\d+)$/);
       if (mm) return AYLAR_TR_FULL_KB[parseInt(mm[1], 10) - 1];
@@ -1992,8 +1992,8 @@
       }
     }
     if (view === "alti_ay") {
-      if (ctx.periodKey === "halfyear_1") return "Ocak – Haziran";
-      if (ctx.periodKey === "halfyear_2") return "Temmuz – Aralık";
+      if (ctx.periodKey === "halfyear_1") return t("Ocak – Haziran");
+      if (ctx.periodKey === "halfyear_2") return t("Temmuz – Aralık");
     }
     if (view === "haftalik" && ctx.periodKey) {
       const hm = ctx.periodKey.match(/^haftalik_(\d+)_(\d+)$/);
@@ -2011,9 +2011,9 @@
     const day = Math.max(1, Math.min(ld, d));
     return {
       periodKey: `gunluk_${day}_${mo}`,
-      label: `Gün ${day} — ${MONTHS[mo - 1]} ${y}`,
+      label: `${t("Gün")} ${day} — ${MONTHS[mo - 1]} ${y}`,
       gosterimPeriyot: "gunluk",
-      metaPeriodLabel: `Günlük · ${MONTHS[mo - 1]}`,
+      metaPeriodLabel: `${t("Günlük")} · ${MONTHS[mo - 1]}`,
     };
   }
 
@@ -2023,9 +2023,9 @@
     if (view === "yillik") {
       return {
         periodKey: "yillik_1",
-        label: `Yıl sonu ${y}`,
+        label: `${t("Yıl sonu")} ${y}`,
         gosterimPeriyot: "yillik",
-        metaPeriodLabel: "Yıllık",
+        metaPeriodLabel: t("Yıllık"),
       };
     }
     if (view === "ceyrek") {
@@ -2053,7 +2053,7 @@
     }
     if (view === "alti_ay") {
       const is2 = periodKey === "halfyear_2";
-      const meta = is2 ? "2. yarıyıl" : "1. yarıyıl";
+      const meta = is2 ? t("2. yarıyıl") : t("1. yarıyıl");
       return {
         periodKey: is2 ? "halfyear_2" : "halfyear_1",
         label: `${meta} ${y}`,
@@ -2353,14 +2353,14 @@
       const wDisplay = w != null && !Number.isNaN(w) ? String(w) : "—";
       const isFav = favSet.has(k.id);
       const favBtn = FAVORITE_TOGGLE_URL
-        ? `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary karne-fav-kpi-btn ${isFav ? "karne-fav-kpi-btn--on" : ""}" data-kpi-id="${k.id}" title="Favori"><i class="fas fa-star"></i></button>`
-        : `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" disabled title="Favori"><i class="fas fa-star"></i></button>`;
+        ? `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary karne-fav-kpi-btn ${isFav ? "karne-fav-kpi-btn--on" : ""}" data-kpi-id="${k.id}" title="${t("Favori")}"><i class="fas fa-star"></i></button>`
+        : `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" disabled title="${t("Favori")}"><i class="fas fa-star"></i></button>`;
       const editBtn =
         canCrudPg && KPI_GET_TEMPLATE
-          ? `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary btn-kpi-edit" data-kpi-id="${k.id}" title="Düzenle"><i class="fas fa-pen text-slate-600 dark:text-slate-300"></i></button>`
+          ? `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary btn-kpi-edit" data-kpi-id="${k.id}" title="${t("Düzenle")}"><i class="fas fa-pen text-slate-600 dark:text-slate-300"></i></button>`
           : "";
       const delBtn = canCrudPg
-        ? `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary btn-kpi-delete" data-kpi-id="${k.id}" title="Sil"><i class="fas fa-trash text-red-500"></i></button>`
+        ? `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary btn-kpi-delete" data-kpi-id="${k.id}" title="${t("Sil")}"><i class="fas fa-trash text-red-500"></i></button>`
         : "";
 
       const subCode = (k.sub_strategy_code && String(k.sub_strategy_code).trim()) || "";
@@ -2385,7 +2385,7 @@
       const safeKey = String(ctx.periodKey).replace(/"/g, "&quot;");
       const safeLabel = String(ctx.label).replace(/"/g, "&quot;");
       const vgsBtn = canEnterPgv
-        ? `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary btn-kpi-vgs" data-kpi-id="${k.id}" data-year="${year}" data-period-key="${safeKey}" data-label="${safeLabel}" title="Veri Girişi Sihirbazı (VGS)"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i></button>`
+        ? `<button type="button" class="mc-btn mc-btn-sm mc-btn-secondary btn-kpi-vgs" data-kpi-id="${k.id}" data-year="${year}" data-period-key="${safeKey}" data-label="${safeLabel}" title="${t("Veri Girişi Sihirbazı (VGS)")}"><i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i></button>`
         : "";
 
       const cardInner = `
@@ -2407,23 +2407,23 @@
         <div class="kb-card-divider"></div>
         <div class="kb-card-meta">
           <div class="kb-card-meta-item">
-            <span class="kb-meta-label">Hedef</span>
+            <span class="kb-meta-label">${t("Hedef")}</span>
             <span class="kb-meta-val">${hedefMeta}</span>
           </div>
-          <div class="kb-card-meta-item kb-gerceklesen-item" data-kpi-id="${k.id}" data-period-key="${safeKey}" style="cursor:pointer;" title="Periyot veri detayını görmek için tıklayın">
-            <span class="kb-meta-label">Gerçekleşen</span>
+          <div class="kb-card-meta-item kb-gerceklesen-item" data-kpi-id="${k.id}" data-period-key="${safeKey}" style="cursor:pointer;" title="${t("Periyot veri detayını görmek için tıklayın")}">
+            <span class="kb-meta-label">${t("Gerçekleşen")}</span>
             <span class="kb-meta-val">${gercekMeta}</span>
           </div>
           <div class="kb-card-meta-item">
-            <span class="kb-meta-label">Başarı Puanı</span>
+            <span class="kb-meta-label">${t("Başarı Puanı")}</span>
             <span class="kb-meta-val">${basariPuaniHtml}</span>
           </div>
           <div class="kb-card-meta-item">
-            <span class="kb-meta-label">Periyot</span>
+            <span class="kb-meta-label">${t("Periyot")}</span>
             <span class="kb-meta-val">${escHtml(k.period || "—")}</span>
           </div>
         </div>
-        <div class="kb-card-weight">Ağırlık: ${wDisplay === "—" ? "—" : `${escHtml(wDisplay)} %`}</div>
+        <div class="kb-card-weight">${t("Ağırlık:")} ${wDisplay === "—" ? "—" : `${escHtml(wDisplay)} %`}</div>
       </div>`;
 
       if (bucket.col === "hedefte") appendCard(colH, cardInner);
@@ -2483,29 +2483,29 @@
       const plan = [a.start_at || a.start_date || "—", a.end_at || a.end_date || "—"].join(" → ");
       const assignees = Array.isArray(a.assignees) && a.assignees.length
         ? a.assignees.map((u) => u.full_name || u.email || `#${u.id}`).join(", ")
-        : "Atama yok";
-      const kpiLabel = a.process_kpi_name || "Bağımsız faaliyet";
+        : t("Atama yok");
+      const kpiLabel = a.process_kpi_name || t("Bağımsız faaliyet");
       const canManage = !!a.can_manage || !!canCrudActivity;
       const card = `
         <div class="kb-card" data-act-id="${a.id}">
           <div class="kb-card-top">
             <div class="kb-card-name-block">
-              <div><span class="kb-code-badge">FAALİYET</span> <span class="kb-card-name">${escHtml(a.name || "—")}</span></div>
-              <div class="kb-card-subline">${escHtml(a.status || "Planlandı")}</div>
+              <div><span class="kb-code-badge">${t("FAALİYET")}</span> <span class="kb-card-name">${escHtml(a.name || "—")}</span></div>
+              <div class="kb-card-subline">${escHtml(a.status || t("Planlandı"))}</div>
             </div>
             <div class="kb-card-actions no-print">
-              ${canManage ? `<button type="button" class="btn-act-complete text-emerald-500 hover:text-emerald-700 text-xs" data-act-id="${a.id}" title="Tamamlandı olarak işaretle"><i class="fas fa-check"></i></button>` : ""}
-              ${canManage ? `<button type="button" class="btn-act-postpone text-amber-500 hover:text-amber-700 text-xs" data-act-id="${a.id}" title="Ertele"><i class="fas fa-clock"></i></button>` : ""}
-              ${canManage ? `<button type="button" class="btn-act-cancel text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="İptal"><i class="fas fa-ban"></i></button>` : ""}
-              ${canManage ? `<button type="button" class="btn-act-delete text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="Sil"><i class="fas fa-trash"></i></button>` : ""}
+              ${canManage ? `<button type="button" class="btn-act-complete text-emerald-500 hover:text-emerald-700 text-xs" data-act-id="${a.id}" title="${t("Tamamlandı olarak işaretle")}"><i class="fas fa-check"></i></button>` : ""}
+              ${canManage ? `<button type="button" class="btn-act-postpone text-amber-500 hover:text-amber-700 text-xs" data-act-id="${a.id}" title="${t("Ertele")}"><i class="fas fa-clock"></i></button>` : ""}
+              ${canManage ? `<button type="button" class="btn-act-cancel text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="${t("İptal")}"><i class="fas fa-ban"></i></button>` : ""}
+              ${canManage ? `<button type="button" class="btn-act-delete text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="${t("Sil")}"><i class="fas fa-trash"></i></button>` : ""}
             </div>
           </div>
           <div class="kb-card-divider"></div>
           <div class="kb-card-meta">
-            <div class="kb-card-meta-item"><span class="kb-meta-label">Plan</span><span class="kb-meta-val">${escHtml(plan)}</span></div>
-            <div class="kb-card-meta-item"><span class="kb-meta-label">Atanan</span><span class="kb-meta-val">${escHtml(assignees)}</span></div>
-            <div class="kb-card-meta-item"><span class="kb-meta-label">İlişkili PG</span><span class="kb-meta-val">${escHtml(kpiLabel)}</span></div>
-            <div class="kb-card-meta-item"><span class="kb-meta-label">Hatırlatma</span><span class="kb-meta-val">${(a.reminder_offsets || []).length || 0} kayıt</span></div>
+            <div class="kb-card-meta-item"><span class="kb-meta-label">${t("Plan")}</span><span class="kb-meta-val">${escHtml(plan)}</span></div>
+            <div class="kb-card-meta-item"><span class="kb-meta-label">${t("Atanan")}</span><span class="kb-meta-val">${escHtml(assignees)}</span></div>
+            <div class="kb-card-meta-item"><span class="kb-meta-label">${t("İlişkili PG")}</span><span class="kb-meta-val">${escHtml(kpiLabel)}</span></div>
+            <div class="kb-card-meta-item"><span class="kb-meta-label">${t("Hatırlatma")}</span><span class="kb-meta-val">${(a.reminder_offsets || []).length || 0} ${t("kayıt")}</span></div>
           </div>
         </div>`;
       if (bucket === "plan") colPlan.insertAdjacentHTML("beforeend", card);
@@ -2521,7 +2521,7 @@
   function renderActivityTable(activities, year) {
     if (!actTbody) return;
     if (!activities || activities.length === 0) {
-      actTbody.innerHTML = `<tr><td colspan="16" class="text-center py-8 text-gray-400">Henüz faaliyet eklenmemiş.</td></tr>`;
+      actTbody.innerHTML = `<tr><td colspan="16" class="text-center py-8 text-gray-400">${t("Henüz faaliyet eklenmemiş.")}</td></tr>`;
       return;
     }
 
@@ -2566,7 +2566,7 @@
         ${monthCells}
         <td class="px-3 py-2 text-center">${
           (a.can_manage || canCrudActivity)
-            ? `<button type="button" class="btn-act-delete text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="Sil">
+            ? `<button type="button" class="btn-act-delete text-red-400 hover:text-red-600 text-xs" data-act-id="${a.id}" title="${t("Sil")}">
             <i class="fas fa-trash"></i>
           </button>`
             : "—"
@@ -2587,21 +2587,21 @@
     const startVal = toDateTimeLocalValue(activity?.start_at || activity?.start_date || "");
     const endVal = toDateTimeLocalValue(activity?.end_at || activity?.end_date || "");
     if (typeof window.openMcFormModal !== "function") {
-      showError("Form modali yüklenemedi.");
+      showError(t("Form modali yüklenemedi."));
       return;
     }
     const payload = await window.openMcFormModal({
-      title: "Faaliyet Ertele",
+      title: t("Faaliyet Ertele"),
       iconClass: "fas fa-clock",
-      confirmText: "Ertele",
+      confirmText: t("Ertele"),
       bodyHtml: `
         <div style="display:flex;flex-direction:column;gap:12px;">
           <div class="mc-form-field">
-            <label class="mc-form-label">Yeni Başlangıç</label>
+            <label class="mc-form-label">${t("Yeni Başlangıç")}</label>
             <input id="mc-postpone-start" class="mc-form-input" type="datetime-local" value="${escHtml(startVal)}">
           </div>
           <div class="mc-form-field">
-            <label class="mc-form-label">Yeni Bitiş</label>
+            <label class="mc-form-label">${t("Yeni Bitiş")}</label>
             <input id="mc-postpone-end" class="mc-form-input" type="datetime-local" value="${escHtml(endVal)}">
           </div>
         </div>
@@ -2610,11 +2610,11 @@
         const startAt = document.getElementById("mc-postpone-start")?.value || "";
         const endAt = document.getElementById("mc-postpone-end")?.value || "";
         if (!startAt || !endAt) {
-          showValidation("Başlangıç ve bitiş zorunludur.");
+          showValidation(t("Başlangıç ve bitiş zorunludur."));
           return false;
         }
         if (endAt <= startAt) {
-          showValidation("Bitiş başlangıçtan sonra olmalıdır.");
+          showValidation(t("Bitiş başlangıçtan sonra olmalıdır."));
           return false;
         }
         return { start_at: startAt, end_at: endAt };
@@ -2623,11 +2623,11 @@
     if (!payload) return;
     try {
       const data = await postJson(`/process/api/activity/postpone/${actId}`, payload);
-      if (!data.success) throw new Error(data.message || "Faaliyet ertelenemedi.");
-      toastSuccess(data.message || "Faaliyet ertelendi.");
+      if (!data.success) throw new Error(data.message || t("Faaliyet ertelenemedi."));
+      toastSuccess(data.message || t("Faaliyet ertelendi."));
       await loadKarne();
     } catch (err) {
-      showError(err.message || "Erteleme işlemi başarısız.");
+      showError(err.message || t("Erteleme işlemi başarısız."));
     }
   }
 
@@ -2649,7 +2649,7 @@
       if (!canEnterPgv) return;
       openDataEntryModal(btnKpiVgs.dataset.kpiId, btnKpiVgs.dataset.year, {
         periodKey: btnKpiVgs.dataset.periodKey || undefined,
-        label: btnKpiVgs.dataset.label || "Dönem",
+        label: btnKpiVgs.dataset.label || t("Dönem"),
       });
       return;
     }
@@ -2679,11 +2679,11 @@
       try {
         const data = await postJson(FAVORITE_TOGGLE_URL, { kpi_id: parseInt(favBtn.dataset.kpiId, 10) });
         if (data.success) {
-          toastSuccess(data.message || "Güncellendi.");
+          toastSuccess(data.message || t("Güncellendi."));
           loadKarne();
-        } else showError(data.message || "İşlem başarısız.");
+        } else showError(data.message || t("İşlem başarısız."));
       } catch (err) {
-        showError(err.message || "Sunucu hatası.");
+        showError(err.message || t("Sunucu hatası."));
       }
       return;
     }
@@ -2692,14 +2692,14 @@
     const btnKpiDel = e.target.closest(".btn-kpi-delete");
     if (btnKpiDel) {
       if (!canCrudPg) return;
-      const ok = await confirmDelete("Performans göstergesi silinsin mi?", "Seçili yıl için kaldırılacaktır (plan yılı kapalıysa tümden pasife alınır).");
+      const ok = await confirmDelete(t("Performans göstergesi silinsin mi?"), t("Seçili yıl için kaldırılacaktır (plan yılı kapalıysa tümden pasife alınır)."));
       if (!ok) return;
       try {
         const selectedYear = yearSelect ? parseInt(yearSelect.value, 10) : null;
         const data = await postJson(`${KPI_DELETE_BASE}${btnKpiDel.dataset.kpiId}`, {
           year: Number.isFinite(selectedYear) ? selectedYear : null,
         });
-        if (data.success) { toastSuccess("Performans göstergesi silindi."); loadKarne(); }
+        if (data.success) { toastSuccess(t("Performans göstergesi silindi.")); loadKarne(); }
         else showError(data.message);
       } catch (err) { showError(err.message); }
       return;
@@ -2710,11 +2710,11 @@
     if (btnActDel) {
       const activity = (cachedActivities || []).find((a) => String(a.id) === String(btnActDel.dataset.actId));
       if (!activity || !(activity.can_manage || canCrudActivity)) return;
-      const ok = await confirmDelete("Faaliyet silinsin mi?", "Faaliyet pasife alınacak.");
+      const ok = await confirmDelete(t("Faaliyet silinsin mi?"), t("Faaliyet pasife alınacak."));
       if (!ok) return;
       try {
         const data = await postJson(`${ACT_DELETE_BASE}${btnActDel.dataset.actId}`, {});
-        if (data.success) { toastSuccess("Faaliyet silindi."); loadKarne(); }
+        if (data.success) { toastSuccess(t("Faaliyet silindi.")); loadKarne(); }
         else showError(data.message);
       } catch (err) { showError(err.message); }
       return;
@@ -2724,15 +2724,15 @@
     if (btnActCancel) {
       const activity = (cachedActivities || []).find((a) => String(a.id) === String(btnActCancel.dataset.actId));
       if (!activity || !(activity.can_manage || canCrudActivity)) return;
-      const ok = await confirmDelete("Faaliyet iptal edilsin mi?", "Faaliyet durumu 'İptal' olarak güncellenecek.");
+      const ok = await confirmDelete(t("Faaliyet iptal edilsin mi?"), t("Faaliyet durumu 'İptal' olarak güncellenecek."));
       if (!ok) return;
       try {
         const data = await postJson(`/process/api/activity/cancel/${btnActCancel.dataset.actId}`, {});
-        if (!data.success) throw new Error(data.message || "Faaliyet iptal edilemedi.");
-        toastSuccess(data.message || "Faaliyet iptal edildi.");
+        if (!data.success) throw new Error(data.message || t("Faaliyet iptal edilemedi."));
+        toastSuccess(data.message || t("Faaliyet iptal edildi."));
         loadKarne();
       } catch (err) {
-        showError(err.message || "İşlem başarısız.");
+        showError(err.message || t("İşlem başarısız."));
       }
       return;
     }
@@ -2749,15 +2749,15 @@
     if (btnActComplete) {
       const activity = (cachedActivities || []).find((a) => String(a.id) === String(btnActComplete.dataset.actId));
       if (!activity || !(activity.can_manage || canCrudActivity)) return;
-      const ok = await confirmDelete("Faaliyet tamamlandı olarak işaretlensin mi?", "Durum 'Tamamlandı', ilerleme %100 olacak.");
+      const ok = await confirmDelete(t("Faaliyet tamamlandı olarak işaretlensin mi?"), t("Durum 'Tamamlandı', ilerleme %100 olacak."));
       if (!ok) return;
       try {
         const data = await postJson(`/process/api/activity/complete/${btnActComplete.dataset.actId}`, {});
-        if (!data.success) throw new Error(data.message || "Faaliyet tamamlanamadı.");
-        toastSuccess(data.message || "Faaliyet tamamlandı.");
+        if (!data.success) throw new Error(data.message || t("Faaliyet tamamlanamadı."));
+        toastSuccess(data.message || t("Faaliyet tamamlandı."));
         loadKarne();
       } catch (err) {
-        showError(err.message || "İşlem başarısız.");
+        showError(err.message || t("İşlem başarısız."));
       }
       return;
     }
@@ -2780,7 +2780,7 @@
       const data = await postJson(`${ACT_TRACK_BASE}${cb.dataset.actId}`, body);
       if (!data.success) {
         cb.checked = !cb.checked; // geri al
-        showError(data.message || "Takip güncellenemedi.");
+        showError(data.message || t("Takip güncellenemedi."));
       }
     } catch (err) {
       cb.checked = !cb.checked;
@@ -2791,7 +2791,7 @@
   async function exportKarneExcel() {
     if (PAGE_MODE !== "karne" || !yearSelect) return;
     if (!KARNE_EXPORT_XLSX_URL) {
-      showError("Excel dışa aktarma adresi tanımlı değil.");
+      showError(t("Excel dışa aktarma adresi tanımlı değil."));
       return;
     }
     const year = String(getDataYearForKarneLoad());
@@ -2869,7 +2869,7 @@
       });
       const ct = (res.headers.get("Content-Type") || "").toLowerCase();
       if (!res.ok) {
-        let msg = "Dışa aktarılamadı.";
+        let msg = t("Dışa aktarılamadı.");
         if (ct.includes("json")) {
           try {
             const j = await res.json();
@@ -2892,9 +2892,9 @@
       a.download = `surec_karne_${safeName}_${year}.xlsx`;
       a.click();
       setTimeout(() => URL.revokeObjectURL(a.href), 5000);
-      toastSuccess("Excel dosyası indirildi.");
+      toastSuccess(t("Excel dosyası indirildi."));
     } catch (err) {
-      showError(err.message || "Sunucu hatası.");
+      showError(err.message || t("Sunucu hatası."));
     } finally {
       if (xbtn) xbtn.disabled = false;
     }
@@ -2903,7 +2903,7 @@
   function openKarneDataWizard() {
     if (PAGE_MODE !== "karne") return;
     if (!canEnterPgv) {
-      showError("PG verisi girme yetkiniz yok.");
+      showError(t("PG verisi girme yetkiniz yok."));
       return;
     }
     document.getElementById("kpi-section")?.scrollIntoView({ behavior: "smooth", block: "start" });
@@ -2911,16 +2911,16 @@
     if (first) {
       Swal.fire({
         icon: "info",
-        title: "Veri giriş sihirbazı",
-        html: "Üstteki <strong>Görünüm periyodu</strong> seçimi, VGS’de kaydedeceğiniz verinin <strong>hangi döneme</strong> yazılacağını belirler. Ardından ilgili PG kartında, favori / düzenle / sil ikonlarının yanındaki <strong>asa (sihirbaz)</strong> simgesine tıklayın.",
-        confirmButtonText: "Tamam",
+        title: t("Veri giriş sihirbazı"),
+        html: t("Üstteki <strong>Görünüm periyodu</strong> seçimi, VGS’de kaydedeceğiniz verinin <strong>hangi döneme</strong> yazılacağını belirler. Ardından ilgili PG kartında, favori / düzenle / sil ikonlarının yanındaki <strong>asa (sihirbaz)</strong> simgesine tıklayın."),
+        confirmButtonText: t("Tamam"),
         confirmButtonColor: "#4f46e5",
       });
     } else {
       Swal.fire({
         icon: "info",
-        title: "Veri giriş sihirbazı",
-        text: "Önce bu sürece performans göstergesi ekleyin; veri girişi için PG kartındaki sihirbaz ikonunu kullanın.",
+        title: t("Veri giriş sihirbazı"),
+        text: t("Önce bu sürece performans göstergesi ekleyin; veri girişi için PG kartındaki sihirbaz ikonunu kullanın."),
         confirmButtonColor: "#4f46e5",
       });
     }
@@ -2958,7 +2958,7 @@
           // Bu yılda klon yok — API verisi yükle (sadece KpiData)
           if (window.Swal) {
             Swal.fire({ toast: true, position: "top-end", icon: "info",
-              title: data.message || `${newYear} döneminde eşleşen süreç bulunamadı.`,
+              title: data.message || `${newYear} ${t("döneminde eşleşen süreç bulunamadı.")}`,
               showConfirmButton: false, timer: 3000 });
           }
           // Yıl değişimini geri al
@@ -3005,7 +3005,7 @@
   document.getElementById("kpi-add-basari-enable")?.addEventListener("change", toggleKpiAddBasariPanel);
   document.querySelector(".karne-basari-aralik-info-btn")?.addEventListener("click", () => {
     Swal.fire({
-      title: "Aralık nasıl girilir?",
+      title: t("Aralık nasıl girilir?"),
       icon: "info",
       customClass: { container: "swal-above-nested-modal" },
       didOpen: () => {
@@ -3014,27 +3014,27 @@
       },
       html: `
         <div style="text-align:left; font-size:13px; line-height:1.6;">
-          <p>Her puan seviyesi için gerçekleşme <strong>yüzdesi</strong> (gerçekleşen ÷ hedef × 100) aralığını <strong>min-max</strong> formatında girin.</p>
+          <p>${t("Her puan seviyesi için gerçekleşme <strong>yüzdesi</strong> (gerçekleşen ÷ hedef × 100) aralığını <strong>min-max</strong> formatında girin.")}</p>
           <table style="width:100%; border-collapse:collapse; margin:12px 0;">
             <thead>
               <tr style="background:#f1f5f9;">
-                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:center;">Puan</th>
-                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:center;">Aralık</th>
-                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:left;">Anlam</th>
+                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:center;">${t("Puan")}</th>
+                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:center;">${t("Aralık")}</th>
+                <th style="padding:6px 10px; border:1px solid #e2e8f0; text-align:left;">${t("Anlam")}</th>
               </tr>
             </thead>
             <tbody>
-              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">1</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">0-40</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 0 ile 40 arasında</td></tr>
-              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">2</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">40.01-60</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 40.01 ile 60 arasında</td></tr>
-              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">3</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">60.01-80</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 60.01 ile 80 arasında</td></tr>
-              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">4</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">80.01-100</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 80.01 ile 100 arasında</td></tr>
-              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">5</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">100.01-</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">% 100.01 ve üzeri (üst sınır yok)</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">1</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">0-40</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">${t("% 0 ile 40 arasında")}</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">2</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">40.01-60</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">${t("% 40.01 ile 60 arasında")}</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">3</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">60.01-80</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">${t("% 60.01 ile 80 arasında")}</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">4</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">80.01-100</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">${t("% 80.01 ile 100 arasında")}</td></tr>
+              <tr><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">5</td><td style="padding:5px 10px; border:1px solid #e2e8f0; text-align:center;">100.01-</td><td style="padding:5px 10px; border:1px solid #e2e8f0;">${t("% 100.01 ve üzeri (üst sınır yok)")}</td></tr>
             </tbody>
           </table>
-          <p style="margin:0;"><strong>⚠ Sınır değeri:</strong> Eşleşme <code>&lt;=</code> ile yapılır; 40 yazıldığında 1. aralığa düşer. Çakışmayı önlemek için üst sınırı <code>40.01</code> gibi bir sonraki aralığın başlangıcına kaydırın.</p>
-          <p style="margin-top:8px; margin-bottom:0;"><strong>Açık uç:</strong> Son puan için max kısmını boş bırakın (örn: <code>100.01-</code>) — üst sınır sonsuz kabul edilir.</p>
+          <p style="margin:0;"><strong>${t("⚠ Sınır değeri:")}</strong> ${t("Eşleşme <code>&lt;=</code> ile yapılır; 40 yazıldığında 1. aralığa düşer. Çakışmayı önlemek için üst sınırı <code>40.01</code> gibi bir sonraki aralığın başlangıcına kaydırın.")}</p>
+          <p style="margin-top:8px; margin-bottom:0;"><strong>${t("Açık uç:")}</strong> ${t("Son puan için max kısmını boş bırakın (örn: <code>100.01-</code>) — üst sınır sonsuz kabul edilir.")}</p>
         </div>`,
-      confirmButtonText: "Anladım",
+      confirmButtonText: t("Anladım"),
       width: 560,
     });
   });
@@ -3096,7 +3096,7 @@
     if (microPgTablo && typeof microPgTablo.open === "function") {
       microPgTablo.open(null);
     } else {
-      showError("Tablo görünümü şu an kullanılamıyor.");
+      showError(t("Tablo görünümü şu an kullanılamıyor."));
     }
   });
 
@@ -3116,7 +3116,7 @@
       atananlar: (a.assignees || []).map((u) => u.full_name || u.email || `#${u.id}`).join(", "),
       hatirlatma: (a.reminder_offsets || []).join(", "),
     }));
-    const headers = ["ID", "Faaliyet", "Durum", "Başlangıç", "Bitiş", "İlişkili PG", "Atananlar", "Hatırlatmalar (dk)"];
+    const headers = ["ID", t("Faaliyet"), t("Durum"), t("Başlangıç"), t("Bitiş"), t("İlişkili PG"), t("Atananlar"), t("Hatırlatmalar (dk)")];
     const lines = [headers.join(";")];
     rows.forEach((r) => {
       const vals = [r.id, r.faaliyet, r.durum, r.baslangic, r.bitis, r.iliskili_pg, r.atananlar, r.hatirlatma]
@@ -3160,7 +3160,7 @@
 
   document.getElementById("btn-activity-excel")?.addEventListener("click", () => {
     exportActivitiesCsv();
-    toastSuccess("Faaliyet listesi dışa aktarıldı.");
+    toastSuccess(t("Faaliyet listesi dışa aktarıldı."));
   });
   document.getElementById("btn-activity-print")?.addEventListener("click", () => window.print());
 
@@ -3286,7 +3286,7 @@
   function showError(msg) {
     const openModals = Array.from(document.querySelectorAll(".mc-modal-overlay.open, .mc-modal-overlay.active"));
     openModals.forEach(m => m.style.zIndex = "1");
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" })
+    Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" })
       .then(() => { openModals.forEach(m => m.style.zIndex = ""); });
   }
 
@@ -3336,9 +3336,9 @@
     const icon = document.getElementById("modal-surec-title-icon");
     if (icon) icon.className = "fas fa-plus-circle";
     const tit = document.getElementById("modal-surec-title-text");
-    if (tit) tit.textContent = "Yeni Süreç Oluştur";
+    if (tit) tit.textContent = t("Yeni Süreç Oluştur");
     const st = document.getElementById("btn-surec-save-text");
-    if (st) st.textContent = "Süreci Kaydet";
+    if (st) st.textContent = t("Süreci Kaydet");
     const sel = document.getElementById("surec-parent-id");
     if (sel) {
       [...sel.options].forEach((o) => {
@@ -3351,9 +3351,9 @@
     const icon = document.getElementById("modal-surec-title-icon");
     if (icon) icon.className = "fas fa-pen-to-square";
     const tit = document.getElementById("modal-surec-title-text");
-    if (tit) tit.textContent = "Süreci Düzenle";
+    if (tit) tit.textContent = t("Süreci Düzenle");
     const st = document.getElementById("btn-surec-save-text");
-    if (st) st.textContent = "Değişiklikleri Kaydet";
+    if (st) st.textContent = t("Değişiklikleri Kaydet");
   }
 
   function applyParentSelectSelfDisable(processId) {
@@ -3399,8 +3399,8 @@
       let headerHtml = `<div style="font-size:11px; font-weight:700; color:#64748b; margin-bottom:6px;">${(st.code || "") + " " + (st.title || "")}</div>`;
       if (K_VEKTOR_ENABLED) {
         headerHtml += `<div style="display:flex;justify-content:space-between;align-items:center;padding:0 2px 4px;border-bottom:1px solid #e2e8f0;margin-bottom:4px;">` +
-          `<span style="font-size:11px;font-weight:600;color:#94a3b8;">Alt Strateji</span>` +
-          `<span style="font-size:11px;font-weight:600;color:#94a3b8;width:96px;text-align:center;flex-shrink:0;">Katkı %</span>` +
+          `<span style="font-size:11px;font-weight:600;color:#94a3b8;">${t("Alt Strateji")}</span>` +
+          `<span style="font-size:11px;font-weight:600;color:#94a3b8;width:96px;text-align:center;flex-shrink:0;">${t("Katkı %")}</span>` +
           `</div>`;
       }
       h.innerHTML = headerHtml;
@@ -3486,7 +3486,7 @@
     try {
       const res = await fetch(`${GET_URL_BASE}${id}`);
       const data = await res.json();
-      if (!data.success) throw new Error(data.message || "Süreç bilgisi alınamadı.");
+      if (!data.success) throw new Error(data.message || t("Süreç bilgisi alınamadı."));
       const p = data.process;
       setModalUiEditMode();
       const hid = document.getElementById("surec-edit-id");
@@ -3534,7 +3534,7 @@
       const modal = document.getElementById("modal-surec-add");
       if (modal) modal.style.display = "flex";
     } catch (err) {
-      showError(err.message || "Süreç yüklenemedi.");
+      showError(err.message || t("Süreç yüklenemedi."));
     }
   }
 
@@ -3556,9 +3556,9 @@
     let pct = 0;
     let progressTimer = null;
     Swal.fire({
-      title: "Süreç kaydediliyor",
+      title: t("Süreç kaydediliyor"),
       html:
-        '<p style="margin:0 0 10px;font-size:14px;color:#64748b;line-height:1.45;">İstek sunucuya gönderiliyor. Tamamlanınca liste yenilenecek.</p>' +
+        `<p style="margin:0 0 10px;font-size:14px;color:#64748b;line-height:1.45;">${t("İstek sunucuya gönderiliyor. Tamamlanınca liste yenilenecek.")}</p>` +
         '<div style="height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;">' +
         '<div id="surec-save-progress-bar" style="height:100%;width:0%;background:linear-gradient(90deg,#6366f1,#8b5cf6);transition:width 0.2s ease-out;"></div></div>' +
         '<p id="surec-save-progress-pct" style="margin:12px 0 0;font-size:18px;font-weight:700;color:#334155;">0%</p>',
@@ -3610,14 +3610,14 @@
 
     const name = document.getElementById("surec-name")?.value.trim();
     if (!name) {
-      showError("Süreç adı zorunludur.");
+      showError(t("Süreç adı zorunludur."));
       return;
     }
     const checked = [...document.querySelectorAll("#modal-surec-add .ss-check:checked")].map((cb) =>
       parseInt(cb.value, 10)
     );
     if (!checked.length) {
-      showError("En az bir alt strateji seçmelisiniz.");
+      showError(t("En az bir alt strateji seçmelisiniz."));
       return;
     }
     let subStrategyLinksPayload;
@@ -3628,19 +3628,19 @@
         const inp = document.querySelector(`#modal-surec-add .ss-pct-input[data-ss-id="${sid}"]`);
         const raw = inp ? inp.value.trim() : "";
         if (raw === "") {
-          showError("K-Vektör açıkken her seçili alt strateji için katkı % girilmelidir.");
+          showError(t("K-Vektör açıkken her seçili alt strateji için katkı % girilmelidir."));
           return;
         }
         const p = parseFloat(String(raw).replace(",", "."));
         if (Number.isNaN(p) || p < 0) {
-          showError("Katkı yüzdeleri 0 veya pozitif sayı olmalıdır.");
+          showError(t("Katkı yüzdeleri 0 veya pozitif sayı olmalıdır."));
           return;
         }
         links.push({ sub_strategy_id: sid, contribution_pct: p });
       }
       const total = links.reduce((s, l) => s + l.contribution_pct, 0);
       if (total > 100.0001) {
-        showError("Katkı yüzdelerinin toplamı 100'ü aşamaz.");
+        showError(t("Katkı yüzdelerinin toplamı 100'ü aşamaz."));
         return;
       }
       subStrategyLinksPayload = links;
@@ -3672,11 +3672,11 @@
     const modalTitle = document.getElementById("modal-surec-title-text")?.textContent?.trim() || "";
     const looksLikeEditMode = modalTitle.indexOf("Düzenle") !== -1;
     if (!editId && !CAN_CRUD_PROCESS) {
-      showError("Yeni süreç oluşturma yetkiniz yok.");
+      showError(t("Yeni süreç oluşturma yetkiniz yok."));
       return;
     }
     if (!editId && CAN_CRUD_PROCESS && looksLikeEditMode) {
-      showError("Düzenleme oturumu eksik (süreç kimliği bulunamadı). Modalı kapatıp «Düzenle» ile yeniden açın.");
+      showError(t("Düzenleme oturumu eksik (süreç kimliği bulunamadı). Modalı kapatıp «Düzenle» ile yeniden açın."));
       return;
     }
     const saveBtn = document.getElementById("btn-surec-save");
@@ -3695,15 +3695,15 @@
       if (data.success) {
         await progressUi.finishSuccess();
         closeAddModal();
-        toastSuccess(editId ? "Süreç güncellendi." : "Süreç oluşturuldu.");
+        toastSuccess(editId ? t("Süreç güncellendi.") : t("Süreç oluşturuldu."));
         setTimeout(() => location.reload(), 450);
       } else {
         progressUi.finishError();
-        showError(data.message || (editId ? "Güncelleme başarısız." : "Kayıt başarısız."));
+        showError(data.message || (editId ? t("Güncelleme başarısız.") : t("Kayıt başarısız.")));
       }
     } catch (err) {
       progressUi.finishError();
-      showError("Sunucu hatası: " + (err && err.message ? err.message : String(err)));
+      showError(t("Sunucu hatası:") + " " + (err && err.message ? err.message : String(err)));
     } finally {
       processSaveInFlight = false;
       if (saveBtn) saveBtn.disabled = false;
@@ -3713,27 +3713,27 @@
   // ── Süreç sil ─────────────────────────────────────────────────────────────
   async function deleteSurec(id, name) {
     const result = await Swal.fire({
-      title: "Süreç silinsin mi?",
-      text: `"${name}" pasife alınacak.`,
+      title: t("Süreç silinsin mi?"),
+      text: `"${name}" ${t("pasife alınacak.")}`,
       icon: "warning",
       showCancelButton: true,
       confirmButtonColor: "#dc2626",
       cancelButtonColor: "#6b7280",
-      confirmButtonText: "Evet, sil",
-      cancelButtonText: "İptal",
+      confirmButtonText: t("Evet, sil"),
+      cancelButtonText: t("İptal"),
     });
     if (!result.isConfirmed) return;
 
     try {
       const data = await postJson(`${DELETE_BASE}${id}`, {});
       if (data.success) {
-        toastSuccess("Süreç silindi.");
+        toastSuccess(t("Süreç silindi."));
         setTimeout(() => location.reload(), 1200);
       } else {
-        showError(data.message || "Silme başarısız.");
+        showError(data.message || t("Silme başarısız."));
       }
     } catch (err) {
-      showError("Sunucu hatası: " + err.message);
+      showError(t("Sunucu hatası:") + " " + err.message);
     }
   }
 

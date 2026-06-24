@@ -56,9 +56,9 @@ document.addEventListener('DOMContentLoaded', function () {
             var csrf = document.querySelector('meta[name="csrf-token"]');
 
             MicroUI.onayla(
-                'Tüm bildirimler okundu olarak işaretlenecek.',
+                t('Tüm bildirimler okundu olarak işaretlenecek.'),
                 function () {
-                    MicroUI.yukleniyor('İşleniyor...');
+                    MicroUI.yukleniyor(t('İşleniyor...'));
                     fetch(url, {
                         method: 'POST',
                         headers: { 'X-CSRFToken': csrf ? csrf.content : '' }
@@ -84,18 +84,18 @@ document.addEventListener('DOMContentLoaded', function () {
                             var badge = document.getElementById('notif-badge');
                             if (badge) badge.style.display = 'none';
                             btnAll.style.display = 'none';
-                            MicroUI.basari('Tüm bildirimler okundu olarak işaretlendi.');
+                            MicroUI.basari(t('Tüm bildirimler okundu olarak işaretlendi.'));
                         } else {
-                            MicroUI.hata(res.message || 'İşlem başarısız.');
+                            MicroUI.hata(res.message || t('İşlem başarısız.'));
                         }
                     })
                     .catch(function () {
                         MicroUI.kapat();
-                        MicroUI.hata('Sunucu bağlantı hatası.');
+                        MicroUI.hata(t('Sunucu bağlantı hatası.'));
                     });
                 },
-                'Tümünü Okundu İşaretle',
-                'Evet, işaretle'
+                t('Tümünü Okundu İşaretle'),
+                t('Evet, işaretle')
             );
         });
     }

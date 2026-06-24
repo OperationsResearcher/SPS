@@ -66,21 +66,21 @@ document.addEventListener('DOMContentLoaded', function () {
         btnSave.addEventListener('click', function () {
             var data = _collectData();
             if (!data.kurum_adi) {
-                MicroUI.uyari('Kurum adı zorunludur.');
+                MicroUI.uyari(t('Kurum adı zorunludur.'));
                 return;
             }
 
-            MicroUI.yukleniyor('Kaydediliyor...');
+            MicroUI.yukleniyor(t('Kaydediliyor...'));
             MicroUI.post(
                 saveUrl,
                 data,
                 function (res) {
                     MicroUI.kapat();
-                    MicroUI.basari(res.message || 'Kurum ayarları kaydedildi.');
+                    MicroUI.basari(res.message || t('Kurum ayarları kaydedildi.'));
                 },
                 function (res) {
                     MicroUI.kapat();
-                    MicroUI.hata(res.message || 'Kayıt başarısız.');
+                    MicroUI.hata(res.message || t('Kayıt başarısız.'));
                 }
             );
         });
@@ -89,7 +89,7 @@ document.addEventListener('DOMContentLoaded', function () {
     // Logo yükleme (multipart)
     function _uploadLogo() {
         if (!elLogo || !elLogo.files || !elLogo.files.length) {
-            MicroUI.uyari('Lütfen bir logo dosyası seçin.');
+            MicroUI.uyari(t('Lütfen bir logo dosyası seçin.'));
             return;
         }
 
@@ -97,7 +97,7 @@ document.addEventListener('DOMContentLoaded', function () {
         var form = new FormData();
         form.append('logo', file);
 
-        MicroUI.yukleniyor('Logo yükleniyor...');
+        MicroUI.yukleniyor(t('Logo yükleniyor...'));
 
         var csrfToken = document.querySelector('meta[name="csrf-token"]');
         var csrfValue = csrfToken ? csrfToken.content : '';
@@ -113,15 +113,15 @@ document.addEventListener('DOMContentLoaded', function () {
             .then(function (res) {
                 MicroUI.kapat();
                 if (res && res.success) {
-                    MicroUI.basari(res.message || 'Logo yüklendi.');
+                    MicroUI.basari(res.message || t('Logo yüklendi.'));
                     window.location.href = saveUrl;
                 } else {
-                    MicroUI.hata((res && res.message) ? res.message : 'Logo yükleme başarısız.');
+                    MicroUI.hata((res && res.message) ? res.message : t('Logo yükleme başarısız.'));
                 }
             })
             .catch(function () {
                 MicroUI.kapat();
-                MicroUI.hata('Sunucu bağlantı hatası.');
+                MicroUI.hata(t('Sunucu bağlantı hatası.'));
             });
     }
 

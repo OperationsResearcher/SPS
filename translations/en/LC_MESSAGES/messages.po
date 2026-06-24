@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 06:44+0300\n"
+"POT-Creation-Date: 2026-06-24 07:45+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -16,246 +16,62 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Generated-By: Babel 2.18.0\n"
 
-#: ui/templates/platform/base.html:130
-msgid "Ana Modüller"
-msgstr "Main Modules"
+#: ui/static/platform/js/admin.js:32 ui/static/platform/js/analiz.js:45
+#: ui/static/platform/js/app.js:113 ui/static/platform/js/bireysel.js:103
+#: ui/static/platform/js/k_radar_ks.js:396
+#: ui/static/platform/js/k_radar_ks.js:510
+#: ui/static/platform/js/k_radar_ks.js:609
+#: ui/static/platform/js/k_radar_ks.js:881
+#: ui/static/platform/js/k_radar_ks.js:906
+#: ui/static/platform/js/k_radar_ks.js:926
+#: ui/static/platform/js/k_radar_ks.js:945
+#: ui/static/platform/js/k_radar_ks.js:972
+#: ui/static/platform/js/k_radar_ks.js:991
+#: ui/static/platform/js/k_radar_ks.js:1054
+#: ui/static/platform/js/k_radar_ks.js:1286 ui/static/platform/js/kurum.js:48
+#: ui/static/platform/js/launcher_plan_year.js:39
+#: ui/static/platform/js/masaustu.js:217 ui/static/platform/js/masaustu.js:221
+#: ui/static/platform/js/masaustu_plan_year.js:44
+#: ui/static/platform/js/pg_tablo_modal.js:718
+#: ui/static/platform/js/pg_tablo_modal.js:740
+#: ui/static/platform/js/profil.js:22 ui/static/platform/js/sp.js:47
+#: ui/static/platform/js/sp_analiz.js:111
+#: ui/static/platform/js/sp_analiz.js:149
+#: ui/static/platform/js/sp_analiz.js:186
+#: ui/static/platform/js/sp_donemler.js:30
+#: ui/static/platform/js/sp_donemler.js:276
+#: ui/static/platform/js/sp_plan_year.js:48 ui/static/platform/js/surec.js:122
+#: ui/static/platform/js/surec.js:3314 ui/static/platform/js/twofa.js:73
+#: ui/static/platform/js/twofa.js:170
+#: ui/static/platform/js/yonetim_paneli.js:10
+msgid "Hata"
+msgstr "Error"
 
-#: ui/templates/platform/base.html:137
-msgid "Masaüstüm"
-msgstr "My Desktop"
+#: ui/static/platform/js/admin.js:46
+#: ui/static/platform/js/pg_tablo_modal.js:700
+msgid "Evet"
+msgstr "Yes"
 
-#: ui/templates/platform/base.html:145
-#: ui/templates/platform/sp/blue_ocean.html:10
-#: ui/templates/platform/sp/ceyreklik_review.html:10
-#: ui/templates/platform/sp/donemler.html:11
-#: ui/templates/platform/sp/index.html:70
-#: ui/templates/platform/sp/initiatives.html:10
-#: ui/templates/platform/sp/menu.html:17
-#: ui/templates/platform/sp/projeler.html:10
-#: ui/templates/platform/sp/projeler.html:24
-#: ui/templates/platform/sp/replan_triggers.html:10
-#: ui/templates/platform/sp/scenarios.html:10
-#: ui/templates/platform/sp/strategy_project_matrix.html:7
-#: ui/templates/platform/sp/vrio.html:10
-#: ui/templates/platform/surec/index.html:489
-msgid "Stratejik Planlama"
-msgstr "Strategic Planning"
-
-#: ui/templates/platform/base.html:150 ui/templates/platform/kurum/index.html:2
-#: ui/templates/platform/kurum/index.html:3
-msgid "Kurum Paneli"
-msgstr "Organization Panel"
-
-#: ui/templates/platform/admin/holding_drilldown.html:2
-#: ui/templates/platform/base.html:159
-msgid "Holding Görünümü"
-msgstr "Holding View"
-
-#: ui/templates/platform/admin/holding_dashboard.html:26
-#: ui/templates/platform/admin/sub_tenants.html:3
-#: ui/templates/platform/admin/sub_tenants.html:21
-#: ui/templates/platform/base.html:171
-msgid "Alt Kurum Yönetimi"
-msgstr "Sub-Organization Management"
-
-#: ui/templates/platform/base.html:173
-msgid "Müşteri Kurumlarım"
-msgstr "My Client Organizations"
-
-#: ui/templates/platform/base.html:183
-#: ui/templates/platform/sp/exec_dashboard.html:109
-#: ui/templates/platform/surec/faaliyetler.html:10
-msgid "Süreç Yönetimi"
-msgstr "Process Management"
-
-#: ui/templates/platform/base.html:191
-msgid "Proje Yönetimi"
-msgstr "Project Management"
-
-#: ui/templates/platform/analiz/index.html:62
-#: ui/templates/platform/base.html:206
-#: ui/templates/platform/sp/exec_dashboard.html:112
-msgid "K-Analiz"
-msgstr "K-Analysis"
-
-#: ui/templates/platform/base.html:212
-#: ui/templates/platform/sp/exec_dashboard.html:94
-msgid "Savaş Odası"
-msgstr "War Room"
-
-#: ui/templates/platform/base.html:220
-#: ui/templates/platform/k_radar/hub.html:76
-msgid "Bireysel Performans"
-msgstr "Individual Performance"
-
-#: ui/templates/platform/analiz/index.html:2
-#: ui/templates/platform/analiz/index.html:3
-#: ui/templates/platform/base.html:227
-msgid "Performans Analitiği"
-msgstr "Performance Analytics"
-
-#: ui/templates/platform/base.html:233
-msgid "Yönetim"
-msgstr "Management"
-
-#: ui/templates/platform/admin/users.html:10
-#: ui/templates/platform/base.html:238
-#: ui/templates/platform/surec/index.html:598
-#: ui/templates/platform/surec/index.html:618
-msgid "Kullanıcılar"
-msgstr "Users"
-
-#: ui/templates/platform/admin/tenants.html:10
-#: ui/templates/platform/base.html:244
-msgid "Kurumlar"
-msgstr "Organizations"
-
-#: ui/templates/platform/base.html:250
-msgid "Bildirim Merkezi"
-msgstr "Notification Center"
-
-#: ui/templates/platform/base.html:257
-msgid "SaaS Paketler"
-msgstr "SaaS Packages"
-
-#: ui/templates/platform/base.html:265
-msgid "API Dokümantasyonu"
-msgstr "API Documentation"
-
-#: ui/templates/platform/admin/araclar.html:3
-#: ui/templates/platform/admin/araclar.html:6
-#: ui/templates/platform/admin/araclar.html:15
-#: ui/templates/platform/admin/hata_kontrolu.html:6
-#: ui/templates/platform/admin/istatistikler.html:6
-#: ui/templates/platform/admin/kilavuz_olusturucu.html:6
-#: ui/templates/platform/admin/loglar.html:6
-#: ui/templates/platform/admin/loglar_kurum.html:7
-#: ui/templates/platform/admin/yedekleme.html:6
-#: ui/templates/platform/base.html:272 ui/templates/platform/base.html:276
-msgid "Admin Araçları"
-msgstr "Admin Tools"
-
-#: ui/templates/platform/base.html:281
-msgid "Sistem"
-msgstr "System"
-
-#: ui/templates/platform/base.html:286 ui/templates/platform/base.html:393
-#: ui/templates/platform/bildirim/index.html:18
-msgid "Bildirimler"
-msgstr "Notifications"
-
-#: ui/templates/platform/ayarlar/eposta.html:10
-#: ui/templates/platform/ayarlar/index.html:2
-#: ui/templates/platform/ayarlar/index.html:3
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:7
-#: ui/templates/platform/base.html:291
-msgid "Ayarlar"
-msgstr "Settings"
-
-#: ui/templates/platform/admin/istatistikler.html:35
-#: ui/templates/platform/admin/istatistikler.html:69
-#: ui/templates/platform/admin/sub_tenants.html:79
-#: ui/templates/platform/admin/sub_tenants_usage.html:44
-#: ui/templates/platform/admin/sub_tenants_usage.html:73
-#: ui/templates/platform/admin/yonetim_paneli.html:114
-#: ui/templates/platform/admin/yonetim_paneli.html:142
-#: ui/templates/platform/ayarlar/index.html:33
-#: ui/templates/platform/base.html:309
-#: ui/templates/platform/k_rapor/index.html:271
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:405
-#: ui/templates/platform/raporlar/bireysel_hizalama.html:25
-msgid "Kullanıcı"
-msgstr "User"
-
-#: ui/templates/platform/base.html:321
-msgid "Profilim"
-msgstr "My Profile"
-
-#: ui/templates/platform/base.html:328 ui/templates/platform/base.html:434
-msgid "Aydınlık Mod"
-msgstr "Light Mode"
-
-#: ui/templates/platform/base.html:328 ui/templates/platform/base.html:434
-msgid "Karanlık Mod"
-msgstr "Dark Mode"
-
-#: ui/templates/platform/base.html:334 ui/templates/platform/base.html:440
-msgid "Çıkış Yap"
-msgstr "Log Out"
-
-#: ui/templates/platform/base.html:351
-msgid "Menü"
-msgstr "Menu"
-
-#: ui/templates/platform/base.html:361
-msgid "Ara — Ctrl+K"
-msgstr "Search — Ctrl+K"
-
-#: ui/templates/platform/base.html:364
-msgid "Sayfa, strateji, PG, proje ara…"
-msgstr "Search pages, strategies, PIs, projects…"
-
-#: ui/templates/platform/base.html:496
-msgid "Ana Sayfa"
-msgstr "Home"
-
-#: ui/templates/platform/base.html:554
-msgid "Sayfa ID (yalnız admin)"
-msgstr "Page ID (admin only)"
-
-#: ui/templates/platform/base.html:560
-msgid "Kart Bilgisi"
-msgstr "Card Info"
-
-#: ui/templates/platform/admin/tenants.html:192
-#: ui/templates/platform/admin/tenants.html:206
-#: ui/templates/platform/admin/users.html:183
-#: ui/templates/platform/admin/users.html:234
-#: ui/templates/platform/base.html:563
-#: ui/templates/platform/k_radar/ks.html:213
-#: ui/templates/platform/k_radar/ks.html:226
-#: ui/templates/platform/k_radar/ks.html:239
-#: ui/templates/platform/k_radar/ks.html:252
-#: ui/templates/platform/k_radar/ks.html:266
-#: ui/templates/platform/k_radar/ks.html:279
-#: ui/templates/platform/k_radar/ks.html:319
-#: ui/templates/platform/k_radar/ks.html:357
-#: ui/templates/platform/k_radar/ks.html:370
-#: ui/templates/platform/k_radar/ks.html:383
-#: ui/templates/platform/surec/index.html:506
-#: ui/templates/platform/surec/karne.html:502
-#: ui/templates/platform/surec/karne.html:683
-#: ui/templates/platform/surec/karne.html:752
-#: ui/templates/platform/surec/karne.html:785
-#: ui/templates/platform/surec/karne.html:811
-#: ui/templates/platform/surec/karne.html:880
-#: ui/templates/platform/surec/karne.html:892
-#: ui/templates/platform/surec/karne.html:898
-#: ui/templates/platform/surec/karne.html:910
-#: ui/templates/platform/surec/karne.html:939
-#: ui/templates/platform/surec/karne.html:947
-msgid "Kapat"
-msgstr "Close"
-
-#: ui/templates/platform/base.html:794
-msgid "Sayfa / strateji / PG / proje / süreç / kullanıcı ara…"
-msgstr "Search page / strategy / PI / project / process / user…"
-
-#: ui/templates/platform/admin/tenants.html:160
-#: ui/templates/platform/admin/tenants.html:161
-#: ui/templates/platform/admin/users.html:140
-#: ui/templates/platform/admin/users.html:141
-#: ui/templates/platform/base.html:816
-#: ui/templates/platform/kurum/index.html:106
-msgid "Düzenle"
-msgstr "Edit"
-
+#: ui/static/platform/js/admin.js:46 ui/static/platform/js/admin.js:657
+#: ui/static/platform/js/admin.js:685 ui/static/platform/js/admin.js:714
+#: ui/static/platform/js/admin.js:804 ui/static/platform/js/app.js:144
+#: ui/static/platform/js/bireysel.js:115 ui/static/platform/js/k_radar.js:22
+#: ui/static/platform/js/k_radar_ks.js:379
+#: ui/static/platform/js/k_radar_ks.js:502
+#: ui/static/platform/js/k_radar_ks.js:601
+#: ui/static/platform/js/k_radar_ks.js:920
+#: ui/static/platform/js/k_radar_ks.js:985
+#: ui/static/platform/js/k_radar_ks.js:1275 ui/static/platform/js/kurum.js:55
+#: ui/static/platform/js/kurum.js:476 ui/static/platform/js/masaustu.js:141
+#: ui/static/platform/js/mc-modal-form.js:25
+#: ui/static/platform/js/pg_tablo_modal.js:701
+#: ui/static/platform/js/project_raid.js:301 ui/static/platform/js/sp.js:55
+#: ui/static/platform/js/surec.js:141 ui/static/platform/js/surec.js:3749
 #: ui/templates/platform/admin/sub_tenants.html:162
 #: ui/templates/platform/admin/tenants.html:329
 #: ui/templates/platform/admin/users.html:218
 #: ui/templates/platform/admin/users.html:292
-#: ui/templates/platform/base.html:826
+#: ui/templates/platform/base.html:841
 #: ui/templates/platform/k_radar/ks.html:308
 #: ui/templates/platform/k_radar/ks.html:346
 #: ui/templates/platform/k_radar/ks.html:399
@@ -283,6 +99,3214 @@ msgstr "Edit"
 msgid "İptal"
 msgstr "Cancel"
 
+#: ui/static/platform/js/admin.js:498
+msgid "Kurum güncellendi."
+msgstr "Organization updated."
+
+#: ui/static/platform/js/admin.js:498
+msgid "Kurum oluşturuldu."
+msgstr "Organization created."
+
+#: ui/static/platform/js/admin.js:502 ui/static/platform/js/admin.js:613
+#: ui/static/platform/js/admin.js:743 ui/static/platform/js/admin.js:761
+#: ui/static/platform/js/admin.js:837 ui/static/platform/js/app.js:189
+#: ui/static/platform/js/bildirim.js:89 ui/static/platform/js/surec.js:2695
+#: ui/static/platform/js/surec.js:2748 ui/static/platform/js/surec.js:2773
+msgid "İşlem başarısız."
+msgstr "Operation failed."
+
+#: ui/static/platform/js/admin.js:515
+msgid ""
+"Kurum kaydedildi ancak logo yüklenemedi. Logo dosyasını kontrol edip "
+"Kaydet ile tekrar deneyin."
+msgstr ""
+"Organization saved but the logo could not be uploaded. Check the logo "
+"file and try again with Save."
+
+#: ui/static/platform/js/admin.js:522 ui/static/platform/js/admin.js:614
+#: ui/static/platform/js/admin.js:642 ui/static/platform/js/admin.js:670
+#: ui/static/platform/js/admin.js:698 ui/static/platform/js/admin.js:726
+#: ui/static/platform/js/admin.js:744 ui/static/platform/js/admin.js:762
+#: ui/static/platform/js/admin.js:822 ui/static/platform/js/admin.js:838
+#: ui/static/platform/js/kurum.js:487 ui/static/platform/js/kurum.js:534
+#: ui/static/platform/js/kurum.js:575 ui/static/platform/js/kurum.js:592
+#: ui/static/platform/js/kurum.js:603 ui/static/platform/js/kurum.js:654
+#: ui/static/platform/js/kurum.js:699 ui/static/platform/js/kurum.js:713
+#: ui/static/platform/js/kurum.js:752 ui/static/platform/js/kurum.js:766
+msgid "Sunucu hatası: "
+msgstr "Server error: "
+
+#: ui/static/platform/js/admin.js:604
+msgid "Kurum arşivlensin mi?"
+msgstr "Archive the organization?"
+
+#: ui/static/platform/js/admin.js:604
+msgid "Kurum aktifleştirilsin mi?"
+msgstr "Activate the organization?"
+
+#: ui/static/platform/js/admin.js:606
+msgid "Evet, arşivle"
+msgstr "Yes, archive"
+
+#: ui/static/platform/js/admin.js:606 ui/static/platform/js/admin.js:736
+#: ui/static/platform/js/admin.js:754
+msgid "Evet, aktifleştir"
+msgstr "Yes, activate"
+
+#: ui/static/platform/js/admin.js:635
+msgid "Bileşenler senkronize edilsin mi?"
+msgstr "Synchronize the components?"
+
+#: ui/static/platform/js/admin.js:636
+msgid "Tüm Flask route'ları taranacak."
+msgstr "All Flask routes will be scanned."
+
+#: ui/static/platform/js/admin.js:636
+msgid "Evet, senkronize et"
+msgstr "Yes, synchronize"
+
+#: ui/static/platform/js/admin.js:641
+msgid "Senkronizasyon başarısız."
+msgstr "Synchronization failed."
+
+#: ui/static/platform/js/admin.js:647
+msgid "Yeni Paket Ekle"
+msgstr "Add New Package"
+
+#: ui/static/platform/js/admin.js:657 ui/static/platform/js/admin.js:685
+#: ui/static/platform/js/k_radar_ks.js:378
+#: ui/static/platform/js/k_radar_ks.js:502
+#: ui/static/platform/js/k_radar_ks.js:601 ui/static/platform/js/kurum.js:476
+#: ui/static/platform/js/kurum.js:518 ui/static/platform/js/kurum.js:567
+#: ui/static/platform/js/kurum.js:638 ui/static/platform/js/masaustu.js:140
+#: ui/static/platform/js/mc-modal-form.js:24 ui/static/platform/js/surec.js:641
+#: ui/templates/platform/admin/tenants.html:331
+#: ui/templates/platform/admin/users.html:220
+#: ui/templates/platform/ayarlar/eposta.html:175
+#: ui/templates/platform/k_radar/index.html:90
+#: ui/templates/platform/k_radar/ks.html:309
+#: ui/templates/platform/k_radar/ks.html:347
+#: ui/templates/platform/k_radar/ks.html:400
+#: ui/templates/platform/k_radar/risk_management.html:109
+#: ui/templates/platform/kurum/ayarlar.html:201
+#: ui/templates/platform/sp/ai_settings.html:104
+#: ui/templates/platform/sp/initiatives.html:81
+#: ui/templates/platform/sp/okr.html:90 ui/templates/platform/sp/okr.html:132
+#: ui/templates/platform/sp/pestel.html:32
+#: ui/templates/platform/sp/porter.html:31
+#: ui/templates/platform/sp/projeler.html:91
+#: ui/templates/platform/sp/projeler.html:135
+#: ui/templates/platform/sp/replan_triggers.html:103
+#: ui/templates/platform/sp/swot.html:30 ui/templates/platform/sp/tows.html:30
+#: ui/templates/platform/sp/tv.html:169
+#: ui/templates/platform/surec/karne.html:668
+#: ui/templates/platform/surec/karne.html:738
+#: ui/templates/platform/surec/karne.html:771
+#: ui/templates/platform/surec/karne.html:926
+msgid "Kaydet"
+msgstr "Save"
+
+#: ui/static/platform/js/admin.js:661 ui/static/platform/js/admin.js:689
+msgid "Ad ve kod zorunludur."
+msgstr "Name and code are required."
+
+#: ui/static/platform/js/admin.js:668
+msgid "Paket oluşturuldu."
+msgstr "Package created."
+
+#: ui/static/platform/js/admin.js:669 ui/static/platform/js/admin.js:697
+#: ui/static/platform/js/ayarlar_eposta.js:92
+#: ui/static/platform/js/kurum.js:533 ui/static/platform/js/kurum.js:574
+#: ui/static/platform/js/kurum.js:653 ui/static/platform/js/kurum_ayarlar.js:83
+#: ui/static/platform/js/surec.js:3727
+msgid "Kayıt başarısız."
+msgstr "Record failed."
+
+#: ui/static/platform/js/admin.js:675
+msgid "Yeni Modül Ekle"
+msgstr "Add New Module"
+
+#: ui/static/platform/js/admin.js:696
+msgid "Modül oluşturuldu."
+msgstr "Module created."
+
+#: ui/static/platform/js/admin.js:706
+msgid "Paket Düzenle"
+msgstr "Edit Package"
+
+#: ui/static/platform/js/admin.js:714 ui/static/platform/js/kurum.js:585
+#: ui/static/platform/js/kurum.js:683 ui/static/platform/js/kurum.js:737
+#: ui/templates/platform/admin/users.html:294
+msgid "Güncelle"
+msgstr "Update"
+
+#: ui/static/platform/js/admin.js:717
+msgid "Paket adı zorunludur."
+msgstr "Package name is required."
+
+#: ui/static/platform/js/admin.js:724
+msgid "Paket güncellendi."
+msgstr "Package updated."
+
+#: ui/static/platform/js/admin.js:725 ui/static/platform/js/k_radar.js:607
+#: ui/static/platform/js/k_radar.js:752 ui/static/platform/js/kurum.js:486
+#: ui/static/platform/js/kurum.js:591 ui/static/platform/js/kurum.js:698
+#: ui/static/platform/js/kurum.js:751 ui/static/platform/js/profil.js:201
+#: ui/static/platform/js/surec.js:3727
+msgid "Güncelleme başarısız."
+msgstr "Update failed."
+
+#: ui/static/platform/js/admin.js:734
+msgid "Paket pasife alınsın mı?"
+msgstr "Deactivate the package?"
+
+#: ui/static/platform/js/admin.js:734
+msgid "Paket aktifleştirilsin mi?"
+msgstr "Activate the package?"
+
+#: ui/static/platform/js/admin.js:736 ui/static/platform/js/admin.js:754
+msgid "Evet, pasife al"
+msgstr "Yes, deactivate"
+
+#: ui/static/platform/js/admin.js:752
+msgid "Modül pasife alınsın mı?"
+msgstr "Deactivate the module?"
+
+#: ui/static/platform/js/admin.js:752
+msgid "Modül aktifleştirilsin mi?"
+msgstr "Activate the module?"
+
+#: ui/static/platform/js/admin.js:793
+#: ui/templates/platform/admin/notifications.html:22
+msgid "Toplu Bildirim Gönder"
+msgstr "Send Bulk Notification"
+
+#: ui/static/platform/js/admin.js:804
+#: ui/static/platform/js/ayarlar_eposta.js:115
+msgid "Gönder"
+msgstr "Send"
+
+#: ui/static/platform/js/admin.js:808
+msgid "Başlık ve mesaj zorunludur."
+msgstr "Title and message are required."
+
+#: ui/static/platform/js/admin.js:821
+msgid "Gönderim başarısız."
+msgstr "Submission failed."
+
+#: ui/static/platform/js/admin.js:829
+msgid "Bildirim silinsin mi?"
+msgstr "Delete the notification?"
+
+#: ui/static/platform/js/admin.js:831 ui/static/platform/js/bireysel.js:114
+#: ui/static/platform/js/k_radar.js:22 ui/static/platform/js/kurum.js:55
+#: ui/static/platform/js/project_raid.js:301 ui/static/platform/js/sp.js:55
+#: ui/static/platform/js/surec.js:140 ui/static/platform/js/surec.js:3748
+msgid "Evet, sil"
+msgstr "Yes, delete"
+
+#: ui/static/platform/js/admin.js:836
+msgid "Bildirim silindi."
+msgstr "Notification deleted."
+
+#: ui/static/platform/js/admin_hierarchy.js:64
+#: ui/static/platform/js/esg_yonetim.js:66
+#: ui/static/platform/js/esg_yonetim.js:91 ui/static/platform/js/k_radar.js:586
+#: ui/static/platform/js/k_radar.js:730 ui/static/platform/js/k_radar_ks.js:920
+#: ui/static/platform/js/k_radar_ks.js:985
+#: ui/static/platform/js/project_kapasite.js:61
+#: ui/static/platform/js/sp_liste_analiz.js:62
+#: ui/static/platform/js/sp_porter.js:63
+#: ui/static/platform/js/sp_projeler.js:81 ui/static/platform/js/surec.js:2372
+#: ui/static/platform/js/vc_items.js:76
+#: ui/templates/platform/admin/notifications.html:113
+msgid "Sil"
+msgstr "Delete"
+
+#: ui/static/platform/js/admin_hierarchy.js:76
+msgid "Kartı düzenle"
+msgstr "Edit card"
+
+#: ui/static/platform/js/admin_hierarchy.js:78
+msgid "Veri ekle"
+msgstr "Add data"
+
+#: ui/static/platform/js/admin_hierarchy.js:185
+msgid "örn: pgv_kapsami"
+msgstr "e.g. pgv_kapsami"
+
+#: ui/static/platform/js/analiz.js:137 ui/static/platform/js/k_rapor.js:359
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/sp/index.html:445
+#: ui/templates/platform/surec/karne.html:916
+msgid "Gerçekleşen"
+msgstr "Actual"
+
+#: ui/static/platform/js/analiz.js:147
+msgid "Tahmin"
+msgstr "Estimate"
+
+#: ui/static/platform/js/analiz.js:212
+msgid "Değer:"
+msgstr "Value:"
+
+#: ui/static/platform/js/analiz.js:213
+msgid "Tarih:"
+msgstr "Date:"
+
+#: ui/static/platform/js/analiz.js:214
+msgid "Z-skor:"
+msgstr "Z-score:"
+
+#: ui/static/platform/js/analiz.js:215
+msgid "Süreç karnesi →"
+msgstr "Process scorecard →"
+
+#: ui/static/platform/js/app.js:101 ui/static/platform/js/k_radar_ks.js:762
+#: ui/static/platform/js/project_raid.js:288
+#: ui/static/platform/js/project_raid.js:316
+#: ui/templates/platform/admin/sub_tenants.html:175
+msgid "Başarılı"
+msgstr "Successful"
+
+#: ui/static/platform/js/app.js:114
+msgid "Bir hata oluştu. Lütfen tekrar deneyin."
+msgstr "An error occurred. Please try again."
+
+#: ui/static/platform/js/app.js:116 ui/static/platform/js/app.js:126
+#: ui/static/platform/js/auth.js:18 ui/static/platform/js/k_radar_ks.js:1294
+#: ui/static/platform/js/kule.js:193 ui/static/platform/js/mc-modal-form.js:127
+#: ui/static/platform/js/sp_donemler.js:267 ui/static/platform/js/surec.js:2931
+#: ui/templates/platform/admin/sub_tenants.html:195
+msgid "Tamam"
+msgstr "OK"
+
+#: ui/static/platform/js/app.js:123
+#: ui/templates/platform/k_rapor/index.html:106
+msgid "Uyarı"
+msgstr "Alert"
+
+#: ui/static/platform/js/app.js:138 ui/static/platform/js/k_radar.js:19
+#: ui/static/platform/js/project_raid.js:298 ui/static/platform/js/sp.js:52
+#: ui/static/platform/js/surec.js:134
+msgid "Emin misiniz?"
+msgstr "Are you sure?"
+
+#: ui/static/platform/js/app.js:143
+msgid "Evet, devam et"
+msgstr "Yes, continue"
+
+#: ui/static/platform/js/app.js:155 ui/static/platform/js/bildirim.js:61
+msgid "İşleniyor..."
+msgstr "Processing..."
+
+#: ui/static/platform/js/app.js:179
+msgid "Bu işlem için yetkiniz yok."
+msgstr "You do not have permission for this action."
+
+#: ui/static/platform/js/app.js:194 ui/static/platform/js/bildirim.js:94
+#: ui/static/platform/js/kurum_ayarlar.js:124
+msgid "Sunucu bağlantı hatası."
+msgstr "Server connection error."
+
+#: ui/static/platform/js/auth.js:15
+msgid "Eksik Bilgi"
+msgstr "Missing Information"
+
+#: ui/static/platform/js/auth.js:16
+msgid "Lütfen e-posta ve şifrenizi girin."
+msgstr "Please enter your email and password."
+
+#: ui/static/platform/js/auth.js:27
+msgid "Giriş yapılıyor…"
+msgstr "Logging in…"
+
+#: ui/static/platform/js/ayarlar_eposta.js:55
+msgid "Sunucu adresi ve kullanıcı adı zorunludur."
+msgstr "Server address and username are required."
+
+#: ui/static/platform/js/ayarlar_eposta.js:59
+msgid "Test ediliyor..."
+msgstr "Testing..."
+
+#: ui/static/platform/js/ayarlar_eposta.js:62
+msgid "SMTP bağlantısı test ediliyor..."
+msgstr "Testing SMTP connection..."
+
+#: ui/static/platform/js/ayarlar_eposta.js:71
+msgid "Bağlantı başarısız."
+msgstr "Connection failed."
+
+#: ui/static/platform/js/ayarlar_eposta.js:81
+msgid "Özel SMTP aktifken sunucu adresi ve kullanıcı adı zorunludur."
+msgstr "When custom SMTP is enabled, server address and username are required."
+
+#: ui/static/platform/js/ayarlar_eposta.js:84
+#: ui/static/platform/js/kurum_ayarlar.js:73
+msgid "Kaydediliyor..."
+msgstr "Saving..."
+
+#: ui/static/platform/js/ayarlar_eposta.js:88
+msgid "Ayarlar kaydedildi."
+msgstr "Settings saved."
+
+#: ui/static/platform/js/ayarlar_eposta.js:100
+msgid "Kayıtlı ayarlarla kendi e-posta adresinize test maili gönderilecek."
+msgstr ""
+"A test mail will be sent to your own email address with the saved "
+"settings."
+
+#: ui/static/platform/js/ayarlar_eposta.js:102
+msgid "Mail gönderiliyor..."
+msgstr "Sending mail..."
+
+#: ui/static/platform/js/ayarlar_eposta.js:110
+msgid "Mail gönderilemedi."
+msgstr "Mail could not be sent."
+
+#: ui/static/platform/js/ayarlar_eposta.js:114
+msgid "Test Maili"
+msgstr "Test Mail"
+
+#: ui/static/platform/js/ayarlar_index.js:7
+msgid "Karanlık"
+msgstr "Dark"
+
+#: ui/static/platform/js/ayarlar_index.js:7
+#: ui/templates/platform/ayarlar/index.html:44
+msgid "Aydınlık"
+msgstr "Light"
+
+#: ui/static/platform/js/bildirim.js:59
+msgid "Tüm bildirimler okundu olarak işaretlenecek."
+msgstr "All notifications will be marked as read."
+
+#: ui/static/platform/js/bildirim.js:87
+msgid "Tüm bildirimler okundu olarak işaretlendi."
+msgstr "All notifications marked as read."
+
+#: ui/static/platform/js/bildirim.js:97
+#: ui/templates/platform/bildirim/index.html:25
+msgid "Tümünü Okundu İşaretle"
+msgstr "Mark All as Read"
+
+#: ui/static/platform/js/bildirim.js:98
+msgid "Evet, işaretle"
+msgstr "Yes, mark"
+
+#: ui/static/platform/js/bireysel.js:363
+msgid "Stratejik hedef"
+msgstr "Strategic target"
+
+#: ui/static/platform/js/bireysel.js:413
+msgid "PG adı"
+msgstr "PI name"
+
+#: ui/static/platform/js/bireysel.js:415
+msgid "Örn: 95"
+msgstr "e.g. 95"
+
+#: ui/static/platform/js/bireysel.js:417
+msgid "Örn: %"
+msgstr "e.g. %"
+
+#: ui/static/platform/js/bireysel.js:457
+msgid "Faaliyet adı"
+msgstr "Activity name"
+
+#: ui/static/platform/js/bireysel.js:459 ui/static/platform/js/sp.js:240
+#: ui/static/platform/js/sp.js:287
+msgid "Kısa açıklama"
+msgstr "Short description"
+
+#: ui/static/platform/js/command_palette.js:21
+#: ui/templates/platform/bildirim/index.html:88
+msgid "Masaüstü"
+msgstr "Desktop"
+
+#: ui/static/platform/js/command_palette.js:21
+#: ui/static/platform/js/command_palette.js:22
+#: ui/static/platform/js/command_palette.js:23
+#: ui/static/platform/js/command_palette.js:24
+#: ui/static/platform/js/command_palette.js:25
+#: ui/static/platform/js/command_palette.js:26
+#: ui/static/platform/js/command_palette.js:27
+#: ui/static/platform/js/command_palette.js:28
+#: ui/static/platform/js/command_palette.js:29
+#: ui/static/platform/js/command_palette.js:30
+#: ui/static/platform/js/command_palette.js:31
+#: ui/static/platform/js/command_palette.js:32
+#: ui/static/platform/js/command_palette.js:33
+#: ui/static/platform/js/command_palette.js:34
+#: ui/static/platform/js/command_palette.js:35
+#: ui/static/platform/js/command_palette.js:36
+#: ui/static/platform/js/command_palette.js:37
+#: ui/static/platform/js/command_palette.js:38
+#: ui/static/platform/js/command_palette.js:39
+#: ui/static/platform/js/command_palette.js:40
+#: ui/static/platform/js/command_palette.js:41
+#: ui/static/platform/js/command_palette.js:42
+#: ui/static/platform/js/command_palette.js:43
+#: ui/static/platform/js/command_palette.js:44
+#: ui/static/platform/js/command_palette.js:45
+#: ui/static/platform/js/command_palette.js:46
+#: ui/static/platform/js/command_palette.js:47
+#: ui/static/platform/js/k_radar.js:179
+msgid "Sayfa"
+msgstr "Page"
+
+#: ui/static/platform/js/command_palette.js:22
+#: ui/templates/platform/base.html:160
+#: ui/templates/platform/sp/blue_ocean.html:10
+#: ui/templates/platform/sp/ceyreklik_review.html:10
+#: ui/templates/platform/sp/donemler.html:11
+#: ui/templates/platform/sp/index.html:70
+#: ui/templates/platform/sp/initiatives.html:10
+#: ui/templates/platform/sp/menu.html:17
+#: ui/templates/platform/sp/projeler.html:10
+#: ui/templates/platform/sp/projeler.html:24
+#: ui/templates/platform/sp/replan_triggers.html:10
+#: ui/templates/platform/sp/scenarios.html:10
+#: ui/templates/platform/sp/strategy_project_matrix.html:7
+#: ui/templates/platform/sp/vrio.html:10
+#: ui/templates/platform/surec/index.html:489
+msgid "Stratejik Planlama"
+msgstr "Strategic Planning"
+
+#: ui/static/platform/js/command_palette.js:23
+#: ui/templates/platform/sp/exec_dashboard.html:56
+#: ui/templates/platform/sp/menu.html:26
+msgid "Yönetici Paneli"
+msgstr "Executive Panel"
+
+#: ui/static/platform/js/command_palette.js:24
+msgid "X-Matrix"
+msgstr "X-Matrix"
+
+#: ui/static/platform/js/command_palette.js:25
+#: ui/templates/platform/admin/holding_drilldown.html:102
+#: ui/templates/platform/sp/initiatives.html:10
+#: ui/templates/platform/sp/menu.html:28
+msgid "Girişimler"
+msgstr "Initiatives"
+
+#: ui/static/platform/js/command_palette.js:26
+#: ui/templates/platform/sp/menu.html:29
+#: ui/templates/platform/sp/scenarios.html:10
+msgid "Senaryolar"
+msgstr "Scenarios"
+
+#: ui/static/platform/js/command_palette.js:27
+#: ui/templates/platform/sp/ceyreklik_review.html:22
+#: ui/templates/platform/sp/menu.html:27
+msgid "Çeyreklik Değerlendirme"
+msgstr "Quarterly Review"
+
+#: ui/static/platform/js/command_palette.js:28
+#: ui/templates/platform/sp/menu.html:30
+#: ui/templates/platform/sp/replan_triggers.html:24
+msgid "Yeniden Planlama Tetikleyicileri"
+msgstr "Replanning Triggers"
+
+#: ui/static/platform/js/command_palette.js:29
+#: ui/templates/platform/sp/menu.html:32
+msgid "Mavi Okyanus"
+msgstr "Blue Ocean"
+
+#: ui/static/platform/js/command_palette.js:30
+#: ui/templates/platform/sp/vrio.html:10
+msgid "VRIO"
+msgstr "VRIO"
+
+#: ui/static/platform/js/command_palette.js:31
+#: ui/static/platform/js/k_radar_ks.js:1070
+#: ui/templates/platform/k_radar/hub.html:121
+#: ui/templates/platform/sp/strateji_haritasi.html:3
+#: ui/templates/platform/sp/strateji_haritasi.html:12
+#: ui/templates/platform/sp/strateji_haritasi.html:21
+msgid "Strateji Haritası"
+msgstr "Strategy Map"
+
+#: ui/static/platform/js/command_palette.js:32
+#: ui/templates/platform/sp/index.html:87
+msgid "SP Menüsü"
+msgstr "SP Menu"
+
+#: ui/static/platform/js/command_palette.js:33
+#: ui/templates/platform/base.html:198
+#: ui/templates/platform/sp/exec_dashboard.html:109
+#: ui/templates/platform/surec/faaliyetler.html:10
+msgid "Süreç Yönetimi"
+msgstr "Process Management"
+
+#: ui/static/platform/js/command_palette.js:34
+#: ui/templates/platform/base.html:206
+msgid "Proje Yönetimi"
+msgstr "Project Management"
+
+#: ui/static/platform/js/command_palette.js:35
+msgid "Proje Portföyü"
+msgstr "Project Portfolio"
+
+#: ui/static/platform/js/command_palette.js:36
+msgid "Proje Gantt"
+msgstr "Project Gantt"
+
+#: ui/static/platform/js/command_palette.js:37
+msgid "Proje Kanban"
+msgstr "Project Kanban"
+
+#: ui/static/platform/js/command_palette.js:38
+#: ui/templates/platform/analiz/index.html:62
+#: ui/templates/platform/base.html:221
+#: ui/templates/platform/sp/exec_dashboard.html:112
+msgid "K-Analiz"
+msgstr "K-Analysis"
+
+#: ui/static/platform/js/command_palette.js:39
+#: ui/templates/platform/raporlar/index.html:6
+#: ui/templates/platform/raporlar/pg_proje_etki.html:7
+msgid "K-Radar"
+msgstr "K-Radar"
+
+#: ui/static/platform/js/command_palette.js:40
+#: ui/templates/platform/analiz/index.html:2
+#: ui/templates/platform/analiz/index.html:3
+#: ui/templates/platform/base.html:242
+msgid "Performans Analitiği"
+msgstr "Performance Analytics"
+
+#: ui/static/platform/js/command_palette.js:41
+msgid "Bireysel Karne"
+msgstr "Individual Scorecard"
+
+#: ui/static/platform/js/command_palette.js:42
+#: ui/templates/platform/base.html:301 ui/templates/platform/base.html:408
+#: ui/templates/platform/bildirim/index.html:18
+msgid "Bildirimler"
+msgstr "Notifications"
+
+#: ui/static/platform/js/command_palette.js:43
+#: ui/templates/platform/ayarlar/index.html:118
+#: ui/templates/platform/kurum/ayarlar.html:2
+#: ui/templates/platform/kurum/ayarlar.html:3
+#: ui/templates/platform/kurum/ayarlar.html:23
+#: ui/templates/platform/sp/donemler.html:38
+msgid "Kurum Ayarları"
+msgstr "Organization Settings"
+
+#: ui/static/platform/js/command_palette.js:44
+#: ui/templates/platform/ayarlar/eposta.html:10
+#: ui/templates/platform/ayarlar/index.html:2
+#: ui/templates/platform/ayarlar/index.html:3
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:7
+#: ui/templates/platform/base.html:306
+msgid "Ayarlar"
+msgstr "Settings"
+
+#: ui/static/platform/js/command_palette.js:45
+#: ui/static/platform/js/profil.js:109
+#: ui/templates/platform/raporlar/mobile.html:45
+msgid "Profil"
+msgstr "Profile"
+
+#: ui/static/platform/js/command_palette.js:46
+#: ui/templates/platform/admin/hierarchy.html:6
+#: ui/templates/platform/admin/holding_dashboard.html:6
+#: ui/templates/platform/admin/notifications.html:6
+#: ui/templates/platform/admin/packages.html:6
+#: ui/templates/platform/admin/sub_tenants.html:6
+#: ui/templates/platform/admin/sub_tenants_usage.html:6
+#: ui/templates/platform/admin/tenants.html:10
+#: ui/templates/platform/admin/users.html:10
+#: ui/templates/platform/admin/yonetim_paneli.html:2
+#: ui/templates/platform/admin/yonetim_paneli.html:3
+#: ui/templates/platform/admin/yonetim_paneli.html:10
+#: ui/templates/platform/ayarlar/index.html:139
+msgid "Yönetim Paneli"
+msgstr "Management Panel"
+
+#: ui/static/platform/js/command_palette.js:47
+#: ui/templates/platform/admin/users.html:10
+#: ui/templates/platform/base.html:253
+#: ui/templates/platform/surec/index.html:598
+#: ui/templates/platform/surec/index.html:618
+msgid "Kullanıcılar"
+msgstr "Users"
+
+#: ui/static/platform/js/command_palette.js:118
+msgid "Son ziyaret edilenler"
+msgstr "Recently visited"
+
+#: ui/static/platform/js/esg_yonetim.js:20
+msgid "Çevresel (Environment)"
+msgstr "Environmental (Environment)"
+
+#: ui/static/platform/js/esg_yonetim.js:21
+msgid "Sosyal (Social)"
+msgstr "Social (Social)"
+
+#: ui/static/platform/js/esg_yonetim.js:22
+msgid "Yönetişim (Governance)"
+msgstr "Governance (Governance)"
+
+#: ui/static/platform/js/esg_yonetim.js:24
+msgid "Kapsam 1"
+msgstr "Scope 1"
+
+#: ui/static/platform/js/esg_yonetim.js:24
+msgid "Kapsam 2"
+msgstr "Scope 2"
+
+#: ui/static/platform/js/esg_yonetim.js:24
+msgid "Kapsam 3"
+msgstr "Scope 3"
+
+#: ui/static/platform/js/esg_yonetim.js:90 ui/static/platform/js/k_radar.js:585
+#: ui/static/platform/js/k_radar.js:729
+#: ui/static/platform/js/mc-modal-form.js:21
+#: ui/static/platform/js/project_raid.js:214
+#: ui/static/platform/js/sp_projeler.js:80 ui/static/platform/js/surec.js:2369
+#: ui/static/platform/js/vc_items.js:75
+#: ui/templates/platform/admin/tenants.html:160
+#: ui/templates/platform/admin/tenants.html:161
+#: ui/templates/platform/admin/users.html:140
+#: ui/templates/platform/admin/users.html:141
+#: ui/templates/platform/base.html:831
+#: ui/templates/platform/kurum/index.html:106
+msgid "Düzenle"
+msgstr "Edit"
+
+#: ui/static/platform/js/esg_yonetim.js:135
+msgid "Örn: Toplam karbon emisyonu"
+msgstr "e.g. Total carbon emissions"
+
+#: ui/static/platform/js/esg_yonetim.js:209
+msgid "Ölçüm / tahmin / fatura"
+msgstr "Measurement / estimate / invoice"
+
+#: ui/static/platform/js/k_radar.js:19
+#: ui/static/platform/js/project_raid.js:298 ui/static/platform/js/sp.js:52
+#: ui/static/platform/js/surec.js:135
+msgid "Bu işlem geri alınamaz."
+msgstr "This action cannot be undone."
+
+#: ui/static/platform/js/k_radar.js:78
+msgid "stabil"
+msgstr "stable"
+
+#: ui/static/platform/js/k_radar.js:81
+msgid "puan, son30="
+msgstr "points, last30="
+
+#: ui/static/platform/js/k_radar.js:81
+msgid "onceki30="
+msgstr "prev30="
+
+#: ui/static/platform/js/k_radar.js:121
+msgid "Onayla"
+msgstr "Confirm"
+
+#: ui/static/platform/js/k_radar.js:124
+msgid "Reddet"
+msgstr "Reject"
+
+#: ui/static/platform/js/k_radar.js:137
+msgid "Aksiyon güncellendi."
+msgstr "Action updated."
+
+#: ui/static/platform/js/k_radar.js:141
+msgid "Aksiyon güncellenemedi."
+msgstr "Action could not be updated."
+
+#: ui/static/platform/js/k_radar.js:152
+msgid "Aktif kural tetikleyici yok."
+msgstr "No active rule trigger."
+
+#: ui/static/platform/js/k_radar.js:179
+msgid "Toplam:"
+msgstr "Total:"
+
+#: ui/static/platform/js/k_radar.js:182
+msgid "Gecmis aksiyon kaydi yok."
+msgstr "No past action record."
+
+#: ui/static/platform/js/k_radar.js:207 ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/admin/notifications.html:80
+#: ui/templates/platform/admin/sub_tenants.html:80
+#: ui/templates/platform/admin/sub_tenants_usage.html:81
+#: ui/templates/platform/admin/tenants.html:73
+#: ui/templates/platform/admin/users.html:103
+#: ui/templates/platform/admin/yonetim_paneli.html:113
+#: ui/templates/platform/bireysel/karne.html:274
+#: ui/templates/platform/k_radar/risk_management.html:52
+#: ui/templates/platform/k_radar/risk_management.html:87
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:574
+#: ui/templates/platform/k_rapor/index.html:603
+#: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/raporlar/initiative_bubble.html:109
+#: ui/templates/platform/raporlar/op_istatistik.html:38
+#: ui/templates/platform/sp/donemler.html:91
+#: ui/templates/platform/sp/initiatives.html:66
+#: ui/templates/platform/sp/projeler.html:65
+#: ui/templates/platform/sp/projeler.html:115
+#: ui/templates/platform/surec/faaliyetler.html:105
+#: ui/templates/platform/surec/index.html:530
+#: ui/templates/platform/surec/karne.html:221
+#: ui/templates/platform/surec/karne.html:477
+msgid "Durum"
+msgstr "Status"
+
+#: ui/static/platform/js/k_radar.js:208
+msgid "Kullanici"
+msgstr "User"
+
+#: ui/static/platform/js/k_radar.js:209
+#: ui/templates/platform/admin/yonetim_paneli.html:144
+msgid "Zaman"
+msgstr "Time"
+
+#: ui/static/platform/js/k_radar.js:210
+msgid "Oneri"
+msgstr "Suggestion"
+
+#: ui/static/platform/js/k_radar.js:262
+msgid "Veri bulunamadi."
+msgstr "No data found."
+
+#: ui/static/platform/js/k_radar.js:312
+msgid "Kategori:"
+msgstr "Category:"
+
+#: ui/static/platform/js/k_radar.js:313
+msgid "Kaynak:"
+msgstr "Source:"
+
+#: ui/static/platform/js/k_radar.js:314
+msgid "Olasilik x Etki:"
+msgstr "Probability x Impact:"
+
+#: ui/static/platform/js/k_radar.js:315
+msgid "Oneri:"
+msgstr "Suggestion:"
+
+#: ui/static/platform/js/k_radar.js:315
+msgid "Yok"
+msgstr "None"
+
+#: ui/static/platform/js/k_radar.js:429
+msgid "Olgunluk kaydı eklendi."
+msgstr "Maturity record added."
+
+#: ui/static/platform/js/k_radar.js:433
+msgid "Olgunluk kaydı eklenemedi."
+msgstr "Maturity record could not be added."
+
+#: ui/static/platform/js/k_radar.js:591 ui/static/platform/js/k_radar.js:735
+#: ui/static/platform/js/yonetim_paneli.js:67
+#: ui/templates/platform/k_radar/cross_paydas.html:50
+#: ui/templates/platform/k_radar/kp_olgunluk.html:53
+msgid "Kayıt bulunamadı."
+msgstr "No records found."
+
+#: ui/static/platform/js/k_radar.js:599
+msgid "Yeni seviye (1-5):"
+msgstr "New level (1-5):"
+
+#: ui/static/platform/js/k_radar.js:601
+msgid "Boyut:"
+msgstr "Dimension:"
+
+#: ui/static/platform/js/k_radar.js:604 ui/static/platform/js/surec_vgs.js:463
+msgid "Kayıt güncellendi."
+msgstr "Record updated."
+
+#: ui/static/platform/js/k_radar.js:613
+msgid "Kayıt silinsin mi?"
+msgstr "Delete the record?"
+
+#: ui/static/platform/js/k_radar.js:617
+msgid "Kayıt silindi."
+msgstr "Record deleted."
+
+#: ui/static/platform/js/k_radar.js:620 ui/static/platform/js/k_radar.js:765
+#: ui/static/platform/js/kurum.js:602 ui/static/platform/js/kurum.js:712
+#: ui/static/platform/js/kurum.js:765 ui/static/platform/js/surec.js:3759
+msgid "Silme başarısız."
+msgstr "Delete failed."
+
+#: ui/static/platform/js/k_radar.js:645
+msgid "Kritik başlangıç görevi bulunamadı."
+msgstr "Critical start task not found."
+
+#: ui/static/platform/js/k_radar.js:648
+msgid "CPM analizi güncellendi."
+msgstr "CPM analysis updated."
+
+#: ui/static/platform/js/k_radar.js:686
+msgid "Paydaş kaydı eklendi."
+msgstr "Stakeholder record added."
+
+#: ui/static/platform/js/k_radar.js:690
+msgid "Paydaş kaydı eklenemedi."
+msgstr "Stakeholder record could not be added."
+
+#: ui/static/platform/js/k_radar.js:741
+msgid "Ad:"
+msgstr "Name:"
+
+#: ui/static/platform/js/k_radar.js:743
+msgid "Rol:"
+msgstr "Role:"
+
+#: ui/static/platform/js/k_radar.js:744
+msgid "Etki (1-5):"
+msgstr "Impact (1-5):"
+
+#: ui/static/platform/js/k_radar.js:745
+msgid "İlgi (1-5):"
+msgstr "Interest (1-5):"
+
+#: ui/static/platform/js/k_radar.js:746
+#: ui/templates/platform/raporlar/hizalama_sankey.html:33
+msgid "Strateji:"
+msgstr "Strategy:"
+
+#: ui/static/platform/js/k_radar.js:749
+msgid "Paydaş güncellendi."
+msgstr "Stakeholder updated."
+
+#: ui/static/platform/js/k_radar.js:758
+msgid "Paydaş silinsin mi?"
+msgstr "Delete the stakeholder?"
+
+#: ui/static/platform/js/k_radar.js:762
+msgid "Paydaş silindi."
+msgstr "Stakeholder deleted."
+
+#: ui/static/platform/js/k_radar_ks.js:100
+#: ui/templates/platform/k_rapor/index.html:579
+msgid "İyi"
+msgstr "Good"
+
+#: ui/static/platform/js/k_radar_ks.js:100 ui/static/platform/js/k_rapor.js:703
+#: ui/templates/platform/k_radar/risk_management.html:37
+#: ui/templates/platform/k_rapor/anomalies.html:32
+#: ui/templates/platform/raporlar/early_warning.html:20
+#: ui/templates/platform/raporlar/initiative_bubble.html:96
+#: ui/templates/platform/sp/initiatives.html:62
+#: ui/templates/platform/sp/replan_triggers.html:93
+msgid "Orta"
+msgstr "Medium"
+
+#: ui/static/platform/js/k_radar_ks.js:100
+#: ui/static/platform/js/k_radar_ks.js:764
+#: ui/static/platform/js/k_radar_ks.js:1501
+#: ui/static/platform/js/k_rapor.js:703
+#: ui/templates/platform/k_radar/ks.html:139
+#: ui/templates/platform/k_radar/risk_management.html:35
+#: ui/templates/platform/k_rapor/index.html:582
+#: ui/templates/platform/k_rapor/index.html:795
+#: ui/templates/platform/raporlar/initiative_bubble.html:94
+#: ui/templates/platform/sp/initiatives.html:60
+#: ui/templates/platform/sp/replan_triggers.html:95
+msgid "Kritik"
+msgstr "Critical"
+
+#: ui/static/platform/js/k_radar_ks.js:115
+#: ui/static/platform/js/k_radar_ks.js:407
+msgid "madde"
+msgstr "item"
+
+#: ui/static/platform/js/k_radar_ks.js:115
+#: ui/static/platform/js/k_radar_ks.js:130
+#: ui/static/platform/js/k_radar_ks.js:153
+#: ui/static/platform/js/k_radar_ks.js:761
+#: ui/templates/platform/surec/index.html:423
+msgid "Veri yok"
+msgstr "No Data"
+
+#: ui/static/platform/js/k_radar_ks.js:130
+#: ui/static/platform/js/k_radar_ks.js:515
+msgid "strateji"
+msgstr "strategy"
+
+#: ui/static/platform/js/k_radar_ks.js:153
+#: ui/static/platform/js/k_radar_ks.js:614
+msgid "faktör"
+msgstr "factor"
+
+#: ui/static/platform/js/k_radar_ks.js:199
+msgid "alt strateji"
+msgstr "sub-strategy"
+
+#: ui/static/platform/js/k_radar_ks.js:201
+msgid "kapsam"
+msgstr "scope"
+
+#: ui/static/platform/js/k_radar_ks.js:309
+msgid "Güçlü Yönler (S)"
+msgstr "Strengths (S)"
+
+#: ui/static/platform/js/k_radar_ks.js:309
+msgid "Güçlü yön ekle…"
+msgstr "Add strength…"
+
+#: ui/static/platform/js/k_radar_ks.js:310
+msgid "Zayıf Yönler (W)"
+msgstr "Weaknesses (W)"
+
+#: ui/static/platform/js/k_radar_ks.js:310
+msgid "Zayıf yön ekle…"
+msgstr "Add weakness…"
+
+#: ui/static/platform/js/k_radar_ks.js:311
+msgid "Fırsatlar (O)"
+msgstr "Opportunities (O)"
+
+#: ui/static/platform/js/k_radar_ks.js:311
+msgid "Fırsat ekle…"
+msgstr "Add opportunity…"
+
+#: ui/static/platform/js/k_radar_ks.js:312
+msgid "Tehditler (T)"
+msgstr "Threats (T)"
+
+#: ui/static/platform/js/k_radar_ks.js:312
+msgid "Tehdit ekle…"
+msgstr "Add threat…"
+
+#: ui/static/platform/js/k_radar_ks.js:374
+#: ui/static/platform/js/k_radar_ks.js:501
+#: ui/static/platform/js/k_radar_ks.js:600
+msgid "Maddeyi Düzenle"
+msgstr "Edit Item"
+
+#: ui/static/platform/js/k_radar_ks.js:396
+#: ui/static/platform/js/sp_analiz.js:111
+msgid "SWOT kaydedildi."
+msgstr "SWOT saved."
+
+#: ui/static/platform/js/k_radar_ks.js:409
+#: ui/static/platform/js/k_radar_ks.js:517
+#: ui/static/platform/js/k_radar_ks.js:616
+#: ui/static/platform/js/k_radar_ks.js:882
+#: ui/static/platform/js/k_radar_ks.js:907
+#: ui/static/platform/js/k_radar_ks.js:927
+#: ui/static/platform/js/k_radar_ks.js:946
+#: ui/static/platform/js/k_radar_ks.js:973
+#: ui/static/platform/js/k_radar_ks.js:992
+#: ui/static/platform/js/k_radar_ks.js:1055
+#: ui/static/platform/js/launcher_plan_year.js:55
+#: ui/static/platform/js/launcher_plan_year.js:88
+#: ui/static/platform/js/launcher_plan_year.js:139
+#: ui/static/platform/js/masaustu_plan_year.js:61
+#: ui/static/platform/js/masaustu_plan_year.js:94
+#: ui/static/platform/js/masaustu_plan_year.js:148
+#: ui/static/platform/js/sp_analiz.js:112
+#: ui/static/platform/js/sp_analiz.js:150
+#: ui/static/platform/js/sp_analiz.js:187
+#: ui/static/platform/js/sp_donemler.js:40
+#: ui/static/platform/js/sp_donemler.js:59
+#: ui/static/platform/js/sp_donemler.js:91
+#: ui/static/platform/js/sp_plan_year.js:66
+#: ui/static/platform/js/sp_plan_year.js:99
+#: ui/static/platform/js/sp_plan_year.js:153
+msgid "Bağlantı hatası."
+msgstr "Connection error."
+
+#: ui/static/platform/js/k_radar_ks.js:435
+msgid "SO — Saldırgan"
+msgstr "SO — Offensive"
+
+#: ui/static/platform/js/k_radar_ks.js:435
+msgid "SO stratejisi ekle…"
+msgstr "Add SO strategy…"
+
+#: ui/static/platform/js/k_radar_ks.js:436
+msgid "WO — Dönüşüm"
+msgstr "WO — Transformation"
+
+#: ui/static/platform/js/k_radar_ks.js:436
+msgid "WO stratejisi ekle…"
+msgstr "Add WO strategy…"
+
+#: ui/static/platform/js/k_radar_ks.js:437
+msgid "ST — Savunma"
+msgstr "ST — Defensive"
+
+#: ui/static/platform/js/k_radar_ks.js:437
+msgid "ST stratejisi ekle…"
+msgstr "Add ST strategy…"
+
+#: ui/static/platform/js/k_radar_ks.js:438
+msgid "WT — Kaçınma"
+msgstr "WT — Avoidance"
+
+#: ui/static/platform/js/k_radar_ks.js:438
+msgid "WT stratejisi ekle…"
+msgstr "Add WT strategy…"
+
+#: ui/static/platform/js/k_radar_ks.js:510
+#: ui/static/platform/js/sp_analiz.js:149
+msgid "TOWS kaydedildi."
+msgstr "TOWS saved."
+
+#: ui/static/platform/js/k_radar_ks.js:540
+msgid "Siyasi (P)"
+msgstr "Political (P)"
+
+#: ui/static/platform/js/k_radar_ks.js:540
+msgid "Siyasi faktör ekle…"
+msgstr "Add political factor…"
+
+#: ui/static/platform/js/k_radar_ks.js:541
+msgid "Ekonomik (E)"
+msgstr "Economic (E)"
+
+#: ui/static/platform/js/k_radar_ks.js:541
+msgid "Ekonomik faktör ekle…"
+msgstr "Add economic factor…"
+
+#: ui/static/platform/js/k_radar_ks.js:542
+msgid "Sosyal (S)"
+msgstr "Social (S)"
+
+#: ui/static/platform/js/k_radar_ks.js:542
+msgid "Sosyal faktör ekle…"
+msgstr "Add social factor…"
+
+#: ui/static/platform/js/k_radar_ks.js:543
+msgid "Teknolojik (T)"
+msgstr "Technological (T)"
+
+#: ui/static/platform/js/k_radar_ks.js:543
+msgid "Teknolojik faktör ekle…"
+msgstr "Add technological factor…"
+
+#: ui/static/platform/js/k_radar_ks.js:544
+msgid "Çevresel (E)"
+msgstr "Environmental (E)"
+
+#: ui/static/platform/js/k_radar_ks.js:544
+msgid "Çevresel faktör ekle…"
+msgstr "Add environmental factor…"
+
+#: ui/static/platform/js/k_radar_ks.js:545
+msgid "Yasal (L)"
+msgstr "Legal (L)"
+
+#: ui/static/platform/js/k_radar_ks.js:545
+msgid "Yasal faktör ekle…"
+msgstr "Add legal factor…"
+
+#: ui/static/platform/js/k_radar_ks.js:609
+#: ui/static/platform/js/sp_analiz.js:186
+msgid "PESTLE kaydedildi."
+msgstr "PESTLE saved."
+
+#: ui/static/platform/js/k_radar_ks.js:763
+msgid "Devam ediyor"
+msgstr "In progress"
+
+#: ui/static/platform/js/k_radar_ks.js:786
+msgid "Yıllık Hedefler"
+msgstr "Annual Targets"
+
+#: ui/static/platform/js/k_radar_ks.js:845
+msgid "Henüz KR eklenmemiş"
+msgstr "No KR added yet"
+
+#: ui/static/platform/js/k_radar_ks.js:872 ui/templates/platform/sp/okr.html:23
+msgid "Yeni Hedef Ekle"
+msgstr "Add New Target"
+
+#: ui/static/platform/js/k_radar_ks.js:878
+#: ui/static/platform/js/k_radar_ks.js:899
+#: ui/static/platform/js/k_radar_ks.js:942
+#: ui/static/platform/js/k_radar_ks.js:965 ui/static/platform/js/kurum.js:521
+#: ui/static/platform/js/kurum.js:559 ui/static/platform/js/kurum.js:641
+#: ui/static/platform/js/kurum.js:686 ui/static/platform/js/kurum.js:740
+msgid "Başlık zorunludur."
+msgstr "Title is required."
+
+#: ui/static/platform/js/k_radar_ks.js:880
+msgid "Hedef eklendi."
+msgstr "Target added."
+
+#: ui/static/platform/js/k_radar_ks.js:892
+msgid "Hedefi Düzenle"
+msgstr "Edit Target"
+
+#: ui/static/platform/js/k_radar_ks.js:905 ui/static/platform/js/kurum.js:590
+#: ui/static/platform/js/kurum.js:697
+#: ui/static/platform/js/pg_tablo_modal.js:734
+#: ui/static/platform/js/surec.js:2693
+msgid "Güncellendi."
+msgstr "Updated."
+
+#: ui/static/platform/js/k_radar_ks.js:918
+msgid "Hedefi sil?"
+msgstr "Delete the target?"
+
+#: ui/static/platform/js/k_radar_ks.js:918
+msgid "Bu hedef ve tüm KR'ları silinecek."
+msgstr "This target and all its KRs will be deleted."
+
+#: ui/static/platform/js/k_radar_ks.js:925 ui/static/platform/js/kurum.js:601
+#: ui/static/platform/js/pg_tablo_modal.js:714
+msgid "Silindi."
+msgstr "Deleted."
+
+#: ui/static/platform/js/k_radar_ks.js:936
+#: ui/templates/platform/k_radar/ks.html:318
+msgid "Anahtar Sonuç Ekle"
+msgstr "Add Key Result"
+
+#: ui/static/platform/js/k_radar_ks.js:944
+msgid "KR eklendi."
+msgstr "KR added."
+
+#: ui/static/platform/js/k_radar_ks.js:957
+msgid "Anahtar Sonucu Düzenle"
+msgstr "Edit Key Result"
+
+#: ui/static/platform/js/k_radar_ks.js:971
+msgid "KR güncellendi."
+msgstr "KR updated."
+
+#: ui/static/platform/js/k_radar_ks.js:984
+msgid "KR silinsin mi?"
+msgstr "Delete the KR?"
+
+#: ui/static/platform/js/k_radar_ks.js:990
+msgid "KR silindi."
+msgstr "KR deleted."
+
+#: ui/static/platform/js/k_radar_ks.js:1013 ui/static/platform/js/sp_bsc.js:21
+#: ui/templates/platform/k_radar/ks.html:165
+#: ui/templates/platform/k_radar/ks.html:391
+msgid "Finansal"
+msgstr "Financial"
+
+#: ui/static/platform/js/k_radar_ks.js:1014 ui/static/platform/js/sp_bsc.js:22
+#: ui/templates/platform/k_radar/ks.html:166
+#: ui/templates/platform/k_radar/ks.html:392
+msgid "Müşteri"
+msgstr "Customer"
+
+#: ui/static/platform/js/k_radar_ks.js:1015 ui/static/platform/js/sp_bsc.js:23
+#: ui/templates/platform/k_radar/ks.html:393
+msgid "İç Süreçler"
+msgstr "Internal Processes"
+
+#: ui/static/platform/js/k_radar_ks.js:1016 ui/static/platform/js/sp_bsc.js:24
+msgid "Öğrenme & Gelişim"
+msgstr "Learning & Growth"
+
+#: ui/static/platform/js/k_radar_ks.js:1050
+msgid "Perspektif atandı."
+msgstr "Perspective assigned."
+
+#: ui/static/platform/js/k_radar_ks.js:1050
+msgid "Atama kaldırıldı."
+msgstr "Assignment removed."
+
+#: ui/static/platform/js/k_radar_ks.js:1068
+msgid "Kart Görünümü"
+msgstr "Card View"
+
+#: ui/static/platform/js/k_radar_ks.js:1069
+msgid "KPI Tablosu"
+msgstr "KPI Table"
+
+#: ui/static/platform/js/k_radar_ks.js:1071
+#: ui/templates/platform/k_radar/ks.html:382
+msgid "Perspektif Ata"
+msgstr "Assign Perspective"
+
+#: ui/static/platform/js/k_radar_ks.js:1140
+msgid "Atanmamış"
+msgstr "Unassigned"
+
+#: ui/static/platform/js/k_radar_ks.js:1270
+msgid "Otomatik Atama"
+msgstr "Auto Assignment"
+
+#: ui/static/platform/js/k_radar_ks.js:1274
+msgid "Otomatik Ata"
+msgstr "Auto Assign"
+
+#: ui/static/platform/js/k_radar_ks.js:1286
+msgid "Atama yapılamadı"
+msgstr "Assignment could not be made"
+
+#: ui/static/platform/js/k_radar_ks.js:1291
+msgid "Atama Tamamlandı"
+msgstr "Assignment Completed"
+
+#: ui/static/platform/js/k_radar_ks.js:1330
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
+msgid "Yön"
+msgstr "Direction"
+
+#: ui/static/platform/js/k_radar_ks.js:1331
+msgid "Kuruluş \"neden\" var ve \"nasıl\" yön belirliyor."
+msgstr "Why the organization exists and \"how\" it sets direction."
+
+#: ui/static/platform/js/k_radar_ks.js:1332
+msgid "Uygulama"
+msgstr "Application"
+
+#: ui/static/platform/js/k_radar_ks.js:1333
+msgid "Amaç, vizyon ve stratejiyi \"nasıl\" hayata geçiriyor."
+msgstr "Realizes the purpose, vision and strategy through \"how\"."
+
+#: ui/static/platform/js/k_radar_ks.js:1334
+msgid "Sonuçlar"
+msgstr "Results"
+
+#: ui/static/platform/js/k_radar_ks.js:1335
+msgid "Bugüne kadar \"ne\" gerçekleştirildi."
+msgstr "What has been achieved \"to date\"."
+
+#: ui/static/platform/js/k_radar_ks.js:1407
+msgid "Results — Sonuçlar"
+msgstr "Results — Results"
+
+#: ui/static/platform/js/k_radar_ks.js:1408
+msgid "Approach — Yaklaşım"
+msgstr "Approach — Approach"
+
+#: ui/static/platform/js/k_radar_ks.js:1409
+msgid "Deployment — Yayılım"
+msgstr "Deployment — Deployment"
+
+#: ui/static/platform/js/k_radar_ks.js:1410
+msgid "Assessment — Değerlendirme"
+msgstr "Assessment — Assessment"
+
+#: ui/static/platform/js/k_radar_ks.js:1411
+msgid "Refinement — İyileştirme"
+msgstr "Refinement — Refinement"
+
+#: ui/static/platform/js/k_radar_ks.js:1462
+msgid "Hata:"
+msgstr "Error:"
+
+#: ui/static/platform/js/k_radar_ks.js:1498
+#: ui/templates/platform/k_radar/ks.html:137
+#: ui/templates/platform/k_rapor/index.html:795
+#: ui/templates/platform/surec/index.html:270
+#: ui/templates/platform/surec/karne.html:361
+msgid "Hedefte"
+msgstr "On Target"
+
+#: ui/static/platform/js/k_radar_ks.js:1500
+#: ui/templates/platform/k_radar/ks.html:138
+#: ui/templates/platform/k_rapor/index.html:795
+msgid "Riskli"
+msgstr "At Risk"
+
+#: ui/static/platform/js/k_radar_ks.js:1527
+#: ui/static/platform/js/k_rapor.js:1419
+msgid "Ort. Başarı %"
+msgstr "Avg. Success %"
+
+#: ui/static/platform/js/k_rapor.js:360
+#: ui/templates/platform/bireysel/karne.html:239
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
+#: ui/templates/platform/sp/okr.html:120
+msgid "Hedef"
+msgstr "Target"
+
+#: ui/static/platform/js/k_rapor.js:419
+msgid "Bağlı süreç yok"
+msgstr "No linked process"
+
+#: ui/static/platform/js/k_rapor.js:474 ui/static/platform/js/k_rapor.js:1262
+#: ui/static/platform/js/k_rapor.js:1545
+#: ui/templates/platform/bireysel/karne.html:176
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
+#: ui/templates/platform/surec/faaliyetler.html:81
+#: ui/templates/platform/surec/karne.html:396
+msgid "Tamamlanan"
+msgstr "Completed"
+
+#: ui/static/platform/js/k_rapor.js:500 ui/static/platform/js/k_rapor.js:1264
+#: ui/static/platform/js/k_rapor.js:1547
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
+msgid "Geciken"
+msgstr "Delayed"
+
+#: ui/static/platform/js/k_rapor.js:703
+#: ui/templates/platform/k_radar/risk_management.html:36
+#: ui/templates/platform/raporlar/early_warning.html:19
+#: ui/templates/platform/raporlar/initiative_bubble.html:95
+#: ui/templates/platform/sp/initiatives.html:61
+#: ui/templates/platform/sp/replan_triggers.html:94
+msgid "Yüksek"
+msgstr "High"
+
+#: ui/static/platform/js/k_rapor.js:703
+#: ui/templates/platform/k_radar/risk_management.html:38
+#: ui/templates/platform/raporlar/initiative_bubble.html:97
+#: ui/templates/platform/sp/initiatives.html:63
+#: ui/templates/platform/sp/replan_triggers.html:92
+msgid "Düşük"
+msgstr "Low"
+
+#: ui/static/platform/js/k_rapor.js:722
+msgid "Çözüldü"
+msgstr "Resolved"
+
+#: ui/static/platform/js/k_rapor.js:722
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:41
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:81
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:109
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:136
+#: ui/templates/platform/k_radar/risk_management.html:42
+#: ui/templates/platform/k_radar/risk_management.html:89
+#: ui/templates/platform/kurum/ayarlar.html:109
+#: ui/templates/platform/kurum/ayarlar.html:139
+msgid "Açık"
+msgstr "On"
+
+#: ui/static/platform/js/k_rapor.js:1019
+msgid "Siyasi"
+msgstr "Political"
+
+#: ui/static/platform/js/k_rapor.js:1019
+msgid "Ekonomik"
+msgstr "Economic"
+
+#: ui/static/platform/js/k_rapor.js:1020
+msgid "Sosyal"
+msgstr "Social"
+
+#: ui/static/platform/js/k_rapor.js:1020
+msgid "Teknolojik"
+msgstr "Technological"
+
+#: ui/static/platform/js/k_rapor.js:1021
+msgid "Çevresel"
+msgstr "Environmental"
+
+#: ui/static/platform/js/k_rapor.js:1021
+msgid "Yasal"
+msgstr "Legal"
+
+#: ui/static/platform/js/k_rapor.js:1038
+msgid "Rekabet Yoğunluğu"
+msgstr "Competitive Intensity"
+
+#: ui/static/platform/js/k_rapor.js:1038
+msgid "Tedarikçi Gücü"
+msgstr "Supplier Power"
+
+#: ui/static/platform/js/k_rapor.js:1038
+msgid "Alıcı Gücü"
+msgstr "Buyer Power"
+
+#: ui/static/platform/js/k_rapor.js:1039
+msgid "Yeni Giriş Tehdidi"
+msgstr "Threat of New Entrants"
+
+#: ui/static/platform/js/k_rapor.js:1039
+msgid "İkame Tehdidi"
+msgstr "Threat of Substitution"
+
+#: ui/static/platform/js/k_rapor.js:1207
+#: ui/templates/platform/k_rapor/index.html:795
+#: ui/templates/platform/raporlar/op_istatistik.html:39
+msgid "PG Sayısı"
+msgstr "PI Count"
+
+#: ui/static/platform/js/k_rapor.js:1221
+msgid "Başarı %"
+msgstr "Success %"
+
+#: ui/static/platform/js/k_rapor.js:1228 ui/static/platform/js/surec_vgs.js:541
+#: ui/static/platform/js/surec_vgs.js:587
+#: ui/templates/platform/k_rapor/index.html:271
+#: ui/templates/platform/sp/dynamic_flow.html:29
+#: ui/templates/platform/sp/strateji_haritasi.html:69
+#: ui/templates/platform/sp/strateji_haritasi.html:114
+msgid "PG"
+msgstr "PI"
+
+#: ui/static/platform/js/k_rapor.js:1263 ui/static/platform/js/k_rapor.js:1546
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/k_rapor/index.html:853
+msgid "Devam"
+msgstr "Ongoing"
+
+#: ui/static/platform/js/k_rapor.js:1265
+#: ui/templates/platform/sp/projeler.html:67
+#: ui/templates/platform/sp/projeler.html:117
+msgid "Planlandı"
+msgstr "Planned"
+
+#: ui/static/platform/js/k_rapor.js:1391
+msgid "Giriş"
+msgstr "Login"
+
+#: ui/static/platform/js/k_rapor.js:1409
+msgid "kurum"
+msgstr "organization"
+
+#: ui/static/platform/js/k_rapor.js:1483
+msgid "Tam Kapsamlı"
+msgstr "Full Coverage"
+
+#: ui/static/platform/js/k_rapor.js:1483
+msgid "Kısmi"
+msgstr "Partial"
+
+#: ui/static/platform/js/k_rapor.js:1483
+msgid "Boş"
+msgstr "Empty"
+
+#: ui/static/platform/js/k_rapor.js:1610
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "Güçlü"
+msgstr "Strengths"
+
+#: ui/static/platform/js/k_rapor.js:1611
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "Zayıf"
+msgstr "Weaknesses"
+
+#: ui/static/platform/js/k_rapor.js:1612
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "Fırsat"
+msgstr "Opportunities"
+
+#: ui/static/platform/js/k_rapor.js:1613
+#: ui/templates/platform/k_rapor/index.html:877
+msgid "Tehdit"
+msgstr "Threats"
+
+#: ui/static/platform/js/k_rapor.js:1706
+#: ui/templates/platform/k_rapor/index.html:119
+#: ui/templates/platform/sp/replan_triggers.html:85
+msgid "Bildirim"
+msgstr "Notification"
+
+#: ui/static/platform/js/kule.js:58
+msgid "Kule — sayfa yardımı"
+msgstr "Tower — page help"
+
+#: ui/static/platform/js/kule.js:59
+msgid "Kule yardımcısını aç"
+msgstr "Open the Tower assistant"
+
+#: ui/static/platform/js/kule.js:72
+msgid "Bu sayfa henüz turlu değil"
+msgstr "This page does not have a tour yet"
+
+#: ui/static/platform/js/kule.js:73
+msgid ""
+"Bu sayfa için Kule turu henüz hazırlanmadı. Stratejik Planlama, Süreçler "
+"veya Masaüstü gibi sayfalarda beni dene."
+msgstr ""
+"The Tower tour for this page has not been prepared yet. Try me on pages "
+"like Strategic Planning, Processes or Desktop."
+
+#: ui/static/platform/js/kule.js:81
+msgid "Tur başlatılamadı"
+msgstr "Tour could not be started"
+
+#: ui/static/platform/js/kule.js:82
+msgid "Sunucuya ulaşılamadı. Sayfayı yenileyip tekrar dene."
+msgstr "Server could not be reached. Refresh the page and try again."
+
+#: ui/static/platform/js/kule.js:167
+msgid "Tur kütüphanesi yüklenemedi"
+msgstr "Tour library could not be loaded"
+
+#: ui/static/platform/js/kule.js:168
+msgid ""
+"Driver.js CDN'i engellenmiş olabilir. İnternet bağlantını veya ağ "
+"engellerini kontrol et."
+msgstr ""
+"The Driver.js CDN may be blocked. Check your internet connection or "
+"network blocks."
+
+#: ui/static/platform/js/kule.js:191
+msgid "Devam →"
+msgstr "Continue →"
+
+#: ui/static/platform/js/kule.js:192
+msgid "← Geri"
+msgstr "← Back"
+
+#: ui/static/platform/js/kule.js:238
+msgid "Tur yüklenemedi"
+msgstr "Tour could not be loaded"
+
+#: ui/static/platform/js/kule.js:239
+msgid "Sunucudan tur tanımı alınamadı."
+msgstr "Tour definition could not be retrieved from the server."
+
+#: ui/static/platform/js/kurum.js:259
+msgid "Skorlu (≥50)"
+msgstr "Scored (≥50)"
+
+#: ui/static/platform/js/kurum.js:259
+msgid "Skorsuz"
+msgstr "Unscored"
+
+#: ui/static/platform/js/kurum.js:273
+msgid "Aktif proje yok"
+msgstr "No active project"
+
+#: ui/static/platform/js/kurum.js:278
+msgid "Bitiş gecikti"
+msgstr "End delayed"
+
+#: ui/static/platform/js/kurum.js:278
+msgid "30 gün içinde"
+msgstr "Within 30 days"
+
+#: ui/static/platform/js/kurum.js:278
+msgid "Diğer"
+msgstr "Other"
+
+#: ui/static/platform/js/kurum.js:292
+msgid "Açık görev yok"
+msgstr "No open tasks"
+
+#: ui/static/platform/js/kurum.js:297
+msgid "Vadesi geçti"
+msgstr "Overdue"
+
+#: ui/static/platform/js/kurum.js:297
+msgid "7 gün içinde"
+msgstr "Within 7 days"
+
+#: ui/static/platform/js/kurum.js:297
+msgid "Diğer açık"
+msgstr "Other open"
+
+#: ui/static/platform/js/kurum.js:312
+#: ui/templates/platform/kurum/index.html:522
+#: ui/templates/platform/kurum/index.html:567
+msgid "Geciken görev"
+msgstr "Overdue tasks"
+
+#: ui/static/platform/js/kurum.js:312
+#: ui/templates/platform/kurum/index.html:526
+msgid "7 gün vadesi"
+msgstr "Due in 7 days"
+
+#: ui/static/platform/js/kurum.js:312
+#: ui/templates/platform/kurum/index.html:530
+#: ui/templates/platform/kurum/index.html:575
+msgid "Açık RAID"
+msgstr "Open RAID"
+
+#: ui/static/platform/js/kurum.js:312
+msgid "Sağlık <50"
+msgstr "Health <50"
+
+#: ui/static/platform/js/kurum.js:314
+msgid "Sayı"
+msgstr "Number"
+
+#: ui/static/platform/js/kurum.js:467
+msgid "Amaç & Vizyon Düzenle"
+msgstr "Edit Purpose & Vision"
+
+#: ui/static/platform/js/kurum.js:485
+msgid "Stratejik kimlik güncellendi."
+msgstr "Strategic identity updated."
+
+#: ui/static/platform/js/kurum.js:494
+msgid "Modal bileşeni yüklenemedi. Sayfayı yenileyin."
+msgstr "Modal component could not be loaded. Refresh the page."
+
+#: ui/static/platform/js/kurum.js:502
+msgid "Yeni Strateji Ekle"
+msgstr "Add New Strategy"
+
+#: ui/static/platform/js/kurum.js:532
+msgid "Strateji eklendi."
+msgstr "Strategy added."
+
+#: ui/static/platform/js/kurum.js:542
+#: ui/templates/platform/k_rapor/index.html:308
+msgid "Değer"
+msgstr "Value"
+
+#: ui/static/platform/js/kurum.js:542
+msgid "Etik kural"
+msgstr "Ethical rule"
+
+#: ui/static/platform/js/kurum.js:542
+msgid "Kalite politikası maddesi"
+msgstr "Quality policy item"
+
+#: ui/static/platform/js/kurum.js:564 ui/static/platform/js/kurum.js:581
+msgid "Madde"
+msgstr "Item"
+
+#: ui/static/platform/js/kurum.js:573
+msgid "Eklendi."
+msgstr "Added."
+
+#: ui/static/platform/js/kurum.js:597
+msgid "Madde silinsin mi?"
+msgstr "Delete the item?"
+
+#: ui/static/platform/js/kurum.js:626
+msgid "Alt Strateji Ekle"
+msgstr "Add Sub-Strategy"
+
+#: ui/static/platform/js/kurum.js:652
+msgid "Alt strateji eklendi."
+msgstr "Sub-strategy added."
+
+#: ui/static/platform/js/kurum.js:667
+msgid "Ana strateji düzenle"
+msgstr "Edit main strategy"
+
+#: ui/static/platform/js/kurum.js:707
+msgid "Strateji silinsin mi?"
+msgstr "Delete the strategy?"
+
+#: ui/static/platform/js/kurum.js:711
+msgid "Strateji silindi."
+msgstr "Strategy deleted."
+
+#: ui/static/platform/js/kurum.js:725
+msgid "Alt Strateji Düzenle"
+msgstr "Edit Sub-Strategy"
+
+#: ui/static/platform/js/kurum.js:750
+msgid "Alt strateji güncellendi."
+msgstr "Sub-strategy updated."
+
+#: ui/static/platform/js/kurum.js:760
+msgid "Alt strateji silinsin mi?"
+msgstr "Delete the sub-strategy?"
+
+#: ui/static/platform/js/kurum.js:764
+msgid "Alt strateji silindi."
+msgstr "Sub-strategy deleted."
+
+#: ui/static/platform/js/kurum_ayarlar.js:69
+msgid "Kurum adı zorunludur."
+msgstr "Organization name is required."
+
+#: ui/static/platform/js/kurum_ayarlar.js:79
+msgid "Kurum ayarları kaydedildi."
+msgstr "Organization settings saved."
+
+#: ui/static/platform/js/kurum_ayarlar.js:92
+msgid "Lütfen bir logo dosyası seçin."
+msgstr "Please select a logo file."
+
+#: ui/static/platform/js/kurum_ayarlar.js:100
+msgid "Logo yükleniyor..."
+msgstr "Uploading logo..."
+
+#: ui/static/platform/js/kurum_ayarlar.js:116
+msgid "Logo yüklendi."
+msgstr "Logo uploaded."
+
+#: ui/static/platform/js/kurum_ayarlar.js:119
+msgid "Logo yükleme başarısız."
+msgstr "Logo upload failed."
+
+#: ui/static/platform/js/launcher_plan_year.js:52
+#: ui/static/platform/js/masaustu_plan_year.js:58
+#: ui/static/platform/js/sp_donemler.js:39
+msgid "Dönem değiştirilemedi."
+msgstr "Period could not be changed."
+
+#: ui/static/platform/js/launcher_plan_year.js:73
+#: ui/static/platform/js/masaustu_plan_year.js:79
+#: ui/static/platform/js/sp_donemler.js:52
+#: ui/static/platform/js/sp_plan_year.js:84
+msgid "Evet, Kapat"
+msgstr "Yes, Close"
+
+#: ui/static/platform/js/launcher_plan_year.js:74
+#: ui/static/platform/js/masaustu_plan_year.js:80
+#: ui/static/platform/js/sp_donemler.js:52
+#: ui/static/platform/js/sp_plan_year.js:85
+msgid "Vazgeç"
+msgstr "Cancel"
+
+#: ui/static/platform/js/launcher_plan_year.js:85
+#: ui/static/platform/js/masaustu_plan_year.js:91
+#: ui/static/platform/js/sp_donemler.js:58
+msgid "Dönem kapatılamadı."
+msgstr "Period could not be closed."
+
+#: ui/static/platform/js/launcher_plan_year.js:120
+#: ui/static/platform/js/masaustu_plan_year.js:129
+#: ui/static/platform/js/sp_donemler.js:82
+#: ui/static/platform/js/sp_plan_year.js:134
+msgid "Geçerli bir yıl girin (2000-2100)."
+msgstr "Enter a valid year (2000-2100)."
+
+#: ui/static/platform/js/launcher_plan_year.js:136
+#: ui/static/platform/js/masaustu_plan_year.js:145
+#: ui/static/platform/js/sp_donemler.js:90
+msgid "Dönem oluşturulamadı."
+msgstr "Period could not be created."
+
+#: ui/static/platform/js/masaustu.js:114
+msgid "Kart bulunamadı"
+msgstr "Card not found"
+
+#: ui/static/platform/js/masaustu.js:114
+msgid "Bu sayfada yönetilebilir kart yok."
+msgstr "There are no manageable cards on this page."
+
+#: ui/static/platform/js/masaustu.js:130
+msgid "Kart yönetimi"
+msgstr "Card management"
+
+#: ui/static/platform/js/masaustu.js:211
+#: ui/templates/platform/admin/notifications.html:106
+#: ui/templates/platform/masaustu/index.html:678
+msgid "Okundu"
+msgstr "Read"
+
+#: ui/static/platform/js/masaustu.js:217
+msgid "İşlem başarısız"
+msgstr "Operation failed"
+
+#: ui/static/platform/js/masaustu.js:243
+msgid "Not kaydedildi"
+msgstr "Note saved"
+
+#: ui/static/platform/js/masaustu.js:248
+msgid "Kaydedilemedi"
+msgstr "Could not be saved"
+
+#: ui/static/platform/js/masaustu.js:271
+#: ui/templates/platform/masaustu/index.html:204
+#: ui/templates/platform/sp/exec_dashboard.html:264
+msgid "Bugün"
+msgstr "Today"
+
+#: ui/static/platform/js/masaustu.js:272
+msgid "Ay"
+msgstr "Month"
+
+#: ui/static/platform/js/masaustu.js:273
+msgid "Hafta"
+msgstr "Week"
+
+#: ui/static/platform/js/masaustu.js:274
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:46
+msgid "Gün"
+msgstr "Day"
+
+#: ui/static/platform/js/mc-modal-form.js:124
+msgid "Bilgi"
+msgstr "Info"
+
+#: ui/static/platform/js/pg_tablo_modal.js:100
+#: ui/static/platform/js/pg_tablo_modal.js:154
+#: ui/static/platform/js/surec.js:282
+msgid "Ocak"
+msgstr "January"
+
+#: ui/static/platform/js/pg_tablo_modal.js:101
+#: ui/static/platform/js/pg_tablo_modal.js:155
+#: ui/static/platform/js/surec.js:283
+msgid "Şubat"
+msgstr "February"
+
+#: ui/static/platform/js/pg_tablo_modal.js:102
+#: ui/static/platform/js/pg_tablo_modal.js:156
+#: ui/static/platform/js/surec.js:284
+msgid "Mart"
+msgstr "March"
+
+#: ui/static/platform/js/pg_tablo_modal.js:103
+#: ui/static/platform/js/pg_tablo_modal.js:157
+#: ui/static/platform/js/surec.js:285
+msgid "Nisan"
+msgstr "April"
+
+#: ui/static/platform/js/pg_tablo_modal.js:104
+#: ui/static/platform/js/pg_tablo_modal.js:158
+#: ui/static/platform/js/surec.js:286
+msgid "Mayıs"
+msgstr "May"
+
+#: ui/static/platform/js/pg_tablo_modal.js:105
+#: ui/static/platform/js/pg_tablo_modal.js:159
+#: ui/static/platform/js/surec.js:287
+msgid "Haziran"
+msgstr "June"
+
+#: ui/static/platform/js/pg_tablo_modal.js:106
+#: ui/static/platform/js/pg_tablo_modal.js:160
+#: ui/static/platform/js/surec.js:288
+msgid "Temmuz"
+msgstr "July"
+
+#: ui/static/platform/js/pg_tablo_modal.js:107
+#: ui/static/platform/js/pg_tablo_modal.js:161
+#: ui/static/platform/js/surec.js:289
+msgid "Ağustos"
+msgstr "August"
+
+#: ui/static/platform/js/pg_tablo_modal.js:108
+#: ui/static/platform/js/pg_tablo_modal.js:162
+#: ui/static/platform/js/surec.js:290
+msgid "Eylül"
+msgstr "September"
+
+#: ui/static/platform/js/pg_tablo_modal.js:109
+#: ui/static/platform/js/pg_tablo_modal.js:163
+#: ui/static/platform/js/surec.js:291
+msgid "Ekim"
+msgstr "October"
+
+#: ui/static/platform/js/pg_tablo_modal.js:110
+#: ui/static/platform/js/pg_tablo_modal.js:164
+#: ui/static/platform/js/surec.js:292
+msgid "Kasım"
+msgstr "November"
+
+#: ui/static/platform/js/pg_tablo_modal.js:111
+#: ui/static/platform/js/pg_tablo_modal.js:165
+#: ui/static/platform/js/surec.js:293
+#: ui/templates/platform/surec/karne.html:640
+msgid "Aralık"
+msgstr "Range"
+
+#: ui/static/platform/js/pg_tablo_modal.js:141
+#: ui/static/platform/js/pg_tablo_modal.js:569
+#: ui/static/platform/js/surec.js:332
+msgid "Ocak – Haziran"
+msgstr "January – June"
+
+#: ui/static/platform/js/pg_tablo_modal.js:142
+#: ui/static/platform/js/pg_tablo_modal.js:570
+#: ui/static/platform/js/surec.js:333
+msgid "Temmuz – Aralık"
+msgstr "July – December"
+
+#: ui/static/platform/js/pg_tablo_modal.js:147
+#: ui/static/platform/js/pg_tablo_modal.js:564
+#: ui/static/platform/js/surec.js:325
+msgid "I. Çeyrek"
+msgstr "Q1"
+
+#: ui/static/platform/js/pg_tablo_modal.js:148
+#: ui/static/platform/js/pg_tablo_modal.js:565
+#: ui/static/platform/js/surec.js:326
+msgid "II. Çeyrek"
+msgstr "Q2"
+
+#: ui/static/platform/js/pg_tablo_modal.js:149
+#: ui/static/platform/js/pg_tablo_modal.js:566
+#: ui/static/platform/js/surec.js:327
+msgid "III. Çeyrek"
+msgstr "Q3"
+
+#: ui/static/platform/js/pg_tablo_modal.js:150
+#: ui/static/platform/js/pg_tablo_modal.js:567
+#: ui/static/platform/js/surec.js:328
+msgid "IV. Çeyrek"
+msgstr "Q4"
+
+#: ui/static/platform/js/pg_tablo_modal.js:152
+#: ui/static/platform/js/pg_tablo_modal.js:568
+#: ui/static/platform/js/surec.js:378
+msgid "Yıl Sonu"
+msgstr "Year End"
+
+#: ui/static/platform/js/pg_tablo_modal.js:246
+#: ui/static/platform/js/surec.js:234
+#: ui/templates/platform/analiz/index.html:44
+#: ui/templates/platform/k_rapor/index.html:194
+#: ui/templates/platform/surec/karne.html:305
+#: ui/templates/platform/surec/karne.html:560
+#: ui/templates/platform/surec/karne.html:827
+msgid "Çeyreklik"
+msgstr "Quarterly"
+
+#: ui/static/platform/js/pg_tablo_modal.js:247
+#: ui/static/platform/js/surec.js:235 ui/templates/platform/k_radar/ks.html:290
+#: ui/templates/platform/k_rapor/index.html:196
+#: ui/templates/platform/surec/karne.html:562
+msgid "Yıllık"
+msgstr "Annual"
+
+#: ui/static/platform/js/pg_tablo_modal.js:248
+#: ui/static/platform/js/surec.js:236
+#: ui/templates/platform/analiz/index.html:43
+#: ui/templates/platform/k_rapor/index.html:195
+#: ui/templates/platform/surec/karne.html:306
+#: ui/templates/platform/surec/karne.html:559
+#: ui/templates/platform/surec/karne.html:828
+msgid "Aylık"
+msgstr "Monthly"
+
+#: ui/static/platform/js/pg_tablo_modal.js:249
+#: ui/static/platform/js/surec.js:237
+#: ui/templates/platform/analiz/index.html:45
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:117
+#: ui/templates/platform/surec/karne.html:307
+#: ui/templates/platform/surec/karne.html:829
+msgid "Haftalık"
+msgstr "Weekly"
+
+#: ui/static/platform/js/pg_tablo_modal.js:250
+#: ui/static/platform/js/surec.js:238
+#: ui/templates/platform/analiz/index.html:46
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:116
+#: ui/templates/platform/surec/karne.html:308
+#: ui/templates/platform/surec/karne.html:830
+msgid "Günlük"
+msgstr "Daily"
+
+#: ui/static/platform/js/pg_tablo_modal.js:251
+#: ui/static/platform/js/surec.js:239
+#: ui/templates/platform/surec/karne.html:304
+#: ui/templates/platform/surec/karne.html:826
+msgid "6 aylık"
+msgstr "Semi-annual"
+
+#: ui/static/platform/js/pg_tablo_modal.js:358
+msgid "Bu veri önceki yıldan hesaplanmıştır."
+msgstr "This data was calculated from the previous year."
+
+#: ui/static/platform/js/pg_tablo_modal.js:489
+msgid "Karne verisi yüklenemedi."
+msgstr "Scorecard data could not be loaded."
+
+#: ui/static/platform/js/pg_tablo_modal.js:643
+msgid "Görev"
+msgstr "Task"
+
+#: ui/static/platform/js/pg_tablo_modal.js:644
+msgid "Bağlı görev yok."
+msgstr "No linked tasks."
+
+#: ui/static/platform/js/pg_tablo_modal.js:647
+msgid "Yüklenemedi."
+msgstr "Could not be loaded."
+
+#: ui/static/platform/js/pg_tablo_modal.js:697
+msgid "Veriyi pasifleştir?"
+msgstr "Deactivate the data?"
+
+#: ui/static/platform/js/pg_tablo_modal.js:776
+#: ui/static/platform/js/surec.js:2921 ui/static/platform/js/surec_vgs.js:566
+msgid "PG verisi girme yetkiniz yok."
+msgstr "You do not have permission to enter PI data."
+
+#: ui/static/platform/js/pg_tablo_modal.js:780
+msgid "Veri girişi sihirbazı şu an kullanılamıyor."
+msgstr "Data entry wizard is not available right now."
+
+#: ui/static/platform/js/pg_tablo_modal.js:784
+msgid "Önce bu sürece performans göstergesi ekleyin."
+msgstr "First add a performance indicator to this process."
+
+#: ui/static/platform/js/profil.js:56
+msgid "Geçersiz dosya tipi. PNG, JPG, GIF veya WEBP seçin."
+msgstr "Invalid file type. Select PNG, JPG, GIF or WEBP."
+
+#: ui/static/platform/js/profil.js:60
+msgid "Dosya boyutu çok büyük. Maksimum 5MB yükleyebilirsiniz."
+msgstr "File size is too large. You can upload a maximum of 5MB."
+
+#: ui/static/platform/js/profil.js:81
+msgid "Sunucudan geçersiz yanıt alındı (HTTP "
+msgstr "Invalid response received from server (HTTP "
+
+#: ui/static/platform/js/profil.js:118
+msgid "Profil fotoğrafı güncellendi."
+msgstr "Profile photo updated."
+
+#: ui/static/platform/js/profil.js:120
+msgid "Fotoğraf yüklenemedi."
+msgstr "Photo could not be uploaded."
+
+#: ui/static/platform/js/profil.js:126 ui/static/platform/js/profil.js:205
+msgid "Sunucuya bağlanılamadı."
+msgstr "Could not connect to the server."
+
+#: ui/static/platform/js/profil.js:144
+msgid "Lütfen geçerli bir e-posta adresi girin."
+msgstr "Please enter a valid email address."
+
+#: ui/static/platform/js/profil.js:148
+msgid "Lütfen geçerli bir telefon numarası girin. (Örnek: 0555 123 45 67)"
+msgstr "Please enter a valid phone number. (Example: 0555 123 45 67)"
+
+#: ui/static/platform/js/profil.js:152
+msgid "Yeni şifre en az 6 karakter olmalıdır."
+msgstr "The new password must be at least 6 characters."
+
+#: ui/static/platform/js/profil.js:156
+msgid "Yeni şifreler eşleşmiyor."
+msgstr "The new passwords do not match."
+
+#: ui/static/platform/js/profil.js:160
+msgid "Şifre değiştirmek için mevcut şifrenizi girmelisiniz."
+msgstr "You must enter your current password to change the password."
+
+#: ui/static/platform/js/profil.js:189
+msgid "Sunucudan geçersiz yanıt alındı. Sayfayı yenileyip tekrar deneyin."
+msgstr "Invalid response received from server. Refresh the page and try again."
+
+#: ui/static/platform/js/profil.js:196
+msgid "Profil güncellendi."
+msgstr "Profile updated."
+
+#: ui/static/platform/js/program_gantt.js:25
+msgid "Gantt bileşeni yüklenemedi."
+msgstr "Gantt component could not be loaded."
+
+#: ui/static/platform/js/program_gantt.js:39
+msgid "skor"
+msgstr "score"
+
+#: ui/static/platform/js/program_gantt.js:61
+msgid "Çizelge oluşturulamadı: "
+msgstr "Schedule could not be created: "
+
+#: ui/static/platform/js/project_form_transfer.js:117
+msgid "Önce soldan seçim yapın."
+msgstr "First make a selection from the left."
+
+#: ui/static/platform/js/project_form_transfer.js:138
+msgid "Önce sağdan seçim yapın."
+msgstr "First make a selection from the right."
+
+#: ui/static/platform/js/project_form_transfer.js:222
+#: ui/templates/platform/admin/istatistikler.html:35
+#: ui/templates/platform/admin/istatistikler.html:69
+#: ui/templates/platform/admin/sub_tenants.html:79
+#: ui/templates/platform/admin/sub_tenants_usage.html:44
+#: ui/templates/platform/admin/sub_tenants_usage.html:73
+#: ui/templates/platform/admin/yonetim_paneli.html:114
+#: ui/templates/platform/admin/yonetim_paneli.html:142
+#: ui/templates/platform/ayarlar/index.html:33
+#: ui/templates/platform/base.html:324
+#: ui/templates/platform/k_rapor/index.html:271
+#: ui/templates/platform/k_rapor/index.html:286
+#: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:25
+msgid "Kullanıcı"
+msgstr "User"
+
+#: ui/static/platform/js/project_form_transfer.js:269
+msgid "Üye olan kullanıcı gözlemci olamaz; önce üyelikten çıkarın."
+msgstr "A user who is a member cannot be an observer; first remove the membership."
+
+#: ui/static/platform/js/project_form_transfer.js:312
+msgid "En az bir proje lideri seçmelisiniz."
+msgstr "You must select at least one project leader."
+
+#: ui/static/platform/js/project_raid.js:44
+msgid "API yanıtı JSON değil (oturum veya /api adresi). Sayfayı yenileyin."
+msgstr "API response is not JSON (session or /api address). Refresh the page."
+
+#: ui/static/platform/js/project_raid.js:65
+msgid "RAID Yükleme Hatası"
+msgstr "RAID Loading Error"
+
+#: ui/static/platform/js/project_raid.js:79
+msgid "Henüz öğe eklenmedi."
+msgstr "No item added yet."
+
+#: ui/static/platform/js/project_raid.js:90
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+msgid "Olasılık"
+msgstr "Probability"
+
+#: ui/static/platform/js/project_raid.js:93
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_radar/risk_management.html:50
+#: ui/templates/platform/k_rapor/index.html:346
+#: ui/templates/platform/k_rapor/index.html:450
+#: ui/templates/platform/k_rapor/index.html:663
+#: ui/templates/platform/sp/blue_ocean.html:133
+msgid "Etki"
+msgstr "Impact"
+
+#: ui/static/platform/js/project_raid.js:98
+msgid "Doğrulama"
+msgstr "Verification"
+
+#: ui/static/platform/js/project_raid.js:103
+msgid "Aciliyet"
+msgstr "Urgency"
+
+#: ui/static/platform/js/project_raid.js:108
+#: ui/templates/platform/admin/notifications.html:77
+#: ui/templates/platform/admin/tenants.html:68
+msgid "Tip"
+msgstr "Type"
+
+#: ui/static/platform/js/project_raid.js:194
+#: ui/templates/platform/admin/packages.html:44
+#: ui/templates/platform/admin/packages.html:101
+#: ui/templates/platform/k_radar/cross_paydas.html:23
+#: ui/templates/platform/k_radar/kp_olgunluk.html:28
+#: ui/templates/platform/sp/blue_ocean.html:143
+#: ui/templates/platform/surec/index.html:602
+#: ui/templates/platform/surec/index.html:622
+msgid "Ekle"
+msgstr "Add"
+
+#: ui/static/platform/js/project_raid.js:251
+msgid "Başlık gerekli"
+msgstr "Title required"
+
+#: ui/static/platform/js/project_raid.js:288
+msgid "RAID öğesi kaydedildi"
+msgstr "RAID item saved"
+
+#: ui/static/platform/js/project_raid.js:291
+msgid "Kaydetme Hatası"
+msgstr "Save Error"
+
+#: ui/static/platform/js/project_raid.js:307
+msgid "RAID öğesi silinsin mi?"
+msgstr "Delete the RAID item?"
+
+#: ui/static/platform/js/project_raid.js:307
+msgid "Bu öğeyi silmek istediğinizden emin misiniz?"
+msgstr "Are you sure you want to delete this item?"
+
+#: ui/static/platform/js/project_raid.js:316
+msgid "RAID öğesi silindi"
+msgstr "RAID item deleted"
+
+#: ui/static/platform/js/project_raid.js:319
+msgid "Silme Hatası"
+msgstr "Delete Error"
+
+#: ui/static/platform/js/sp.js:29
+msgid ""
+"Oturum veya güvenlik doğrulaması başarısız. Sayfayı yenileyip tekrar "
+"deneyin."
+msgstr "Session or security verification failed. Refresh the page and try again."
+
+#: ui/static/platform/js/sp.js:32
+msgid "Oturum süresi dolmuş olabilir. Yeniden giriş yapın."
+msgstr "Your session may have expired. Log in again."
+
+#: ui/static/platform/js/sp.js:34
+msgid "Sunucu JSON yerine HTML döndü"
+msgstr "Server returned HTML instead of JSON"
+
+#: ui/static/platform/js/sp.js:126
+msgid "Kurum misyonunu yazın..."
+msgstr "Write the organization mission..."
+
+#: ui/static/platform/js/sp.js:148
+msgid "Kurum vizyonunu yazın..."
+msgstr "Write the organization vision..."
+
+#: ui/static/platform/js/sp.js:171
+msgid "Değerler..."
+msgstr "Values..."
+
+#: ui/static/platform/js/sp.js:175
+msgid "Etik kurallar..."
+msgstr "Ethical rules..."
+
+#: ui/static/platform/js/sp.js:222 ui/static/platform/js/sp.js:359
+msgid "Boş = eşit dağıtım"
+msgstr "Empty = equal distribution"
+
+#: ui/static/platform/js/sp.js:232 ui/static/platform/js/sp.js:279
+msgid "Strateji başlığı"
+msgstr "Strategy title"
+
+#: ui/static/platform/js/sp.js:236 ui/static/platform/js/sp.js:283
+msgid "Örn: ST1"
+msgstr "e.g. ST1"
+
+#: ui/static/platform/js/sp.js:322
+msgid "Alt strateji başlığı"
+msgstr "Sub-strategy title"
+
+#: ui/static/platform/js/sp.js:326
+msgid "Örn: ST1.1"
+msgstr "e.g. ST1.1"
+
+#: ui/static/platform/js/sp_analiz.js:30
+#: ui/templates/platform/sp/index.html:167
+#: ui/templates/platform/sp/index.html:210
+msgid "Henüz eklenmemiş"
+msgstr "Not added yet"
+
+#: ui/static/platform/js/sp_donemler.js:139
+#: ui/static/platform/js/sp_donemler.js:141
+msgid "Sadece"
+msgstr "Only"
+
+#: ui/static/platform/js/sp_donemler.js:139
+#: ui/static/platform/js/sp_donemler.js:141
+msgid "'de"
+msgstr "in"
+
+#: ui/static/platform/js/sp_donemler.js:194
+msgid "İki dönem arasında kayıtlı konfigürasyon farkı yok."
+msgstr "There is no saved configuration difference between the two periods."
+
+#: ui/static/platform/js/sp_donemler.js:233
+#: ui/templates/platform/kurum/index.html:661
+msgid "Stratejiler"
+msgstr "Strategies"
+
+#: ui/static/platform/js/sp_donemler.js:233
+msgid "Strateji konfigürasyonu yok."
+msgstr "No strategy configuration."
+
+#: ui/static/platform/js/sp_donemler.js:234
+msgid "Alt Stratejiler"
+msgstr "Sub-Strategies"
+
+#: ui/static/platform/js/sp_donemler.js:234
+msgid "Alt strateji konfigürasyonu yok."
+msgstr "No sub-strategy configuration."
+
+#: ui/static/platform/js/sp_donemler.js:267
+msgid "Aynı dönem seçildi"
+msgstr "Same period selected"
+
+#: ui/static/platform/js/sp_donemler.js:267
+msgid "Farklı iki dönem seçin."
+msgstr "Select two different periods."
+
+#: ui/static/platform/js/sp_donemler.js:271
+#: ui/templates/platform/admin/hata_kontrolu.html:122
+#: ui/templates/platform/admin/hata_kontrolu.html:158
+#: ui/templates/platform/admin/hierarchy.html:26
+#: ui/templates/platform/admin/holding_dashboard.html:98
+#: ui/templates/platform/admin/holding_drilldown.html:33
+#: ui/templates/platform/admin/sub_tenants.html:59
+#: ui/templates/platform/admin/sub_tenants_usage.html:62
+#: ui/templates/platform/bireysel/karne.html:251
+#: ui/templates/platform/k_radar/kp.html:57
+#: ui/templates/platform/k_radar/kp_deger_zinciri.html:29
+#: ui/templates/platform/k_radar/ks.html:58
+#: ui/templates/platform/k_radar/ks.html:70
+#: ui/templates/platform/k_radar/ks.html:199
+#: ui/templates/platform/k_radar/ks.html:216
+#: ui/templates/platform/k_radar/ks.html:229
+#: ui/templates/platform/k_radar/ks.html:242
+#: ui/templates/platform/k_radar/ks.html:255
+#: ui/templates/platform/k_radar/ks.html:269
+#: ui/templates/platform/k_radar/ks.html:360
+#: ui/templates/platform/k_radar/ks.html:373
+#: ui/templates/platform/k_rapor/index.html:156
+#: ui/templates/platform/k_rapor/index.html:162
+#: ui/templates/platform/k_rapor/index.html:174
+#: ui/templates/platform/k_rapor/index.html:180
+#: ui/templates/platform/k_rapor/index.html:217
+#: ui/templates/platform/k_rapor/index.html:252
+#: ui/templates/platform/k_rapor/index.html:272
+#: ui/templates/platform/k_rapor/index.html:287
+#: ui/templates/platform/k_rapor/index.html:347
+#: ui/templates/platform/k_rapor/index.html:605
+#: ui/templates/platform/k_rapor/index.html:621
+#: ui/templates/platform/k_rapor/index.html:629
+#: ui/templates/platform/k_rapor/index.html:639
+#: ui/templates/platform/k_rapor/index.html:647
+#: ui/templates/platform/k_rapor/index.html:664
+#: ui/templates/platform/k_rapor/index.html:673
+#: ui/templates/platform/k_rapor/index.html:796
+#: ui/templates/platform/k_rapor/index.html:854
+#: ui/templates/platform/k_rapor/index.html:907
+#: ui/templates/platform/masaustu/index.html:63
+#: ui/templates/platform/raporlar/esg_yonetim.html:34
+#: ui/templates/platform/raporlar/veri_kalitesi.html:32
+#: ui/templates/platform/sp/bsc.html:29
+#: ui/templates/platform/sp/llm_usage.html:25
+#: ui/templates/platform/sp/llm_usage.html:30
+#: ui/templates/platform/sp/scenarios_kiyas.html:27
+#: ui/templates/platform/sp/tv.html:149
+#: ui/templates/platform/surec/karne.html:727
+msgid "Yükleniyor…"
+msgstr "Loading…"
+
+#: ui/static/platform/js/sp_donemler.js:276
+msgid "Karşılaştırma yapılamadı."
+msgstr "Comparison could not be made."
+
+#: ui/static/platform/js/sp_donemler.js:278
+msgid "Bağlantı hatası"
+msgstr "Connection error"
+
+#: ui/static/platform/js/sp_donemler.js:278
+msgid "Sunucuya ulaşılamadı."
+msgstr "Server could not be reached."
+
+#: ui/static/platform/js/sp_donemler.js:281
+#: ui/templates/platform/sp/donemler.html:157
+#: ui/templates/platform/sp/scenarios_kiyas.html:31
+msgid "Karşılaştır"
+msgstr "Compare"
+
+#: ui/static/platform/js/sp_plan_year.js:63
+msgid "Yıl değiştirilemedi."
+msgstr "Year could not be changed."
+
+#: ui/static/platform/js/sp_plan_year.js:96
+msgid "Yıl kapatılamadı."
+msgstr "Year could not be closed."
+
+#: ui/static/platform/js/sp_plan_year.js:150
+msgid "Plan yılı oluşturulamadı."
+msgstr "Plan year could not be created."
+
+#: ui/static/platform/js/surec.js:35
+msgid "Oturum süresi doldu. Lütfen yeniden giriş yapın."
+msgstr "Your session has expired. Please log in again."
+
+#: ui/static/platform/js/surec.js:58
+msgid "İstek limiti aşıldı. Lütfen bir süre sonra tekrar deneyin."
+msgstr "Request limit exceeded. Please try again later."
+
+#: ui/static/platform/js/surec.js:61
+msgid "Bu işlem için yetkiniz yok (403)."
+msgstr "You do not have permission for this action (403)."
+
+#: ui/static/platform/js/surec.js:64
+msgid "İstenen kayıt bulunamadı (404)."
+msgstr "The requested record was not found (404)."
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Oca"
+msgstr "Jan"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Şub"
+msgstr "Feb"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Mar"
+msgstr "Mar"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Nis"
+msgstr "Apr"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "May"
+msgstr "May"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Haz"
+msgstr "Jun"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Tem"
+msgstr "Jul"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Ağu"
+msgstr "Aug"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Eyl"
+msgstr "Sep"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Eki"
+msgstr "Oct"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Kas"
+msgstr "Nov"
+
+#: ui/static/platform/js/surec.js:280
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Ara"
+msgstr "Dec"
+
+#: ui/static/platform/js/surec.js:567
+msgid "Faaliyet ekleme yetkiniz yok."
+msgstr "You do not have permission to add an activity."
+
+#: ui/static/platform/js/surec.js:571 ui/static/platform/js/surec.js:2600
+msgid "Form modali yüklenemedi."
+msgstr "Form modal could not be loaded."
+
+#: ui/static/platform/js/surec.js:638
+msgid "Yeni Faaliyet"
+msgstr "New Activity"
+
+#: ui/static/platform/js/surec.js:645
+msgid "Faaliyet adı zorunludur."
+msgstr "Activity name is required."
+
+#: ui/static/platform/js/surec.js:651
+msgid "Başlangıç ve bitiş tarih/saat zorunludur."
+msgstr "Start and end date/time are required."
+
+#: ui/static/platform/js/surec.js:655
+msgid "Bitiş tarihi başlangıç tarihinden önce olamaz."
+msgstr "End date cannot be before start date."
+
+#: ui/static/platform/js/surec.js:662
+msgid "En az bir atanan seçiniz."
+msgstr "Select at least one assignee."
+
+#: ui/static/platform/js/surec.js:683
+msgid "Faaliyet kaydedilemedi."
+msgstr "Activity could not be saved."
+
+#: ui/static/platform/js/surec.js:684
+msgid "Faaliyet eklendi."
+msgstr "Activity added."
+
+#: ui/static/platform/js/surec.js:689
+msgid "Faaliyet eklenemedi."
+msgstr "Activity could not be added."
+
+#: ui/static/platform/js/surec.js:1072
+msgid "Hedef sayısal değil veya veri yok"
+msgstr "Target is not numeric or no data"
+
+#: ui/static/platform/js/surec.js:1077
+msgid "Yıllık hedef ÷ 12 ile aylık hedef; verili ayların ortalama sapması"
+msgstr "Monthly target via annual target ÷ 12; average deviation of given months"
+
+#: ui/static/platform/js/surec.js:1336
+msgid "Başarı puanı yapılandırması aktif olmayan performans göstergeleri"
+msgstr "Performance indicators without active success score configuration"
+
+#: ui/static/platform/js/surec.js:1392
+msgid "Aralık hatası olan performans göstergeleri"
+msgstr "Performance indicators with interval errors"
+
+#: ui/static/platform/js/surec.js:1395
+msgid "Aralık analizinde sorun çıkmayan PG’ler"
+msgstr "PIs with no issues in interval analysis"
+
+#: ui/static/platform/js/surec.js:2365 ui/static/platform/js/surec.js:2366
+msgid "Favori"
+msgstr "Favorite"
+
+#: ui/static/platform/js/surec.js:2495
+msgid "Atama yok"
+msgstr "No assignment"
+
+#: ui/static/platform/js/surec.js:2496
+msgid "Bağımsız faaliyet"
+msgstr "Independent activity"
+
+#: ui/static/platform/js/surec.js:2604
+msgid "Faaliyet Ertele"
+msgstr "Postpone Activity"
+
+#: ui/static/platform/js/surec.js:2606
+msgid "Ertele"
+msgstr "Postpone"
+
+#: ui/static/platform/js/surec.js:2623
+msgid "Başlangıç ve bitiş zorunludur."
+msgstr "Start and end are required."
+
+#: ui/static/platform/js/surec.js:2627
+msgid "Bitiş başlangıçtan sonra olmalıdır."
+msgstr "End must be after start."
+
+#: ui/static/platform/js/surec.js:2636
+msgid "Faaliyet ertelenemedi."
+msgstr "Activity could not be postponed."
+
+#: ui/static/platform/js/surec.js:2637
+msgid "Faaliyet ertelendi."
+msgstr "Activity postponed."
+
+#: ui/static/platform/js/surec.js:2640
+msgid "Erteleme işlemi başarısız."
+msgstr "Postpone operation failed."
+
+#: ui/static/platform/js/surec.js:2663
+msgid "Dönem"
+msgstr "Period"
+
+#: ui/static/platform/js/surec.js:2697 ui/static/platform/js/surec.js:2912
+#: ui/static/platform/js/surec_vgs.js:467
+#: ui/static/platform/js/surec_vgs.js:488
+msgid "Sunucu hatası."
+msgstr "Server error."
+
+#: ui/static/platform/js/surec.js:2707
+msgid "Performans göstergesi silinsin mi?"
+msgstr "Delete the performance indicator?"
+
+#: ui/static/platform/js/surec.js:2707
+msgid ""
+"Seçili yıl için kaldırılacaktır (plan yılı kapalıysa tümden pasife "
+"alınır)."
+msgstr ""
+"It will be removed for the selected year (if the plan year is closed, it "
+"is fully deactivated)."
+
+#: ui/static/platform/js/surec.js:2714
+msgid "Performans göstergesi silindi."
+msgstr "Performance indicator deleted."
+
+#: ui/static/platform/js/surec.js:2726
+msgid "Faaliyet silinsin mi?"
+msgstr "Delete the activity?"
+
+#: ui/static/platform/js/surec.js:2726
+msgid "Faaliyet pasife alınacak."
+msgstr "The activity will be deactivated."
+
+#: ui/static/platform/js/surec.js:2730
+msgid "Faaliyet silindi."
+msgstr "Activity deleted."
+
+#: ui/static/platform/js/surec.js:2740
+msgid "Faaliyet iptal edilsin mi?"
+msgstr "Cancel the activity?"
+
+#: ui/static/platform/js/surec.js:2740
+msgid "Faaliyet durumu 'İptal' olarak güncellenecek."
+msgstr "Activity status will be updated to 'Cancel'."
+
+#: ui/static/platform/js/surec.js:2744
+msgid "Faaliyet iptal edilemedi."
+msgstr "Activity could not be cancelled."
+
+#: ui/static/platform/js/surec.js:2745
+msgid "Faaliyet iptal edildi."
+msgstr "Activity cancelled."
+
+#: ui/static/platform/js/surec.js:2765
+msgid "Faaliyet tamamlandı olarak işaretlensin mi?"
+msgstr "Mark the activity as completed?"
+
+#: ui/static/platform/js/surec.js:2765
+msgid "Durum 'Tamamlandı', ilerleme %100 olacak."
+msgstr "Status will be 'Completed', progress will be %100."
+
+#: ui/static/platform/js/surec.js:2769
+msgid "Faaliyet tamamlanamadı."
+msgstr "Activity could not be completed."
+
+#: ui/static/platform/js/surec.js:2770
+msgid "Faaliyet tamamlandı."
+msgstr "Activity completed."
+
+#: ui/static/platform/js/surec.js:2798
+msgid "Takip güncellenemedi."
+msgstr "Tracking could not be updated."
+
+#: ui/static/platform/js/surec.js:2809
+msgid "Excel dışa aktarma adresi tanımlı değil."
+msgstr "Excel export address is not defined."
+
+#: ui/static/platform/js/surec.js:2887
+msgid "Dışa aktarılamadı."
+msgstr "Could not be exported."
+
+#: ui/static/platform/js/surec.js:2910
+msgid "Excel dosyası indirildi."
+msgstr "Excel file downloaded."
+
+#: ui/static/platform/js/surec.js:2929 ui/static/platform/js/surec.js:2937
+msgid "Veri giriş sihirbazı"
+msgstr "Data entry wizard"
+
+#: ui/static/platform/js/surec.js:2930
+msgid ""
+"Üstteki <strong>Görünüm periyodu</strong> seçimi, VGS’de kaydedeceğiniz "
+"verinin <strong>hangi döneme</strong> yazılacağını belirler. Ardından "
+"ilgili PG kartında, favori / düzenle / sil ikonlarının yanındaki "
+"<strong>asa (sihirbaz)</strong> simgesine tıklayın."
+msgstr ""
+"The <strong>View period</strong> selection at the top determines "
+"<strong>which period</strong> the data you save in the DES will be "
+"written to. Then, on the relevant PI card, click the <strong>wand "
+"(wizard)</strong> icon next to the favorite / edit / delete icons."
+
+#: ui/static/platform/js/surec.js:2938
+msgid ""
+"Önce bu sürece performans göstergesi ekleyin; veri girişi için PG "
+"kartındaki sihirbaz ikonunu kullanın."
+msgstr ""
+"First add a performance indicator to this process; use the wizard icon on"
+" the PI card for data entry."
+
+#: ui/static/platform/js/surec.js:3029
+msgid "Aralık nasıl girilir?"
+msgstr "How to enter an interval?"
+
+#: ui/static/platform/js/surec.js:3058
+msgid "Anladım"
+msgstr "Got it"
+
+#: ui/static/platform/js/surec.js:3120
+msgid "Tablo görünümü şu an kullanılamıyor."
+msgstr "Table view is not available right now."
+
+#: ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/bireysel/karne.html:273
+#: ui/templates/platform/k_rapor/index.html:101
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/sp/ceyreklik_review.html:75
+#: ui/templates/platform/surec/faaliyetler.html:104
+#: ui/templates/platform/surec/karne.html:476
+msgid "Faaliyet"
+msgstr "Activity"
+
+#: ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/sp/okr.html:116
+#: ui/templates/platform/sp/projeler.html:124
+msgid "Başlangıç"
+msgstr "Start"
+
+#: ui/static/platform/js/surec.js:3140
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:251
+#: ui/templates/platform/sp/projeler.html:128
+msgid "Bitiş"
+msgstr "End"
+
+#: ui/static/platform/js/surec.js:3140
+msgid "İlişkili PG"
+msgstr "Related PI"
+
+#: ui/static/platform/js/surec.js:3140
+msgid "Atananlar"
+msgstr "Assignees"
+
+#: ui/static/platform/js/surec.js:3140
+msgid "Hatırlatmalar (dk)"
+msgstr "Reminders (min)"
+
+#: ui/static/platform/js/surec.js:3184
+msgid "Faaliyet listesi dışa aktarıldı."
+msgstr "Activity list exported."
+
+#: ui/static/platform/js/surec.js:3364
+#: ui/templates/platform/surec/index.html:504
+msgid "Yeni Süreç Oluştur"
+msgstr "Create New Process"
+
+#: ui/static/platform/js/surec.js:3366
+#: ui/templates/platform/surec/index.html:637
+msgid "Süreci Kaydet"
+msgstr "Save Process"
+
+#: ui/static/platform/js/surec.js:3379
+msgid "Süreci Düzenle"
+msgstr "Edit Process"
+
+#: ui/static/platform/js/surec.js:3381
+msgid "Değişiklikleri Kaydet"
+msgstr "Save Changes"
+
+#: ui/static/platform/js/surec.js:3514
+msgid "Süreç bilgisi alınamadı."
+msgstr "Process information could not be retrieved."
+
+#: ui/static/platform/js/surec.js:3562
+msgid "Süreç yüklenemedi."
+msgstr "Process could not be loaded."
+
+#: ui/static/platform/js/surec.js:3584
+msgid "Süreç kaydediliyor"
+msgstr "Saving process"
+
+#: ui/static/platform/js/surec.js:3638
+msgid "Süreç adı zorunludur."
+msgstr "Process name is required."
+
+#: ui/static/platform/js/surec.js:3645
+msgid "En az bir alt strateji seçmelisiniz."
+msgstr "You must select at least one sub-strategy."
+
+#: ui/static/platform/js/surec.js:3656
+#, python-format
+msgid "K-Vektör açıkken her seçili alt strateji için katkı % girilmelidir."
+msgstr ""
+"When K-Vector is on, a contribution % must be entered for each selected "
+"sub-strategy."
+
+#: ui/static/platform/js/surec.js:3661
+msgid "Katkı yüzdeleri 0 veya pozitif sayı olmalıdır."
+msgstr "Contribution percentages must be 0 or a positive number."
+
+#: ui/static/platform/js/surec.js:3668
+msgid "Katkı yüzdelerinin toplamı 100'ü aşamaz."
+msgstr "The sum of contribution percentages cannot exceed 100."
+
+#: ui/static/platform/js/surec.js:3700
+msgid "Yeni süreç oluşturma yetkiniz yok."
+msgstr "You do not have permission to create a new process."
+
+#: ui/static/platform/js/surec.js:3704
+msgid ""
+"Düzenleme oturumu eksik (süreç kimliği bulunamadı). Modalı kapatıp "
+"«Düzenle» ile yeniden açın."
+msgstr ""
+"Editing session is missing (process id not found). Close the modal and "
+"reopen with «Edit»."
+
+#: ui/static/platform/js/surec.js:3723
+msgid "Süreç güncellendi."
+msgstr "Process updated."
+
+#: ui/static/platform/js/surec.js:3723
+msgid "Süreç oluşturuldu."
+msgstr "Process created."
+
+#: ui/static/platform/js/surec.js:3731 ui/static/platform/js/surec.js:3762
+#: ui/static/platform/js/surec_vgs.js:724
+msgid "Sunucu hatası:"
+msgstr "Server error:"
+
+#: ui/static/platform/js/surec.js:3742
+msgid "Süreç silinsin mi?"
+msgstr "Delete the process?"
+
+#: ui/static/platform/js/surec.js:3756
+msgid "Süreç silindi."
+msgstr "Process deleted."
+
+#: ui/static/platform/js/surec_vgs.js:179
+msgid "Veri tarihini seçin."
+msgstr "Select the data date."
+
+#: ui/static/platform/js/surec_vgs.js:184
+msgid "Geçerli bir tarih seçin."
+msgstr "Select a valid date."
+
+#: ui/static/platform/js/surec_vgs.js:190
+#: ui/static/platform/js/surec_vgs.js:653
+msgid "Tarih işlenemedi."
+msgstr "Date could not be processed."
+
+#: ui/static/platform/js/surec_vgs.js:200
+#: ui/static/platform/js/surec_vgs.js:445
+msgid "Gerçekleşen değer zorunludur."
+msgstr "Actual value is required."
+
+#: ui/static/platform/js/surec_vgs.js:345
+msgid "Geçmiş yüklenemedi:"
+msgstr "History could not be loaded:"
+
+#: ui/static/platform/js/surec_vgs.js:398
+msgid "Güncelleme penceresi veya adres yüklenemedi."
+msgstr "Update window or address could not be loaded."
+
+#: ui/static/platform/js/surec_vgs.js:424
+msgid "Silme penceresi veya adres yüklenemedi."
+msgstr "Delete window or address could not be loaded."
+
+#: ui/static/platform/js/surec_vgs.js:459
+msgid "Güncellenemedi."
+msgstr "Could not be updated."
+
+#: ui/static/platform/js/surec_vgs.js:480
+msgid "Silinemedi."
+msgstr "Could not be deleted."
+
+#: ui/static/platform/js/surec_vgs.js:484
+msgid "Kayıt pasifleştirildi."
+msgstr "Record deactivated."
+
+#: ui/static/platform/js/surec_vgs.js:497
+msgid "Düzenlenecek satır bulunamadı."
+msgstr "No row found to edit."
+
+#: ui/static/platform/js/surec_vgs.js:570
+msgid "Veri girişi penceresi yüklenemedi."
+msgstr "Data entry window could not be loaded."
+
+#: ui/static/platform/js/surec_vgs.js:576
+msgid "PG bulunamadı; sayfayı yenileyin."
+msgstr "PI not found; refresh the page."
+
+#: ui/static/platform/js/surec_vgs.js:579
+#: ui/templates/platform/admin/istatistikler.html:38
+#: ui/templates/platform/admin/istatistikler.html:72
+#: ui/templates/platform/k_radar/kp_olgunluk.html:43
+#: ui/templates/platform/k_radar/risk_management.html:98
+#: ui/templates/platform/k_rapor/index.html:237
+#: ui/templates/platform/k_rapor/index.html:308
+#: ui/templates/platform/k_rapor/index.html:320
+#: ui/templates/platform/k_rapor/index.html:370
+#: ui/templates/platform/k_rapor/index.html:437
+#: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/raporlar/sektorel_detay.html:16
+#: ui/templates/platform/raporlar/sektorel_detay.html:46
+#: ui/templates/platform/sp/dynamic_flow.html:26
+#: ui/templates/platform/sp/flow.html:33
+#: ui/templates/platform/sp/strateji_haritasi.html:62
+#: ui/templates/platform/sp/strateji_haritasi.html:113
+#: ui/templates/platform/surec/faaliyetler.html:60
+#: ui/templates/platform/surec/karne.html:691
+msgid "Süreç"
+msgstr "Process"
+
+#: ui/static/platform/js/surec_vgs.js:683
+msgid "Bireysel PG eşlemesi oluşturulamadı."
+msgstr "Individual PI mapping could not be created."
+
+#: ui/static/platform/js/surec_vgs.js:691
+msgid "Süreç verisi kaydedilemedi."
+msgstr "Process data could not be saved."
+
+#: ui/static/platform/js/surec_vgs.js:712
+msgid ""
+"Süreç verisi kaydedildi; bireysel karne kaydı başarısız. Bireysel "
+"modülünü kontrol edin."
+msgstr ""
+"Process data saved; individual scorecard record failed. Check the "
+"individual module."
+
+#: ui/static/platform/js/surec_vgs.js:721
+msgid "Veri kaydedildi (süreç + bireysel)."
+msgstr "Data saved (process + individual)."
+
+#: ui/static/platform/js/surec_vgs.js:739
+msgid "Seçilen PG bulunamadı."
+msgstr "Selected PI not found."
+
+#: ui/static/platform/js/twofa.js:97
+msgid "Lütfen 6 haneli doğrulama kodunu girin."
+msgstr "Please enter the 6-digit verification code."
+
+#: ui/static/platform/js/twofa.js:104
+msgid "Doğrulanıyor…"
+msgstr "Verifying…"
+
+#: ui/static/platform/js/twofa.js:110
+msgid "Doğrulama hatalı."
+msgstr "Verification failed."
+
+#: ui/static/platform/js/twofa.js:136
+msgid "Kopyalandı"
+msgstr "Copied"
+
+#: ui/static/platform/js/twofa.js:160
+msgid "Şifrenizi girin."
+msgstr "Enter your password."
+
+#: ui/static/platform/js/twofa.js:175
+msgid "2FA devre dışı bırakıldı"
+msgstr "2FA disabled"
+
+#: ui/static/platform/js/vc_items.js:21
+msgid "Birincil Faaliyetler"
+msgstr "Primary Activities"
+
+#: ui/static/platform/js/vc_items.js:22
+msgid "Destek Faaliyetler"
+msgstr "Support Activities"
+
+#: ui/static/platform/js/vc_items.js:25
+msgid "Fazla üretim"
+msgstr "Overproduction"
+
+#: ui/static/platform/js/vc_items.js:25
+msgid "Bekleme"
+msgstr "Waiting"
+
+#: ui/static/platform/js/vc_items.js:25
+msgid "Taşıma"
+msgstr "Transport"
+
+#: ui/static/platform/js/vc_items.js:26
+msgid "Fazla işleme"
+msgstr "Overprocessing"
+
+#: ui/static/platform/js/vc_items.js:26
+msgid "Stok"
+msgstr "Inventory"
+
+#: ui/static/platform/js/vc_items.js:26
+msgid "Hareket"
+msgstr "Movement"
+
+#: ui/static/platform/js/vc_items.js:26
+msgid "Hata/Düzeltme"
+msgstr "Error/Correction"
+
+#: ui/static/platform/js/vc_items.js:116
+msgid "Örn: Gelen lojistik"
+msgstr "e.g. Inbound logistics"
+
+#: ui/static/platform/js/yonetim_paneli.js:11
+msgid "İstatistikler yüklenemedi."
+msgstr "Statistics could not be loaded."
+
+#: ui/static/platform/js/yonetim_paneli.js:35
+msgid "sn önce"
+msgstr "sec ago"
+
+#: ui/static/platform/js/yonetim_paneli.js:37
+msgid "dk önce"
+msgstr "min ago"
+
+#: ui/static/platform/js/yonetim_paneli.js:39
+msgid "saat önce"
+msgstr "hours ago"
+
+#: ui/static/platform/js/yonetim_paneli.js:41
+msgid "gün önce"
+msgstr "days ago"
+
+#: ui/static/platform/js/yonetim_paneli.js:74
+#: ui/templates/platform/admin/yonetim_paneli.html:61
+msgid "Çevrimiçi"
+msgstr "Online"
+
+#: ui/static/platform/js/yonetim_paneli.js:77
+#: ui/templates/platform/admin/packages.html:61
+#: ui/templates/platform/admin/packages.html:117
+#: ui/templates/platform/admin/tenants.html:129
+#: ui/templates/platform/admin/users.html:69
+#: ui/templates/platform/admin/users.html:133
+#: ui/templates/platform/sp/donemler.html:63
+#: ui/templates/platform/sp/donemler.html:105
+#: ui/templates/platform/surec/index.html:127
+#: ui/templates/platform/surec/index.html:532
+msgid "Aktif"
+msgstr "Active"
+
+#: ui/static/platform/js/yonetim_paneli.js:78
+#: ui/templates/platform/admin/packages.html:61
+#: ui/templates/platform/admin/packages.html:117
+#: ui/templates/platform/admin/users.html:74
+#: ui/templates/platform/admin/users.html:133
+#: ui/templates/platform/surec/index.html:533
+msgid "Pasif"
+msgstr "Inactive"
+
+#: ui/templates/platform/base.html:145
+msgid "Ana Modüller"
+msgstr "Main Modules"
+
+#: ui/templates/platform/base.html:152
+msgid "Masaüstüm"
+msgstr "My Desktop"
+
+#: ui/templates/platform/base.html:165 ui/templates/platform/kurum/index.html:2
+#: ui/templates/platform/kurum/index.html:3
+msgid "Kurum Paneli"
+msgstr "Organization Panel"
+
+#: ui/templates/platform/admin/holding_drilldown.html:2
+#: ui/templates/platform/base.html:174
+msgid "Holding Görünümü"
+msgstr "Holding View"
+
+#: ui/templates/platform/admin/holding_dashboard.html:26
+#: ui/templates/platform/admin/sub_tenants.html:3
+#: ui/templates/platform/admin/sub_tenants.html:21
+#: ui/templates/platform/base.html:186
+msgid "Alt Kurum Yönetimi"
+msgstr "Sub-Organization Management"
+
+#: ui/templates/platform/base.html:188
+msgid "Müşteri Kurumlarım"
+msgstr "My Client Organizations"
+
+#: ui/templates/platform/base.html:227
+#: ui/templates/platform/sp/exec_dashboard.html:94
+msgid "Savaş Odası"
+msgstr "War Room"
+
+#: ui/templates/platform/base.html:235
+#: ui/templates/platform/k_radar/hub.html:76
+msgid "Bireysel Performans"
+msgstr "Individual Performance"
+
+#: ui/templates/platform/base.html:248
+msgid "Yönetim"
+msgstr "Management"
+
+#: ui/templates/platform/admin/tenants.html:10
+#: ui/templates/platform/base.html:259
+msgid "Kurumlar"
+msgstr "Organizations"
+
+#: ui/templates/platform/base.html:265
+msgid "Bildirim Merkezi"
+msgstr "Notification Center"
+
+#: ui/templates/platform/base.html:272
+msgid "SaaS Paketler"
+msgstr "SaaS Packages"
+
+#: ui/templates/platform/base.html:280
+msgid "API Dokümantasyonu"
+msgstr "API Documentation"
+
+#: ui/templates/platform/admin/araclar.html:3
+#: ui/templates/platform/admin/araclar.html:6
+#: ui/templates/platform/admin/araclar.html:15
+#: ui/templates/platform/admin/hata_kontrolu.html:6
+#: ui/templates/platform/admin/istatistikler.html:6
+#: ui/templates/platform/admin/kilavuz_olusturucu.html:6
+#: ui/templates/platform/admin/loglar.html:6
+#: ui/templates/platform/admin/loglar_kurum.html:7
+#: ui/templates/platform/admin/yedekleme.html:6
+#: ui/templates/platform/base.html:287 ui/templates/platform/base.html:291
+msgid "Admin Araçları"
+msgstr "Admin Tools"
+
+#: ui/templates/platform/base.html:296
+msgid "Sistem"
+msgstr "System"
+
+#: ui/templates/platform/base.html:336
+msgid "Profilim"
+msgstr "My Profile"
+
+#: ui/templates/platform/base.html:343 ui/templates/platform/base.html:449
+msgid "Aydınlık Mod"
+msgstr "Light Mode"
+
+#: ui/templates/platform/base.html:343 ui/templates/platform/base.html:449
+msgid "Karanlık Mod"
+msgstr "Dark Mode"
+
+#: ui/templates/platform/base.html:349 ui/templates/platform/base.html:455
+msgid "Çıkış Yap"
+msgstr "Log Out"
+
+#: ui/templates/platform/base.html:366
+msgid "Menü"
+msgstr "Menu"
+
+#: ui/templates/platform/base.html:376
+msgid "Ara — Ctrl+K"
+msgstr "Search — Ctrl+K"
+
+#: ui/templates/platform/base.html:379
+msgid "Sayfa, strateji, PG, proje ara…"
+msgstr "Search pages, strategies, PIs, projects…"
+
+#: ui/templates/platform/base.html:511
+msgid "Ana Sayfa"
+msgstr "Home"
+
+#: ui/templates/platform/base.html:569
+msgid "Sayfa ID (yalnız admin)"
+msgstr "Page ID (admin only)"
+
+#: ui/templates/platform/base.html:575
+msgid "Kart Bilgisi"
+msgstr "Card Info"
+
+#: ui/templates/platform/admin/tenants.html:192
+#: ui/templates/platform/admin/tenants.html:206
+#: ui/templates/platform/admin/users.html:183
+#: ui/templates/platform/admin/users.html:234
+#: ui/templates/platform/base.html:578
+#: ui/templates/platform/k_radar/ks.html:213
+#: ui/templates/platform/k_radar/ks.html:226
+#: ui/templates/platform/k_radar/ks.html:239
+#: ui/templates/platform/k_radar/ks.html:252
+#: ui/templates/platform/k_radar/ks.html:266
+#: ui/templates/platform/k_radar/ks.html:279
+#: ui/templates/platform/k_radar/ks.html:319
+#: ui/templates/platform/k_radar/ks.html:357
+#: ui/templates/platform/k_radar/ks.html:370
+#: ui/templates/platform/k_radar/ks.html:383
+#: ui/templates/platform/surec/index.html:506
+#: ui/templates/platform/surec/karne.html:502
+#: ui/templates/platform/surec/karne.html:683
+#: ui/templates/platform/surec/karne.html:752
+#: ui/templates/platform/surec/karne.html:785
+#: ui/templates/platform/surec/karne.html:811
+#: ui/templates/platform/surec/karne.html:880
+#: ui/templates/platform/surec/karne.html:892
+#: ui/templates/platform/surec/karne.html:898
+#: ui/templates/platform/surec/karne.html:910
+#: ui/templates/platform/surec/karne.html:939
+#: ui/templates/platform/surec/karne.html:947
+msgid "Kapat"
+msgstr "Close"
+
+#: ui/templates/platform/base.html:809
+msgid "Sayfa / strateji / PG / proje / süreç / kullanıcı ara…"
+msgstr "Search page / strategy / PI / project / process / user…"
+
 #: ui/templates/platform/admin/araclar.html:2
 msgid "Admin Araçları — Kokpitim"
 msgstr "Admin Tools — Kokpitim"
@@ -294,7 +3318,9 @@ msgstr ""
 "access.Maintenance and audit tools open only to general administrator "
 "(Admin) access.Maintenance and audit tools open only to general "
 "administrator (Admin) access.Maintenance and audit tools open only to "
-"general administrator (Admin) access."
+"general administrator (Admin) access.Maintenance and audit tools open "
+"only to general administrator (Admin) access.Maintenance and audit tools "
+"open only to general administrator (Admin) access."
 
 #: ui/templates/platform/admin/araclar.html:26
 msgid ""
@@ -463,57 +3489,6 @@ msgid ""
 "açılır."
 msgstr "Only Automatic Browser Test runs. Clicking a record opens it above."
 
-#: ui/templates/platform/admin/hata_kontrolu.html:122
-#: ui/templates/platform/admin/hata_kontrolu.html:158
-#: ui/templates/platform/admin/hierarchy.html:26
-#: ui/templates/platform/admin/holding_dashboard.html:98
-#: ui/templates/platform/admin/holding_drilldown.html:33
-#: ui/templates/platform/admin/sub_tenants.html:59
-#: ui/templates/platform/admin/sub_tenants_usage.html:62
-#: ui/templates/platform/bireysel/karne.html:251
-#: ui/templates/platform/k_radar/kp.html:57
-#: ui/templates/platform/k_radar/kp_deger_zinciri.html:29
-#: ui/templates/platform/k_radar/ks.html:58
-#: ui/templates/platform/k_radar/ks.html:70
-#: ui/templates/platform/k_radar/ks.html:199
-#: ui/templates/platform/k_radar/ks.html:216
-#: ui/templates/platform/k_radar/ks.html:229
-#: ui/templates/platform/k_radar/ks.html:242
-#: ui/templates/platform/k_radar/ks.html:255
-#: ui/templates/platform/k_radar/ks.html:269
-#: ui/templates/platform/k_radar/ks.html:360
-#: ui/templates/platform/k_radar/ks.html:373
-#: ui/templates/platform/k_rapor/index.html:156
-#: ui/templates/platform/k_rapor/index.html:162
-#: ui/templates/platform/k_rapor/index.html:174
-#: ui/templates/platform/k_rapor/index.html:180
-#: ui/templates/platform/k_rapor/index.html:217
-#: ui/templates/platform/k_rapor/index.html:252
-#: ui/templates/platform/k_rapor/index.html:272
-#: ui/templates/platform/k_rapor/index.html:287
-#: ui/templates/platform/k_rapor/index.html:347
-#: ui/templates/platform/k_rapor/index.html:605
-#: ui/templates/platform/k_rapor/index.html:621
-#: ui/templates/platform/k_rapor/index.html:629
-#: ui/templates/platform/k_rapor/index.html:639
-#: ui/templates/platform/k_rapor/index.html:647
-#: ui/templates/platform/k_rapor/index.html:664
-#: ui/templates/platform/k_rapor/index.html:673
-#: ui/templates/platform/k_rapor/index.html:796
-#: ui/templates/platform/k_rapor/index.html:854
-#: ui/templates/platform/k_rapor/index.html:907
-#: ui/templates/platform/masaustu/index.html:63
-#: ui/templates/platform/raporlar/esg_yonetim.html:34
-#: ui/templates/platform/raporlar/veri_kalitesi.html:32
-#: ui/templates/platform/sp/bsc.html:29
-#: ui/templates/platform/sp/llm_usage.html:25
-#: ui/templates/platform/sp/llm_usage.html:30
-#: ui/templates/platform/sp/scenarios_kiyas.html:27
-#: ui/templates/platform/sp/tv.html:149
-#: ui/templates/platform/surec/karne.html:727
-msgid "Yükleniyor…"
-msgstr "Loading…"
-
 #: ui/templates/platform/admin/hata_kontrolu.html:132
 msgid "Aktif CRUD Senaryoları"
 msgstr "Active CRUD Scenarios"
@@ -549,21 +3524,6 @@ msgstr "SaaS Hierarchy"
 #: ui/templates/platform/admin/hierarchy.html:3
 msgid "Paket Hiyerarşisi (4 Katman)"
 msgstr "Package Hierarchy (4 Layers)"
-
-#: ui/templates/platform/admin/hierarchy.html:6
-#: ui/templates/platform/admin/holding_dashboard.html:6
-#: ui/templates/platform/admin/notifications.html:6
-#: ui/templates/platform/admin/packages.html:6
-#: ui/templates/platform/admin/sub_tenants.html:6
-#: ui/templates/platform/admin/sub_tenants_usage.html:6
-#: ui/templates/platform/admin/tenants.html:10
-#: ui/templates/platform/admin/users.html:10
-#: ui/templates/platform/admin/yonetim_paneli.html:2
-#: ui/templates/platform/admin/yonetim_paneli.html:3
-#: ui/templates/platform/admin/yonetim_paneli.html:10
-#: ui/templates/platform/ayarlar/index.html:139
-msgid "Yönetim Paneli"
-msgstr "Management Panel"
 
 #: ui/templates/platform/admin/hierarchy.html:6
 #: ui/templates/platform/admin/hierarchy.html:17
@@ -610,7 +3570,10 @@ msgstr ""
 "only</strong>.and the summary performance of all its sub-organizations — "
 "<strong>read-only</strong>.and the summary performance of all its sub-"
 "organizations — <strong>read-only</strong>.and the summary performance of"
-" all its sub-organizations — <strong>read-only</strong>."
+" all its sub-organizations — <strong>read-only</strong>.and the summary "
+"performance of all its sub-organizations — <strong>read-only</strong>.and"
+" the summary performance of all its sub-organizations — <strong>read-"
+"only</strong>."
 
 #: ui/templates/platform/admin/holding_dashboard.html:39
 msgid "Ortalama Sağlık Skoru"
@@ -750,12 +3713,6 @@ msgstr "Critical Risk"
 msgid "Kullanıcı / Senaryo"
 msgstr "User / Scenario"
 
-#: ui/templates/platform/admin/holding_drilldown.html:102
-#: ui/templates/platform/sp/initiatives.html:10
-#: ui/templates/platform/sp/menu.html:28
-msgid "Girişimler"
-msgstr "Initiatives"
-
 #: ui/templates/platform/admin/holding_drilldown.html:111
 msgid "Risk Listesi"
 msgstr "Risk List"
@@ -810,29 +3767,6 @@ msgstr "Main Strategy"
 #: ui/templates/platform/sp/strateji_haritasi.html:112
 msgid "Alt Strateji"
 msgstr "Sub-Strategy"
-
-#: ui/templates/platform/admin/istatistikler.html:38
-#: ui/templates/platform/admin/istatistikler.html:72
-#: ui/templates/platform/k_radar/kp_olgunluk.html:43
-#: ui/templates/platform/k_radar/risk_management.html:98
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:308
-#: ui/templates/platform/k_rapor/index.html:320
-#: ui/templates/platform/k_rapor/index.html:370
-#: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/k_rapor/index.html:727
-#: ui/templates/platform/k_rapor/index.html:753
-#: ui/templates/platform/raporlar/sektorel_detay.html:16
-#: ui/templates/platform/raporlar/sektorel_detay.html:46
-#: ui/templates/platform/sp/dynamic_flow.html:26
-#: ui/templates/platform/sp/flow.html:33
-#: ui/templates/platform/sp/strateji_haritasi.html:62
-#: ui/templates/platform/sp/strateji_haritasi.html:113
-#: ui/templates/platform/surec/faaliyetler.html:60
-#: ui/templates/platform/surec/karne.html:691
-msgid "Süreç"
-msgstr "Process"
 
 #: ui/templates/platform/admin/istatistikler.html:40
 #: ui/templates/platform/admin/istatistikler.html:74
@@ -1142,10 +4076,6 @@ msgstr "Notification Logs"
 msgid "Toplam %(n)s bildirim"
 msgstr "Total %(n)s notifications"
 
-#: ui/templates/platform/admin/notifications.html:22
-msgid "Toplu Bildirim Gönder"
-msgstr "Send Bulk Notification"
-
 #: ui/templates/platform/admin/notifications.html:31
 msgid "Toplam Bildirim"
 msgstr "Total Notifications"
@@ -1205,11 +4135,6 @@ msgstr "Title"
 msgid "Mesaj"
 msgstr "Message"
 
-#: ui/templates/platform/admin/notifications.html:77
-#: ui/templates/platform/admin/tenants.html:68
-msgid "Tip"
-msgstr "Type"
-
 #: ui/templates/platform/admin/notifications.html:78
 msgid "Alıcı"
 msgstr "Recipient"
@@ -1221,36 +4146,6 @@ msgstr "Recipient"
 #: ui/templates/platform/k_rapor/index.html:697
 msgid "Tarih"
 msgstr "Date"
-
-#: ui/templates/platform/admin/notifications.html:80
-#: ui/templates/platform/admin/sub_tenants.html:80
-#: ui/templates/platform/admin/sub_tenants_usage.html:81
-#: ui/templates/platform/admin/tenants.html:73
-#: ui/templates/platform/admin/users.html:103
-#: ui/templates/platform/admin/yonetim_paneli.html:113
-#: ui/templates/platform/bireysel/karne.html:274
-#: ui/templates/platform/k_radar/risk_management.html:52
-#: ui/templates/platform/k_radar/risk_management.html:87
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/k_rapor/index.html:574
-#: ui/templates/platform/k_rapor/index.html:603
-#: ui/templates/platform/k_rapor/index.html:827
-#: ui/templates/platform/raporlar/initiative_bubble.html:109
-#: ui/templates/platform/raporlar/op_istatistik.html:38
-#: ui/templates/platform/sp/donemler.html:91
-#: ui/templates/platform/sp/initiatives.html:66
-#: ui/templates/platform/sp/projeler.html:65
-#: ui/templates/platform/sp/projeler.html:115
-#: ui/templates/platform/surec/faaliyetler.html:105
-#: ui/templates/platform/surec/index.html:530
-#: ui/templates/platform/surec/karne.html:221
-#: ui/templates/platform/surec/karne.html:477
-msgid "Durum"
-msgstr "Status"
 
 #: ui/templates/platform/admin/notifications.html:81
 #: ui/templates/platform/admin/sub_tenants.html:81
@@ -1271,17 +4166,8 @@ msgid "İşlem"
 msgstr "Action"
 
 #: ui/templates/platform/admin/notifications.html:106
-#: ui/templates/platform/masaustu/index.html:678
-msgid "Okundu"
-msgstr "Read"
-
-#: ui/templates/platform/admin/notifications.html:106
 msgid "Okunmadı"
 msgstr "Unread"
-
-#: ui/templates/platform/admin/notifications.html:113
-msgid "Sil"
-msgstr "Delete"
 
 #: ui/templates/platform/admin/notifications.html:120
 msgid "Bildirim bulunamadı."
@@ -1311,36 +4197,6 @@ msgstr "Synchronize Component"
 #: ui/templates/platform/admin/packages.html:40
 msgid "Abonelik Paketleri"
 msgstr "Subscription Packages"
-
-#: ui/templates/platform/admin/packages.html:44
-#: ui/templates/platform/admin/packages.html:101
-#: ui/templates/platform/k_radar/cross_paydas.html:23
-#: ui/templates/platform/k_radar/kp_olgunluk.html:28
-#: ui/templates/platform/sp/blue_ocean.html:143
-#: ui/templates/platform/surec/index.html:602
-#: ui/templates/platform/surec/index.html:622
-msgid "Ekle"
-msgstr "Add"
-
-#: ui/templates/platform/admin/packages.html:61
-#: ui/templates/platform/admin/packages.html:117
-#: ui/templates/platform/admin/tenants.html:129
-#: ui/templates/platform/admin/users.html:69
-#: ui/templates/platform/admin/users.html:133
-#: ui/templates/platform/sp/donemler.html:63
-#: ui/templates/platform/sp/donemler.html:105
-#: ui/templates/platform/surec/index.html:127
-#: ui/templates/platform/surec/index.html:532
-msgid "Aktif"
-msgstr "Active"
-
-#: ui/templates/platform/admin/packages.html:61
-#: ui/templates/platform/admin/packages.html:117
-#: ui/templates/platform/admin/users.html:74
-#: ui/templates/platform/admin/users.html:133
-#: ui/templates/platform/surec/index.html:533
-msgid "Pasif"
-msgstr "Inactive"
 
 #: ui/templates/platform/admin/packages.html:65
 msgid "Modüller"
@@ -1415,7 +4271,9 @@ msgstr ""
 "organization.Click the \"Open New Sub-Organization\" button to open the "
 "first sub-organization.Click the \"Open New Sub-Organization\" button to "
 "open the first sub-organization.Click the \"Open New Sub-Organization\" "
-"button to open the first sub-organization."
+"button to open the first sub-organization.Click the \"Open New Sub-"
+"Organization\" button to open the first sub-organization.Click the \"Open"
+" New Sub-Organization\" button to open the first sub-organization."
 
 #: ui/templates/platform/admin/sub_tenants.html:110
 msgid ""
@@ -1509,10 +4367,6 @@ msgstr "Will be auto-generated"
 msgid "Oluştur"
 msgstr "Create"
 
-#: ui/templates/platform/admin/sub_tenants.html:175
-msgid "Başarılı"
-msgstr "Successful"
-
 #: ui/templates/platform/admin/sub_tenants.html:182
 msgid "Geçici Şifre — Şimdi Kaydet"
 msgstr "Temporary Password — Save Now"
@@ -1532,10 +4386,6 @@ msgstr "Copy"
 #: ui/templates/platform/admin/sub_tenants.html:191
 msgid "Bu pencere kapanınca şifre tekrar gösterilmez."
 msgstr "Once this window closes, the password is not shown again."
-
-#: ui/templates/platform/admin/sub_tenants.html:195
-msgid "Tamam"
-msgstr "OK"
 
 #: ui/templates/platform/admin/sub_tenants_usage.html:2
 msgid "Konsolide Kullanım Raporu — Kokpitim"
@@ -1826,32 +4676,6 @@ msgstr ""
 "independent organization. The sub-tenant automatically gets the 'normal' "
 "type."
 
-#: ui/templates/platform/admin/tenants.html:331
-#: ui/templates/platform/admin/users.html:220
-#: ui/templates/platform/ayarlar/eposta.html:175
-#: ui/templates/platform/k_radar/index.html:90
-#: ui/templates/platform/k_radar/ks.html:309
-#: ui/templates/platform/k_radar/ks.html:347
-#: ui/templates/platform/k_radar/ks.html:400
-#: ui/templates/platform/k_radar/risk_management.html:109
-#: ui/templates/platform/kurum/ayarlar.html:201
-#: ui/templates/platform/sp/ai_settings.html:104
-#: ui/templates/platform/sp/initiatives.html:81
-#: ui/templates/platform/sp/okr.html:90 ui/templates/platform/sp/okr.html:132
-#: ui/templates/platform/sp/pestel.html:32
-#: ui/templates/platform/sp/porter.html:31
-#: ui/templates/platform/sp/projeler.html:91
-#: ui/templates/platform/sp/projeler.html:135
-#: ui/templates/platform/sp/replan_triggers.html:103
-#: ui/templates/platform/sp/swot.html:30 ui/templates/platform/sp/tows.html:30
-#: ui/templates/platform/sp/tv.html:169
-#: ui/templates/platform/surec/karne.html:668
-#: ui/templates/platform/surec/karne.html:738
-#: ui/templates/platform/surec/karne.html:771
-#: ui/templates/platform/surec/karne.html:926
-msgid "Kaydet"
-msgstr "Save"
-
 #: ui/templates/platform/admin/users.html:2
 #: ui/templates/platform/admin/users.html:3
 #: ui/templates/platform/admin/users.html:24
@@ -1943,10 +4767,6 @@ msgstr ""
 "Reset 2FA if the user has lost their phone or cannot access their backup "
 "codes. They can re-enable it from their profile on their next login."
 
-#: ui/templates/platform/admin/users.html:294
-msgid "Güncelle"
-msgstr "Update"
-
 #: ui/templates/platform/admin/yedekleme.html:2
 msgid "Yedekleme — Kokpitim"
 msgstr "Backup — Kokpitim"
@@ -1982,7 +4802,9 @@ msgstr ""
 "prepare.The code backup can be large (~100+ MB), it takes a few seconds "
 "to prepare.The code backup can be large (~100+ MB), it takes a few "
 "seconds to prepare.The code backup can be large (~100+ MB), it takes a "
-"few seconds to prepare."
+"few seconds to prepare.The code backup can be large (~100+ MB), it takes "
+"a few seconds to prepare.The code backup can be large (~100+ MB), it "
+"takes a few seconds to prepare."
 
 #: ui/templates/platform/admin/yedekleme.html:46
 msgid "Otomatik Yedek — her gece 02:00"
@@ -2091,10 +4913,6 @@ msgstr "Organization Selection"
 msgid "Tüm Kurumlar"
 msgstr "All Organizations"
 
-#: ui/templates/platform/admin/yonetim_paneli.html:61
-msgid "Çevrimiçi"
-msgstr "Online"
-
 #: ui/templates/platform/admin/yonetim_paneli.html:63
 msgid "Son 30 dakika"
 msgstr "Last 30 minutes"
@@ -2165,10 +4983,6 @@ msgstr "Icon"
 msgid "Kaynak"
 msgstr "Source"
 
-#: ui/templates/platform/admin/yonetim_paneli.html:144
-msgid "Zaman"
-msgstr "Time"
-
 #: ui/templates/platform/admin/yonetim_paneli.html:153
 msgid "Daha fazla göster"
 msgstr "Show more"
@@ -2184,36 +4998,6 @@ msgstr "— Select Process —"
 #: ui/templates/platform/analiz/index.html:42
 msgid "Trend frekansı"
 msgstr "Trend frequency"
-
-#: ui/templates/platform/analiz/index.html:43
-#: ui/templates/platform/k_rapor/index.html:195
-#: ui/templates/platform/surec/karne.html:306
-#: ui/templates/platform/surec/karne.html:559
-#: ui/templates/platform/surec/karne.html:828
-msgid "Aylık"
-msgstr "Monthly"
-
-#: ui/templates/platform/analiz/index.html:44
-#: ui/templates/platform/k_rapor/index.html:194
-#: ui/templates/platform/surec/karne.html:305
-#: ui/templates/platform/surec/karne.html:560
-#: ui/templates/platform/surec/karne.html:827
-msgid "Çeyreklik"
-msgstr "Quarterly"
-
-#: ui/templates/platform/analiz/index.html:45
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:117
-#: ui/templates/platform/surec/karne.html:307
-#: ui/templates/platform/surec/karne.html:829
-msgid "Haftalık"
-msgstr "Weekly"
-
-#: ui/templates/platform/analiz/index.html:46
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:116
-#: ui/templates/platform/surec/karne.html:308
-#: ui/templates/platform/surec/karne.html:830
-msgid "Günlük"
-msgstr "Daily"
 
 #: ui/templates/platform/analiz/index.html:48
 msgid "Tahmin yöntemi"
@@ -2441,10 +5225,6 @@ msgstr "no role"
 msgid "Tema"
 msgstr "Theme"
 
-#: ui/templates/platform/ayarlar/index.html:44
-msgid "Aydınlık"
-msgstr "Light"
-
 #: ui/templates/platform/ayarlar/index.html:45
 msgid "çoklu cihaz senkronlu"
 msgstr "synced across devices"
@@ -2498,14 +5278,6 @@ msgstr "Scheduled Reports"
 msgid "Haftalık özet · sabah operasyonel · risk uyarısı · aylık PG"
 msgstr "Weekly summary · morning operational · risk alert · monthly PI"
 
-#: ui/templates/platform/ayarlar/index.html:118
-#: ui/templates/platform/kurum/ayarlar.html:2
-#: ui/templates/platform/kurum/ayarlar.html:3
-#: ui/templates/platform/kurum/ayarlar.html:23
-#: ui/templates/platform/sp/donemler.html:38
-msgid "Kurum Ayarları"
-msgstr "Organization Settings"
-
 #: ui/templates/platform/ayarlar/index.html:119
 msgid "İletişim bilgileri ve logo"
 msgstr "Contact information and logo"
@@ -2542,21 +5314,6 @@ msgid ""
 msgstr ""
 "Strategy health score · PI performance · overdue activities · critical "
 "risks · initiative status. Sent with a PDF attachment."
-
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:41
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:81
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:109
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:136
-#: ui/templates/platform/k_radar/risk_management.html:42
-#: ui/templates/platform/k_radar/risk_management.html:89
-#: ui/templates/platform/kurum/ayarlar.html:109
-#: ui/templates/platform/kurum/ayarlar.html:139
-msgid "Açık"
-msgstr "On"
-
-#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:46
-msgid "Gün"
-msgstr "Day"
 
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:48
 msgid "Pazartesi"
@@ -2664,10 +5421,6 @@ msgstr ""
 msgid "%(n)s bildirim"
 msgstr "%(n)s notifications"
 
-#: ui/templates/platform/bildirim/index.html:25
-msgid "Tümünü Okundu İşaretle"
-msgstr "Mark All as Read"
-
 #: ui/templates/platform/bildirim/index.html:79
 msgid "Bildirim yok"
 msgstr "No notifications"
@@ -2689,10 +5442,6 @@ msgstr "Notification email and channel settings"
 #: ui/templates/platform/bildirim/index.html:85
 msgid "Bildirim Ayarları"
 msgstr "Notification Settings"
-
-#: ui/templates/platform/bildirim/index.html:88
-msgid "Masaüstü"
-msgstr "Desktop"
 
 #: ui/templates/platform/bireysel/karne.html:36
 msgid "AI PERFORMANS ÖZETİ"
@@ -2752,14 +5501,6 @@ msgstr "Data Entered"
 msgid "Faaliyetler"
 msgstr "Activities"
 
-#: ui/templates/platform/bireysel/karne.html:176
-#: ui/templates/platform/k_rapor/index.html:753
-#: ui/templates/platform/k_rapor/index.html:853
-#: ui/templates/platform/surec/faaliyetler.html:81
-#: ui/templates/platform/surec/karne.html:396
-msgid "Tamamlanan"
-msgstr "Completed"
-
 #: ui/templates/platform/bireysel/karne.html:185
 msgid "Yıl özeti &amp; dikkat"
 msgstr "Year summary &amp; attention"
@@ -2777,7 +5518,9 @@ msgstr ""
 "and your indicators for the selected year.A brief summary of data "
 "coverage and your indicators for the selected year.A brief summary of "
 "data coverage and your indicators for the selected year.A brief summary "
-"of data coverage and your indicators for the selected year."
+"of data coverage and your indicators for the selected year.A brief "
+"summary of data coverage and your indicators for the selected year.A "
+"brief summary of data coverage and your indicators for the selected year."
 
 #: ui/templates/platform/bireysel/karne.html:192
 msgid ""
@@ -2835,104 +5578,11 @@ msgstr "Click a row to open annual detail and a mini chart."
 msgid "Gösterge"
 msgstr "Indicator"
 
-#: ui/templates/platform/bireysel/karne.html:239
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:727
-#: ui/templates/platform/raporlar/sektorel_detay.html:62
-#: ui/templates/platform/sp/okr.html:120
-msgid "Hedef"
-msgstr "Target"
-
 #: ui/templates/platform/bireysel/karne.html:240
 #: ui/templates/platform/raporlar/sektorel_detay.html:62
 #: ui/templates/platform/surec/karne.html:866
 msgid "Birim"
 msgstr "Unit"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Oca"
-msgstr "Jan"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Şub"
-msgstr "Feb"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Mar"
-msgstr "Mar"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Nis"
-msgstr "Apr"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "May"
-msgstr "May"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Haz"
-msgstr "Jun"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Tem"
-msgstr "Jul"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Ağu"
-msgstr "Aug"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Eyl"
-msgstr "Sep"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Eki"
-msgstr "Oct"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Kas"
-msgstr "Nov"
-
-#: ui/templates/platform/bireysel/karne.html:243
-#: ui/templates/platform/bireysel/karne.html:277
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Ara"
-msgstr "Dec"
 
 #: ui/templates/platform/bireysel/karne.html:262
 msgid "Faaliyetlerim"
@@ -2943,16 +5593,6 @@ msgstr "My Activities"
 #: ui/templates/platform/surec/karne.html:431
 msgid "Faaliyet Ekle"
 msgstr "Add Activity"
-
-#: ui/templates/platform/bireysel/karne.html:273
-#: ui/templates/platform/k_rapor/index.html:101
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:464
-#: ui/templates/platform/sp/ceyreklik_review.html:75
-#: ui/templates/platform/surec/faaliyetler.html:104
-#: ui/templates/platform/surec/karne.html:476
-msgid "Faaliyet"
-msgstr "Activity"
 
 #: ui/templates/platform/k_radar/cross.html:12
 msgid "Risk Isi Haritasi (Ozet)"
@@ -3103,23 +5743,9 @@ msgid "Uygula"
 msgstr "Apply"
 
 #: ui/templates/platform/k_radar/cross_paydas.html:39
-#: ui/templates/platform/k_radar/risk_management.html:50
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-#: ui/templates/platform/k_rapor/index.html:663
-#: ui/templates/platform/sp/blue_ocean.html:133
-msgid "Etki"
-msgstr "Impact"
-
-#: ui/templates/platform/k_radar/cross_paydas.html:39
 #: ui/templates/platform/k_rapor/index.html:663
 msgid "İlgi"
 msgstr "Interest"
-
-#: ui/templates/platform/k_radar/cross_paydas.html:50
-#: ui/templates/platform/k_radar/kp_olgunluk.html:53
-msgid "Kayıt bulunamadı."
-msgstr "No records found."
 
 #: ui/templates/platform/k_radar/cross_rekabet.html:7
 msgid "Rekabet Özeti"
@@ -3430,8 +6056,10 @@ msgstr ""
 "Activities ending/pending today & critical PIsActivities ending/pending "
 "today & critical PIsActivities ending/pending today & critical "
 "PIsActivities ending/pending today & critical PIsActivities "
-"ending/pending today & critical PIsActivities due/pending today, assigned"
-" tasks, critical PIs. A short summary to start the work day."
+"ending/pending today & critical PIsActivities ending/pending today & "
+"critical PIsActivities ending/pending today & critical PIsActivities "
+"due/pending today, assigned tasks, critical PIs. A short summary to start"
+" the work day."
 
 #: ui/templates/platform/k_radar/hub.html:84
 #: ui/templates/platform/raporlar/index.html:39
@@ -3645,13 +6273,6 @@ msgstr "Sectoral Plan Packages"
 #: ui/templates/platform/k_radar/hub.html:120
 msgid "Sektöre özel hazır plan şablonları"
 msgstr "Industry-specific ready plan templates"
-
-#: ui/templates/platform/k_radar/hub.html:121
-#: ui/templates/platform/sp/strateji_haritasi.html:3
-#: ui/templates/platform/sp/strateji_haritasi.html:12
-#: ui/templates/platform/sp/strateji_haritasi.html:21
-msgid "Strateji Haritası"
-msgstr "Strategy Map"
 
 #: ui/templates/platform/k_radar/hub.html:121
 msgid "Strateji → Süreç → KPI interaktif ilişki ağı"
@@ -4416,41 +7037,9 @@ msgstr "PESTLE Analysis"
 msgid "GAP Analizi"
 msgstr "GAP Analysis"
 
-#: ui/templates/platform/k_radar/ks.html:137
-#: ui/templates/platform/k_rapor/index.html:795
-#: ui/templates/platform/surec/index.html:270
-#: ui/templates/platform/surec/karne.html:361
-msgid "Hedefte"
-msgstr "On Target"
-
-#: ui/templates/platform/k_radar/ks.html:138
-#: ui/templates/platform/k_rapor/index.html:795
-msgid "Riskli"
-msgstr "At Risk"
-
-#: ui/templates/platform/k_radar/ks.html:139
-#: ui/templates/platform/k_radar/risk_management.html:35
-#: ui/templates/platform/k_rapor/index.html:582
-#: ui/templates/platform/k_rapor/index.html:795
-#: ui/templates/platform/raporlar/initiative_bubble.html:94
-#: ui/templates/platform/sp/initiatives.html:60
-#: ui/templates/platform/sp/replan_triggers.html:95
-msgid "Kritik"
-msgstr "Critical"
-
 #: ui/templates/platform/k_radar/ks.html:152
 msgid "Hedef ve Anahtar Sonuç hiyerarşisi, çeyrek bazlı ilerleme takibi."
 msgstr "Objective and Key Result hierarchy, quarter-based progress tracking."
-
-#: ui/templates/platform/k_radar/ks.html:165
-#: ui/templates/platform/k_radar/ks.html:391
-msgid "Finansal"
-msgstr "Financial"
-
-#: ui/templates/platform/k_radar/ks.html:166
-#: ui/templates/platform/k_radar/ks.html:392
-msgid "Müşteri"
-msgstr "Customer"
 
 #: ui/templates/platform/k_radar/ks.html:167
 msgid "İç Süreç"
@@ -4495,12 +7084,6 @@ msgstr "Where do we want to go?"
 #: ui/templates/platform/sp/okr.html:57
 msgid "Çeyrek"
 msgstr "Quarter"
-
-#: ui/templates/platform/k_radar/ks.html:290
-#: ui/templates/platform/k_rapor/index.html:196
-#: ui/templates/platform/surec/karne.html:562
-msgid "Yıllık"
-msgstr "Annual"
 
 #: ui/templates/platform/k_radar/ks.html:291
 msgid "Ç1 — Ocak–Mart"
@@ -4548,10 +7131,6 @@ msgstr "Description"
 msgid "Opsiyonel açıklama"
 msgstr "Optional description"
 
-#: ui/templates/platform/k_radar/ks.html:318
-msgid "Anahtar Sonuç Ekle"
-msgstr "Add Key Result"
-
 #: ui/templates/platform/k_radar/ks.html:324
 #: ui/templates/platform/sp/okr.html:107
 msgid "KR Başlığı"
@@ -4596,10 +7175,6 @@ msgstr "BSC — Balanced Scorecard"
 msgid "EFQM Modeli 2025 — Olgunluk Değerlendirmesi"
 msgstr "EFQM Model 2025 — Maturity Assessment"
 
-#: ui/templates/platform/k_radar/ks.html:382
-msgid "Perspektif Ata"
-msgstr "Assign Perspective"
-
 #: ui/templates/platform/k_radar/ks.html:388
 msgid "Perspektif"
 msgstr "Perspective"
@@ -4607,10 +7182,6 @@ msgstr "Perspective"
 #: ui/templates/platform/k_radar/ks.html:390
 msgid "— Atama Kaldır —"
 msgstr "— Remove Assignment —"
-
-#: ui/templates/platform/k_radar/ks.html:393
-msgid "İç Süreçler"
-msgstr "Internal Processes"
 
 #: ui/templates/platform/k_radar/ks.html:394
 msgid "Öğrenme &amp; Gelişim"
@@ -4640,30 +7211,6 @@ msgstr "Row: Probability · Column: Impact"
 #: ui/templates/platform/k_radar/risk_management.html:34
 msgid "Tüm severity"
 msgstr "All severities"
-
-#: ui/templates/platform/k_radar/risk_management.html:36
-#: ui/templates/platform/raporlar/early_warning.html:19
-#: ui/templates/platform/raporlar/initiative_bubble.html:95
-#: ui/templates/platform/sp/initiatives.html:61
-#: ui/templates/platform/sp/replan_triggers.html:94
-msgid "Yüksek"
-msgstr "High"
-
-#: ui/templates/platform/k_radar/risk_management.html:37
-#: ui/templates/platform/k_rapor/anomalies.html:32
-#: ui/templates/platform/raporlar/early_warning.html:20
-#: ui/templates/platform/raporlar/initiative_bubble.html:96
-#: ui/templates/platform/sp/initiatives.html:62
-#: ui/templates/platform/sp/replan_triggers.html:93
-msgid "Orta"
-msgstr "Medium"
-
-#: ui/templates/platform/k_radar/risk_management.html:38
-#: ui/templates/platform/raporlar/initiative_bubble.html:97
-#: ui/templates/platform/sp/initiatives.html:63
-#: ui/templates/platform/sp/replan_triggers.html:92
-msgid "Düşük"
-msgstr "Low"
 
 #: ui/templates/platform/k_radar/risk_management.html:41
 msgid "Tüm durum"
@@ -4861,10 +7408,6 @@ msgid "Aktivite ve değişiklik denetim kayıtları"
 msgstr "Activity and change audit logs"
 
 #: ui/templates/platform/k_rapor/index.html:106
-msgid "Uyarı"
-msgstr "Alert"
-
-#: ui/templates/platform/k_rapor/index.html:106
 msgid "Aktif sistem uyarıları ve tetikleyiciler"
 msgstr "Active system alerts and triggers"
 
@@ -4936,11 +7479,6 @@ msgstr "Responsible person load and performance distribution"
 #: ui/templates/platform/k_rapor/index.html:118
 msgid "SWOT öğelerinin zaman içinde gelişimi"
 msgstr "Evolution of SWOT items over time"
-
-#: ui/templates/platform/k_rapor/index.html:119
-#: ui/templates/platform/sp/replan_triggers.html:85
-msgid "Bildirim"
-msgstr "Notification"
 
 #: ui/templates/platform/k_rapor/index.html:119
 msgid "Bildirim ve uyarı sıklığı raporu"
@@ -5021,12 +7559,6 @@ msgstr "Monthly Completed"
 msgid "Geciken Faaliyetler"
 msgstr "Overdue Activities"
 
-#: ui/templates/platform/k_rapor/index.html:237
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/sp/projeler.html:128
-msgid "Bitiş"
-msgstr "End"
-
 #: ui/templates/platform/k_rapor/index.html:246
 msgid "Proje Portföy Durumu"
 msgstr "Project Portfolio Status"
@@ -5038,12 +7570,6 @@ msgstr "Project Portfolio Status"
 #: ui/templates/platform/surec/karne.html:220
 msgid "İlerleme"
 msgstr "Progress"
-
-#: ui/templates/platform/k_rapor/index.html:251
-#: ui/templates/platform/sp/okr.html:116
-#: ui/templates/platform/sp/projeler.html:124
-msgid "Başlangıç"
-msgstr "Start"
 
 #: ui/templates/platform/k_rapor/index.html:260
 msgid ""
@@ -5057,13 +7583,6 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:267
 msgid "Kullanıcı Bazlı PG Başarı Tablosu"
 msgstr "User-Based PI Success Table"
-
-#: ui/templates/platform/k_rapor/index.html:271
-#: ui/templates/platform/sp/dynamic_flow.html:29
-#: ui/templates/platform/sp/strateji_haritasi.html:69
-#: ui/templates/platform/sp/strateji_haritasi.html:114
-msgid "PG"
-msgstr "PI"
 
 #: ui/templates/platform/k_rapor/index.html:271
 msgid "Veri Girilmiş PG"
@@ -5106,14 +7625,6 @@ msgstr "PI Name"
 #: ui/templates/platform/k_rapor/index.html:286
 #: ui/templates/platform/k_rapor/index.html:437
 #: ui/templates/platform/k_rapor/index.html:727
-#: ui/templates/platform/sp/index.html:445
-#: ui/templates/platform/surec/karne.html:916
-msgid "Gerçekleşen"
-msgstr "Actual"
-
-#: ui/templates/platform/k_rapor/index.html:286
-#: ui/templates/platform/k_rapor/index.html:437
-#: ui/templates/platform/k_rapor/index.html:727
 #, python-format
 msgid "Başarı %%"
 msgstr "Success %%"
@@ -5142,10 +7653,6 @@ msgid "Son Tarih"
 msgstr "Last Date"
 
 #: ui/templates/platform/k_rapor/index.html:308
-msgid "Değer"
-msgstr "Value"
-
-#: ui/templates/platform/k_rapor/index.html:308
 msgid "Giren"
 msgstr "Entered By"
 
@@ -5156,11 +7663,6 @@ msgstr "PIs without Data Entered"
 #: ui/templates/platform/k_rapor/index.html:343
 msgid "Risk Tablosu (RPN Sıralı)"
 msgstr "Risk Table (RPN Sorted)"
-
-#: ui/templates/platform/k_rapor/index.html:346
-#: ui/templates/platform/k_rapor/index.html:450
-msgid "Olasılık"
-msgstr "Probability"
 
 #: ui/templates/platform/k_rapor/index.html:353
 msgid "Süreç Olgunluk Seviyeleri"
@@ -5296,7 +7798,9 @@ msgstr ""
 "of our pocket?The amount <b>actually spent</b> by this date. What came "
 "out of our pocket?The amount <b>actually spent</b> by this date. What "
 "came out of our pocket?The amount <b>actually spent</b> by this date. "
-"What came out of our pocket?"
+"What came out of our pocket?The amount <b>actually spent</b> by this "
+"date. What came out of our pocket?The amount <b>actually spent</b> by "
+"this date. What came out of our pocket?"
 
 #: ui/templates/platform/k_rapor/index.html:540
 msgid "Zaman Performans Endeksi"
@@ -5317,10 +7821,6 @@ msgstr "CPI"
 #: ui/templates/platform/k_rapor/index.html:575
 msgid "Anlamı"
 msgstr "Meaning"
-
-#: ui/templates/platform/k_rapor/index.html:579
-msgid "İyi"
-msgstr "Good"
 
 #: ui/templates/platform/k_rapor/index.html:579
 msgid "Programın önünde + bütçenin altında — ideal"
@@ -5479,16 +7979,6 @@ msgstr "Process Activity Detail Table"
 
 #: ui/templates/platform/k_rapor/index.html:753
 #: ui/templates/platform/k_rapor/index.html:853
-msgid "Devam"
-msgstr "Ongoing"
-
-#: ui/templates/platform/k_rapor/index.html:753
-#: ui/templates/platform/k_rapor/index.html:853
-msgid "Geciken"
-msgstr "Delayed"
-
-#: ui/templates/platform/k_rapor/index.html:753
-#: ui/templates/platform/k_rapor/index.html:853
 #, python-format
 msgid "Tamamlanma %%"
 msgstr "Completion %%"
@@ -5526,11 +8016,6 @@ msgstr "Organization Performance Comparison"
 #: ui/templates/platform/k_rapor/index.html:792
 msgid "Kurum Detay Tablosu"
 msgstr "Organization Detail Table"
-
-#: ui/templates/platform/k_rapor/index.html:795
-#: ui/templates/platform/raporlar/op_istatistik.html:39
-msgid "PG Sayısı"
-msgstr "PI Count"
 
 #: ui/templates/platform/k_rapor/index.html:804
 msgid ""
@@ -5612,22 +8097,6 @@ msgstr "TOWS Strategy Count Trend"
 #: ui/templates/platform/k_rapor/index.html:874
 msgid "Yıllık SWOT/TOWS Özet Tablosu"
 msgstr "Annual SWOT/TOWS Summary Table"
-
-#: ui/templates/platform/k_rapor/index.html:877
-msgid "Güçlü"
-msgstr "Strengths"
-
-#: ui/templates/platform/k_rapor/index.html:877
-msgid "Zayıf"
-msgstr "Weaknesses"
-
-#: ui/templates/platform/k_rapor/index.html:877
-msgid "Fırsat"
-msgstr "Opportunities"
-
-#: ui/templates/platform/k_rapor/index.html:877
-msgid "Tehdit"
-msgstr "Threats"
 
 #: ui/templates/platform/k_rapor/index.html:877
 msgid "SWOT Toplam"
@@ -5721,7 +8190,9 @@ msgstr ""
 " on a 1000 scale.When enabled, the vision score is calculated "
 "hierarchically on a 1000 scale.When enabled, the vision score is "
 "calculated hierarchically on a 1000 scale.When enabled, the vision score "
-"is calculated hierarchically on a 1000 scale."
+"is calculated hierarchically on a 1000 scale.When enabled, the vision "
+"score is calculated hierarchically on a 1000 scale.When enabled, the "
+"vision score is calculated hierarchically on a 1000 scale."
 
 #: ui/templates/platform/kurum/ayarlar.html:94
 #, python-format
@@ -5758,7 +8229,9 @@ msgstr ""
 "activated across the organization.Vision score and hierarchical weights "
 "are activated across the organization.Vision score and hierarchical "
 "weights are activated across the organization.Vision score and "
-"hierarchical weights are activated across the organization."
+"hierarchical weights are activated across the organization.Vision score "
+"and hierarchical weights are activated across the organization.Vision "
+"score and hierarchical weights are activated across the organization."
 
 #: ui/templates/platform/kurum/ayarlar.html:120
 msgid "Yıllık Plan Dönemleri"
@@ -5790,7 +8263,10 @@ msgstr ""
 " targets are kept separately per year.A year selector is added to the SP "
 "page; KPI targets are kept separately per year.A year selector is added "
 "to the SP page; KPI targets are kept separately per year.A year selector "
-"is added to the SP page; KPI targets are kept separately per year."
+"is added to the SP page; KPI targets are kept separately per year.A year "
+"selector is added to the SP page; KPI targets are kept separately per "
+"year.A year selector is added to the SP page; KPI targets are kept "
+"separately per year."
 
 #: ui/templates/platform/kurum/ayarlar.html:147
 msgid "Geçmiş yılları dahil et"
@@ -6046,7 +8522,9 @@ msgstr ""
 "data, open activities and tracking completed this monthActive PIs, "
 "processes with data, open activities and tracking completed this "
 "monthActive PIs, processes with data, open activities and tracking "
-"completed this month"
+"completed this monthActive PIs, processes with data, open activities and "
+"tracking completed this monthActive PIs, processes with data, open "
+"activities and tracking completed this month"
 
 #: ui/templates/platform/kurum/index.html:441
 msgid "Risk &amp; uyarı"
@@ -6108,20 +8586,6 @@ msgstr "Ends within 30 days"
 msgid "Açık görev"
 msgstr "Open tasks"
 
-#: ui/templates/platform/kurum/index.html:522
-#: ui/templates/platform/kurum/index.html:567
-msgid "Geciken görev"
-msgstr "Overdue tasks"
-
-#: ui/templates/platform/kurum/index.html:526
-msgid "7 gün vadesi"
-msgstr "Due in 7 days"
-
-#: ui/templates/platform/kurum/index.html:530
-#: ui/templates/platform/kurum/index.html:575
-msgid "Açık RAID"
-msgstr "Open RAID"
-
 #: ui/templates/platform/kurum/index.html:534
 msgid "Sağlık &lt; 50 proje"
 msgstr "Health &lt; 50 projects"
@@ -6177,10 +8641,6 @@ msgstr "Risk and load indicators"
 #: ui/templates/platform/kurum/index.html:644
 msgid "Geciken görev, yaklaşan vade, RAID, düşük sağlık"
 msgstr "Overdue tasks, upcoming due, RAID, low health"
-
-#: ui/templates/platform/kurum/index.html:661
-msgid "Stratejiler"
-msgstr "Strategies"
 
 #: ui/templates/platform/kurum/index.html:665
 #: ui/templates/platform/kurum/index.html:761
@@ -6310,11 +8770,6 @@ msgstr "Pending notifications"
 #: ui/templates/platform/masaustu/index.html:203
 msgid "Gecikmiş"
 msgstr "Overdue"
-
-#: ui/templates/platform/masaustu/index.html:204
-#: ui/templates/platform/sp/exec_dashboard.html:264
-msgid "Bugün"
-msgstr "Today"
 
 #: ui/templates/platform/masaustu/index.html:205
 msgid "Bu hafta"
@@ -6518,7 +8973,10 @@ msgstr ""
 "<b>Organization Information</b> — Name, sector, employee count, "
 "organization identity<b>Organization Information</b> — Name, sector, "
 "employee count, organization identity<b>Organization Information</b> — "
-"Name, sector, employee count, organization identity"
+"Name, sector, employee count, organization identity<b>Organization "
+"Information</b> — Name, sector, employee count, organization "
+"identity<b>Organization Information</b> — Name, sector, employee count, "
+"organization identity"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:34
 msgid "<b>Stratejik Plan Yapısı</b> — Strateji, alt strateji, süreç ve PG sayımı"
@@ -6526,7 +8984,10 @@ msgstr ""
 "<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies, "
 "processes and PIs<b>Strategic Plan Structure</b> — Count of strategies, "
 "sub-strategies, processes and PIs<b>Strategic Plan Structure</b> — Count "
-"of strategies, sub-strategies, processes and PIs"
+"of strategies, sub-strategies, processes and PIs<b>Strategic Plan "
+"Structure</b> — Count of strategies, sub-strategies, processes and "
+"PIs<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies,"
+" processes and PIs"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:35
 msgid "<b>Denetim Günlüğü (Son 90 Gün)</b> — İşlem dağılımı + son 20 giriş detayı"
@@ -6534,7 +8995,10 @@ msgstr ""
 "<b>Audit Log (Last 90 Days)</b> — Action distribution + details of the "
 "last 20 entries<b>Audit Log (Last 90 Days)</b> — Action distribution + "
 "details of the last 20 entries<b>Audit Log (Last 90 Days)</b> — Action "
-"distribution + details of the last 20 entries"
+"distribution + details of the last 20 entries<b>Audit Log (Last 90 "
+"Days)</b> — Action distribution + details of the last 20 entries<b>Audit "
+"Log (Last 90 Days)</b> — Action distribution + details of the last 20 "
+"entries"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:36
 msgid ""
@@ -6560,7 +9024,9 @@ msgstr ""
 "Corporate transparency presentation to external auditors (PWC, Deloitte, "
 "KPMG)Corporate transparency presentation to external auditors (PWC, "
 "Deloitte, KPMG)Corporate transparency presentation to external auditors "
-"(PWC, Deloitte, KPMG)"
+"(PWC, Deloitte, KPMG)Corporate transparency presentation to external "
+"auditors (PWC, Deloitte, KPMG)Corporate transparency presentation to "
+"external auditors (PWC, Deloitte, KPMG)"
 
 #: ui/templates/platform/raporlar/audit_paketi.html:45
 msgid "ISO 9001 / ISO 27001 uyum kanıtı"
@@ -6620,7 +9086,9 @@ msgstr ""
 "After the data is loaded, make the necessary transformations in the Power"
 " Query EditorAfter the data is loaded, make the necessary transformations"
 " in the Power Query EditorAfter the data is loaded, make the necessary "
-"transformations in the Power Query Editor"
+"transformations in the Power Query EditorAfter the data is loaded, make "
+"the necessary transformations in the Power Query EditorAfter the data is "
+"loaded, make the necessary transformations in the Power Query Editor"
 
 #: ui/templates/platform/raporlar/bi_connector.html:46
 msgid "Direct Query desteklenmiyor — Import mode kullan (yenileme zamanlı)"
@@ -7147,10 +9615,6 @@ msgstr ""
 "<b>Vision → Strategy → Sub-Strategy → Process → PI</b> flow visual. Band "
 "thickness = weight/contribution · Color = current score"
 
-#: ui/templates/platform/raporlar/hizalama_sankey.html:33
-msgid "Strateji:"
-msgstr "Strategy:"
-
 #: ui/templates/platform/raporlar/hizalama_sankey.html:52
 msgid "Renk = mevcut skor:"
 msgstr "Color = current score:"
@@ -7209,11 +9673,6 @@ msgstr ""
 #: ui/templates/platform/raporlar/iki_fa.html:31
 msgid "⚠ 2FA'sı Olmayan Yöneticiler (kritik güvenlik açığı)"
 msgstr "⚠ Administrators Without 2FA (critical security vulnerability)"
-
-#: ui/templates/platform/raporlar/index.html:6
-#: ui/templates/platform/raporlar/pg_proje_etki.html:7
-msgid "K-Radar"
-msgstr "K-Radar"
 
 #: ui/templates/platform/raporlar/index.html:16
 msgid ""
@@ -7743,10 +10202,6 @@ msgstr "Home"
 msgid "Görevler"
 msgstr "Tasks"
 
-#: ui/templates/platform/raporlar/mobile.html:45
-msgid "Profil"
-msgstr "Profile"
-
 #: ui/templates/platform/raporlar/mobile.html:53
 msgid ""
 "<b>MVP:</b> Bu sayfa mobile arayüz önizlemesi. Full native app (React "
@@ -8027,7 +10482,9 @@ msgstr ""
 "&nbsp;·&nbsp; The number in the cell shows the count of risks in that "
 "region.&nbsp;·&nbsp; The number in the cell shows the count of risks in "
 "that region.&nbsp;·&nbsp; The number in the cell shows the count of risks"
-" in that region."
+" in that region.&nbsp;·&nbsp; The number in the cell shows the count of "
+"risks in that region.&nbsp;·&nbsp; The number in the cell shows the count"
+" of risks in that region."
 
 #: ui/templates/platform/raporlar/risk_heatmap.html:42
 msgid "5×5 Risk Matrisi"
@@ -8200,10 +10657,6 @@ msgstr "📊 Performance Indicators (%(n)s)"
 #: ui/templates/platform/surec/karne.html:867
 msgid "Periyot"
 msgstr "Period"
-
-#: ui/templates/platform/raporlar/sektorel_detay.html:62
-msgid "Yön"
-msgstr "Direction"
 
 #: ui/templates/platform/raporlar/sektorel_detay.html:69
 msgid "\"Paketi Uygula\" özelliği yakında"
@@ -8417,7 +10870,9 @@ msgstr "Kokpitim system AI (free, quota-limited)"
 msgid "Günlük 50 / aylık 500 çağrı limitli, Gemini 2.0 Flash. Ek ücret yok."
 msgstr ""
 "Limited to 50 daily / 500 monthly calls, Gemini 2.0 Flash. No additional "
-"charge."
+"charge.Limited to 50 daily / 500 monthly calls, Gemini 2.0 Flash. No "
+"additional charge.Limited to 50 daily / 500 monthly calls, Gemini 2.0 "
+"Flash. No additional charge."
 
 #: ui/templates/platform/sp/ai_settings.html:37
 msgid "Kendi API anahtarımı kullan (sınırsız, kendi faturam)"
@@ -8657,16 +11112,13 @@ msgstr "Quarterly Strategy Review"
 msgid "Çeyreklik Review"
 msgstr "Quarterly Review"
 
-#: ui/templates/platform/sp/ceyreklik_review.html:22
-#: ui/templates/platform/sp/menu.html:27
-msgid "Çeyreklik Değerlendirme"
-msgstr "Quarterly Review"
-
 #: ui/templates/platform/sp/ceyreklik_review.html:25
 msgid "Modern strateji ritmi: yıllık vizyon — çeyreklik ayarlama — aylık takip."
 msgstr ""
 "Modern strategy rhythm: annual vision — quarterly adjustment — monthly "
-"tracking."
+"tracking.Modern strategy rhythm: annual vision — quarterly adjustment — "
+"monthly tracking.Modern strategy rhythm: annual vision — quarterly "
+"adjustment — monthly tracking."
 
 #: ui/templates/platform/sp/ceyreklik_review.html:39
 msgid "Q1 (Oca-Mar)"
@@ -8824,11 +11276,6 @@ msgstr "Period 1"
 msgid "2. Dönem"
 msgstr "Period 2"
 
-#: ui/templates/platform/sp/donemler.html:157
-#: ui/templates/platform/sp/scenarios_kiyas.html:31
-msgid "Karşılaştır"
-msgstr "Compare"
-
 #: ui/templates/platform/sp/donemler.html:172
 msgid "Yeni Stratejik Plan Dönemi"
 msgstr "New Strategic Plan Period"
@@ -8863,7 +11310,9 @@ msgstr "copy from plan"
 msgid "Seçilirse kaynak dönemin stratejileri, süreçleri ve KPI yapısı kopyalanır."
 msgstr ""
 "If selected, the source period's strategies, processes and KPI structure "
-"are copied."
+"are copied.If selected, the source period's strategies, processes and KPI"
+" structure are copied.If selected, the source period's strategies, "
+"processes and KPI structure are copied."
 
 #: ui/templates/platform/sp/dynamic_flow.html:2
 #: ui/templates/platform/sp/dynamic_flow.html:3
@@ -8898,11 +11347,6 @@ msgstr "Executive Panel — Kokpitim"
 #: ui/templates/platform/sp/exec_dashboard.html:3
 msgid "Stratejik Sağlık Paneli"
 msgstr "Strategic Health Panel"
-
-#: ui/templates/platform/sp/exec_dashboard.html:56
-#: ui/templates/platform/sp/menu.html:26
-msgid "Yönetici Paneli"
-msgstr "Executive Panel"
 
 #: ui/templates/platform/sp/exec_dashboard.html:59
 msgid ""
@@ -9106,10 +11550,6 @@ msgstr "Hierarchy Guide"
 msgid "SP araçlarına git"
 msgstr "Go to SP tools"
 
-#: ui/templates/platform/sp/index.html:87
-msgid "SP Menüsü"
-msgstr "SP Menu"
-
 #: ui/templates/platform/sp/index.html:100
 #, python-format
 msgid "%(n)s alt strateji"
@@ -9220,11 +11660,6 @@ msgstr "Edit or view mission text"
 #: ui/templates/platform/sp/index.html:165
 msgid "Misyon özeti"
 msgstr "Mission summary"
-
-#: ui/templates/platform/sp/index.html:167
-#: ui/templates/platform/sp/index.html:210
-msgid "Henüz eklenmemiş"
-msgstr "Not added yet"
 
 #: ui/templates/platform/sp/index.html:185
 msgid "Vizyonu düzenle"
@@ -9343,7 +11778,9 @@ msgstr "Fill rate by quota · Share within Vision 100"
 msgid "Alt strateji yoksa veya kota atanmamışsa katkı gösterilmez."
 msgstr ""
 "If there is no sub-strategy or no quota is assigned, contribution is not "
-"shown."
+"shown.If there is no sub-strategy or no quota is assigned, contribution "
+"is not shown.If there is no sub-strategy or no quota is assigned, "
+"contribution is not shown."
 
 #: ui/templates/platform/sp/index.html:411
 msgid "Bağlı alt stratejiler"
@@ -9518,18 +11955,8 @@ msgid "Çok yıllık stratejik girişim listesi"
 msgstr "Multi-year strategic initiative list"
 
 #: ui/templates/platform/sp/menu.html:29
-#: ui/templates/platform/sp/scenarios.html:10
-msgid "Senaryolar"
-msgstr "Scenarios"
-
-#: ui/templates/platform/sp/menu.html:29
 msgid "İyimser, kötümser, temel senaryo varyasyonları"
 msgstr "Optimistic, pessimistic, base scenario variations"
-
-#: ui/templates/platform/sp/menu.html:30
-#: ui/templates/platform/sp/replan_triggers.html:24
-msgid "Yeniden Planlama Tetikleyicileri"
-msgstr "Replanning Triggers"
 
 #: ui/templates/platform/sp/menu.html:30
 msgid "Otomatik strateji yeniden değerlendirme kuralları"
@@ -9542,10 +11969,6 @@ msgstr "Hoshin X-Matrix"
 #: ui/templates/platform/sp/menu.html:31
 msgid "Strateji ↔ Hedef ↔ Girişim ↔ KPI korelasyonu"
 msgstr "Strategy ↔ Target ↔ Initiative ↔ KPI correlation"
-
-#: ui/templates/platform/sp/menu.html:32
-msgid "Mavi Okyanus"
-msgstr "Blue Ocean"
 
 #: ui/templates/platform/sp/menu.html:32
 msgid "Strateji tuvali ve ERRC tablosu"
@@ -9616,10 +12039,6 @@ msgstr "%(year)s Plan Year"
 #: ui/templates/platform/sp/okr.html:18
 msgid "Plan yılı seçilmemiş"
 msgstr "No plan year selected"
-
-#: ui/templates/platform/sp/okr.html:23
-msgid "Yeni Hedef Ekle"
-msgstr "Add New Target"
 
 #: ui/templates/platform/sp/okr.html:32
 msgid "Henüz hedef tanımlanmamış"
@@ -9741,11 +12160,6 @@ msgstr "Project name"
 #: ui/templates/platform/sp/projeler.html:62
 msgid "Kısa açıklama..."
 msgstr "Short description..."
-
-#: ui/templates/platform/sp/projeler.html:67
-#: ui/templates/platform/sp/projeler.html:117
-msgid "Planlandı"
-msgstr "Planned"
 
 #: ui/templates/platform/sp/projeler.html:76
 msgid "Başlangıç Tarihi"
@@ -10037,7 +12451,9 @@ msgstr "Strategy → Sub-Strategy → Process → KPI relationship network."
 msgid "Aktif SP döneminde <strong>%(count)s</strong> ana strateji görüntülenir."
 msgstr ""
 "<strong>%(count)s</strong> main strategies are displayed in the active SP"
-" period."
+" period.<strong>%(count)s</strong> main strategies are displayed in the "
+"active SP period.<strong>%(count)s</strong> main strategies are displayed"
+" in the active SP period."
 
 #: ui/templates/platform/sp/strateji_haritasi.html:29
 msgid "Tüm grafiği sığdır"
@@ -10125,7 +12541,9 @@ msgstr "Go to SP"
 msgid "Güçlü/zayıf yönler ve dış fırsat/tehditler — aktif plan yılı bazlı."
 msgstr ""
 "Strengths/weaknesses and external opportunities/threats — based on the "
-"active plan year."
+"active plan year.Strengths/weaknesses and external opportunities/threats "
+"— based on the active plan year.Strengths/weaknesses and external "
+"opportunities/threats — based on the active plan year."
 
 #: ui/templates/platform/sp/templates.html:3
 msgid "Plan Year Şablonları"
@@ -10239,10 +12657,6 @@ msgstr "VRIO Matrix — Kokpitim"
 msgid "VRIO Analizi (Resource-Based View)"
 msgstr "VRIO Analysis (Resource-Based View)"
 
-#: ui/templates/platform/sp/vrio.html:10
-msgid "VRIO"
-msgstr "VRIO"
-
 #: ui/templates/platform/sp/vrio.html:25
 msgid ""
 "Barney çerçevesi — kurumunuzun kaynak ve yeteneklerini 4 soru ile "
@@ -10276,7 +12690,9 @@ msgstr "R — Rare?"
 msgid "Rakiplerin çoğunda bu kaynak yok mu? Az sayıda firma bu kaynağa sahip mi?"
 msgstr ""
 "Do most competitors lack this resource? Do only a few firms possess this "
-"resource?"
+"resource?Do most competitors lack this resource? Do only a few firms "
+"possess this resource?Do most competitors lack this resource? Do only a "
+"few firms possess this resource?"
 
 #: ui/templates/platform/sp/vrio.html:42
 msgid "I — Taklit Edilemez mi?"
@@ -10298,7 +12714,9 @@ msgstr "O — Organized?"
 msgid "Kurum bu kaynağı sömürmek için süreç, yapı ve sistemlere sahip mi?"
 msgstr ""
 "Does the organization have the processes, structures and systems to "
-"exploit this resource?"
+"exploit this resource?Does the organization have the processes, "
+"structures and systems to exploit this resource?Does the organization "
+"have the processes, structures and systems to exploit this resource?"
 
 #: ui/templates/platform/sp/vrio.html:56
 msgid "Kategori"
@@ -10480,10 +12898,6 @@ msgstr "At Risk"
 msgid "Hedef dışı"
 msgstr "Off Target"
 
-#: ui/templates/platform/surec/index.html:423
-msgid "Veri yok"
-msgstr "No Data"
-
 #: ui/templates/platform/surec/index.html:474
 msgid "Görüntülenecek süreç yok"
 msgstr "No processes to display"
@@ -10510,10 +12924,6 @@ msgstr ""
 #: ui/templates/platform/surec/index.html:485
 msgid "İlk Süreci Ekle"
 msgstr "Add First Process"
-
-#: ui/templates/platform/surec/index.html:504
-msgid "Yeni Süreç Oluştur"
-msgstr "Create New Process"
 
 #: ui/templates/platform/surec/index.html:514
 msgid ""
@@ -10629,10 +13039,6 @@ msgstr "Process Members"
 msgid "Seçilen Üyeler"
 msgstr "Selected Members"
 
-#: ui/templates/platform/surec/index.html:637
-msgid "Süreci Kaydet"
-msgstr "Save Process"
-
 #: ui/templates/platform/surec/karne.html:89
 msgid "SÜREÇ KARNESİ"
 msgstr "PROCESS SCORECARD"
@@ -10733,11 +13139,6 @@ msgstr "View period"
 #: ui/templates/platform/surec/karne.html:825
 msgid "Yıllık (yıl sonu)"
 msgstr "Annual (year-end)"
-
-#: ui/templates/platform/surec/karne.html:304
-#: ui/templates/platform/surec/karne.html:826
-msgid "6 aylık"
-msgstr "Semi-annual"
 
 #: ui/templates/platform/surec/karne.html:314
 msgid "Önceki dönem"
@@ -10956,10 +13357,6 @@ msgstr "Optional baseline value"
 msgid "Başarı Puanı Yapılandırması (Opsiyonel)"
 msgstr "Success Score Configuration (Optional)"
 
-#: ui/templates/platform/surec/karne.html:640
-msgid "Aralık"
-msgstr "Range"
-
 #: ui/templates/platform/surec/karne.html:641
 msgid "Aralık hakkında bilgi"
 msgstr "Range info"
@@ -11071,7 +13468,9 @@ msgstr ""
 "updated.The data date does not change; only the actual value and "
 "description are updated.The data date does not change; only the actual "
 "value and description are updated.The data date does not change; only the"
-" actual value and description are updated."
+" actual value and description are updated.The data date does not change; "
+"only the actual value and description are updated.The data date does not "
+"change; only the actual value and description are updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"

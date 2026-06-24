@@ -44,14 +44,14 @@
   }
 
   function showError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
   }
 
   async function confirmDelete(title, text) {
     const r = await Swal.fire({
       title: title, text: text, icon: "warning", showCancelButton: true,
       confirmButtonColor: "#dc2626", cancelButtonColor: "#6b7280",
-      confirmButtonText: "Evet, sil", cancelButtonText: "İptal",
+      confirmButtonText: t("Evet, sil"), cancelButtonText: t("İptal"),
     });
     return r.isConfirmed;
   }
@@ -138,12 +138,12 @@
     if (elPg && canvasVisible(elPg)) {
       let labels; let data; let colors;
       if (pc <= 0) {
-        labels = ["Erişilebilir süreç yok"];
+        labels = [t("Erişilebilir süreç yok")];
         data = [1];
         colors = ["#94a3b8"];
       } else {
         const withoutPg = Math.max(0, pc - pPg);
-        labels = ["PG tanımlı", "PG yok"];
+        labels = [t("PG tanımlı"), t("PG yok")];
         data = [pPg, withoutPg];
         colors = ["#10b981", "#e2e8f0"];
       }
@@ -157,12 +157,12 @@
     if (elSt && canvasVisible(elSt)) {
       let labels; let data; let colors;
       if (pc <= 0) {
-        labels = ["Veri yok"];
+        labels = [t("Veri yok")];
         data = [1];
         colors = ["#94a3b8"];
       } else {
         const linked = Math.max(0, pc - pNoStr);
-        labels = ["Stratejiye bağlı", "Bağlantı yok"];
+        labels = [t("Stratejiye bağlı"), t("Bağlantı yok")];
         data = [linked, pNoStr];
         colors = ["#8b5cf6", "#fbbf24"];
       }
@@ -177,9 +177,9 @@
       push(new Chart(elAct, {
         type: "bar",
         data: {
-          labels: ["Aktif PG", "30g veri (süreç)", "Açık faaliyet", "Bu ay takip"],
+          labels: [t("Aktif PG"), t("30g veri (süreç)"), t("Açık faaliyet"), t("Bu ay takip")],
           datasets: [{
-            label: "Adet",
+            label: t("Adet"),
             data: [activePg, pKpi30, openAct, actMonth],
             backgroundColor: ["#059669", "#34d399", "#6ee7b7", "#a7f3d0"],
             borderRadius: 6,
@@ -214,9 +214,9 @@
       push(new Chart(elProcRisk, {
         type: "bar",
         data: {
-          labels: ["Bayat veri (PG)", "Geciken faaliyet", "Eksik tanım (PG)"],
+          labels: [t("Bayat veri (PG)"), t("Geciken faaliyet"), t("Eksik tanım (PG)")],
           datasets: [{
-            label: "Adet",
+            label: t("Adet"),
             data: [stalePg, odAct, incDef],
             backgroundColor: ["#e11d48", "#fb7185", "#fda4af"],
             borderRadius: 6,
@@ -249,13 +249,13 @@
     if (elProcScore && canvasVisible(elProcScore)) {
       let labels; let data; let colors;
       if (activePg <= 0) {
-        labels = ["Aktif PG yok"];
+        labels = [t("Aktif PG yok")];
         data = [1];
         colors = ["#94a3b8"];
       } else {
         const okScored = Math.max(0, scored - lowSc);
         const noScore = Math.max(0, activePg - scored);
-        labels = ["Düşük skor (<50)", "Skorlu (≥50)", "Skorsuz"];
+        labels = [t("Düşük skor (<50)"), t("Skorlu (≥50)"), t("Skorsuz")];
         data = [lowSc, okScored, noScore];
         colors = ["#f43f5e", "#22c55e", "#cbd5e1"];
       }
@@ -269,12 +269,12 @@
     if (elTim && canvasVisible(elTim)) {
       let labels; let data; let colors;
       if (projN <= 0) {
-        labels = ["Aktif proje yok"];
+        labels = [t("Aktif proje yok")];
         data = [1];
         colors = ["#94a3b8"];
       } else {
         const other = Math.max(0, projN - endOver - endSoon);
-        labels = ["Bitiş gecikti", "30 gün içinde", "Diğer"];
+        labels = [t("Bitiş gecikti"), t("30 gün içinde"), t("Diğer")];
         data = [endOver, endSoon, other];
         colors = ["#f43f5e", "#f59e0b", "#6366f1"];
       }
@@ -288,12 +288,12 @@
     if (elTk && canvasVisible(elTk)) {
       let labels; let data; let colors;
       if (openT <= 0) {
-        labels = ["Açık görev yok"];
+        labels = [t("Açık görev yok")];
         data = [1];
         colors = ["#cbd5e1"];
       } else {
         const rest = Math.max(0, openT - ovT - due7);
-        labels = ["Vadesi geçti", "7 gün içinde", "Diğer açık"];
+        labels = [t("Vadesi geçti"), t("7 gün içinde"), t("Diğer açık")];
         data = [ovT, due7, rest];
         colors = ["#ef4444", "#f97316", "#818cf8"];
       }
@@ -308,9 +308,9 @@
       push(new Chart(elRisk, {
         type: "bar",
         data: {
-          labels: ["Geciken görev", "7 gün vadesi", "Açık RAID", "Sağlık <50"],
+          labels: [t("Geciken görev"), t("7 gün vadesi"), t("Açık RAID"), t("Sağlık <50")],
           datasets: [{
-            label: "Sayı",
+            label: t("Sayı"),
             data: [ovT, due7, raid, lowH],
             backgroundColor: ["#dc2626", "#ea580c", "#ca8a04", "#9333ea"],
             borderRadius: 6,
@@ -461,16 +461,16 @@
     const valsVision = readSkField("vision");
 
     const { value: form } = await Swal.fire({
-      title: "Amaç & Vizyon Düzenle",
+      title: t("Amaç & Vizyon Düzenle"),
       width: 640,
       html: `<div class="text-left space-y-3 text-sm">
-        <div><label class="block text-xs text-gray-500 mb-1">Amaç</label>
+        <div><label class="block text-xs text-gray-500 mb-1">${t("Amaç")}</label>
           <textarea id="sk-purpose" class="swal2-textarea" rows="2">${escHtml(valsPurpose)}</textarea></div>
-        <div><label class="block text-xs text-gray-500 mb-1">Vizyon</label>
+        <div><label class="block text-xs text-gray-500 mb-1">${t("Vizyon")}</label>
           <textarea id="sk-vision" class="swal2-textarea" rows="2">${escHtml(valsVision)}</textarea></div>
       </div>`,
       focusConfirm: false, showCancelButton: true,
-      confirmButtonText: "Kaydet", cancelButtonText: "İptal", confirmButtonColor: "#4f46e5",
+      confirmButtonText: t("Kaydet"), cancelButtonText: t("İptal"), confirmButtonColor: "#4f46e5",
       preConfirm: () => ({
         purpose: document.getElementById("sk-purpose").value.trim(),
         vision:  document.getElementById("sk-vision").value.trim(),
@@ -479,15 +479,15 @@
     if (!form) return;
     try {
       const d = await postJson(UPDATE_STRATEGY_URL, form);
-      if (d.success) { toastSuccess("Stratejik kimlik güncellendi."); reload(); }
-      else showError(d.message || "Güncelleme başarısız.");
-    } catch (e) { showError("Sunucu hatası: " + e.message); }
+      if (d.success) { toastSuccess(t("Stratejik kimlik güncellendi.")); reload(); }
+      else showError(d.message || t("Güncelleme başarısız."));
+    } catch (e) { showError(t("Sunucu hatası: ") + e.message); }
   });
 
   // ── Strateji modalları: SP (/sp) ile aynı mc-modal-form-global + openMcFormModal ──
   function kurumOpenMcFormModal(opts) {
     if (typeof window.openMcFormModal !== "function") {
-      showError("Modal bileşeni yüklenemedi. Sayfayı yenileyin.");
+      showError(t("Modal bileşeni yüklenemedi. Sayfayı yenileyin."));
       return Promise.resolve(null);
     }
     return window.openMcFormModal(opts);
@@ -495,26 +495,26 @@
 
   async function onKurumAddStrategyClick() {
     const vals = await kurumOpenMcFormModal({
-      title: "Yeni Strateji Ekle",
+      title: t("Yeni Strateji Ekle"),
       iconClass: "fas fa-plus-circle",
       bodyHtml: `<div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Başlık <span class="req">*</span></label>
-            <input id="sp-modal-add-title" type="text" class="mc-form-input" placeholder="Strateji başlığı">
+            <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
+            <input id="sp-modal-add-title" type="text" class="mc-form-input" placeholder="${t("Strateji başlığı")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kod</label>
-            <input id="sp-modal-add-code" type="text" class="mc-form-input" placeholder="Örn: ST1">
+            <label class="mc-form-label">${t("Kod")}</label>
+            <input id="sp-modal-add-code" type="text" class="mc-form-input" placeholder="${t("Örn: ST1")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Açıklama</label>
-            <textarea id="sp-modal-add-desc" class="mc-form-input" rows="4" placeholder="Kısa açıklama"></textarea>
+            <label class="mc-form-label">${t("Açıklama")}</label>
+            <textarea id="sp-modal-add-desc" class="mc-form-input" rows="4" placeholder="${t("Kısa açıklama")}"></textarea>
           </div>
         </div>`,
-      confirmText: "Kaydet",
+      confirmText: t("Kaydet"),
       onConfirm: function (ctx) {
         var title = document.getElementById("sp-modal-add-title").value.trim();
-        if (!title) { ctx.showValidation("Başlık zorunludur."); return false; }
+        if (!title) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
         return {
           title: title,
           code: document.getElementById("sp-modal-add-code").value.trim() || null,
@@ -525,77 +525,77 @@
     if (vals === null) return;
     try {
       const d = await postJson(ADD_STRATEGY_URL, vals);
-      if (d.success) { toastSuccess("Strateji eklendi."); setTimeout(() => location.reload(), 1200); }
-      else showError(d.message || "Kayıt başarısız.");
-    } catch (e) { showError("Sunucu hatası: " + e.message); }
+      if (d.success) { toastSuccess(t("Strateji eklendi.")); setTimeout(() => location.reload(), 1200); }
+      else showError(d.message || t("Kayıt başarısız."));
+    } catch (e) { showError(t("Sunucu hatası: ") + e.message); }
   }
 
   document.getElementById("btn-strategy-add")?.addEventListener("click", onKurumAddStrategyClick);
   document.getElementById("btn-strategy-add-empty")?.addEventListener("click", onKurumAddStrategyClick);
 
   // ── Kimlik maddeleri (çok-satırlı Değer / Etik / Kalite) CRUD ────────────
-  const KIMLIK_ETIKET = { values: "Değer", ethics: "Etik kural", quality: "Kalite politikası maddesi" };
+  const KIMLIK_ETIKET = { values: t("Değer"), ethics: t("Etik kural"), quality: t("Kalite politikası maddesi") };
 
   function kimlikModalBody(baslik, aciklama) {
     return `<div class="tm-grid-2">
         <div class="tm-field tm-full">
-          <label class="mc-form-label">Başlık <span class="req">*</span></label>
-          <input id="kimlik-modal-baslik" type="text" class="mc-form-input" value="${escHtml(baslik || "")}" placeholder="Madde başlığı">
+          <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
+          <input id="kimlik-modal-baslik" type="text" class="mc-form-input" value="${escHtml(baslik || "")}" placeholder="${t("Madde başlığı")}">
         </div>
         <div class="tm-field tm-full">
-          <label class="mc-form-label">Açıklama</label>
-          <textarea id="kimlik-modal-aciklama" class="mc-form-input" rows="3" placeholder="İsteğe bağlı açıklama">${escHtml(aciklama || "")}</textarea>
+          <label class="mc-form-label">${t("Açıklama")}</label>
+          <textarea id="kimlik-modal-aciklama" class="mc-form-input" rows="3" placeholder="${t("İsteğe bağlı açıklama")}">${escHtml(aciklama || "")}</textarea>
         </div>
       </div>`;
   }
 
   function kimlikModalOnConfirm(ctx) {
     const baslik = document.getElementById("kimlik-modal-baslik").value.trim();
-    if (!baslik) { ctx.showValidation("Başlık zorunludur."); return false; }
+    if (!baslik) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
     return { baslik: baslik, aciklama: document.getElementById("kimlik-modal-aciklama").value.trim() || null };
   }
 
   async function onKimlikAdd(kind) {
-    const etiket = KIMLIK_ETIKET[kind] || "Madde";
+    const etiket = KIMLIK_ETIKET[kind] || t("Madde");
     const vals = await kurumOpenMcFormModal({
-      title: `${etiket} ekle`, iconClass: "fas fa-plus-circle",
-      bodyHtml: kimlikModalBody("", ""), confirmText: "Kaydet",
+      title: `${etiket} ${t("ekle")}`, iconClass: "fas fa-plus-circle",
+      bodyHtml: kimlikModalBody("", ""), confirmText: t("Kaydet"),
       onConfirm: kimlikModalOnConfirm,
     });
     if (vals === null) return;
     try {
       const d = await postJson(`${KIMLIK_BASE}${kind}/add`, vals);
-      if (d.success) { toastSuccess(d.message || "Eklendi."); reload(); }
-      else showError(d.message || "Kayıt başarısız.");
-    } catch (e) { showError("Sunucu hatası: " + e.message); }
+      if (d.success) { toastSuccess(d.message || t("Eklendi.")); reload(); }
+      else showError(d.message || t("Kayıt başarısız."));
+    } catch (e) { showError(t("Sunucu hatası: ") + e.message); }
   }
 
   async function onKimlikEdit(btn) {
     const kind = btn.dataset.kind;
     const itemId = btn.dataset.itemId;
-    const etiket = KIMLIK_ETIKET[kind] || "Madde";
+    const etiket = KIMLIK_ETIKET[kind] || t("Madde");
     const vals = await kurumOpenMcFormModal({
-      title: `${etiket} düzenle`, iconClass: "fas fa-pen-to-square",
+      title: `${etiket} ${t("düzenle")}`, iconClass: "fas fa-pen-to-square",
       bodyHtml: kimlikModalBody(btn.dataset.baslik, btn.dataset.aciklama),
-      confirmText: "Güncelle", onConfirm: kimlikModalOnConfirm,
+      confirmText: t("Güncelle"), onConfirm: kimlikModalOnConfirm,
     });
     if (vals === null) return;
     try {
       const d = await postJson(`${KIMLIK_BASE}${kind}/update/${itemId}`, vals);
-      if (d.success) { toastSuccess(d.message || "Güncellendi."); reload(); }
-      else showError(d.message || "Güncelleme başarısız.");
-    } catch (e) { showError("Sunucu hatası: " + e.message); }
+      if (d.success) { toastSuccess(d.message || t("Güncellendi.")); reload(); }
+      else showError(d.message || t("Güncelleme başarısız."));
+    } catch (e) { showError(t("Sunucu hatası: ") + e.message); }
   }
 
   async function onKimlikDelete(btn) {
     const kind = btn.dataset.kind;
-    const ok = await confirmDelete("Madde silinsin mi?", `"${btn.dataset.baslik}" pasife alınacak.`);
+    const ok = await confirmDelete(t("Madde silinsin mi?"), `"${btn.dataset.baslik}" ${t("pasife alınacak.")}`);
     if (!ok) return;
     try {
       const d = await postJson(`${KIMLIK_BASE}${kind}/delete/${btn.dataset.itemId}`, {});
-      if (d.success) { toastSuccess(d.message || "Silindi."); reload(); }
-      else showError(d.message || "Silme başarısız.");
-    } catch (e) { showError("Sunucu hatası: " + e.message); }
+      if (d.success) { toastSuccess(d.message || t("Silindi.")); reload(); }
+      else showError(d.message || t("Silme başarısız."));
+    } catch (e) { showError(t("Sunucu hatası: ") + e.message); }
   }
 
   /* Bubble dinleyicisi kullanılamaz: şablonda @click.stop olayın root’a çıkmasını engelliyor.
@@ -616,22 +616,22 @@
     if (btnSubAdd && root.contains(btnSubAdd)) {
       const strategyId = btnSubAdd.dataset.strategyId;
       const vals = await kurumOpenMcFormModal({
-        title: "Alt Strateji Ekle",
+        title: t("Alt Strateji Ekle"),
         iconClass: "fas fa-layer-group",
         bodyHtml: `<div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Başlık <span class="req">*</span></label>
-            <input id="sp-modal-sub-add-title" type="text" class="mc-form-input" placeholder="Alt strateji başlığı">
+            <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
+            <input id="sp-modal-sub-add-title" type="text" class="mc-form-input" placeholder="${t("Alt strateji başlığı")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kod</label>
-            <input id="sp-modal-sub-add-code" type="text" class="mc-form-input" placeholder="Örn: ST1.1">
+            <label class="mc-form-label">${t("Kod")}</label>
+            <input id="sp-modal-sub-add-code" type="text" class="mc-form-input" placeholder="${t("Örn: ST1.1")}">
           </div>
         </div>`,
-        confirmText: "Kaydet",
+        confirmText: t("Kaydet"),
         onConfirm: function (ctx) {
           var title = document.getElementById("sp-modal-sub-add-title").value.trim();
-          if (!title) { ctx.showValidation("Başlık zorunludur."); return false; }
+          if (!title) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
           return {
             strategy_id: strategyId,
             title: title,
@@ -642,9 +642,9 @@
       if (vals === null) return;
       try {
         const d = await postJson(ADD_SUB_URL, vals);
-        if (d.success) { toastSuccess("Alt strateji eklendi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Kayıt başarısız.");
-      } catch (err) { showError("Sunucu hatası: " + err.message); }
+        if (d.success) { toastSuccess(t("Alt strateji eklendi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Kayıt başarısız."));
+      } catch (err) { showError(t("Sunucu hatası: ") + err.message); }
       return;
     }
 
@@ -656,26 +656,26 @@
       const currentCode = btnMainEdit.dataset.code || "";
       const currentDesc = btnMainEdit.dataset.description || "";
       const vals = await kurumOpenMcFormModal({
-        title: "Ana strateji düzenle",
+        title: t("Ana strateji düzenle"),
         iconClass: "fas fa-chess",
         bodyHtml: `<div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Başlık <span class="req">*</span></label>
-            <input id="sp-modal-main-title" type="text" class="mc-form-input" value="${escHtml(currentTitle)}" placeholder="Strateji başlığı">
+            <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
+            <input id="sp-modal-main-title" type="text" class="mc-form-input" value="${escHtml(currentTitle)}" placeholder="${t("Strateji başlığı")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kod</label>
-            <input id="sp-modal-main-code" type="text" class="mc-form-input" value="${escHtml(currentCode)}" placeholder="Örn: ST1">
+            <label class="mc-form-label">${t("Kod")}</label>
+            <input id="sp-modal-main-code" type="text" class="mc-form-input" value="${escHtml(currentCode)}" placeholder="${t("Örn: ST1")}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Açıklama</label>
-            <textarea id="sp-modal-main-desc" class="mc-form-input" rows="4" placeholder="Kısa açıklama">${escHtml(currentDesc)}</textarea>
+            <label class="mc-form-label">${t("Açıklama")}</label>
+            <textarea id="sp-modal-main-desc" class="mc-form-input" rows="4" placeholder="${t("Kısa açıklama")}">${escHtml(currentDesc)}</textarea>
           </div>
         </div>`,
-        confirmText: "Güncelle",
+        confirmText: t("Güncelle"),
         onConfirm: function (ctx) {
           var title = document.getElementById("sp-modal-main-title").value.trim();
-          if (!title) { ctx.showValidation("Başlık zorunludur."); return false; }
+          if (!title) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
           return {
             title: title,
             code: document.getElementById("sp-modal-main-code").value.trim() || null,
@@ -686,22 +686,22 @@
       if (vals === null) return;
       try {
         const d = await postJson(`${UPDATE_MAIN_BASE}${sid}`, vals);
-        if (d.success) { toastSuccess(d.message || "Güncellendi."); setTimeout(() => location.reload(), 800); }
-        else showError(d.message || "Güncelleme başarısız.");
-      } catch (err) { showError("Sunucu hatası: " + err.message); }
+        if (d.success) { toastSuccess(d.message || t("Güncellendi.")); setTimeout(() => location.reload(), 800); }
+        else showError(d.message || t("Güncelleme başarısız."));
+      } catch (err) { showError(t("Sunucu hatası: ") + err.message); }
       return;
     }
 
     // Ana strateji sil
     const btnMainDel = e.target.closest(".btn-main-delete");
     if (btnMainDel && root.contains(btnMainDel)) {
-      const ok = await confirmDelete("Strateji silinsin mi?", `"${btnMainDel.dataset.title}" pasife alınacak.`);
+      const ok = await confirmDelete(t("Strateji silinsin mi?"), `"${btnMainDel.dataset.title}" ${t("pasife alınacak.")}`);
       if (!ok) return;
       try {
         const d = await postJson(`${DELETE_MAIN_BASE}${btnMainDel.dataset.strategyId}`, {});
-        if (d.success) { toastSuccess("Strateji silindi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Silme başarısız.");
-      } catch (err) { showError("Sunucu hatası: " + err.message); }
+        if (d.success) { toastSuccess(t("Strateji silindi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Silme başarısız."));
+      } catch (err) { showError(t("Sunucu hatası: ") + err.message); }
       return;
     }
 
@@ -712,22 +712,22 @@
       const currentTitle = btnSubEdit.dataset.title || "";
       const currentCode = btnSubEdit.dataset.code || "";
       const vals = await kurumOpenMcFormModal({
-        title: "Alt Strateji Düzenle",
+        title: t("Alt Strateji Düzenle"),
         iconClass: "fas fa-pen-to-square",
         bodyHtml: `<div class="tm-grid-2">
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Başlık <span class="req">*</span></label>
+            <label class="mc-form-label">${t("Başlık")} <span class="req">*</span></label>
             <input id="sp-modal-sub-edit-title" type="text" class="mc-form-input" value="${escHtml(currentTitle)}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label">Kod</label>
+            <label class="mc-form-label">${t("Kod")}</label>
             <input id="sp-modal-sub-edit-code" type="text" class="mc-form-input" value="${escHtml(currentCode)}">
           </div>
         </div>`,
-        confirmText: "Güncelle",
+        confirmText: t("Güncelle"),
         onConfirm: function (ctx) {
           var title = document.getElementById("sp-modal-sub-edit-title").value.trim();
-          if (!title) { ctx.showValidation("Başlık zorunludur."); return false; }
+          if (!title) { ctx.showValidation(t("Başlık zorunludur.")); return false; }
           return {
             title: title,
             code: document.getElementById("sp-modal-sub-edit-code").value.trim() || null,
@@ -737,22 +737,22 @@
       if (vals === null) return;
       try {
         const d = await postJson(`${UPDATE_SUB_BASE}${subId}`, vals);
-        if (d.success) { toastSuccess("Alt strateji güncellendi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Güncelleme başarısız.");
-      } catch (err) { showError("Sunucu hatası: " + err.message); }
+        if (d.success) { toastSuccess(t("Alt strateji güncellendi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Güncelleme başarısız."));
+      } catch (err) { showError(t("Sunucu hatası: ") + err.message); }
       return;
     }
 
     // Alt strateji sil
     const btnSubDel = e.target.closest(".btn-sub-delete");
     if (btnSubDel && root.contains(btnSubDel)) {
-      const ok = await confirmDelete("Alt strateji silinsin mi?", `"${btnSubDel.dataset.title}" pasife alınacak.`);
+      const ok = await confirmDelete(t("Alt strateji silinsin mi?"), `"${btnSubDel.dataset.title}" ${t("pasife alınacak.")}`);
       if (!ok) return;
       try {
         const d = await postJson(`${DELETE_SUB_BASE}${btnSubDel.dataset.subId}`, {});
-        if (d.success) { toastSuccess("Alt strateji silindi."); setTimeout(() => location.reload(), 1200); }
-        else showError(d.message || "Silme başarısız.");
-      } catch (err) { showError("Sunucu hatası: " + err.message); }
+        if (d.success) { toastSuccess(t("Alt strateji silindi.")); setTimeout(() => location.reload(), 1200); }
+        else showError(d.message || t("Silme başarısız."));
+      } catch (err) { showError(t("Sunucu hatası: ") + err.message); }
     }
     },
     true

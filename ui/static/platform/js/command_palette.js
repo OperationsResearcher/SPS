@@ -17,33 +17,33 @@
 
   // Statik sayfa katalogu — kullanıcı tıklayınca atlayacak
   const STATIC_PAGES = [
-    { title: "Masaüstü",                url: "/desktop-launcher", icon: "fa-home",                 group: "Sayfa" },
-    { title: "Stratejik Planlama",      url: "/sp",                icon: "fa-bullseye",             group: "Sayfa" },
-    { title: "Yönetici Paneli",         url: "/sp/exec-dashboard", icon: "fa-tachometer-alt",       group: "Sayfa" },
-    { title: "X-Matrix",                url: "/sp/xmatrix",        icon: "fa-th-large",             group: "Sayfa" },
-    { title: "Girişimler",              url: "/sp/initiatives",    icon: "fa-rocket",               group: "Sayfa" },
-    { title: "Senaryolar",              url: "/sp/scenarios",      icon: "fa-code-branch",          group: "Sayfa" },
-    { title: "Çeyreklik Değerlendirme", url: "/sp/ceyreklik-review", icon: "fa-calendar-check",     group: "Sayfa" },
-    { title: "Yeniden Planlama Tetikleyicileri", url: "/sp/replan-triggers", icon: "fa-bell",       group: "Sayfa" },
-    { title: "Mavi Okyanus",            url: "/sp/blue-ocean",     icon: "fa-water",                group: "Sayfa" },
-    { title: "VRIO",                    url: "/sp/vrio",           icon: "fa-shield-halved",        group: "Sayfa" },
-    { title: "Strateji Haritası",       url: "/sp/strategy-map",   icon: "fa-diagram-project",   group: "Sayfa" },
-    { title: "SP Menüsü",               url: "/sp/menu",           icon: "fa-th",                   group: "Sayfa" },
-    { title: "Süreç Yönetimi",          url: "/process",           icon: "fa-sitemap",              group: "Sayfa" },
-    { title: "Proje Yönetimi",          url: "/project",           icon: "fa-folder-open",          group: "Sayfa" },
-    { title: "Proje Portföyü",          url: "/project/portfolio", icon: "fa-layer-group",          group: "Sayfa" },
-    { title: "Proje Gantt",             url: "/project/gantt",     icon: "fa-stream",               group: "Sayfa" },
-    { title: "Proje Kanban",            url: "/project/kanban",    icon: "fa-columns",              group: "Sayfa" },
-    { title: "K-Analiz",                url: "/k-radar/ks",        icon: "fa-magnifying-glass-chart", group: "Sayfa" },
-    { title: "K-Radar",                 url: "/reports",          icon: "fa-satellite-dish",       group: "Sayfa" },
-    { title: "Performans Analitiği",    url: "/analysis",          icon: "fa-chart-bar",            group: "Sayfa" },
-    { title: "Bireysel Karne",          url: "/individual/scorecard", icon: "fa-user-check",        group: "Sayfa" },
-    { title: "Bildirimler",             url: "/notification",      icon: "fa-bell",                 group: "Sayfa" },
-    { title: "Kurum Ayarları",          url: "/organization/settings", icon: "fa-building",          group: "Sayfa" },
-    { title: "Ayarlar",                 url: "/settings",          icon: "fa-cog",                  group: "Sayfa" },
-    { title: "Profil",                  url: "/profile",           icon: "fa-user",                 group: "Sayfa" },
-    { title: "Yönetim Paneli",          url: "/admin/yonetim",     icon: "fa-user-shield",          group: "Sayfa" },
-    { title: "Kullanıcılar",            url: "/admin/users",       icon: "fa-users",                group: "Sayfa" },
+    { title: t("Masaüstü"),                url: "/desktop-launcher", icon: "fa-home",                 group: t("Sayfa") },
+    { title: t("Stratejik Planlama"),      url: "/sp",                icon: "fa-bullseye",             group: t("Sayfa") },
+    { title: t("Yönetici Paneli"),         url: "/sp/exec-dashboard", icon: "fa-tachometer-alt",       group: t("Sayfa") },
+    { title: t("X-Matrix"),                url: "/sp/xmatrix",        icon: "fa-th-large",             group: t("Sayfa") },
+    { title: t("Girişimler"),              url: "/sp/initiatives",    icon: "fa-rocket",               group: t("Sayfa") },
+    { title: t("Senaryolar"),              url: "/sp/scenarios",      icon: "fa-code-branch",          group: t("Sayfa") },
+    { title: t("Çeyreklik Değerlendirme"), url: "/sp/ceyreklik-review", icon: "fa-calendar-check",     group: t("Sayfa") },
+    { title: t("Yeniden Planlama Tetikleyicileri"), url: "/sp/replan-triggers", icon: "fa-bell",       group: t("Sayfa") },
+    { title: t("Mavi Okyanus"),            url: "/sp/blue-ocean",     icon: "fa-water",                group: t("Sayfa") },
+    { title: t("VRIO"),                    url: "/sp/vrio",           icon: "fa-shield-halved",        group: t("Sayfa") },
+    { title: t("Strateji Haritası"),       url: "/sp/strategy-map",   icon: "fa-diagram-project",   group: t("Sayfa") },
+    { title: t("SP Menüsü"),               url: "/sp/menu",           icon: "fa-th",                   group: t("Sayfa") },
+    { title: t("Süreç Yönetimi"),          url: "/process",           icon: "fa-sitemap",              group: t("Sayfa") },
+    { title: t("Proje Yönetimi"),          url: "/project",           icon: "fa-folder-open",          group: t("Sayfa") },
+    { title: t("Proje Portföyü"),          url: "/project/portfolio", icon: "fa-layer-group",          group: t("Sayfa") },
+    { title: t("Proje Gantt"),             url: "/project/gantt",     icon: "fa-stream",               group: t("Sayfa") },
+    { title: t("Proje Kanban"),            url: "/project/kanban",    icon: "fa-columns",              group: t("Sayfa") },
+    { title: t("K-Analiz"),                url: "/k-radar/ks",        icon: "fa-magnifying-glass-chart", group: t("Sayfa") },
+    { title: t("K-Radar"),                 url: "/reports",          icon: "fa-satellite-dish",       group: t("Sayfa") },
+    { title: t("Performans Analitiği"),    url: "/analysis",          icon: "fa-chart-bar",            group: t("Sayfa") },
+    { title: t("Bireysel Karne"),          url: "/individual/scorecard", icon: "fa-user-check",        group: t("Sayfa") },
+    { title: t("Bildirimler"),             url: "/notification",      icon: "fa-bell",                 group: t("Sayfa") },
+    { title: t("Kurum Ayarları"),          url: "/organization/settings", icon: "fa-building",          group: t("Sayfa") },
+    { title: t("Ayarlar"),                 url: "/settings",          icon: "fa-cog",                  group: t("Sayfa") },
+    { title: t("Profil"),                  url: "/profile",           icon: "fa-user",                 group: t("Sayfa") },
+    { title: t("Yönetim Paneli"),          url: "/admin/yonetim",     icon: "fa-user-shield",          group: t("Sayfa") },
+    { title: t("Kullanıcılar"),            url: "/admin/users",       icon: "fa-users",                group: t("Sayfa") },
   ];
 
   let activeIdx = 0;
@@ -89,7 +89,7 @@
   function render(items, q) {
     currentItems = items;
     if (!items.length) {
-      list.innerHTML = `<div style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">${q ? "Sonuç bulunamadı." : "Yazmaya başlayın…"}</div>`;
+      list.innerHTML = `<div style="padding:24px; text-align:center; color:#94a3b8; font-size:13px;">${q ? t("Sonuç bulunamadı.") : t("Yazmaya başlayın…")}</div>`;
       return;
     }
     let lastGroup = "";
@@ -114,7 +114,7 @@
     const items = [];
     const rec = recent();
     if (rec.length) {
-      rec.slice(0, 5).forEach(r => items.push({ ...r, group: "Son ziyaret edilenler" }));
+      rec.slice(0, 5).forEach(r => items.push({ ...r, group: t("Son ziyaret edilenler") }));
     }
     items.push(...STATIC_PAGES.slice(0, 12));
     return items;

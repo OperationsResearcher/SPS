@@ -107,7 +107,7 @@
   function openWidgetManager() {
     const cards = collectCards();
     if (!cards.length) {
-      Swal.fire({ icon: "info", title: "Kart bulunamadı", text: "Bu sayfada yönetilebilir kart yok." });
+      Swal.fire({ icon: "info", title: t("Kart bulunamadı"), text: t("Bu sayfada yönetilebilir kart yok.") });
       return;
     }
     const hidden = readHidden();
@@ -123,18 +123,18 @@
       .join("");
 
     Swal.fire({
-      title: "Kart yönetimi",
+      title: t("Kart yönetimi"),
       html: `<div class="text-left" style="max-height:55vh;overflow-y:auto;">
           <div style="display:flex;gap:8px;margin-bottom:10px;">
-            <button type="button" id="kk-wm-all" class="mc-btn mc-btn-sm mc-btn-secondary">Tümünü aç</button>
-            <button type="button" id="kk-wm-none" class="mc-btn mc-btn-sm mc-btn-secondary">Tümünü kapat</button>
+            <button type="button" id="kk-wm-all" class="mc-btn mc-btn-sm mc-btn-secondary">${t("Tümünü aç")}</button>
+            <button type="button" id="kk-wm-none" class="mc-btn mc-btn-sm mc-btn-secondary">${t("Tümünü kapat")}</button>
           </div>
           ${checks}
-          <p class="mc-page-subtitle" style="margin-top:12px;">Kapatılan kartlar sayfadan gizlenir (yalnız bu tarayıcıda). Sıralamayı kart başlığından sürükleyerek değiştirebilirsiniz.</p>
+          <p class="mc-page-subtitle" style="margin-top:12px;">${t("Kapatılan kartlar sayfadan gizlenir (yalnız bu tarayıcıda). Sıralamayı kart başlığından sürükleyerek değiştirebilirsiniz.")}</p>
         </div>`,
       showCancelButton: true,
-      confirmButtonText: "Kaydet",
-      cancelButtonText: "İptal",
+      confirmButtonText: t("Kaydet"),
+      cancelButtonText: t("İptal"),
       confirmButtonColor: "#4f46e5",
       didOpen: () => {
         const pop = Swal.getPopup();
@@ -204,17 +204,17 @@
               toast: true,
               position: "top-end",
               icon: "success",
-              title: "Okundu",
+              title: t("Okundu"),
               showConfirmButton: false,
               timer: 1800,
             });
           } else {
             btn.disabled = false;
-            Swal.fire({ icon: "error", title: "Hata", text: data.message || "İşlem başarısız" });
+            Swal.fire({ icon: "error", title: t("Hata"), text: data.message || t("İşlem başarısız") });
           }
         } catch (e) {
           btn.disabled = false;
-          Swal.fire({ icon: "error", title: "Hata", text: String(e.message || e) });
+          Swal.fire({ icon: "error", title: t("Hata"), text: String(e.message || e) });
         }
       });
     });
@@ -236,12 +236,12 @@
           toast: true,
           position: "top-end",
           icon: "success",
-          title: "Not kaydedildi",
+          title: t("Not kaydedildi"),
           showConfirmButton: false,
           timer: 2000,
         });
       } catch (e) {
-        Swal.fire({ icon: "error", title: "Kaydedilemedi", text: String(e) });
+        Swal.fire({ icon: "error", title: t("Kaydedilemedi"), text: String(e) });
       }
     });
   }
@@ -264,10 +264,10 @@
         right: "dayGridMonth,timeGridWeek,timeGridDay",
       },
       buttonText: {
-        today: "Bugün",
-        month: "Ay",
-        week: "Hafta",
-        day: "Gün",
+        today: t("Bugün"),
+        month: t("Ay"),
+        week: t("Hafta"),
+        day: t("Gün"),
       },
       events: async function (fetchInfo, successCallback, failureCallback) {
         try {
@@ -284,8 +284,8 @@
             const raw = await res.text();
             throw new Error(
               res.status >= 500
-                ? `Sunucu hatası (HTTP ${res.status})`
-                : `Beklenmeyen yanıt (HTTP ${res.status}): ${raw.slice(0, 120)}`
+                ? `${t("Sunucu hatası")} (HTTP ${res.status})`
+                : `${t("Beklenmeyen yanıt")} (HTTP ${res.status}): ${raw.slice(0, 120)}`
             );
           }
           if (!res.ok || !data.success) {
@@ -294,7 +294,7 @@
           if (loadingEl) loadingEl.style.display = "none";
           successCallback(data.events || []);
         } catch (err) {
-          if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">Takvim yüklenemedi: ${String(err.message || err)}</span>`;
+          if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">${t("Takvim yüklenemedi:")} ${String(err.message || err)}</span>`;
           failureCallback(err);
         }
       },
@@ -355,7 +355,7 @@
     fetch(url)
       .then(r => r.json())
       .then(res => {
-        if (!res.success) { body.innerHTML = '<p style="color:#ef4444">Özet yüklenemedi.</p>'; return; }
+        if (!res.success) { body.innerHTML = `<p style="color:#ef4444">${t("Özet yüklenemedi.")}</p>`; return; }
         const d = res.data;
         if (dateEl) dateEl.textContent = d.date || "";
 
@@ -370,30 +370,30 @@
           <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:16px;">
             <div style="background:#fef2f2; border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:22px; font-weight:700; color:#ef4444;">${d.counts.kpis_critical}</div>
-              <div style="font-size:11px; color:#64748b;">Kritik KPI</div>
+              <div style="font-size:11px; color:#64748b;">${t("Kritik KPI")}</div>
             </div>
             <div style="background:#fff7ed; border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:22px; font-weight:700; color:#f59e0b;">${d.counts.activities_overdue}</div>
-              <div style="font-size:11px; color:#64748b;">Geciken Faaliyet</div>
+              <div style="font-size:11px; color:#64748b;">${t("Geciken Faaliyet")}</div>
             </div>
             <div style="background:#f0fdf4; border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:22px; font-weight:700; color:#10b981;">${d.counts.activities_upcoming}</div>
-              <div style="font-size:11px; color:#64748b;">Bu Hafta Faaliyet</div>
+              <div style="font-size:11px; color:#64748b;">${t("Bu Hafta Faaliyet")}</div>
             </div>
             <div style="background:#eff6ff; border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:22px; font-weight:700; color:#3b82f6;">${d.counts.projects_overdue}</div>
-              <div style="font-size:11px; color:#64748b;">Geciken Proje</div>
+              <div style="font-size:11px; color:#64748b;">${t("Geciken Proje")}</div>
             </div>
           </div>`;
 
         if (d.kpis_below_target.length > 0) {
           html += `<div style="margin-bottom:12px;">
             <p style="font-size:12px; font-weight:600; color:#ef4444; margin:0 0 6px;">
-              <i class="fas fa-chart-line-down"></i> Hedef Altı KPI'lar
+              <i class="fas fa-chart-line-down"></i> ${t("Hedef Altı KPI'lar")}
             </p>
             <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
           d.kpis_below_target.forEach(k => {
-            html += `<li><strong>${k.kpi_name}</strong> (${k.process_name}) — Gerçekleşen: ${k.actual} / Hedef: ${k.target} <span style="color:#ef4444;">(${k.ratio_pct}%)</span></li>`;
+            html += `<li><strong>${k.kpi_name}</strong> (${k.process_name}) — ${t("Gerçekleşen:")} ${k.actual} / ${t("Hedef:")} ${k.target} <span style="color:#ef4444;">(${k.ratio_pct}%)</span></li>`;
           });
           html += `</ul></div>`;
         }
@@ -401,11 +401,11 @@
         if (d.overdue_activities.length > 0) {
           html += `<div style="margin-bottom:12px;">
             <p style="font-size:12px; font-weight:600; color:#f59e0b; margin:0 0 6px;">
-              <i class="fas fa-clock"></i> Geciken Faaliyetler
+              <i class="fas fa-clock"></i> ${t("Geciken Faaliyetler")}
             </p>
             <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
           d.overdue_activities.forEach(a => {
-            html += `<li>${a.name} — <span style="color:#ef4444;">${a.days_overdue} gün gecikti</span></li>`;
+            html += `<li>${a.name} — <span style="color:#ef4444;">${a.days_overdue} ${t("gün gecikti")}</span></li>`;
           });
           html += `</ul></div>`;
         }
@@ -413,11 +413,11 @@
         if (d.overdue_projects.length > 0) {
           html += `<div>
             <p style="font-size:12px; font-weight:600; color:#3b82f6; margin:0 0 6px;">
-              <i class="fas fa-diagram-project"></i> Geciken Projeler
+              <i class="fas fa-diagram-project"></i> ${t("Geciken Projeler")}
             </p>
             <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
           d.overdue_projects.forEach(p => {
-            html += `<li>${p.name} — <span style="color:#ef4444;">${p.days_overdue} gün gecikti</span></li>`;
+            html += `<li>${p.name} — <span style="color:#ef4444;">${p.days_overdue} ${t("gün gecikti")}</span></li>`;
           });
           html += `</ul></div>`;
         }
@@ -425,7 +425,7 @@
         html += `</div>`;
         body.innerHTML = html;
       })
-      .catch(() => { body.innerHTML = '<p style="color:#94a3b8; font-size:12px;">Özet yüklenemedi.</p>'; });
+      .catch(() => { body.innerHTML = `<p style="color:#94a3b8; font-size:12px;">${t("Özet yüklenemedi.")}</p>`; });
   }
 
   // ── KOE Yapı-Danışmanı: opsiyonel LLM zenginleştirme (lazy, butonla) ──────
@@ -444,7 +444,7 @@
       if (btn.disabled) return;
       btn.disabled = true;
       const original = label.textContent;
-      label.textContent = "Hazırlanıyor…";
+      label.textContent = t("Hazırlanıyor…");
       try {
         const res = await fetch(url, {
           method: "POST",
@@ -455,7 +455,7 @@
         if (!d.success) {
           label.textContent = original;
           btn.disabled = false;
-          Swal.fire({ icon: "error", title: "Hata", text: d.message || "AI danışman çağrılamadı." });
+          Swal.fire({ icon: "error", title: t("Hata"), text: d.message || t("AI danışman çağrılamadı.") });
           return;
         }
         const anlatiEl = box.querySelector("[data-koe-anlati]");
@@ -469,21 +469,21 @@
           if (oneriEls[i] && o.oneri) oneriEls[i].textContent = " — " + o.oneri;
         });
         if (d.kaynak === "llm") {
-          label.textContent = "✓ AI ile zenginleştirildi";
+          label.textContent = "✓ " + t("AI ile zenginleştirildi");
           btn.style.color = "#94a3b8";
         } else {
           label.textContent = original;
           btn.disabled = false;
           Swal.fire({
             toast: true, position: "top-end", icon: "info",
-            title: "AI sağlayıcı yapılandırılmamış; mevcut öneriler gösteriliyor.",
+            title: t("AI sağlayıcı yapılandırılmamış; mevcut öneriler gösteriliyor."),
             showConfirmButton: false, timer: 3500, timerProgressBar: true,
           });
         }
       } catch (e) {
         label.textContent = original;
         btn.disabled = false;
-        Swal.fire({ icon: "error", title: "Hata", text: String(e.message || e) });
+        Swal.fire({ icon: "error", title: t("Hata"), text: String(e.message || e) });
       }
     });
   })();

@@ -18,7 +18,7 @@
   function fetchJson(url) {
     return fetch(url).then(r => r.json());
   }
-  const EMPTY_ROW = n => `<tr><td colspan="${n}" style="text-align:center;padding:20px;color:#94a3b8;">Kayıt yok.</td></tr>`;
+  const EMPTY_ROW = n => `<tr><td colspan="${n}" style="text-align:center;padding:20px;color:#94a3b8;">${t("Kayıt yok.")}</td></tr>`;
 
   // ── Modal Yönetimi ────────────────────────────────────────────────────────────
   function openModal(id) {
@@ -90,7 +90,7 @@
     if (el) { el.textContent = (d.score || 0).toFixed(1); el.style.color = scoreColor(d.score); }
     const band = document.getElementById("ks-band");
     if (band) {
-      const labels = { green: "İyi", yellow: "Orta", red: "Kritik" };
+      const labels = { green: t("İyi"), yellow: t("Orta"), red: t("Kritik") };
       band.textContent = labels[d.band] || d.band;
     }
     const card = document.getElementById("ks-skor-card");
@@ -104,7 +104,7 @@
     const oz = d.ozet || {};
     const total = (oz.S || 0) + (oz.W || 0) + (oz.O || 0) + (oz.T || 0);
     const badge = document.getElementById("ks-swot-badge");
-    if (badge) badge.textContent = total ? total + " madde" : "Veri yok";
+    if (badge) badge.textContent = total ? total + " " + t("madde") : t("Veri yok");
     ["s","w","o","t"].forEach(k => {
       const el = document.getElementById("ks-swot-" + k);
       if (el) el.textContent = oz[k.toUpperCase()] || 0;
@@ -118,7 +118,7 @@
     const oz = d.ozet || {};
     const total = (oz.SO || 0) + (oz.ST || 0) + (oz.WO || 0) + (oz.WT || 0);
     const badge = document.getElementById("ks-tows-badge");
-    if (badge) badge.textContent = total ? total + " strateji" : "Veri yok";
+    if (badge) badge.textContent = total ? total + " " + t("strateji") : t("Veri yok");
     ["so","st","wo","wt"].forEach(k => {
       const el = document.getElementById("ks-tows-" + k);
       if (el) el.textContent = oz[k.toUpperCase()] || 0;
@@ -140,7 +140,7 @@
     const oz = d.ozet || {};
     const total = Object.values(oz).reduce((a, b) => a + b, 0);
     const badge = document.getElementById("ks-pestle-badge");
-    if (badge) badge.textContent = total ? total + " faktör" : "Veri yok";
+    if (badge) badge.textContent = total ? total + " " + t("faktör") : t("Veri yok");
     const miniEl = document.getElementById("ks-pestle-mini");
     if (miniEl) {
       const maxVal = Math.max(...PESTLE_META.map(m => (d[m.key] || []).length), 1);
@@ -166,6 +166,7 @@
     if (pgSub) pgSub.textContent = `${d.veri_girilen} / ${d.toplam_kpi} PG`;
     const badge = document.getElementById("ks-gap-badge");
     if (badge) badge.textContent = d.toplam_kpi + " PG";
+
     ["hedefte","riskli","kritik"].forEach(k => {
       const el = document.getElementById("ks-gap-" + k);
       if (el) el.textContent = d[k] || 0;
@@ -179,13 +180,13 @@
     const kapsamEl = document.getElementById("ks-kapsam-pct");
     if (kapsamEl) { kapsamEl.textContent = "%" + (d.kapsam_pct || 0); kapsamEl.style.color = scoreColor(d.kapsam_pct); }
     const kapsamSub = document.getElementById("ks-kapsam-sub");
-    if (kapsamSub) kapsamSub.textContent = `${d.bagli_surec} / ${d.toplam_surec} süreç bağlı`;
+    if (kapsamSub) kapsamSub.textContent = `${d.bagli_surec} / ${d.toplam_surec} ${t("süreç bağlı")}`;
     const stratCount = document.getElementById("ks-strat-count");
     if (stratCount) stratCount.textContent = d.toplam_strateji;
     const subCount = document.getElementById("ks-sub-strat-count");
-    if (subCount) subCount.textContent = d.toplam_alt_strateji + " alt strateji";
+    if (subCount) subCount.textContent = d.toplam_alt_strateji + " " + t("alt strateji");
     const badge = document.getElementById("ks-strat-kapsam-badge");
-    if (badge) badge.textContent = "%" + d.kapsam_pct + " kapsam";
+    if (badge) badge.textContent = "%" + d.kapsam_pct + " " + t("kapsam");
     const listEl = document.getElementById("ks-strat-list");
     if (listEl && d.stratejiler) {
       listEl.innerHTML = d.stratejiler.map(s => {
@@ -197,7 +198,7 @@
           <div style="flex:1;margin:0 12px;">
             <div class="kr-bar-track"><div class="kr-bar-fill" style="width:${Math.min(100,pct)}%;"></div></div>
           </div>
-          <div class="kr-rank-score ${cls}">${s.bagli_surec_sayisi} süreç</div>
+          <div class="kr-rank-score ${cls}">${s.bagli_surec_sayisi} ${t("süreç")}</div>
         </div>`;
       }).join("");
     }
@@ -233,7 +234,7 @@
 
   // Madde listesi render (salt okunur)
   function renderItems(items) {
-    if (!items || !items.length) return '<li class="ks-swot-empty">Henüz girilmemiş</li>';
+    if (!items || !items.length) return `<li class="ks-swot-empty">${t("Henüz girilmemiş")}</li>`;
     return items.map((item, i) => {
       const text = typeof item === "string" ? item : (item.text || "");
       return `<li class="ks-swot-item">
@@ -244,14 +245,14 @@
 
   // Madde listesi render (düzenlenebilir)
   function renderItemsEdit(items, onDelete, onEdit) {
-    if (!items || !items.length) return '<li class="ks-swot-empty">Henüz girilmemiş</li>';
+    if (!items || !items.length) return `<li class="ks-swot-empty">${t("Henüz girilmemiş")}</li>`;
     return items.map((item, i) => {
       const text = typeof item === "string" ? item : (item.text || "");
       return `<li class="ks-swot-item ks-swot-item-edit" data-idx="${i}">
         <span class="ks-swot-item-text">${esc(text)}</span>
         <span class="ks-swot-item-actions">
-          <button class="ks-item-btn ks-item-edit" data-idx="${i}" title="Düzenle"><i class="fas fa-pen"></i></button>
-          <button class="ks-item-btn ks-item-del" data-idx="${i}" title="Sil"><i class="fas fa-trash"></i></button>
+          <button class="ks-item-btn ks-item-edit" data-idx="${i}" title="${t("Düzenle")}"><i class="fas fa-pen"></i></button>
+          <button class="ks-item-btn ks-item-del" data-idx="${i}" title="${t("Sil")}"><i class="fas fa-trash"></i></button>
         </span>
       </li>`;
     }).join("");
@@ -261,21 +262,21 @@
   function addRowHtml(inputId, btnId, placeholder) {
     return `<div class="ks-add-row">
       <input type="text" id="${inputId}" class="mc-form-input" placeholder="${esc(placeholder)}" style="height:34px;font-size:13px;">
-      <button id="${btnId}" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-plus"></i> Ekle</button>
+      <button id="${btnId}" class="mc-btn mc-btn-primary mc-btn-sm"><i class="fas fa-plus"></i> ${t("Ekle")}</button>
     </div>`;
   }
 
   // Kaydet butonu
   function saveRowHtml(btnId) {
     return `<div style="display:flex;justify-content:flex-end;margin-top:10px;">
-      <button id="${btnId}" class="mc-btn mc-btn-success mc-btn-sm"><i class="fas fa-save"></i> Kaydet</button>
+      <button id="${btnId}" class="mc-btn mc-btn-success mc-btn-sm"><i class="fas fa-save"></i> ${t("Kaydet")}</button>
     </div>`;
   }
 
   // ── SWOT Modal ────────────────────────────────────────────────────────────────
   function loadSwotModal() {
     const canManage = hub.dataset.canManage === "true";
-    setHtml("ks-modal-swot-body", '<div class="kr-loading" style="padding:32px;">Yükleniyor…</div>');
+    setHtml("ks-modal-swot-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
 
     // State
     const swotState = { s: [], w: [], o: [], t: [] };
@@ -283,10 +284,10 @@
     function renderSwotModal() {
       const oz = { S: swotState.s.length, W: swotState.w.length, O: swotState.o.length, T: swotState.t.length };
       const quadrants = [
-        { key: "s", cls: "ks-swot-s", icon: "fa-plus-circle",          label: "Güçlü Yönler (S)",  placeholder: "Güçlü yön ekle…" },
-        { key: "w", cls: "ks-swot-w", icon: "fa-minus-circle",         label: "Zayıf Yönler (W)",  placeholder: "Zayıf yön ekle…" },
-        { key: "o", cls: "ks-swot-o", icon: "fa-arrow-up-right-dots",  label: "Fırsatlar (O)",     placeholder: "Fırsat ekle…" },
-        { key: "t", cls: "ks-swot-t", icon: "fa-triangle-exclamation", label: "Tehditler (T)",     placeholder: "Tehdit ekle…" },
+        { key: "s", cls: "ks-swot-s", icon: "fa-plus-circle",          label: t("Güçlü Yönler (S)"),  placeholder: t("Güçlü yön ekle…") },
+        { key: "w", cls: "ks-swot-w", icon: "fa-minus-circle",         label: t("Zayıf Yönler (W)"),  placeholder: t("Zayıf yön ekle…") },
+        { key: "o", cls: "ks-swot-o", icon: "fa-arrow-up-right-dots",  label: t("Fırsatlar (O)"),     placeholder: t("Fırsat ekle…") },
+        { key: "t", cls: "ks-swot-t", icon: "fa-triangle-exclamation", label: t("Tehditler (T)"),     placeholder: t("Tehdit ekle…") },
       ];
       const matrixHtml = quadrants.map(q => `
         <div class="ks-swot-cell ${q.cls}">
@@ -345,12 +346,12 @@
           const cur = swotState[key][idx];
           const text = typeof cur === "string" ? cur : (cur.text || "");
           Swal.fire({
-            title: "Maddeyi Düzenle",
+            title: t("Maddeyi Düzenle"),
             input: "text",
             inputValue: text,
             showCancelButton: true,
-            confirmButtonText: "Kaydet",
-            cancelButtonText: "İptal",
+            confirmButtonText: t("Kaydet"),
+            cancelButtonText: t("İptal"),
           }).then(r => {
             if (r.isConfirmed && r.value.trim()) {
               swotState[key][idx] = r.value.trim();
@@ -366,7 +367,7 @@
           strengths: swotState.s, weaknesses: swotState.w,
           opportunities: swotState.o, threats: swotState.t,
         }).then(r => {
-          toast(r.success ? "SWOT kaydedildi." : (r.message || "Hata"), r.success);
+          toast(r.success ? t("SWOT kaydedildi.") : (r.message || t("Hata")), r.success);
           if (r.success) {
             delete loaded["swot"];
             // Hub mini kartını güncelle
@@ -376,37 +377,37 @@
             });
             const badge = document.getElementById("ks-swot-badge");
             const total = swotState.s.length + swotState.w.length + swotState.o.length + swotState.t.length;
-            if (badge) badge.textContent = total + " madde";
+            if (badge) badge.textContent = total + " " + t("madde");
           }
-        }).catch(() => toast("Bağlantı hatası.", false));
+        }).catch(() => toast(t("Bağlantı hatası."), false));
       });
     }
 
     fetchJson(API.swot).then(res => {
-      if (!res.success) { setHtml("ks-modal-swot-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'); return; }
+      if (!res.success) { setHtml("ks-modal-swot-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`); return; }
       const d = res.data;
       swotState.s = (d.strengths     || []).map(i => typeof i === "string" ? i : (i.text || ""));
       swotState.w = (d.weaknesses    || []).map(i => typeof i === "string" ? i : (i.text || ""));
       swotState.o = (d.opportunities || []).map(i => typeof i === "string" ? i : (i.text || ""));
       swotState.t = (d.threats       || []).map(i => typeof i === "string" ? i : (i.text || ""));
       renderSwotModal();
-    }).catch(() => setHtml("ks-modal-swot-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'));
+    }).catch(() => setHtml("ks-modal-swot-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`));
   }
 
   // ── TOWS Modal ────────────────────────────────────────────────────────────────
   function loadTowsModal() {
     const canManage = hub.dataset.canManage === "true";
-    setHtml("ks-modal-tows-body", '<div class="kr-loading" style="padding:32px;">Yükleniyor…</div>');
+    setHtml("ks-modal-tows-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
 
     const towsState = { so: [], st: [], wo: [], wt: [] };
 
     function renderTowsModal() {
       const oz = { SO: towsState.so.length, ST: towsState.st.length, WO: towsState.wo.length, WT: towsState.wt.length };
       const cells = [
-        { key: "so", cls: "ks-tows-so", label: "SO — Saldırgan", placeholder: "SO stratejisi ekle…" },
-        { key: "wo", cls: "ks-tows-wo", label: "WO — Dönüşüm",   placeholder: "WO stratejisi ekle…" },
-        { key: "st", cls: "ks-tows-st", label: "ST — Savunma",   placeholder: "ST stratejisi ekle…" },
-        { key: "wt", cls: "ks-tows-wt", label: "WT — Kaçınma",   placeholder: "WT stratejisi ekle…" },
+        { key: "so", cls: "ks-tows-so", label: t("SO — Saldırgan"), placeholder: t("SO stratejisi ekle…") },
+        { key: "wo", cls: "ks-tows-wo", label: t("WO — Dönüşüm"),   placeholder: t("WO stratejisi ekle…") },
+        { key: "st", cls: "ks-tows-st", label: t("ST — Savunma"),   placeholder: t("ST stratejisi ekle…") },
+        { key: "wt", cls: "ks-tows-wt", label: t("WT — Kaçınma"),   placeholder: t("WT stratejisi ekle…") },
       ];
       const cellsHtml = (keys) => keys.map(c => `
         <div class="ks-tows-cell ${c.cls}">
@@ -427,15 +428,15 @@
         <div class="ks-tows-matrix">
           <div class="ks-tows-header-row">
             <div class="ks-tows-corner"></div>
-            <div class="ks-tows-col-header ks-tows-s-header"><i class="fas fa-plus-circle"></i> Güçlü Yönler (S)</div>
-            <div class="ks-tows-col-header ks-tows-w-header"><i class="fas fa-minus-circle"></i> Zayıf Yönler (W)</div>
+            <div class="ks-tows-col-header ks-tows-s-header"><i class="fas fa-plus-circle"></i> ${t("Güçlü Yönler (S)")}</div>
+            <div class="ks-tows-col-header ks-tows-w-header"><i class="fas fa-minus-circle"></i> ${t("Zayıf Yönler (W)")}</div>
           </div>
           <div class="ks-tows-row">
-            <div class="ks-tows-row-header ks-tows-o-header"><i class="fas fa-arrow-up-right-dots"></i> Fırsatlar</div>
+            <div class="ks-tows-row-header ks-tows-o-header"><i class="fas fa-arrow-up-right-dots"></i> ${t("Fırsatlar")}</div>
             ${cellsHtml([cells[0], cells[1]])}
           </div>
           <div class="ks-tows-row">
-            <div class="ks-tows-row-header ks-tows-t-header"><i class="fas fa-triangle-exclamation"></i> Tehditler</div>
+            <div class="ks-tows-row-header ks-tows-t-header"><i class="fas fa-triangle-exclamation"></i> ${t("Tehditler")}</div>
             ${cellsHtml([cells[2], cells[3]])}
           </div>
         </div>
@@ -469,8 +470,8 @@
         btn.addEventListener("click", () => {
           const key = btn.closest("ul").id.replace("ks-tows-list-", "");
           const idx = parseInt(btn.dataset.idx);
-          Swal.fire({ title: "Maddeyi Düzenle", input: "text", inputValue: towsState[key][idx],
-            showCancelButton: true, confirmButtonText: "Kaydet", cancelButtonText: "İptal" })
+          Swal.fire({ title: t("Maddeyi Düzenle"), input: "text", inputValue: towsState[key][idx],
+            showCancelButton: true, confirmButtonText: t("Kaydet"), cancelButtonText: t("İptal") })
             .then(r => { if (r.isConfirmed && r.value.trim()) { towsState[key][idx] = r.value.trim(); renderTowsModal(); } });
         });
       });
@@ -478,41 +479,41 @@
       document.getElementById("ks-tows-save")?.addEventListener("click", () => {
         postJson(hub.dataset.apiTowsSave, towsState)
           .then(r => {
-            toast(r.success ? "TOWS kaydedildi." : (r.message || "Hata"), r.success);
+            toast(r.success ? t("TOWS kaydedildi.") : (r.message || t("Hata")), r.success);
             if (r.success) {
               delete loaded["tows"];
               const badge = document.getElementById("ks-tows-badge");
               const total = towsState.so.length + towsState.st.length + towsState.wo.length + towsState.wt.length;
-              if (badge) badge.textContent = total + " strateji";
+              if (badge) badge.textContent = total + " " + t("strateji");
             }
-          }).catch(() => toast("Bağlantı hatası.", false));
+          }).catch(() => toast(t("Bağlantı hatası."), false));
       });
     }
 
     fetchJson(API.tows).then(res => {
-      if (!res.success) { setHtml("ks-modal-tows-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'); return; }
+      if (!res.success) { setHtml("ks-modal-tows-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`); return; }
       const d = res.data;
       towsState.so = (d.so || []).map(i => typeof i === "string" ? i : (i.text || ""));
       towsState.st = (d.st || []).map(i => typeof i === "string" ? i : (i.text || ""));
       towsState.wo = (d.wo || []).map(i => typeof i === "string" ? i : (i.text || ""));
       towsState.wt = (d.wt || []).map(i => typeof i === "string" ? i : (i.text || ""));
       renderTowsModal();
-    }).catch(() => setHtml("ks-modal-tows-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'));
+    }).catch(() => setHtml("ks-modal-tows-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`));
   }
 
   // ── PESTLE Modal ──────────────────────────────────────────────────────────────
   let pestleChart = null;
   function loadPestleModal() {
     const canManage = hub.dataset.canManage === "true";
-    setHtml("ks-modal-pestle-body", '<div class="kr-loading" style="padding:32px;">Yükleniyor…</div>');
+    setHtml("ks-modal-pestle-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
 
     const PESTLE_LABELS = [
-      { key: "political",     label: "Siyasi (P)",     color: "#6366f1", placeholder: "Siyasi faktör ekle…" },
-      { key: "economic",      label: "Ekonomik (E)",   color: "#10b981", placeholder: "Ekonomik faktör ekle…" },
-      { key: "social",        label: "Sosyal (S)",     color: "#f59e0b", placeholder: "Sosyal faktör ekle…" },
-      { key: "technological", label: "Teknolojik (T)", color: "#3b82f6", placeholder: "Teknolojik faktör ekle…" },
-      { key: "environmental", label: "Çevresel (E)",   color: "#84cc16", placeholder: "Çevresel faktör ekle…" },
-      { key: "legal",         label: "Yasal (L)",      color: "#ef4444", placeholder: "Yasal faktör ekle…" },
+      { key: "political",     label: t("Siyasi (P)"),     color: "#6366f1", placeholder: t("Siyasi faktör ekle…") },
+      { key: "economic",      label: t("Ekonomik (E)"),   color: "#10b981", placeholder: t("Ekonomik faktör ekle…") },
+      { key: "social",        label: t("Sosyal (S)"),     color: "#f59e0b", placeholder: t("Sosyal faktör ekle…") },
+      { key: "technological", label: t("Teknolojik (T)"), color: "#3b82f6", placeholder: t("Teknolojik faktör ekle…") },
+      { key: "environmental", label: t("Çevresel (E)"),   color: "#84cc16", placeholder: t("Çevresel faktör ekle…") },
+      { key: "legal",         label: t("Yasal (L)"),      color: "#ef4444", placeholder: t("Yasal faktör ekle…") },
     ];
     const pestleState = {};
     PESTLE_LABELS.forEach(m => { pestleState[m.key] = []; });
@@ -522,7 +523,7 @@
         const items = pestleState[m.key];
         const listHtml = items.length
           ? (canManage ? renderItemsEdit(items) : renderItems(items))
-          : '<li class="ks-swot-empty">Henüz girilmemiş</li>';
+          : `<li class="ks-swot-empty">${t("Henüz girilmemiş")}</li>`;
         return `<div class="mc-card" style="border-top:3px solid ${m.color};">
           <div class="mc-card-header" style="padding:10px 14px;">
             <span class="mc-card-title" style="color:${m.color};font-size:13px;">${m.label}</span>
@@ -567,8 +568,8 @@
         btn.addEventListener("click", () => {
           const key = btn.closest("ul").id.replace("ks-pestle-list-", "");
           const idx = parseInt(btn.dataset.idx);
-          Swal.fire({ title: "Maddeyi Düzenle", input: "text", inputValue: pestleState[key][idx],
-            showCancelButton: true, confirmButtonText: "Kaydet", cancelButtonText: "İptal" })
+          Swal.fire({ title: t("Maddeyi Düzenle"), input: "text", inputValue: pestleState[key][idx],
+            showCancelButton: true, confirmButtonText: t("Kaydet"), cancelButtonText: t("İptal") })
             .then(r => { if (r.isConfirmed && r.value.trim()) { pestleState[key][idx] = r.value.trim(); renderPestleModal(); } });
         });
       });
@@ -576,25 +577,25 @@
       document.getElementById("ks-pestle-save")?.addEventListener("click", () => {
         postJson(hub.dataset.apiPestleSave, pestleState)
           .then(r => {
-            toast(r.success ? "PESTLE kaydedildi." : (r.message || "Hata"), r.success);
+            toast(r.success ? t("PESTLE kaydedildi.") : (r.message || t("Hata")), r.success);
             if (r.success) {
               delete loaded["pestle"];
               const total = PESTLE_LABELS.reduce((s, m) => s + pestleState[m.key].length, 0);
               const badge = document.getElementById("ks-pestle-badge");
-              if (badge) badge.textContent = total + " faktör";
+              if (badge) badge.textContent = total + " " + t("faktör");
             }
-          }).catch(() => toast("Bağlantı hatası.", false));
+          }).catch(() => toast(t("Bağlantı hatası."), false));
       });
     }
 
     fetchJson(API.pestle).then(res => {
-      if (!res.success) { setHtml("ks-modal-pestle-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'); return; }
+      if (!res.success) { setHtml("ks-modal-pestle-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`); return; }
       const d = res.data;
       PESTLE_LABELS.forEach(m => {
         pestleState[m.key] = (d[m.key] || []).map(i => typeof i === "string" ? i : (i.text || ""));
       });
       renderPestleModal();
-    }).catch(() => setHtml("ks-modal-pestle-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'));
+    }).catch(() => setHtml("ks-modal-pestle-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`));
   }
 
   // ── BSC Mini (hub kartı) ─────────────────────────────────────────────────────
@@ -720,10 +721,10 @@
       return "#ef4444";
     }
     function okrScoreLabel(pct) {
-      if (pct == null) return "Veri yok";
-      if (pct >= 70)  return "Başarılı";
-      if (pct >= 40)  return "Devam ediyor";
-      return "Kritik";
+      if (pct == null) return t("Veri yok");
+      if (pct >= 70)  return t("Başarılı");
+      if (pct >= 40)  return t("Devam ediyor");
+      return t("Kritik");
     }
 
     // ── Render ────────────────────────────────────────────────────────────────
@@ -739,13 +740,13 @@
       const addObjBtn = canManage ? `
         <div style="margin-bottom:16px;">
           <button id="okr-add-obj-btn" class="mc-btn mc-btn-primary mc-btn-sm">
-            <i class="fas fa-plus"></i> Yeni Hedef Ekle
+            <i class="fas fa-plus"></i> ${t("Yeni Hedef Ekle")}
           </button>
         </div>` : "";
 
       const sectionsHtml = Object.entries(grouped).map(([q, objs]) => {
-        const qLabel = q === "yillik" ? "Yıllık Hedefler"
-          : `${QUARTERS[parseInt(q)] || q}. Çeyrek Hedefleri`;
+        const qLabel = q === "yillik" ? t("Yıllık Hedefler")
+          : `${QUARTERS[parseInt(q)] || q}. ${t("Çeyrek Hedefleri")}`;
 
         const objsHtml = objs.map(o => {
           const pct = o.avg_progress;
@@ -757,14 +758,14 @@
                 data-kr-id="${kr.id}" data-title="${esc(kr.title)}"
                 data-metric="${esc(kr.metric||'')}" data-start="${kr.start_value??''}"
                 data-target="${kr.target_value??''}" data-current="${kr.current_value??''}"
-                title="Düzenle"><i class="fas fa-pen"></i></button>
+                title="${t("Düzenle")}"><i class="fas fa-pen"></i></button>
               <button class="ks-item-btn ks-item-del okr-kr-del"
-                data-kr-id="${kr.id}" title="Sil"><i class="fas fa-trash"></i></button>` : "";
+                data-kr-id="${kr.id}" title="${t("Sil")}"><i class="fas fa-trash"></i></button>` : "";
             return `<div class="okr-kr-row">
               <div class="okr-kr-title">
                 <span>${esc(kr.title)}</span>
                 ${kr.metric ? `<span class="okr-kr-metric">${esc(kr.metric)}</span>` : ""}
-                <span class="okr-kr-values">${kr.start_value??'—'} → <strong>${kr.target_value??'—'}</strong> | Güncel: <strong style="color:${okrScoreColor(kpct)}">${kr.current_value??'—'}</strong></span>
+                <span class="okr-kr-values">${kr.start_value??'—'} → <strong>${kr.target_value??'—'}</strong> | ${t("Güncel")}: <strong style="color:${okrScoreColor(kpct)}">${kr.current_value??'—'}</strong></span>
               </div>
               <div class="okr-kr-bar-wrap">
                 <div class="okr-kr-bar-track"><div class="okr-kr-bar-fill" style="width:${barW}%;background:${okrScoreColor(kpct)};"></div></div>
@@ -777,16 +778,16 @@
           const addKrBtn = canManage ? `
             <button class="mc-btn mc-btn-secondary mc-btn-sm okr-add-kr-btn"
               data-obj-id="${o.id}" style="margin-top:8px;">
-              <i class="fas fa-plus"></i> KR Ekle
+              <i class="fas fa-plus"></i> ${t("KR Ekle")}
             </button>` : "";
 
           const objEditBtns = canManage ? `
             <button class="ks-item-btn ks-item-edit okr-obj-edit"
               data-obj-id="${o.id}" data-title="${esc(o.title)}"
               data-desc="${esc(o.description||'')}" data-quarter="${o.quarter||''}"
-              data-owner="${esc(o.owner||'')}" title="Düzenle"><i class="fas fa-pen"></i></button>
+              data-owner="${esc(o.owner||'')}" title="${t("Düzenle")}"><i class="fas fa-pen"></i></button>
             <button class="ks-item-btn ks-item-del okr-obj-del"
-              data-obj-id="${o.id}" title="Sil"><i class="fas fa-trash"></i></button>` : "";
+              data-obj-id="${o.id}" title="${t("Sil")}"><i class="fas fa-trash"></i></button>` : "";
 
           return `<div class="okr-obj-card">
             <div class="okr-obj-header">
@@ -803,7 +804,7 @@
               </div>
             </div>
             ${o.description ? `<div class="okr-obj-desc">${esc(o.description)}</div>` : ""}
-            <div class="okr-kr-list">${krsHtml || '<div style="font-size:12px;color:#94a3b8;padding:8px 0;">Henüz KR eklenmemiş</div>'}</div>
+            <div class="okr-kr-list">${krsHtml || `<div style="font-size:12px;color:#94a3b8;padding:8px 0;">${t("Henüz KR eklenmemiş")}</div>`}</div>
             ${addKrBtn}
           </div>`;
         }).join("");
@@ -817,29 +818,29 @@
       const emptyHtml = data.length === 0 ? `
         <div class="mc-empty" style="padding:32px;">
           <div class="mc-empty-icon"><i class="fas fa-crosshairs"></i></div>
-          <div class="mc-empty-title">Henüz OKR tanımlanmamış</div>
-          <div class="mc-empty-text">${year} yılı için ilk hedefinizi ekleyin.</div>
+          <div class="mc-empty-title">${t("Henüz OKR tanımlanmamış")}</div>
+          <div class="mc-empty-text">${year} ${t("yılı için ilk hedefinizi ekleyin.")}</div>
         </div>` : "";
 
       setHtml("ks-modal-okr-body", `
-        <div style="font-size:12px;color:#94a3b8;margin-bottom:12px;">${year} yılı OKR'leri</div>
+        <div style="font-size:12px;color:#94a3b8;margin-bottom:12px;">${year} ${t("yılı OKR'leri")}</div>
         ${addObjBtn}${sectionsHtml}${emptyHtml}`);
 
       if (!canManage) return;
 
       // ── Objective Ekle ────────────────────────────────────────────────────
       document.getElementById("okr-add-obj-btn")?.addEventListener("click", () => {
-        document.getElementById("ks-okr-obj-modal-title").textContent = "Yeni Hedef Ekle";
+        document.getElementById("ks-okr-obj-modal-title").textContent = t("Yeni Hedef Ekle");
         fillObjForm();
         const freshSave = rebindSave(
           document.getElementById("ks-okr-obj-modal-save"),
           () => {
             const d = getObjForm();
-            if (!d.title) { toast("Başlık zorunludur.", false); return; }
+            if (!d.title) { toast(t("Başlık zorunludur."), false); return; }
             postJson(OBJ_CREATE, d).then(res => {
-              if (res.success) { toast("Hedef eklendi.", true); closeInnerModal(objModal); delete loaded["okr"]; loadOkrModal(); }
-              else toast(res.message || "Hata", false);
-            }).catch(() => toast("Bağlantı hatası.", false));
+              if (res.success) { toast(t("Hedef eklendi."), true); closeInnerModal(objModal); delete loaded["okr"]; loadOkrModal(); }
+              else toast(res.message || t("Hata"), false);
+            }).catch(() => toast(t("Bağlantı hatası."), false));
           }
         );
         openInnerModal(objModal);
@@ -848,22 +849,22 @@
       // ── Objective Düzenle ─────────────────────────────────────────────────
       document.querySelectorAll(".okr-obj-edit").forEach(btn => {
         btn.addEventListener("click", () => {
-          document.getElementById("ks-okr-obj-modal-title").textContent = "Hedefi Düzenle";
+          document.getElementById("ks-okr-obj-modal-title").textContent = t("Hedefi Düzenle");
           fillObjForm({ title: btn.dataset.title, description: btn.dataset.desc,
             quarter: btn.dataset.quarter, owner: btn.dataset.owner });
           rebindSave(
             document.getElementById("ks-okr-obj-modal-save"),
             () => {
               const d = getObjForm();
-              if (!d.title) { toast("Başlık zorunludur.", false); return; }
+              if (!d.title) { toast(t("Başlık zorunludur."), false); return; }
               fetch(objUrl(btn.dataset.objId), {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", "X-CSRFToken": CSRF },
                 body: JSON.stringify(d),
               }).then(r => r.json()).then(res => {
-                if (res.success) { toast("Güncellendi.", true); closeInnerModal(objModal); delete loaded["okr"]; loadOkrModal(); }
-                else toast(res.message || "Hata", false);
-              }).catch(() => toast("Bağlantı hatası.", false));
+                if (res.success) { toast(t("Güncellendi."), true); closeInnerModal(objModal); delete loaded["okr"]; loadOkrModal(); }
+                else toast(res.message || t("Hata"), false);
+              }).catch(() => toast(t("Bağlantı hatası."), false));
             }
           );
           openInnerModal(objModal);
@@ -873,16 +874,16 @@
       // ── Objective Sil ─────────────────────────────────────────────────────
       document.querySelectorAll(".okr-obj-del").forEach(btn => {
         btn.addEventListener("click", () => {
-          Swal.fire({ title: "Hedefi sil?", text: "Bu hedef ve tüm KR'ları silinecek.",
+          Swal.fire({ title: t("Hedefi sil?"), text: t("Bu hedef ve tüm KR'ları silinecek."),
             icon: "warning", showCancelButton: true,
-            confirmButtonText: "Sil", cancelButtonText: "İptal", confirmButtonColor: "#ef4444" })
+            confirmButtonText: t("Sil"), cancelButtonText: t("İptal"), confirmButtonColor: "#ef4444" })
             .then(r => {
               if (!r.isConfirmed) return;
               fetch(objUrl(btn.dataset.objId), { method: "DELETE", headers: { "X-CSRFToken": CSRF } })
                 .then(res => res.json()).then(res => {
-                  if (res.success) { toast("Silindi.", true); delete loaded["okr"]; loadOkrModal(); }
-                  else toast(res.message || "Hata", false);
-                }).catch(() => toast("Bağlantı hatası.", false));
+                  if (res.success) { toast(t("Silindi."), true); delete loaded["okr"]; loadOkrModal(); }
+                  else toast(res.message || t("Hata"), false);
+                }).catch(() => toast(t("Bağlantı hatası."), false));
             });
         });
       });
@@ -890,17 +891,17 @@
       // ── KR Ekle ───────────────────────────────────────────────────────────
       document.querySelectorAll(".okr-add-kr-btn").forEach(btn => {
         btn.addEventListener("click", () => {
-          document.getElementById("ks-okr-kr-modal-title").textContent = "Anahtar Sonuç Ekle";
+          document.getElementById("ks-okr-kr-modal-title").textContent = t("Anahtar Sonuç Ekle");
           fillKrForm();
           rebindSave(
             document.getElementById("ks-okr-kr-modal-save"),
             () => {
               const d = getKrForm();
-              if (!d.title) { toast("Başlık zorunludur.", false); return; }
+              if (!d.title) { toast(t("Başlık zorunludur."), false); return; }
               postJson(OBJ_BASE + btn.dataset.objId + "/kr", d).then(res => {
-                if (res.success) { toast("KR eklendi.", true); closeInnerModal(krModal); delete loaded["okr"]; loadOkrModal(); }
-                else toast(res.message || "Hata", false);
-              }).catch(() => toast("Bağlantı hatası.", false));
+                if (res.success) { toast(t("KR eklendi."), true); closeInnerModal(krModal); delete loaded["okr"]; loadOkrModal(); }
+                else toast(res.message || t("Hata"), false);
+              }).catch(() => toast(t("Bağlantı hatası."), false));
             }
           );
           openInnerModal(krModal);
@@ -910,7 +911,7 @@
       // ── KR Düzenle ────────────────────────────────────────────────────────
       document.querySelectorAll(".okr-kr-edit").forEach(btn => {
         btn.addEventListener("click", () => {
-          document.getElementById("ks-okr-kr-modal-title").textContent = "Anahtar Sonucu Düzenle";
+          document.getElementById("ks-okr-kr-modal-title").textContent = t("Anahtar Sonucu Düzenle");
           fillKrForm({ title: btn.dataset.title, metric: btn.dataset.metric,
             start_value: btn.dataset.start, target_value: btn.dataset.target,
             current_value: btn.dataset.current });
@@ -918,15 +919,15 @@
             document.getElementById("ks-okr-kr-modal-save"),
             () => {
               const d = getKrForm();
-              if (!d.title) { toast("Başlık zorunludur.", false); return; }
+              if (!d.title) { toast(t("Başlık zorunludur."), false); return; }
               fetch(krUrl(btn.dataset.krId), {
                 method: "PUT",
                 headers: { "Content-Type": "application/json", "X-CSRFToken": CSRF },
                 body: JSON.stringify(d),
               }).then(r => r.json()).then(res => {
-                if (res.success) { toast("KR güncellendi.", true); closeInnerModal(krModal); delete loaded["okr"]; loadOkrModal(); }
-                else toast(res.message || "Hata", false);
-              }).catch(() => toast("Bağlantı hatası.", false));
+                if (res.success) { toast(t("KR güncellendi."), true); closeInnerModal(krModal); delete loaded["okr"]; loadOkrModal(); }
+                else toast(res.message || t("Hata"), false);
+              }).catch(() => toast(t("Bağlantı hatası."), false));
             }
           );
           openInnerModal(krModal);
@@ -936,25 +937,25 @@
       // ── KR Sil ────────────────────────────────────────────────────────────
       document.querySelectorAll(".okr-kr-del").forEach(btn => {
         btn.addEventListener("click", () => {
-          Swal.fire({ title: "KR silinsin mi?", icon: "warning", showCancelButton: true,
-            confirmButtonText: "Sil", cancelButtonText: "İptal", confirmButtonColor: "#ef4444" })
+          Swal.fire({ title: t("KR silinsin mi?"), icon: "warning", showCancelButton: true,
+            confirmButtonText: t("Sil"), cancelButtonText: t("İptal"), confirmButtonColor: "#ef4444" })
             .then(r => {
               if (!r.isConfirmed) return;
               fetch(krUrl(btn.dataset.krId), { method: "DELETE", headers: { "X-CSRFToken": CSRF } })
                 .then(res => res.json()).then(res => {
-                  if (res.success) { toast("KR silindi.", true); delete loaded["okr"]; loadOkrModal(); }
-                  else toast(res.message || "Hata", false);
-                }).catch(() => toast("Bağlantı hatası.", false));
+                  if (res.success) { toast(t("KR silindi."), true); delete loaded["okr"]; loadOkrModal(); }
+                  else toast(res.message || t("Hata"), false);
+                }).catch(() => toast(t("Bağlantı hatası."), false));
             });
         });
       });
     }
 
-    setHtml("ks-modal-okr-body", '<div class="kr-loading" style="padding:32px;">Yükleniyor…</div>');
+    setHtml("ks-modal-okr-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
     fetchJson(OBJ_URL).then(res => {
-      if (!res.success) { setHtml("ks-modal-okr-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'); return; }
+      if (!res.success) { setHtml("ks-modal-okr-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`); return; }
       renderOkr(res.data || [], res.year);
-    }).catch(() => setHtml("ks-modal-okr-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'));
+    }).catch(() => setHtml("ks-modal-okr-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`));
   }
 
   // ── BSC Modal ─────────────────────────────────────────────────────────────────
@@ -964,10 +965,10 @@
     const ASSIGN_URL = hub.dataset.apiBscAssign;
 
     const PERSPECTIVES = [
-      { key: "finansal", label: "Finansal",         icon: "fa-coins",          color: "#6366f1", bg: "#eef2ff" },
-      { key: "musteri",  label: "Müşteri",           icon: "fa-users",          color: "#10b981", bg: "#d1fae5" },
-      { key: "ic_surec", label: "İç Süreçler",       icon: "fa-gears",          color: "#f59e0b", bg: "#fef3c7" },
-      { key: "ogrenme",  label: "Öğrenme & Gelişim", icon: "fa-graduation-cap", color: "#3b82f6", bg: "#dbeafe" },
+      { key: "finansal", label: t("Finansal"),         icon: "fa-coins",          color: "#6366f1", bg: "#eef2ff" },
+      { key: "musteri",  label: t("Müşteri"),           icon: "fa-users",          color: "#10b981", bg: "#d1fae5" },
+      { key: "ic_surec", label: t("İç Süreçler"),       icon: "fa-gears",          color: "#f59e0b", bg: "#fef3c7" },
+      { key: "ogrenme",  label: t("Öğrenme & Gelişim"), icon: "fa-graduation-cap", color: "#3b82f6", bg: "#dbeafe" },
     ];
 
     // Atama modal
@@ -999,12 +1000,12 @@
         postJson(ASSIGN_URL, { kpi_id: _assignKpiId, perspective })
           .then(r => {
             if (r.success) {
-              toast(perspective ? "Perspektif atandı." : "Atama kaldırıldı.", true);
+              toast(perspective ? t("Perspektif atandı.") : t("Atama kaldırıldı."), true);
               assignModal?.classList.remove("open");
               delete loaded["bsc"];
               loadBscModal();
-            } else toast(r.message || "Hata", false);
-          }).catch(() => toast("Bağlantı hatası.", false));
+            } else toast(r.message || t("Hata"), false);
+          }).catch(() => toast(t("Bağlantı hatası."), false));
       });
     }
 
@@ -1016,10 +1017,10 @@
 
       // ── Sekmeler ──────────────────────────────────────────────────────────
       const tabs = [
-        { id: "bsc-tab-kart",    label: "Kart Görünümü",    icon: "fa-table-cells-large" },
-        { id: "bsc-tab-tablo",   label: "KPI Tablosu",      icon: "fa-table" },
-        { id: "bsc-tab-harita",  label: "Strateji Haritası", icon: "fa-sitemap" },
-        { id: "bsc-tab-atama",   label: "Perspektif Ata",   icon: "fa-tag" },
+        { id: "bsc-tab-kart",    label: t("Kart Görünümü"),    icon: "fa-table-cells-large" },
+        { id: "bsc-tab-tablo",   label: t("KPI Tablosu"),      icon: "fa-table" },
+        { id: "bsc-tab-harita",  label: t("Strateji Haritası"), icon: "fa-sitemap" },
+        { id: "bsc-tab-atama",   label: t("Perspektif Ata"),   icon: "fa-tag" },
       ];
 
       const tabHtml = tabs.map((t, i) => `
@@ -1033,7 +1034,7 @@
         const kpiRows = pd.kpis.map(k => {
           const pct = k.perf_pct;
           const barW = pct != null ? Math.min(100, pct) : 0;
-          const assignBtn = canManage ? `<button class="ks-item-btn bsc-assign-btn" data-kpi-id="${k.id}" data-kpi-name="${esc(k.name)}" data-current="${esc(k.perspective||'')}" title="Perspektif değiştir"><i class="fas fa-tag"></i></button>` : "";
+          const assignBtn = canManage ? `<button class="ks-item-btn bsc-assign-btn" data-kpi-id="${k.id}" data-kpi-name="${esc(k.name)}" data-current="${esc(k.perspective||'')}" title="${t("Perspektif değiştir")}"><i class="fas fa-tag"></i></button>` : "";
           return `<div class="bsc-kpi-row">
             <div class="bsc-kpi-info">
               <span class="bsc-kpi-code">${esc(k.code)}</span>
@@ -1046,7 +1047,7 @@
             </div>
             ${assignBtn}
           </div>`;
-        }).join("") || `<div style="font-size:12px;color:#94a3b8;padding:8px 0;">Bu perspektife atanmış KPI yok.</div>`;
+        }).join("") || `<div style="font-size:12px;color:#94a3b8;padding:8px 0;">${t("Bu perspektife atanmış KPI yok.")}</div>`;
 
         return `<div class="bsc-persp-card" style="border-top:3px solid ${p.color};">
           <div class="bsc-persp-header" style="background:${p.bg};">
@@ -1067,7 +1068,7 @@
       const allKpis = PERSPECTIVES.flatMap(p => (persp[p.key]?.kpis || []).map(k => ({ ...k, persp_label: p.label, persp_color: p.color })));
       const tableRows = allKpis.map(k => {
         const pct = k.perf_pct;
-        const assignBtn = canManage ? `<button class="ks-item-btn bsc-assign-btn" data-kpi-id="${k.id}" data-kpi-name="${esc(k.name)}" data-current="${esc(k.perspective||'')}" title="Perspektif değiştir"><i class="fas fa-tag"></i></button>` : "";
+        const assignBtn = canManage ? `<button class="ks-item-btn bsc-assign-btn" data-kpi-id="${k.id}" data-kpi-name="${esc(k.name)}" data-current="${esc(k.perspective||'')}" title="${t("Perspektif değiştir")}"><i class="fas fa-tag"></i></button>` : "";
         return `<tr>
           <td><span class="mc-badge" style="background:${k.persp_color}20;color:${k.persp_color};font-size:10px;">${k.persp_label}</span></td>
           <td style="font-size:11px;color:#6366f1;">${esc(k.code)}</td>
@@ -1077,7 +1078,7 @@
           <td style="font-weight:700;color:${scoreColor(pct)}">${pct != null ? pct + "%" : "—"}</td>
           <td>${assignBtn}</td>
         </tr>`;
-      }).join("") || `<tr><td colspan="7" style="text-align:center;padding:20px;color:#94a3b8;">Atanmış KPI yok.</td></tr>`;
+      }).join("") || `<tr><td colspan="7" style="text-align:center;padding:20px;color:#94a3b8;">${t("Atanmış KPI yok.")}</td></tr>`;
 
       // ── Strateji Haritası ─────────────────────────────────────────────────
       const haritaHtml = stratMap.map(s => {
@@ -1085,7 +1086,7 @@
           const kpiChips = ss.kpis.map(k => {
             const p = PERSPECTIVES.find(p => p.key === k.perspective);
             const pColor = p ? p.color : "#94a3b8";
-            const pLabel = p ? p.label : "Atanmamış";
+            const pLabel = p ? p.label : t("Atanmamış");
             return `<span class="bsc-map-kpi-chip" style="border-color:${pColor};" title="${esc(k.name)} — ${pLabel}">
               <span style="width:8px;height:8px;border-radius:50%;background:${pColor};display:inline-block;"></span>
               ${esc(k.code || k.name.slice(0,20))}
@@ -1109,7 +1110,7 @@
           </div>
           <div class="bsc-map-subs">${subsHtml}</div>
         </div>`;
-      }).join("") || `<div style="text-align:center;padding:32px;color:#94a3b8;">Strateji bağlantısı olan KPI bulunamadı.</div>`;
+      }).join("") || `<div style="text-align:center;padding:32px;color:#94a3b8;">${t("Strateji bağlantısı olan KPI bulunamadı.")}</div>`;
 
       // ── Perspektif Ata ────────────────────────────────────────────────────
       const atamaRows = [...allKpis, ...unassigned.map(k => ({ ...k, persp_label: "—", persp_color: "#94a3b8" }))];
@@ -1117,8 +1118,8 @@
         const p = PERSPECTIVES.find(p => p.key === k.perspective);
         const badge = p
           ? `<span class="mc-badge" style="background:${p.color}20;color:${p.color};font-size:10px;">${p.label}</span>`
-          : `<span class="mc-badge mc-badge-gray" style="font-size:10px;">Atanmamış</span>`;
-        const btn = canManage ? `<button class="mc-btn mc-btn-secondary mc-btn-sm bsc-assign-btn" data-kpi-id="${k.id}" data-kpi-name="${esc(k.name)}" data-current="${esc(k.perspective||'')}"><i class="fas fa-tag"></i> Ata</button>` : "";
+          : `<span class="mc-badge mc-badge-gray" style="font-size:10px;">${t("Atanmamış")}</span>`;
+        const btn = canManage ? `<button class="mc-btn mc-btn-secondary mc-btn-sm bsc-assign-btn" data-kpi-id="${k.id}" data-kpi-name="${esc(k.name)}" data-current="${esc(k.perspective||'')}"><i class="fas fa-tag"></i> ${t("Ata")}</button>` : "";
         return `<tr>
           <td>${badge}</td>
           <td style="font-size:11px;color:#6366f1;">${esc(k.code)}</td>
@@ -1126,15 +1127,15 @@
           <td style="font-size:11px;">${esc(k.process_code)} ${esc(k.process_name)}</td>
           <td>${btn}</td>
         </tr>`;
-      }).join("") || `<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">KPI bulunamadı.</td></tr>`;
+      }).join("") || `<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">${t("KPI bulunamadı.")}</td></tr>`;
 
       // ── Tümünü birleştir ──────────────────────────────────────────────────
-      const autoBtn = canManage ? `<button id="bsc-auto-assign" class="mc-btn mc-btn-primary mc-btn-sm" style="margin-left:8px;"><i class="fas fa-wand-magic-sparkles"></i> Otomatik Atama</button>` : "";
+      const autoBtn = canManage ? `<button id="bsc-auto-assign" class="mc-btn mc-btn-primary mc-btn-sm" style="margin-left:8px;"><i class="fas fa-wand-magic-sparkles"></i> ${t("Otomatik Atama")}</button>` : "";
       setHtml("ks-modal-bsc-body", `
         <div style="padding:16px 20px 0;">
           <div id="bsc-balance-banner" style="display:flex;gap:12px;align-items:center;padding:10px 14px;background:linear-gradient(90deg,#eef2ff,#fdf4ff);border-radius:8px;margin-bottom:12px;font-size:12.5px;">
             <i class="fas fa-balance-scale" style="color:#6366f1;font-size:18px;"></i>
-            <span><b>Denge skoru hesaplanıyor…</b></span>
+            <span><b>${t("Denge skoru hesaplanıyor…")}</b></span>
           </div>
           <div style="display:flex;gap:8px;flex-wrap:wrap;margin-bottom:12px;align-items:center;">
             ${PERSPECTIVES.map(p => {
@@ -1143,9 +1144,9 @@
                 <i class="fas ${p.icon}"></i> ${p.label}: ${pd.kpi_count || 0} PG ${pd.score != null ? "· " + pd.score + "%" : ""}
               </span>`;
             }).join("")}
-            <span class="mc-badge mc-badge-gray">${unassigned.length} atanmamış</span>
+            <span class="mc-badge mc-badge-gray">${unassigned.length} ${t("atanmamış")}</span>
             ${autoBtn}
-            <span style="font-size:12px;color:#94a3b8;margin-left:auto;">${year} yılı</span>
+            <span style="font-size:12px;color:#94a3b8;margin-left:auto;">${year} ${t("yılı")}</span>
           </div>
           <div class="bsc-tabs">${tabHtml}</div>
         </div>
@@ -1153,14 +1154,14 @@
           <div id="bsc-tab-kart"   class="bsc-panel active"><div class="bsc-persp-grid">${kartsHtml}</div></div>
           <div id="bsc-tab-tablo"  class="bsc-panel">
             <div class="mc-table-wrap"><table class="mc-table">
-              <thead><tr><th>Perspektif</th><th>Kod</th><th>KPI</th><th>Süreç</th><th>Strateji</th><th>Başarı</th><th></th></tr></thead>
+              <thead><tr><th>${t("Perspektif")}</th><th>${t("Kod")}</th><th>KPI</th><th>${t("Süreç")}</th><th>${t("Strateji")}</th><th>${t("Başarı")}</th><th></th></tr></thead>
               <tbody>${tableRows}</tbody>
             </table></div>
           </div>
           <div id="bsc-tab-harita" class="bsc-panel"><div class="bsc-map-wrap">${haritaHtml}</div></div>
           <div id="bsc-tab-atama"  class="bsc-panel">
             <div class="mc-table-wrap"><table class="mc-table">
-              <thead><tr><th>Perspektif</th><th>Kod</th><th>KPI</th><th>Süreç</th><th></th></tr></thead>
+              <thead><tr><th>${t("Perspektif")}</th><th>${t("Kod")}</th><th>KPI</th><th>${t("Süreç")}</th><th></th></tr></thead>
               <tbody>${atamaHtml}</tbody>
             </table></div>
           </div>
@@ -1190,16 +1191,16 @@
         if (!banner) return;
         const score = b.balance_score;
         const scoreColor = score >= 75 ? '#059669' : score >= 50 ? '#f59e0b' : '#dc2626';
-        const sharesStr = `Fin %${b.shares.finansal} · Müş %${b.shares.musteri} · İç Süreç %${b.shares.ic_surec} · Öğr %${b.shares.ogrenme}`;
+        const sharesStr = `${t("Fin")} %${b.shares.finansal} · ${t("Müş")} %${b.shares.musteri} · ${t("İç Süreç")} %${b.shares.ic_surec} · ${t("Öğr")} %${b.shares.ogrenme}`;
         const recoStr = (b.recommendations || []).slice(0,1).map(r=>`<div style="font-size:11.5px;color:#475569;margin-top:4px;">${r}</div>`).join('');
         banner.innerHTML = `
           <i class="fas fa-balance-scale" style="color:${scoreColor};font-size:18px;"></i>
           <div style="flex:1;">
-            <div><b>Denge Skoru: <span style="color:${scoreColor};">${score}/100</span></b> · ${b.total_assigned} atanmış</div>
+            <div><b>${t("Denge Skoru")}: <span style="color:${scoreColor};">${score}/100</span></b> · ${b.total_assigned} ${t("atanmış")}</div>
             <div style="font-size:11.5px;color:#64748b;margin-top:2px;">${sharesStr}</div>
             ${recoStr}
           </div>
-          <span style="font-size:11px;color:#94a3b8;">Kaplan-Norton ideal: %25 her perspektif</span>
+          <span style="font-size:11px;color:#94a3b8;">${t("Kaplan-Norton ideal: %25 her perspektif")}</span>
         `;
       });
 
@@ -1209,12 +1210,12 @@
         autoBtnEl.addEventListener('click', async () => {
           const ok = await Swal.fire({
             icon: 'question',
-            title: 'Otomatik Atama',
-            html: `Atanmamış PG'lerin adı/açıklamasından <b>kural-tabanlı sınıflandırıcı</b> ile uygun BSC perspektifi önerilir.<br><br>
-                   <small style="color:#64748b;">Yalnız <b>%30 ve üzeri güvende</b> olan öneriler uygulanır. Her zaman manuel düzenleyebilirsin.</small>`,
+            title: t('Otomatik Atama'),
+            html: `${t("Atanmamış PG'lerin adı/açıklamasından")} <b>${t("kural-tabanlı sınıflandırıcı")}</b> ${t("ile uygun BSC perspektifi önerilir.")}<br><br>
+                   <small style="color:#64748b;">${t("Yalnız")} <b>${t("%30 ve üzeri güvende")}</b> ${t("olan öneriler uygulanır. Her zaman manuel düzenleyebilirsin.")}</small>`,
             showCancelButton: true,
-            confirmButtonText: 'Otomatik Ata',
-            cancelButtonText: 'İptal',
+            confirmButtonText: t('Otomatik Ata'),
+            cancelButtonText: t('İptal'),
             confirmButtonColor: '#6366f1',
           });
           if (!ok.isConfirmed) return;
@@ -1225,15 +1226,15 @@
           });
           const j = await r.json();
           if (!j.success) {
-            Swal.fire({icon:'error', title:'Hata', text:j.message || 'Atama yapılamadı'});
+            Swal.fire({icon:'error', title:t('Hata'), text:j.message || t('Atama yapılamadı')});
             return;
           }
           await Swal.fire({
             icon: 'success',
-            title: 'Atama Tamamlandı',
-            html: `<b>${j.applied}</b> PG otomatik atandı.<br>
-                   ${j.skipped_low_confidence} düşük güvenli atlanan, ${j.skipped_unclassified} sınıflandırılamayan.`,
-            confirmButtonText: 'Tamam',
+            title: t('Atama Tamamlandı'),
+            html: `<b>${j.applied}</b> ${t("PG otomatik atandı.")}<br>
+                   ${j.skipped_low_confidence} ${t("düşük güvenli atlanan,")} ${j.skipped_unclassified} ${t("sınıflandırılamayan.")}`,
+            confirmButtonText: t('Tamam'),
           });
           // Modal'ı yeniden yükle
           delete loaded['bsc'];
@@ -1242,19 +1243,19 @@
       }
     }
 
-    setHtml("ks-modal-bsc-body", '<div class="kr-loading" style="padding:32px;">Yükleniyor…</div>');
+    setHtml("ks-modal-bsc-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
     fetchJson(BSC_URL).then(res => {
-      if (!res.success) { setHtml("ks-modal-bsc-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'); return; }
+      if (!res.success) { setHtml("ks-modal-bsc-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`); return; }
       renderBsc(res);
-    }).catch(() => setHtml("ks-modal-bsc-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'));
+    }).catch(() => setHtml("ks-modal-bsc-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`));
   }
 
   // ── EFQM Modal — EFQM 2025 zengin türev değerlendirme ──────────────────────
   function loadEfqmModal() {
-    setHtml("ks-modal-efqm-body", '<div class="kr-loading" style="padding:32px;">EFQM 2025 değerlendirmesi hesaplanıyor…</div>');
+    setHtml("ks-modal-efqm-body", `<div class="kr-loading" style="padding:32px;">${t("EFQM 2025 değerlendirmesi hesaplanıyor…")}</div>`);
     fetchJson('/k-radar/api/ks/efqm-detail').then(res => {
       if (!res.success) {
-        setHtml("ks-modal-efqm-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>');
+        setHtml("ks-modal-efqm-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`);
         return;
       }
       const d = res.data;
@@ -1266,12 +1267,12 @@
 
       // Boyut başına render
       const dims = {
-        yon: {label:'Yön', color:'#3b82f6', icon:'fa-compass',
-              desc:'Kuruluş "neden" var ve "nasıl" yön belirliyor.'},
-        uygulama: {label:'Uygulama', color:'#1e40af', icon:'fa-cogs',
-                   desc:'Amaç, vizyon ve stratejiyi "nasıl" hayata geçiriyor.'},
-        sonuclar: {label:'Sonuçlar', color:'#10b981', icon:'fa-chart-line',
-                   desc:'Bugüne kadar "ne" gerçekleştirildi.'}
+        yon: {label:t('Yön'), color:'#3b82f6', icon:'fa-compass',
+              desc:t('Kuruluş "neden" var ve "nasıl" yön belirliyor.')},
+        uygulama: {label:t('Uygulama'), color:'#1e40af', icon:'fa-cogs',
+                   desc:t('Amaç, vizyon ve stratejiyi "nasıl" hayata geçiriyor.')},
+        sonuclar: {label:t('Sonuçlar'), color:'#10b981', icon:'fa-chart-line',
+                   desc:t('Bugüne kadar "ne" gerçekleştirildi.')}
       };
 
       function critCard(c) {
@@ -1329,13 +1330,13 @@
         <div style="background:#fff7ed;border:1px solid #fed7aa;border-radius:8px;padding:12px;margin-bottom:14px;">
           <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;">
             <div>
-              <div style="font-weight:600;color:#9a3412;font-size:13px;"><i class="fas fa-stamp"></i> Kurumsal Manuel EFQM Puanı (KPI-327)</div>
+              <div style="font-weight:600;color:#9a3412;font-size:13px;"><i class="fas fa-stamp"></i> ${t("Kurumsal Manuel EFQM Puanı (KPI-327)")}</div>
               <div style="font-size:11.5px;color:#64748b;margin-top:2px;">${esc(kpi327.note)}</div>
             </div>
             <div style="text-align:right;">
               <div style="font-size:22px;font-weight:800;color:#9a3412;">${kpi327.manual_score}<span style="font-size:12px;color:#64748b;font-weight:500;">/${kpi327.manual_target}</span></div>
               <div style="font-size:10.5px;color:${(kpi327.manual_gap||0) >= 0 ? '#059669' : '#dc2626'};">
-                ${(kpi327.manual_gap||0) >= 0 ? '+' : ''}${(kpi327.manual_gap||0).toFixed(1)} sapma
+                ${(kpi327.manual_gap||0) >= 0 ? '+' : ''}${(kpi327.manual_gap||0).toFixed(1)} ${t("sapma")}
               </div>
             </div>
           </div>
@@ -1343,11 +1344,11 @@
 
       const radar = d.radar || {};
       const radarItems = [
-        ['R', 'Results — Sonuçlar', radar.results],
-        ['A', 'Approach — Yaklaşım', radar.approach],
-        ['D', 'Deployment — Yayılım', radar.deployment],
-        ['A', 'Assessment — Değerlendirme', radar.assessment],
-        ['R', 'Refinement — İyileştirme', radar.refinement],
+        ['R', t('Results — Sonuçlar'), radar.results],
+        ['A', t('Approach — Yaklaşım'), radar.approach],
+        ['D', t('Deployment — Yayılım'), radar.deployment],
+        ['A', t('Assessment — Değerlendirme'), radar.assessment],
+        ['R', t('Refinement — İyileştirme'), radar.refinement],
       ];
 
       setHtml("ks-modal-efqm-body", `
@@ -1355,14 +1356,14 @@
           <!-- Hero: Toplam skor + seviye -->
           <div style="background:linear-gradient(135deg,${lvl.color}15,${lvl.color}05);border:1px solid ${lvl.color}30;border-radius:10px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
             <div>
-              <div style="font-size:11px;color:${lvl.color};font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">EFQM ${esc(d.model_version)} — Olgunluk Seviyesi</div>
+              <div style="font-size:11px;color:${lvl.color};font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">EFQM ${esc(d.model_version)} — ${t("Olgunluk Seviyesi")}</div>
               <div style="font-size:20px;font-weight:800;color:#0f172a;margin-top:4px;">${esc(lvl.label)}</div>
               <div style="font-size:12.5px;color:#64748b;margin-top:2px;">${esc(lvl.tagline)}</div>
               <div style="margin-top:8px;">${starsHtml}</div>
             </div>
             <div style="text-align:right;">
               <div style="font-size:36px;font-weight:800;color:${lvl.color};line-height:1;">${d.total_points}</div>
-              <div style="font-size:13px;color:#64748b;margin-top:2px;">/ ${d.max_points} puan (%${pct})</div>
+              <div style="font-size:13px;color:#64748b;margin-top:2px;">/ ${d.max_points} ${t("puan")} (%${pct})</div>
             </div>
           </div>
 
@@ -1375,13 +1376,13 @@
 
           <!-- Yorum + Öneriler -->
           <div style="background:#f8fafc;border-radius:8px;padding:14px;margin-top:8px;">
-            <h4 style="margin:0 0 10px;font-size:13px;color:#0f172a;"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> Değerlendirme ve Öneriler</h4>
+            <h4 style="margin:0 0 10px;font-size:13px;color:#0f172a;"><i class="fas fa-lightbulb" style="color:#f59e0b;"></i> ${t("Değerlendirme ve Öneriler")}</h4>
             ${narrative}
           </div>
 
           <!-- RADAR mantığı açıklama -->
           <div style="background:#eef2ff;border:1px solid #c7d2fe;border-radius:8px;padding:14px;margin-top:12px;">
-            <h4 style="margin:0 0 8px;font-size:13px;color:#4338ca;"><i class="fas fa-bullseye"></i> RADAR Tanı Aracı (EFQM 2025)</h4>
+            <h4 style="margin:0 0 8px;font-size:13px;color:#4338ca;"><i class="fas fa-bullseye"></i> ${t("RADAR Tanı Aracı (EFQM 2025)")}</h4>
             <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(180px,1fr));gap:8px;">
               ${radarItems.map(([letter, label, desc]) => `
                 <div style="background:#fff;padding:8px 10px;border-radius:6px;border:1px solid #c7d2fe;">
@@ -1392,51 +1393,51 @@
               `).join('')}
             </div>
             <div style="font-size:10.5px;color:#6b7280;margin-top:8px;font-style:italic;">
-              Not: Bu modüldeki puanlar Kokpitim verisinden türev <b>olgunluk göstergesidir</b>. Resmi EFQM Tanınma puanlaması için eğitimli Değerlendiricilerden oluşan ekip tarafından RADAR Tabloları kullanılarak değerlendirme yapılmalıdır.
+              ${t("Not: Bu modüldeki puanlar Kokpitim verisinden türev")} <b>${t("olgunluk göstergesidir")}</b>. ${t("Resmi EFQM Tanınma puanlaması için eğitimli Değerlendiricilerden oluşan ekip tarafından RADAR Tabloları kullanılarak değerlendirme yapılmalıdır.")}
             </div>
           </div>
         </div>
       `);
     }).catch(err => {
-      setHtml("ks-modal-efqm-body", '<div style="color:#ef4444;padding:16px;">Hata: ' + err.message + '</div>');
+      setHtml("ks-modal-efqm-body", '<div style="color:#ef4444;padding:16px;">' + t("Hata:") + ' ' + err.message + '</div>');
     });
   }
 
   // ── GAP Modal ─────────────────────────────────────────────────────────────────
   let gapModalChart = null;
   function loadGapModal() {
-    setHtml("ks-modal-gap-body", '<div class="kr-loading" style="padding:32px;">Yükleniyor…</div>');
+    setHtml("ks-modal-gap-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
     fetchJson(API.gap).then(res => {
-      if (!res.success) { setHtml("ks-modal-gap-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'); return; }
+      if (!res.success) { setHtml("ks-modal-gap-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`); return; }
       const d = res.data;
       const rows = d.surec_gap_listesi || [];
       setHtml("ks-modal-gap-body", `
         <div class="mc-grid-4" style="margin-bottom:16px;">
           <div class="mc-stat-card mc-stat-indigo">
-            <div class="mc-stat-label">Toplam PG</div>
+            <div class="mc-stat-label">${t("Toplam PG")}</div>
             <div class="mc-stat-value">${d.toplam_kpi}</div>
           </div>
           <div class="mc-stat-card mc-stat-emerald">
-            <div class="mc-stat-label">Hedefte</div>
+            <div class="mc-stat-label">${t("Hedefte")}</div>
             <div class="mc-stat-value">${d.hedefte}</div>
           </div>
           <div class="mc-stat-card mc-stat-amber">
-            <div class="mc-stat-label">Riskli</div>
+            <div class="mc-stat-label">${t("Riskli")}</div>
             <div class="mc-stat-value">${d.riskli}</div>
           </div>
           <div class="mc-stat-card" style="background:#fef2f2;">
-            <div class="mc-stat-label">Kritik</div>
+            <div class="mc-stat-label">${t("Kritik")}</div>
             <div class="mc-stat-value" style="color:#ef4444;">${d.kritik}</div>
           </div>
         </div>
         <div class="mc-table-wrap"><table class="mc-table">
-          <thead><tr><th>Kod</th><th>Süreç</th><th>KPI</th><th>Ort. Başarı</th><th>GAP</th><th>Durum</th></tr></thead>
+          <thead><tr><th>${t("Kod")}</th><th>${t("Süreç")}</th><th>KPI</th><th>${t("Ort. Başarı")}</th><th>GAP</th><th>${t("Durum")}</th></tr></thead>
           <tbody>${rows.map(r => {
             const durumBadge = r.durum === "hedefte"
-              ? '<span class="mc-badge mc-badge-success">Hedefte</span>'
+              ? `<span class="mc-badge mc-badge-success">${t("Hedefte")}</span>`
               : r.durum === "riskli"
-              ? '<span class="mc-badge mc-badge-warning">Riskli</span>'
-              : '<span class="mc-badge mc-badge-danger">Kritik</span>';
+              ? `<span class="mc-badge mc-badge-warning">${t("Riskli")}</span>`
+              : `<span class="mc-badge mc-badge-danger">${t("Kritik")}</span>`;
             const gapColor = r.gap >= 0 ? "#10b981" : r.gap >= -50 ? "#f59e0b" : "#ef4444";
             return `<tr>
               <td style="font-size:11px;color:#6366f1;">${esc(r.code)}</td>
@@ -1461,14 +1462,14 @@
           type: "bar",
           data: {
             labels: top12.map(r => (r.code ? r.code + " " : "") + (r.name.length > 18 ? r.name.slice(0,18)+"…" : r.name)),
-            datasets: [{ label: "Ort. Başarı %", data: top12.map(r => r.ort_basari),
+            datasets: [{ label: t("Ort. Başarı %"), data: top12.map(r => r.ort_basari),
               backgroundColor: top12.map(r => scoreColor(r.ort_basari) + "cc"), borderRadius: 4 }]
           },
           options: { indexAxis: "y", responsive: true, plugins: { legend: { display: false } },
             scales: { x: { beginAtZero: true, max: 100, ticks: { callback: v => v + "%" } } } }
         });
       }
-    }).catch(() => setHtml("ks-modal-gap-body", '<div style="color:#ef4444;padding:16px;">Yüklenemedi.</div>'));
+    }).catch(() => setHtml("ks-modal-gap-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`));
   }
 
 })();

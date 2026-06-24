@@ -358,7 +358,7 @@ function showToolInfo(toolKey) {
   var titleEl = document.getElementById("toolInfoTitle");
   var bodyEl = document.getElementById("toolInfoBody");
   if (!overlay || !titleEl || !bodyEl) return;
-  titleEl.innerHTML = '<i class="' + tool.icon + '"></i><span>' + tool.title + "</span>";
+  titleEl.innerHTML = '<i class="' + tool.icon + '"></i><span>' + t(tool.title) + "</span>";
   var sectionsHtml = "";
   var colors = {
     primary: "#4f46e5",
@@ -374,9 +374,9 @@ function showToolInfo(toolKey) {
       '<div class="tool-info-section"><h5 class="tool-info-section-title" style="color:' +
       hc +
       ';"><i class="fas fa-chevron-right"></i>' +
-      section.heading +
+      t(section.heading) +
       '</h5><div class="tool-info-body-inner">' +
-      section.content +
+      t(section.content) +
       "</div></div>";
   });
   bodyEl.innerHTML = sectionsHtml;

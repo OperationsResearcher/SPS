@@ -18,10 +18,10 @@
   const CAN_EDIT = root.dataset.canEdit === "true";
 
   const PERSPS = [
-    { key: "finansal", label: "Finansal", icon: "fa-coins", color: "#10b981" },
-    { key: "musteri", label: "Müşteri", icon: "fa-users", color: "#3b82f6" },
-    { key: "ic_surec", label: "İç Süreçler", icon: "fa-gears", color: "#8b5cf6" },
-    { key: "ogrenme", label: "Öğrenme & Gelişim", icon: "fa-graduation-cap", color: "#f59e0b" },
+    { key: "finansal", label: t("Finansal"), icon: "fa-coins", color: "#10b981" },
+    { key: "musteri", label: t("Müşteri"), icon: "fa-users", color: "#3b82f6" },
+    { key: "ic_surec", label: t("İç Süreçler"), icon: "fa-gears", color: "#8b5cf6" },
+    { key: "ogrenme", label: t("Öğrenme & Gelişim"), icon: "fa-graduation-cap", color: "#f59e0b" },
   ];
 
   const loadingEl = document.getElementById("bsc-loading");
@@ -41,7 +41,7 @@
       .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
   }
   function showError(msg) {
-    Swal.fire({ icon: "error", title: "Hata", text: msg, confirmButtonColor: "#dc2626" });
+    Swal.fire({ icon: "error", title: t("Hata"), text: msg, confirmButtonColor: "#dc2626" });
   }
   function toast(msg) {
     Swal.fire({ toast: true, position: "top-end", icon: "success", title: msg,
@@ -54,14 +54,14 @@
   }
 
   function scoreBadge(score) {
-    if (score == null) return '<span style="color:#94a3b8;font-size:12px;">veri yok</span>';
+    if (score == null) return `<span style="color:#94a3b8;font-size:12px;">${t("veri yok")}</span>`;
     const c = score >= 75 ? "#10b981" : (score >= 50 ? "#f59e0b" : "#ef4444");
     return `<span style="font-weight:800;font-size:18px;color:${c};">%${score}</span>`;
   }
 
   function perspSelect(kpiId, current) {
     if (!CAN_EDIT) return "";
-    const opts = ['<option value="">— Atama yok —</option>']
+    const opts = [`<option value="">${t("— Atama yok —")}</option>`]
       .concat(PERSPS.map((p) =>
         `<option value="${p.key}" ${p.key === current ? "selected" : ""}>${esc(p.label)}</option>`))
       .join("");
@@ -74,7 +74,7 @@
     return `<div style="display:flex;align-items:center;gap:8px;padding:6px 8px;border:1px solid #eef2f7;border-radius:6px;background:var(--bg-default,#fff);">
       <div style="flex:1;min-width:0;">
         <div style="font-size:12.5px;font-weight:600;color:var(--text-default);white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${esc(k.name)}</div>
-        <div style="font-size:11px;color:#94a3b8;">${esc(k.process_name || "—")} · perf ${perf}</div>
+        <div style="font-size:11px;color:#94a3b8;">${esc(k.process_name || "—")} · ${t("perf")} ${perf}</div>
       </div>
       ${perspSelect(k.id, k.perspective)}
     </div>`;
@@ -85,7 +85,7 @@
     perspGrid.innerHTML = PERSPS.map((p) => {
       const d = persp[p.key] || { kpi_count: 0, score: null, kpis: [] };
       const kpis = (d.kpis || []).map(kpiRow).join("") ||
-        '<div style="color:#94a3b8;font-size:12px;padding:6px 0;">Bu perspektifte gösterge yok.</div>';
+        `<div style="color:#94a3b8;font-size:12px;padding:6px 0;">${t("Bu perspektifte gösterge yok.")}</div>`;
       return `<div class="mc-card" style="border-top:3px solid ${p.color};">
         <div class="mc-card-header" style="display:flex;align-items:center;gap:8px;">
           <i class="fas ${p.icon}" style="color:${p.color};"></i>
@@ -93,7 +93,7 @@
           <span style="margin-left:auto;">${scoreBadge(d.score)}</span>
         </div>
         <div class="mc-card-body" style="padding:10px 12px;display:flex;flex-direction:column;gap:6px;">
-          <div style="font-size:11px;color:#64748b;">${d.kpi_count || 0} gösterge</div>
+          <div style="font-size:11px;color:#64748b;">${d.kpi_count || 0} ${t("gösterge")}</div>
           ${kpis}
         </div>
       </div>`;
@@ -118,17 +118,17 @@
         body: JSON.stringify({ kpi_id: kpiId, perspective: perspective }),
       });
       const d = await res.json();
-      if (d.success) { toast(perspective ? perspLabel(perspective) + "'e atandı." : "Atama kaldırıldı."); load(); }
-      else showError(d.message || "Atama başarısız.");
-    } catch (e) { showError("Sunucu hatası: " + e.message); }
+      if (d.success) { toast(perspective ? perspLabel(perspective) + t("'e atandı.") : t("Atama kaldırıldı.")); load(); }
+      else showError(d.message || t("Atama başarısız."));
+    } catch (e) { showError(t("Sunucu hatası: ") + e.message); }
   }
 
   async function autoAssign() {
     const r = await Swal.fire({
-      title: "Otomatik sınıflandır?",
-      text: "Atanmamış göstergeler ad/anahtar kelimeye göre perspektiflere önerilecek. Mevcut atamalar korunur.",
+      title: t("Otomatik sınıflandır?"),
+      text: t("Atanmamış göstergeler ad/anahtar kelimeye göre perspektiflere önerilecek. Mevcut atamalar korunur."),
       icon: "question", showCancelButton: true,
-      confirmButtonText: "Evet, sınıflandır", cancelButtonText: "İptal", confirmButtonColor: "#0d9488",
+      confirmButtonText: t("Evet, sınıflandır"), cancelButtonText: t("İptal"), confirmButtonColor: "#0d9488",
     });
     if (!r.isConfirmed) return;
     try {
@@ -138,9 +138,9 @@
         credentials: "same-origin", body: "{}",
       });
       const d = await res.json();
-      if (d.success) { toast("Otomatik sınıflandırma tamam."); load(); }
-      else showError(d.message || "Sınıflandırma başarısız.");
-    } catch (e) { showError("Sunucu hatası: " + e.message); }
+      if (d.success) { toast(t("Otomatik sınıflandırma tamam.")); load(); }
+      else showError(d.message || t("Sınıflandırma başarısız."));
+    } catch (e) { showError(t("Sunucu hatası: ") + e.message); }
   }
 
   root.addEventListener("change", (e) => {
@@ -154,11 +154,11 @@
       const res = await fetch(GET_URL, { credentials: "same-origin" });
       const d = await res.json();
       loadingEl.style.display = "none";
-      if (!d.success) { showError(d.message || "BSC verisi alınamadı."); return; }
+      if (!d.success) { showError(d.message || t("BSC verisi alınamadı.")); return; }
       render(d);
     } catch (e) {
       loadingEl.style.display = "none";
-      showError("Sunucu hatası: " + e.message);
+      showError(t("Sunucu hatası: ") + e.message);
     }
   }
 

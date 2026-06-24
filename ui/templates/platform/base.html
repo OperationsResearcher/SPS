@@ -25,6 +25,21 @@
     <!-- Chart.js -->
     <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
     <script>
+      // i18n (FAZ 4): JS tarafı çeviri sözlüğü + t() helper.
+      // window.t("Türkçe metin") → aktif dilde çevirisi varsa onu, yoksa Türkçe'yi döner.
+      // Named arg: t("%(n)s öğe", {n: 5}). Default dil (tr) için map boştur → her zaman Türkçe.
+      window._I18N = {{ js_i18n_map() | tojson }};
+      window.t = function (s, params) {
+        var out = (window._I18N && window._I18N[s]) || s;
+        if (params) {
+          out = out.replace(/%\(([^)]+)\)s/g, function (m, k) {
+            return (params[k] !== undefined && params[k] !== null) ? params[k] : m;
+          });
+        }
+        return out;
+      };
+    </script>
+    <script>
       // Kokpitim UI Kılavuzu §6 — Chart.js global ayarları
       if (window.Chart) {
         Chart.defaults.font.family = "'Inter', system-ui, sans-serif";
