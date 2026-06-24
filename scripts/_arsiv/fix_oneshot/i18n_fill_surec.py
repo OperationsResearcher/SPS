@@ -226,6 +226,30 @@ T = {
     "Görüntülenecek süreç": "Process to display",
     "Görünüm": "View",
     "Kaydet": "Save",
+    # bireysel/karne.html
+    "AI PERFORMANS ÖZETİ": "AI PERFORMANCE SUMMARY",
+    "Bireysel Performans Karnem": "My Individual Performance Scorecard",
+    "Kişisel PG ve faaliyet takibi": "Personal PI and activity tracking",
+    "PG VERİ KAPSAMI": "PI DATA COVERAGE",
+    "Veri girilen / toplam PG": "Data entered / total PIs",
+    "FAALİYET TAMAMLAMA": "ACTIVITY COMPLETION",
+    "İşaretlenen aylar / toplam ay": "Marked months / total months",
+    "Toplam PG": "Total PIs",
+    "Veri Girilen": "Data Entered",
+    "Yıl özeti &amp; dikkat": "Year summary &amp; attention",
+    "Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti.": "A brief summary of data coverage and your indicators for the selected year.",
+    "Sarı uyarı pill’lerindeki “hedefe göre zayıf” ifadesi, son girilen aylık değer ile hedefi karşılaştıran <strong>bilgi amaçlı bir tahmindir</strong>; İK veya resmi ölçüm yerine geçmez.":
+        "The “weak against target” label in the yellow warning pills is an <strong>informational estimate</strong> comparing the last entered monthly value with the target; it does not replace HR or official measurement.",
+    "Bu yıl ne yaptım?": "What did I do this year?",
+    "Henüz kayıtlı bir hareket yok. PG verisi girin veya faaliyet aylarını işaretleyin.": "No recorded activity yet. Enter PI data or mark activity months.",
+    "Performans Göstergelerim": "My Performance Indicators",
+    "Veri var": "Has data",
+    "Geçmiş/geçerli ay, veri yok": "Past/current month, no data",
+    "Satıra tıklayınca yıllık detay ve mini grafik açılır.": "Click a row to open annual detail and a mini chart.",
+    "Gösterge": "Indicator",
+    "Hedef": "Target",
+    "Faaliyetlerim": "My Activities",
+    "Silme işlemi <strong>sizin adınıza</strong> kayda geçer (kim / ne zaman).": "The deletion is recorded <strong>on your behalf</strong> (who / when).",
 }
 
 with open(PO, encoding="utf-8") as f:

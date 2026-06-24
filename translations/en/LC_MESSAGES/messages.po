@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 03:58+0300\n"
+"POT-Creation-Date: 2026-06-24 04:13+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -190,6 +190,256 @@ msgstr "Edit"
 msgid "İptal"
 msgstr "Cancel"
 
+#: ui/templates/platform/bireysel/karne.html:36
+msgid "AI PERFORMANS ÖZETİ"
+msgstr "AI PERFORMANCE SUMMARY"
+
+#: ui/templates/platform/bireysel/karne.html:69
+msgid "Bireysel Performans Karnem"
+msgstr "My Individual Performance Scorecard"
+
+#: ui/templates/platform/bireysel/karne.html:70
+msgid "Kişisel PG ve faaliyet takibi"
+msgstr "Personal PI and activity tracking"
+
+#: ui/templates/platform/bireysel/karne.html:73
+#: ui/templates/platform/surec/faaliyetler.html:51
+#: ui/templates/platform/surec/karne.html:99
+#: ui/templates/platform/surec/karne.html:293
+#: ui/templates/platform/surec/karne.html:819
+msgid "Yıl"
+msgstr "Year"
+
+#: ui/templates/platform/bireysel/karne.html:94
+msgid "PG VERİ KAPSAMI"
+msgstr "PI DATA COVERAGE"
+
+#: ui/templates/platform/bireysel/karne.html:96
+msgid "Veri girilen / toplam PG"
+msgstr "Data entered / total PIs"
+
+#: ui/templates/platform/bireysel/karne.html:106
+msgid "FAALİYET TAMAMLAMA"
+msgstr "ACTIVITY COMPLETION"
+
+#: ui/templates/platform/bireysel/karne.html:108
+msgid "İşaretlenen aylar / toplam ay"
+msgstr "Marked months / total months"
+
+#: ui/templates/platform/bireysel/karne.html:161
+#: ui/templates/platform/surec/index.html:105
+msgid "Toplam PG"
+msgstr "Total PIs"
+
+#: ui/templates/platform/bireysel/karne.html:166
+msgid "Veri Girilen"
+msgstr "Data Entered"
+
+#: ui/templates/platform/bireysel/karne.html:171
+#: ui/templates/platform/surec/faaliyetler.html:10
+#: ui/templates/platform/surec/faaliyetler.html:75
+#: ui/templates/platform/surec/faaliyetler.html:94
+#: ui/templates/platform/surec/karne.html:390
+msgid "Faaliyetler"
+msgstr "Activities"
+
+#: ui/templates/platform/bireysel/karne.html:176
+#: ui/templates/platform/surec/faaliyetler.html:81
+#: ui/templates/platform/surec/karne.html:396
+msgid "Tamamlanan"
+msgstr "Completed"
+
+#: ui/templates/platform/bireysel/karne.html:185
+msgid "Yıl özeti &amp; dikkat"
+msgstr "Year summary &amp; attention"
+
+#: ui/templates/platform/bireysel/karne.html:189
+msgid "Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti."
+msgstr "A brief summary of data coverage and your indicators for the selected year."
+
+#: ui/templates/platform/bireysel/karne.html:192
+msgid ""
+"Sarı uyarı pill’lerindeki “hedefe göre zayıf” ifadesi, son girilen aylık "
+"değer ile hedefi karşılaştıran <strong>bilgi amaçlı bir "
+"tahmindir</strong>; İK veya resmi ölçüm yerine geçmez."
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:201
+msgid "Bu yıl ne yaptım?"
+msgstr "What did I do this year?"
+
+#: ui/templates/platform/bireysel/karne.html:206
+msgid ""
+"Henüz kayıtlı bir hareket yok. PG verisi girin veya faaliyet aylarını "
+"işaretleyin."
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:213
+#: ui/templates/platform/surec/faaliyetler.html:89
+#: ui/templates/platform/surec/faaliyetler.html:114
+#: ui/templates/platform/surec/karne.html:278
+#: ui/templates/platform/surec/karne.html:486
+#: ui/templates/platform/surec/karne.html:944
+msgid "Veriler yükleniyor…"
+msgstr "Loading data…"
+
+#: ui/templates/platform/bireysel/karne.html:220
+msgid "Performans Göstergelerim"
+msgstr "My Performance Indicators"
+
+#: ui/templates/platform/bireysel/karne.html:223
+#: ui/templates/platform/surec/karne.html:851
+msgid "PG Ekle"
+msgstr "Add PI"
+
+#: ui/templates/platform/bireysel/karne.html:228
+msgid "Veri var"
+msgstr "Has data"
+
+#: ui/templates/platform/bireysel/karne.html:229
+msgid "Geçmiş/geçerli ay, veri yok"
+msgstr "Past/current month, no data"
+
+#: ui/templates/platform/bireysel/karne.html:230
+msgid "Satıra tıklayınca yıllık detay ve mini grafik açılır."
+msgstr "Click a row to open annual detail and a mini chart."
+
+#: ui/templates/platform/bireysel/karne.html:238
+#: ui/templates/platform/surec/karne.html:263
+msgid "Gösterge"
+msgstr "Indicator"
+
+#: ui/templates/platform/bireysel/karne.html:239
+msgid "Hedef"
+msgstr "Target"
+
+#: ui/templates/platform/bireysel/karne.html:240
+#: ui/templates/platform/surec/karne.html:866
+msgid "Birim"
+msgstr "Unit"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Oca"
+msgstr "Jan"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Şub"
+msgstr "Feb"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Mar"
+msgstr "Mar"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Nis"
+msgstr "Apr"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "May"
+msgstr "May"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Haz"
+msgstr "Jun"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Tem"
+msgstr "Jul"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Ağu"
+msgstr "Aug"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Eyl"
+msgstr "Sep"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Eki"
+msgstr "Oct"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Kas"
+msgstr "Nov"
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Ara"
+msgstr "Dec"
+
+#: ui/templates/platform/bireysel/karne.html:246
+#: ui/templates/platform/bireysel/karne.html:280
+#: ui/templates/platform/surec/faaliyetler.html:109
+#: ui/templates/platform/surec/karne.html:222
+#: ui/templates/platform/surec/karne.html:481
+msgid "İşlem"
+msgstr "Action"
+
+#: ui/templates/platform/bireysel/karne.html:251
+#: ui/templates/platform/masaustu/index.html:63
+#: ui/templates/platform/surec/karne.html:727
+msgid "Yükleniyor…"
+msgstr "Loading…"
+
+#: ui/templates/platform/bireysel/karne.html:262
+msgid "Faaliyetlerim"
+msgstr "My Activities"
+
+#: ui/templates/platform/bireysel/karne.html:265
+#: ui/templates/platform/surec/faaliyetler.html:96
+#: ui/templates/platform/surec/karne.html:431
+msgid "Faaliyet Ekle"
+msgstr "Add Activity"
+
+#: ui/templates/platform/bireysel/karne.html:273
+#: ui/templates/platform/surec/faaliyetler.html:104
+#: ui/templates/platform/surec/karne.html:476
+msgid "Faaliyet"
+msgstr "Activity"
+
+#: ui/templates/platform/bireysel/karne.html:274
+#: ui/templates/platform/surec/faaliyetler.html:105
+#: ui/templates/platform/surec/index.html:530
+#: ui/templates/platform/surec/karne.html:221
+#: ui/templates/platform/surec/karne.html:477
+msgid "Durum"
+msgstr "Status"
+
 #: ui/templates/platform/masaustu/index.html:24
 msgid "Widget görünürlüğü"
 msgstr "Widget visibility"
@@ -223,11 +473,6 @@ msgstr ""
 #: ui/templates/platform/masaustu/index.html:58
 msgid "Yönetici Sabah Özeti"
 msgstr "Executive Morning Brief"
-
-#: ui/templates/platform/masaustu/index.html:63
-#: ui/templates/platform/surec/karne.html:727
-msgid "Yükleniyor…"
-msgstr "Loading…"
 
 #: ui/templates/platform/masaustu/index.html:73
 msgid "Kurumsal Olgunluk Endeksi"
@@ -377,13 +622,6 @@ msgstr "No unread notifications."
 msgid "Süreç Faaliyetleri"
 msgstr "Process Activities"
 
-#: ui/templates/platform/surec/faaliyetler.html:10
-#: ui/templates/platform/surec/faaliyetler.html:75
-#: ui/templates/platform/surec/faaliyetler.html:94
-#: ui/templates/platform/surec/karne.html:390
-msgid "Faaliyetler"
-msgstr "Activities"
-
 #: ui/templates/platform/surec/faaliyetler.html:33
 #: ui/templates/platform/surec/karne.html:133
 #: ui/templates/platform/surec/karne.html:285
@@ -400,13 +638,6 @@ msgstr "Document No"
 msgid "Revizyon"
 msgstr "Revision"
 
-#: ui/templates/platform/surec/faaliyetler.html:51
-#: ui/templates/platform/surec/karne.html:99
-#: ui/templates/platform/surec/karne.html:293
-#: ui/templates/platform/surec/karne.html:819
-msgid "Yıl"
-msgstr "Year"
-
 #: ui/templates/platform/surec/faaliyetler.html:60
 #: ui/templates/platform/surec/karne.html:691
 msgid "Süreç"
@@ -417,105 +648,9 @@ msgstr "Process"
 msgid "Toplam"
 msgstr "Total"
 
-#: ui/templates/platform/surec/faaliyetler.html:81
-#: ui/templates/platform/surec/karne.html:396
-msgid "Tamamlanan"
-msgstr "Completed"
-
 #: ui/templates/platform/surec/faaliyetler.html:83
 msgid "Aylık işaretleme"
 msgstr "Monthly marking"
-
-#: ui/templates/platform/surec/faaliyetler.html:89
-#: ui/templates/platform/surec/faaliyetler.html:114
-#: ui/templates/platform/surec/karne.html:278
-#: ui/templates/platform/surec/karne.html:486
-#: ui/templates/platform/surec/karne.html:944
-msgid "Veriler yükleniyor…"
-msgstr "Loading data…"
-
-#: ui/templates/platform/surec/faaliyetler.html:96
-#: ui/templates/platform/surec/karne.html:431
-msgid "Faaliyet Ekle"
-msgstr "Add Activity"
-
-#: ui/templates/platform/surec/faaliyetler.html:104
-#: ui/templates/platform/surec/karne.html:476
-msgid "Faaliyet"
-msgstr "Activity"
-
-#: ui/templates/platform/surec/faaliyetler.html:105
-#: ui/templates/platform/surec/index.html:530
-#: ui/templates/platform/surec/karne.html:221
-#: ui/templates/platform/surec/karne.html:477
-msgid "Durum"
-msgstr "Status"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Oca"
-msgstr "Jan"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Şub"
-msgstr "Feb"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Mar"
-msgstr "Mar"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Nis"
-msgstr "Apr"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "May"
-msgstr "May"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Haz"
-msgstr "Jun"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Tem"
-msgstr "Jul"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Ağu"
-msgstr "Aug"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Eyl"
-msgstr "Sep"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Eki"
-msgstr "Oct"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Kas"
-msgstr "Nov"
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Ara"
-msgstr "Dec"
-
-#: ui/templates/platform/surec/faaliyetler.html:109
-#: ui/templates/platform/surec/karne.html:222
-#: ui/templates/platform/surec/karne.html:481
-msgid "İşlem"
-msgstr "Action"
 
 #: ui/templates/platform/surec/index.html:100
 msgid "Toplam Süreç"
@@ -525,10 +660,6 @@ msgstr "Total Processes"
 #, python-format
 msgid "%(n)s kök süreç"
 msgstr "%(n)s root processes"
-
-#: ui/templates/platform/surec/index.html:105
-msgid "Toplam PG"
-msgstr "Total PIs"
 
 #: ui/templates/platform/surec/index.html:107
 #, python-format
@@ -863,10 +994,6 @@ msgstr "Process leader (summary)"
 #: ui/templates/platform/surec/karne.html:220
 msgid "İlerleme"
 msgstr "Progress"
-
-#: ui/templates/platform/surec/karne.html:263
-msgid "Gösterge"
-msgstr "Indicator"
 
 #: ui/templates/platform/surec/karne.html:265
 msgid "— PG seçin —"
@@ -1263,6 +1390,8 @@ msgstr "Edit record"
 #: ui/templates/platform/surec/karne.html:757
 msgid "Veri tarihi değişmez; yalnızca gerçekleşen değer ve açıklama güncellenir."
 msgstr "The data date does not change; only the actual value and description are updated."
+"The data date does not change; only the actual value and description are "
+"updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"
@@ -1276,15 +1405,11 @@ msgstr ""
 
 #: ui/templates/platform/surec/karne.html:791
 msgid "Silme işlemi <strong>sizin adınıza</strong> kayda geçer (kim / ne zaman)."
-msgstr ""
+msgstr "The deletion is recorded <strong>on your behalf</strong> (who / when)."
 
 #: ui/templates/platform/surec/karne.html:797
 msgid "Evet, pasifleştir"
 msgstr "Yes, deactivate"
-
-#: ui/templates/platform/surec/karne.html:851
-msgid "PG Ekle"
-msgstr "Add PI"
 
 #: ui/templates/platform/surec/karne.html:856
 msgid "PGV Ekle"
@@ -1301,10 +1426,6 @@ msgstr "Strategy"
 #: ui/templates/platform/surec/karne.html:865
 msgid "Ağırlık"
 msgstr "Weight"
-
-#: ui/templates/platform/surec/karne.html:866
-msgid "Birim"
-msgstr "Unit"
 
 #: ui/templates/platform/surec/karne.html:867
 msgid "Periyot"

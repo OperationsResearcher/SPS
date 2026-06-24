@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 03:58+0300\n"
+"POT-Creation-Date: 2026-06-24 04:13+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -191,6 +191,256 @@ msgstr ""
 msgid "İptal"
 msgstr ""
 
+#: ui/templates/platform/bireysel/karne.html:36
+msgid "AI PERFORMANS ÖZETİ"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:69
+msgid "Bireysel Performans Karnem"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:70
+msgid "Kişisel PG ve faaliyet takibi"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:73
+#: ui/templates/platform/surec/faaliyetler.html:51
+#: ui/templates/platform/surec/karne.html:99
+#: ui/templates/platform/surec/karne.html:293
+#: ui/templates/platform/surec/karne.html:819
+msgid "Yıl"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:94
+msgid "PG VERİ KAPSAMI"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:96
+msgid "Veri girilen / toplam PG"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:106
+msgid "FAALİYET TAMAMLAMA"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:108
+msgid "İşaretlenen aylar / toplam ay"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:161
+#: ui/templates/platform/surec/index.html:105
+msgid "Toplam PG"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:166
+msgid "Veri Girilen"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:171
+#: ui/templates/platform/surec/faaliyetler.html:10
+#: ui/templates/platform/surec/faaliyetler.html:75
+#: ui/templates/platform/surec/faaliyetler.html:94
+#: ui/templates/platform/surec/karne.html:390
+msgid "Faaliyetler"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:176
+#: ui/templates/platform/surec/faaliyetler.html:81
+#: ui/templates/platform/surec/karne.html:396
+msgid "Tamamlanan"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:185
+msgid "Yıl özeti &amp; dikkat"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:189
+msgid "Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti."
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:192
+msgid ""
+"Sarı uyarı pill’lerindeki “hedefe göre zayıf” ifadesi, son girilen aylık "
+"değer ile hedefi karşılaştıran <strong>bilgi amaçlı bir "
+"tahmindir</strong>; İK veya resmi ölçüm yerine geçmez."
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:201
+msgid "Bu yıl ne yaptım?"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:206
+msgid ""
+"Henüz kayıtlı bir hareket yok. PG verisi girin veya faaliyet aylarını "
+"işaretleyin."
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:213
+#: ui/templates/platform/surec/faaliyetler.html:89
+#: ui/templates/platform/surec/faaliyetler.html:114
+#: ui/templates/platform/surec/karne.html:278
+#: ui/templates/platform/surec/karne.html:486
+#: ui/templates/platform/surec/karne.html:944
+msgid "Veriler yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:220
+msgid "Performans Göstergelerim"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:223
+#: ui/templates/platform/surec/karne.html:851
+msgid "PG Ekle"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:228
+msgid "Veri var"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:229
+msgid "Geçmiş/geçerli ay, veri yok"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:230
+msgid "Satıra tıklayınca yıllık detay ve mini grafik açılır."
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:238
+#: ui/templates/platform/surec/karne.html:263
+msgid "Gösterge"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:239
+msgid "Hedef"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:240
+#: ui/templates/platform/surec/karne.html:866
+msgid "Birim"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Oca"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Şub"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Mar"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Nis"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "May"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Haz"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Tem"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Ağu"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Eyl"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Eki"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Kas"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:243
+#: ui/templates/platform/bireysel/karne.html:277
+#: ui/templates/platform/surec/faaliyetler.html:107
+#: ui/templates/platform/surec/karne.html:479
+msgid "Ara"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:246
+#: ui/templates/platform/bireysel/karne.html:280
+#: ui/templates/platform/surec/faaliyetler.html:109
+#: ui/templates/platform/surec/karne.html:222
+#: ui/templates/platform/surec/karne.html:481
+msgid "İşlem"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:251
+#: ui/templates/platform/masaustu/index.html:63
+#: ui/templates/platform/surec/karne.html:727
+msgid "Yükleniyor…"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:262
+msgid "Faaliyetlerim"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:265
+#: ui/templates/platform/surec/faaliyetler.html:96
+#: ui/templates/platform/surec/karne.html:431
+msgid "Faaliyet Ekle"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:273
+#: ui/templates/platform/surec/faaliyetler.html:104
+#: ui/templates/platform/surec/karne.html:476
+msgid "Faaliyet"
+msgstr ""
+
+#: ui/templates/platform/bireysel/karne.html:274
+#: ui/templates/platform/surec/faaliyetler.html:105
+#: ui/templates/platform/surec/index.html:530
+#: ui/templates/platform/surec/karne.html:221
+#: ui/templates/platform/surec/karne.html:477
+msgid "Durum"
+msgstr ""
+
 #: ui/templates/platform/masaustu/index.html:24
 msgid "Widget görünürlüğü"
 msgstr ""
@@ -218,11 +468,6 @@ msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:58
 msgid "Yönetici Sabah Özeti"
-msgstr ""
-
-#: ui/templates/platform/masaustu/index.html:63
-#: ui/templates/platform/surec/karne.html:727
-msgid "Yükleniyor…"
 msgstr ""
 
 #: ui/templates/platform/masaustu/index.html:73
@@ -369,13 +614,6 @@ msgstr ""
 msgid "Süreç Faaliyetleri"
 msgstr ""
 
-#: ui/templates/platform/surec/faaliyetler.html:10
-#: ui/templates/platform/surec/faaliyetler.html:75
-#: ui/templates/platform/surec/faaliyetler.html:94
-#: ui/templates/platform/surec/karne.html:390
-msgid "Faaliyetler"
-msgstr ""
-
 #: ui/templates/platform/surec/faaliyetler.html:33
 #: ui/templates/platform/surec/karne.html:133
 #: ui/templates/platform/surec/karne.html:285
@@ -392,13 +630,6 @@ msgstr ""
 msgid "Revizyon"
 msgstr ""
 
-#: ui/templates/platform/surec/faaliyetler.html:51
-#: ui/templates/platform/surec/karne.html:99
-#: ui/templates/platform/surec/karne.html:293
-#: ui/templates/platform/surec/karne.html:819
-msgid "Yıl"
-msgstr ""
-
 #: ui/templates/platform/surec/faaliyetler.html:60
 #: ui/templates/platform/surec/karne.html:691
 msgid "Süreç"
@@ -409,104 +640,8 @@ msgstr ""
 msgid "Toplam"
 msgstr ""
 
-#: ui/templates/platform/surec/faaliyetler.html:81
-#: ui/templates/platform/surec/karne.html:396
-msgid "Tamamlanan"
-msgstr ""
-
 #: ui/templates/platform/surec/faaliyetler.html:83
 msgid "Aylık işaretleme"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:89
-#: ui/templates/platform/surec/faaliyetler.html:114
-#: ui/templates/platform/surec/karne.html:278
-#: ui/templates/platform/surec/karne.html:486
-#: ui/templates/platform/surec/karne.html:944
-msgid "Veriler yükleniyor…"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:96
-#: ui/templates/platform/surec/karne.html:431
-msgid "Faaliyet Ekle"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:104
-#: ui/templates/platform/surec/karne.html:476
-msgid "Faaliyet"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:105
-#: ui/templates/platform/surec/index.html:530
-#: ui/templates/platform/surec/karne.html:221
-#: ui/templates/platform/surec/karne.html:477
-msgid "Durum"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Oca"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Şub"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Mar"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Nis"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "May"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Haz"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Tem"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Ağu"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Eyl"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Eki"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Kas"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:107
-#: ui/templates/platform/surec/karne.html:479
-msgid "Ara"
-msgstr ""
-
-#: ui/templates/platform/surec/faaliyetler.html:109
-#: ui/templates/platform/surec/karne.html:222
-#: ui/templates/platform/surec/karne.html:481
-msgid "İşlem"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:100
@@ -516,10 +651,6 @@ msgstr ""
 #: ui/templates/platform/surec/index.html:102
 #, python-format
 msgid "%(n)s kök süreç"
-msgstr ""
-
-#: ui/templates/platform/surec/index.html:105
-msgid "Toplam PG"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:107
@@ -854,10 +985,6 @@ msgstr ""
 
 #: ui/templates/platform/surec/karne.html:220
 msgid "İlerleme"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:263
-msgid "Gösterge"
 msgstr ""
 
 #: ui/templates/platform/surec/karne.html:265
@@ -1274,10 +1401,6 @@ msgstr ""
 msgid "Evet, pasifleştir"
 msgstr ""
 
-#: ui/templates/platform/surec/karne.html:851
-msgid "PG Ekle"
-msgstr ""
-
 #: ui/templates/platform/surec/karne.html:856
 msgid "PGV Ekle"
 msgstr ""
@@ -1292,10 +1415,6 @@ msgstr ""
 
 #: ui/templates/platform/surec/karne.html:865
 msgid "Ağırlık"
-msgstr ""
-
-#: ui/templates/platform/surec/karne.html:866
-msgid "Birim"
 msgstr ""
 
 #: ui/templates/platform/surec/karne.html:867

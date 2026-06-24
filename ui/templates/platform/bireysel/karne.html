@@ -33,7 +33,7 @@
       <span style="flex:0 0 auto; width:32px; height:32px; border-radius:10px; background:#6366f1; color:#fff; display:flex; align-items:center; justify-content:center;"><i class="fas fa-wand-magic-sparkles"></i></span>
       <div style="flex:1; min-width:0;">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
-          <span style="font-size:11.5px; font-weight:700; color:#4338ca; letter-spacing:.02em;">AI PERFORMANS ÖZETİ</span>
+          <span style="font-size:11.5px; font-weight:700; color:#4338ca; letter-spacing:.02em;">{{ _("AI PERFORMANS ÖZETİ") }}</span>
           <span id="ai-ozet-kaynak" style="font-size:10px; font-weight:600; color:#64748b; background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:1px 7px;"></span>
         </div>
         <p id="ai-ozet-metin" style="font-size:13px; line-height:1.55; color:#1e293b; margin:0;">…</p>
@@ -66,11 +66,11 @@
   <div class="mc-card" style="margin-bottom:20px;">
     <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
       <div style="flex:1; min-width:0;">
-        <h2 class="mc-page-title" style="margin:0;">Bireysel Performans Karnem</h2>
-        <p class="mc-page-subtitle">Kişisel PG ve faaliyet takibi</p>
+        <h2 class="mc-page-title" style="margin:0;">{{ _("Bireysel Performans Karnem") }}</h2>
+        <p class="mc-page-subtitle">{{ _("Kişisel PG ve faaliyet takibi") }}</p>
       </div>
       <div style="display:flex; align-items:center; gap:8px;">
-        <label class="mc-label" style="margin:0; white-space:nowrap;">Yıl:</label>
+        <label class="mc-label" style="margin:0; white-space:nowrap;">{{ _("Yıl") }}:</label>
         <select id="year-select" class="mc-select" style="width:auto;">
           {% for y in range(current_year + 1, current_year - 5, -1) %}
           <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
@@ -91,9 +91,9 @@
                   transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.6s ease;"/>
           <text id="karne-ring-pg-text" x="60" y="62" text-anchor="middle" dominant-baseline="middle"
                 font-size="22" font-weight="800" fill="#0f172a">—</text>
-          <text x="60" y="82" text-anchor="middle" font-size="9.5" fill="#64748b" letter-spacing="0.5">PG VERİ KAPSAMI</text>
+          <text x="60" y="82" text-anchor="middle" font-size="9.5" fill="#64748b" letter-spacing="0.5">{{ _("PG VERİ KAPSAMI") }}</text>
         </svg>
-        <div style="font-size:12px; color:#64748b; margin-top:4px;">Veri girilen / toplam PG</div>
+        <div style="font-size:12px; color:#64748b; margin-top:4px;">{{ _("Veri girilen / toplam PG") }}</div>
       </div>
       <div style="text-align:center;">
         <svg id="karne-ring-act" width="120" height="120" viewBox="0 0 120 120">
@@ -103,9 +103,9 @@
                   transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.6s ease;"/>
           <text id="karne-ring-act-text" x="60" y="62" text-anchor="middle" dominant-baseline="middle"
                 font-size="22" font-weight="800" fill="#0f172a">—</text>
-          <text x="60" y="82" text-anchor="middle" font-size="9.5" fill="#64748b" letter-spacing="0.5">FAALİYET TAMAMLAMA</text>
+          <text x="60" y="82" text-anchor="middle" font-size="9.5" fill="#64748b" letter-spacing="0.5">{{ _("FAALİYET TAMAMLAMA") }}</text>
         </svg>
-        <div style="font-size:12px; color:#64748b; margin-top:4px;">İşaretlenen aylar / toplam ay</div>
+        <div style="font-size:12px; color:#64748b; margin-top:4px;">{{ _("İşaretlenen aylar / toplam ay") }}</div>
       </div>
     </div>
   </div>
@@ -158,22 +158,22 @@
   <div class="mc-grid-4" style="margin-bottom:20px;">
     <div class="mc-stat-card mc-stat-indigo">
       <div class="mc-stat-icon"><i class="fas fa-chart-line"></i></div>
-      <div class="mc-stat-label">Toplam PG</div>
+      <div class="mc-stat-label">{{ _("Toplam PG") }}</div>
       <div class="mc-stat-value" id="stat-total-pg">—</div>
     </div>
     <div class="mc-stat-card mc-stat-emerald">
       <div class="mc-stat-icon"><i class="fas fa-check-circle"></i></div>
-      <div class="mc-stat-label">Veri Girilen</div>
+      <div class="mc-stat-label">{{ _("Veri Girilen") }}</div>
       <div class="mc-stat-value" id="stat-filled-pg">—</div>
     </div>
     <div class="mc-stat-card mc-stat-blue">
       <div class="mc-stat-icon"><i class="fas fa-tasks"></i></div>
-      <div class="mc-stat-label">Faaliyetler</div>
+      <div class="mc-stat-label">{{ _("Faaliyetler") }}</div>
       <div class="mc-stat-value" id="stat-activities">—</div>
     </div>
     <div class="mc-stat-card mc-stat-amber">
       <div class="mc-stat-icon"><i class="fas fa-percentage"></i></div>
-      <div class="mc-stat-label">Tamamlanan</div>
+      <div class="mc-stat-label">{{ _("Tamamlanan") }}</div>
       <div class="mc-stat-value" id="stat-done-pct">—</div>
     </div>
   </div>
@@ -182,14 +182,14 @@
   <div class="mc-card" id="karne-insights-card" style="margin-bottom:20px;">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-lightbulb" style="color:#f59e0b; margin-right:8px;"></i>Yıl özeti &amp; dikkat
+        <i class="fas fa-lightbulb" style="color:#f59e0b; margin-right:8px;"></i>{{ _("Yıl özeti &amp; dikkat") }}
       </span>
     </div>
     <div class="mc-card-body" style="padding-top:8px;">
-      <p class="mc-page-subtitle" style="margin:0 0 10px;">Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti.</p>
+      <p class="mc-page-subtitle" style="margin:0 0 10px;">{{ _("Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti.") }}</p>
       <div id="karne-insights-strip" class="karne-insights-strip"></div>
       <p class="mc-page-subtitle" style="margin:10px 0 0; font-size:11px; color:#94a3b8;">
-        Sarı uyarı pill’lerindeki “hedefe göre zayıf” ifadesi, son girilen aylık değer ile hedefi karşılaştıran <strong>bilgi amaçlı bir tahmindir</strong>; İK veya resmi ölçüm yerine geçmez.
+        {{ _("Sarı uyarı pill’lerindeki “hedefe göre zayıf” ifadesi, son girilen aylık değer ile hedefi karşılaştıran <strong>bilgi amaçlı bir tahmindir</strong>; İK veya resmi ölçüm yerine geçmez.") }}
       </p>
     </div>
   </div>
@@ -198,36 +198,36 @@
   <div class="mc-card" id="karne-timeline-card" style="margin-bottom:20px;">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-clock-rotate-left" style="color:#6366f1; margin-right:8px;"></i>Bu yıl ne yaptım?
+        <i class="fas fa-clock-rotate-left" style="color:#6366f1; margin-right:8px;"></i>{{ _("Bu yıl ne yaptım?") }}
       </span>
     </div>
     <div class="mc-card-body" style="padding-top:8px;">
       <ul id="karne-timeline-list" class="karne-timeline-list" aria-live="polite"></ul>
-      <p id="karne-timeline-empty" class="mc-page-subtitle" style="margin:12px 0 0; display:none;">Henüz kayıtlı bir hareket yok. PG verisi girin veya faaliyet aylarını işaretleyin.</p>
+      <p id="karne-timeline-empty" class="mc-page-subtitle" style="margin:12px 0 0; display:none;">{{ _("Henüz kayıtlı bir hareket yok. PG verisi girin veya faaliyet aylarını işaretleyin.") }}</p>
     </div>
   </div>
 
   <!-- Yükleniyor -->
   <div id="karne-loading" class="mc-empty" style="display:none;">
     <i class="fas fa-spinner fa-spin" style="font-size:28px; color:#6366f1;"></i>
-    <div class="mc-empty-text" style="margin-top:8px;">Veriler yükleniyor…</div>
+    <div class="mc-empty-text" style="margin-top:8px;">{{ _("Veriler yükleniyor…") }}</div>
   </div>
 
   <!-- PG Tablosu -->
   <div class="mc-card" style="margin-bottom:20px;">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-bullseye" style="color:#6366f1; margin-right:8px;"></i>Performans Göstergelerim
+        <i class="fas fa-bullseye" style="color:#6366f1; margin-right:8px;"></i>{{ _("Performans Göstergelerim") }}
       </span>
       <button id="btn-pg-add" class="mc-btn mc-btn-primary mc-btn-sm">
-        <i class="fas fa-plus"></i> PG Ekle
+        <i class="fas fa-plus"></i> {{ _("PG Ekle") }}
       </button>
     </div>
     <div class="mc-card-body" style="padding:0 20px 12px;">
       <div class="karne-heat-legend">
-        <span class="karne-heat-swatch"><span class="karne-cell-heat-fill" style="display:inline-block;width:14px;height:14px;"></span> Veri var</span>
-        <span class="karne-heat-swatch"><span class="karne-cell-heat-empty" style="display:inline-block;width:14px;height:14px;"></span> Geçmiş/geçerli ay, veri yok</span>
-        <span style="margin-left:auto;">Satıra tıklayınca yıllık detay ve mini grafik açılır.</span>
+        <span class="karne-heat-swatch"><span class="karne-cell-heat-fill" style="display:inline-block;width:14px;height:14px;"></span> {{ _("Veri var") }}</span>
+        <span class="karne-heat-swatch"><span class="karne-cell-heat-empty" style="display:inline-block;width:14px;height:14px;"></span> {{ _("Geçmiş/geçerli ay, veri yok") }}</span>
+        <span style="margin-left:auto;">{{ _("Satıra tıklayınca yıllık detay ve mini grafik açılır.") }}</span>
       </div>
     </div>
     <div class="mc-table-wrap" style="border:none; border-radius:0; box-shadow:none;">
@@ -235,20 +235,20 @@
         <thead>
           <tr>
             <th style="width:32px;">#</th>
-            <th style="min-width:180px;">Gösterge</th>
-            <th style="text-align:center;">Hedef</th>
-            <th style="text-align:center;">Birim</th>
+            <th style="min-width:180px;">{{ _("Gösterge") }}</th>
+            <th style="text-align:center;">{{ _("Hedef") }}</th>
+            <th style="text-align:center;">{{ _("Birim") }}</th>
             {% for m in range(1, 13) %}
             <th class="month-col" style="text-align:center;">
-              {{ ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'][m-1] }}
+              {{ [_('Oca'),_('Şub'),_('Mar'),_('Nis'),_('May'),_('Haz'),_('Tem'),_('Ağu'),_('Eyl'),_('Eki'),_('Kas'),_('Ara')][m-1] }}
             </th>
             {% endfor %}
-            <th style="text-align:center;">İşlem</th>
+            <th style="text-align:center;">{{ _("İşlem") }}</th>
           </tr>
         </thead>
         <tbody id="pg-tbody">
           <tr>
-            <td colspan="17" style="text-align:center; padding:32px; color:#94a3b8;">Yükleniyor…</td>
+            <td colspan="17" style="text-align:center; padding:32px; color:#94a3b8;">{{ _("Yükleniyor…") }}</td>
           </tr>
         </tbody>
       </table>
@@ -259,10 +259,10 @@
   <div class="mc-card">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>Faaliyetlerim
+        <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>{{ _("Faaliyetlerim") }}
       </span>
       <button id="btn-faaliyet-add" class="mc-btn mc-btn-success mc-btn-sm">
-        <i class="fas fa-plus"></i> Faaliyet Ekle
+        <i class="fas fa-plus"></i> {{ _("Faaliyet Ekle") }}
       </button>
     </div>
     <div class="mc-table-wrap" style="border:none; border-radius:0; box-shadow:none;">
@@ -270,14 +270,14 @@
         <thead>
           <tr>
             <th style="width:32px;">#</th>
-            <th style="min-width:180px;">Faaliyet</th>
-            <th style="text-align:center;">Durum</th>
+            <th style="min-width:180px;">{{ _("Faaliyet") }}</th>
+            <th style="text-align:center;">{{ _("Durum") }}</th>
             {% for m in range(1, 13) %}
             <th class="month-col" style="text-align:center;">
-              {{ ['Oca','Şub','Mar','Nis','May','Haz','Tem','Ağu','Eyl','Eki','Kas','Ara'][m-1] }}
+              {{ [_('Oca'),_('Şub'),_('Mar'),_('Nis'),_('May'),_('Haz'),_('Tem'),_('Ağu'),_('Eyl'),_('Eki'),_('Kas'),_('Ara')][m-1] }}
             </th>
             {% endfor %}
-            <th style="text-align:center;">İşlem</th>
+            <th style="text-align:center;">{{ _("İşlem") }}</th>
           </tr>
         </thead>
         <tbody id="faaliyet-tbody">

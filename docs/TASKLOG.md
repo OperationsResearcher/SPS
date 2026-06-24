@@ -2,6 +2,30 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-219 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3c — bireysel (Individual) modülü çevirisi
+**Modül:** ui/bireysel/karne.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3c. bireysel/karne.html (298 satır) ~30 görünür HTML metni {{ _() }} ile işaretlendi:
+AI performans özeti, üst bar, ilerleme halkaları (SVG text), istatistik kartları, yıl özeti, timeline,
+PG/faaliyet tabloları (ay isimleri dahil). EN çevirileri (PG→PI). fill scriptine bireysel sözlüğü eklendi.
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/bireysel/karne.html` → ~30 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +19 string (315 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`, fill scripti
+
+### Test
+parse OK. compile 0 boş 0 fuzzy. force_locale EN: "My Individual Performance Scorecard|My Performance
+Indicators|What did I do this year?|Data Entered".
+
+### Notlar
+JS blokları (AI özet 43-63, halka 112+) DOKUNULMADI — FAZ 4. SVG <text> metni çevrildi (görünür).
+Sıradaki: sp veya raporlar (yoğun). Tamamlanan: base, masaustu, surec(tam), bireysel.
+
 ## TASK-218 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3b devamı — surec/karne.html çevirisi (surec modülü TAM)
