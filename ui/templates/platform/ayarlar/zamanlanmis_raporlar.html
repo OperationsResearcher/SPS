@@ -1,11 +1,11 @@
 {% extends "platform/base.html" %}
-{% block title %}Zamanlanmış Raporlar — Kokpitim{% endblock %}
-{% block page_title %}Zamanlanmış Raporlar{% endblock %}
+{% block title %}{{ _("Zamanlanmış Raporlar") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Zamanlanmış Raporlar") }}{% endblock %}
 
 {% block breadcrumb %}
     {{ mc_breadcrumb([
-      {'label': 'Ayarlar', 'url': url_for('app_bp.ayarlar')},
-      {'label': 'Zamanlanmış Raporlar', 'url': None}
+      {'label': _('Ayarlar'), 'url': url_for('app_bp.ayarlar')},
+      {'label': _('Zamanlanmış Raporlar'), 'url': None}
     ]) }}
 {% endblock %}
 
@@ -15,11 +15,10 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-clock" style="color:#6366f1;"></i> Zamanlanmış Raporlar
+        <i class="fas fa-clock" style="color:#6366f1;"></i> {{ _("Zamanlanmış Raporlar") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Düzenli aralıklarla otomatik olarak e-posta ile gönderilecek raporları seçin.
-        Tüm raporlar <b>{{ user_email or '—' }}</b> adresine gönderilir.
+        {{ _("Düzenli aralıklarla otomatik olarak e-posta ile gönderilecek raporları seçin. Tüm raporlar <b>%(email)s</b> adresine gönderilir.", email=(user_email or '—')) }}
       </p>
     </div>
   </div>
@@ -31,37 +30,37 @@
       <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;">
         <div style="flex:1; min-width:280px;">
           <h3 style="margin:0 0 4px; font-size:15px; font-weight:600;">
-            <i class="fas fa-file-pdf" style="color:#6366f1;"></i> Haftalık Strateji Özeti
+            <i class="fas fa-file-pdf" style="color:#6366f1;"></i> {{ _("Haftalık Strateji Özeti") }}
           </h3>
           <p style="margin:0; font-size:12.5px; color:#64748b; line-height:1.5;">
-            Strateji sağlık skoru · PG performansı · gecikmiş faaliyetler · kritik riskler · girişim durumu. PDF eki ile gönderilir.
+            {{ _("Strateji sağlık skoru · PG performansı · gecikmiş faaliyetler · kritik riskler · girişim durumu. PDF eki ile gönderilir.") }}
           </p>
         </div>
         <label class="mc-switch" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
           <input type="checkbox" data-sub="weekly_digest" data-key="enabled" {% if subs.weekly_digest.enabled %}checked{% endif %}>
-          <span style="font-size:12.5px; font-weight:600;">Açık</span>
+          <span style="font-size:12.5px; font-weight:600;">{{ _("Açık") }}</span>
         </label>
       </div>
       <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px; flex-wrap:wrap;">
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">Gün</label>
+          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Gün") }}</label>
           <select data-sub="weekly_digest" data-key="day" class="mc-form-input" style="font-size:13px;">
-            {% set days = [('mon','Pazartesi'),('tue','Salı'),('wed','Çarşamba'),('thu','Perşembe'),('fri','Cuma'),('sat','Cumartesi'),('sun','Pazar')] %}
+            {% set days = [('mon',_('Pazartesi')),('tue',_('Salı')),('wed',_('Çarşamba')),('thu',_('Perşembe')),('fri',_('Cuma')),('sat',_('Cumartesi')),('sun',_('Pazar'))] %}
             {% for v, l in days %}
             <option value="{{ v }}" {% if subs.weekly_digest.day == v %}selected{% endif %}>{{ l }}</option>
             {% endfor %}
           </select>
         </div>
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">Saat</label>
+          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat") }}</label>
           <select data-sub="weekly_digest" data-key="hour" class="mc-form-input" style="font-size:13px;">
             {% for h in range(0, 24) %}
             <option value="{{ h }}" {% if subs.weekly_digest.hour == h %}selected{% endif %}>{{ "%02d:00"|format(h) }}</option>
             {% endfor %}
           </select>
         </div>
-        <a href="/sp/digest/weekly.pdf" target="_blank" class="mc-btn mc-btn-secondary mc-btn-sm" title="Şimdi önizle">
-          <i class="fas fa-eye"></i> Önizleme
+        <a href="/sp/digest/weekly.pdf" target="_blank" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Şimdi önizle') }}">
+          <i class="fas fa-eye"></i> {{ _("Önizleme") }}
         </a>
       </div>
     </div>
@@ -71,20 +70,20 @@
       <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;">
         <div style="flex:1; min-width:280px;">
           <h3 style="margin:0 0 4px; font-size:15px; font-weight:600;">
-            <i class="fas fa-sun" style="color:#f59e0b;"></i> Sabah Operasyonel Özeti
+            <i class="fas fa-sun" style="color:#f59e0b;"></i> {{ _("Sabah Operasyonel Özeti") }}
           </h3>
           <p style="margin:0; font-size:12.5px; color:#64748b; line-height:1.5;">
-            Bugün biten/bekleyen faaliyet, atanan görev, kritik PG'ler. İş gününe başlarken kısa özet.
+            {{ _("Bugün biten/bekleyen faaliyet, atanan görev, kritik PG'ler. İş gününe başlarken kısa özet.") }}
           </p>
         </div>
         <label class="mc-switch" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
           <input type="checkbox" data-sub="morning_summary" data-key="enabled" {% if subs.morning_summary.enabled %}checked{% endif %}>
-          <span style="font-size:12.5px; font-weight:600;">Açık</span>
+          <span style="font-size:12.5px; font-weight:600;">{{ _("Açık") }}</span>
         </label>
       </div>
       <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px; flex-wrap:wrap;">
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">Saat (her gün)</label>
+          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat (her gün)") }}</label>
           <select data-sub="morning_summary" data-key="hour" class="mc-form-input" style="font-size:13px;">
             {% for h in range(0, 24) %}
             <option value="{{ h }}" {% if subs.morning_summary.hour == h %}selected{% endif %}>{{ "%02d:00"|format(h) }}</option>
@@ -99,23 +98,23 @@
       <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;">
         <div style="flex:1; min-width:280px;">
           <h3 style="margin:0 0 4px; font-size:15px; font-weight:600;">
-            <i class="fas fa-shield-halved" style="color:#ef4444;"></i> Risk & Anomali Uyarısı
+            <i class="fas fa-shield-halved" style="color:#ef4444;"></i> {{ _("Risk & Anomali Uyarısı") }}
           </h3>
           <p style="margin:0; font-size:12.5px; color:#64748b; line-height:1.5;">
-            Açık kritik riskler, yüksek öncelikli PG anomalileri, ateşlenmiş replan tetikleyicileri.
+            {{ _("Açık kritik riskler, yüksek öncelikli PG anomalileri, ateşlenmiş replan tetikleyicileri.") }}
           </p>
         </div>
         <label class="mc-switch" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
           <input type="checkbox" data-sub="risk_alert" data-key="enabled" {% if subs.risk_alert.enabled %}checked{% endif %}>
-          <span style="font-size:12.5px; font-weight:600;">Açık</span>
+          <span style="font-size:12.5px; font-weight:600;">{{ _("Açık") }}</span>
         </label>
       </div>
       <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px; flex-wrap:wrap;">
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">Sıklık</label>
+          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Sıklık") }}</label>
           <select data-sub="risk_alert" data-key="frequency" class="mc-form-input" style="font-size:13px;">
-            <option value="daily"  {% if subs.risk_alert.frequency == 'daily' %}selected{% endif %}>Günlük</option>
-            <option value="weekly" {% if subs.risk_alert.frequency == 'weekly' %}selected{% endif %}>Haftalık</option>
+            <option value="daily"  {% if subs.risk_alert.frequency == 'daily' %}selected{% endif %}>{{ _("Günlük") }}</option>
+            <option value="weekly" {% if subs.risk_alert.frequency == 'weekly' %}selected{% endif %}>{{ _("Haftalık") }}</option>
           </select>
         </div>
       </div>
@@ -126,20 +125,20 @@
       <div style="display:flex; align-items:flex-start; justify-content:space-between; gap:14px; flex-wrap:wrap;">
         <div style="flex:1; min-width:280px;">
           <h3 style="margin:0 0 4px; font-size:15px; font-weight:600;">
-            <i class="fas fa-chart-line" style="color:#10b981;"></i> Aylık PG Raporu
+            <i class="fas fa-chart-line" style="color:#10b981;"></i> {{ _("Aylık PG Raporu") }}
           </h3>
           <p style="margin:0; font-size:12.5px; color:#64748b; line-height:1.5;">
-            Tüm PG'lerin ay sonu durumu: hedef üstü, hedef altı, veri eksikleri. Excel eki ile gönderilir.
+            {{ _("Tüm PG'lerin ay sonu durumu: hedef üstü, hedef altı, veri eksikleri. Excel eki ile gönderilir.") }}
           </p>
         </div>
         <label class="mc-switch" style="display:flex; align-items:center; gap:8px; cursor:pointer;">
           <input type="checkbox" data-sub="monthly_kpi" data-key="enabled" {% if subs.monthly_kpi.enabled %}checked{% endif %}>
-          <span style="font-size:12.5px; font-weight:600;">Açık</span>
+          <span style="font-size:12.5px; font-weight:600;">{{ _("Açık") }}</span>
         </label>
       </div>
       <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px; flex-wrap:wrap;">
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">Ayın günü</label>
+          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Ayın günü") }}</label>
           <select data-sub="monthly_kpi" data-key="day_of_month" class="mc-form-input" style="font-size:13px;">
             {% for d in range(1, 29) %}
             <option value="{{ d }}" {% if subs.monthly_kpi.day_of_month == d %}selected{% endif %}>{{ d }}</option>
@@ -147,7 +146,7 @@
           </select>
         </div>
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">Saat</label>
+          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat") }}</label>
           <select data-sub="monthly_kpi" data-key="hour" class="mc-form-input" style="font-size:13px;">
             {% for h in range(0, 24) %}
             <option value="{{ h }}" {% if subs.monthly_kpi.hour == h %}selected{% endif %}>{{ "%02d:00"|format(h) }}</option>
@@ -161,8 +160,7 @@
 
   <div class="mc-card mc-card--accent-warning" style="margin-top:14px; padding:12px 16px; background:#fef3c7">
     <div style="font-size:12.5px; color:#92400e; line-height:1.5;">
-      <b>Not:</b> Tercihler hemen kaydedilir. İlk e-posta seçtiğiniz takvime göre tetiklenir; geçmişe yönelik gönderim yapılmaz.
-      E-posta gönderiminin etkin olabilmesi için sistemin <code>DIGEST_SCHEDULER_ENABLED</code> ayarı aktif olmalıdır.
+      {{ _("<b>Not:</b> Tercihler hemen kaydedilir. İlk e-posta seçtiğiniz takvime göre tetiklenir; geçmişe yönelik gönderim yapılmaz. E-posta gönderiminin etkin olabilmesi için sistemin <code>DIGEST_SCHEDULER_ENABLED</code> ayarı aktif olmalıdır.") }}
     </div>
   </div>
 

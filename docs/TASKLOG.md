@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-221 | 2026-06-24 | ✅ Tamamlandı
+
+**Görev:** i18n FAZ 3e — ayarlar (Settings) modülü çevirisi (3 dosya)
+**Modül:** ui/ayarlar/{index,eposta,zamanlanmis_raporlar}.html, translations/{tr,en}
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+docs/lang/ FAZ 3e. ayarlar modülünün 3 template'i (~70 metin) {{ _() }} ile işaretlendi:
+index (hub: istatistik kartları, tile başlık/açıklamalar), eposta (SMTP formu, bildirim tercihleri,
+test/kaydet), zamanlanmis_raporlar (4 rapor kartı, gün/saat seçiciler, gün isimleri). EN çevirileri (PG→PI).
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/ayarlar/index.html`, `eposta.html`, `zamanlanmis_raporlar.html` → ~70 metin {{ _() }}
+- `translations/en/LC_MESSAGES/messages.po` → +70 string (425 toplam, 0 boş, 0 fuzzy), .mo derlendi
+- `translations/tr/LC_MESSAGES/messages.{po,mo}`, `messages.pot`, fill scripti
+
+### Test
+parse OK (3 dosya). compile 0 boş 0 fuzzy. force_locale EN: "Account Settings|Custom SMTP Server|
+Weekly Strategy Summary|Monday|Organization". Gün isimleri liste indeksleme, named param %(email)s OK.
+
+### Notlar
+data-sub/data-key attribute'ları (weekly_digest, day) ve option value'ları (daily/mon) sabit korundu.
+JS toast metinleri (showToast) DOKUNULMADI — FAZ 4. Tamamlanan: base, masaustu, surec(tam), bireysel,
+bildirim, analiz, ayarlar. Kalan büyük: sp(31), raporlar(45), kurum, k_radar, k_rapor, admin.
+
 ## TASK-220 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n FAZ 3d — bildirim (Notification) + analiz (Analysis) modülleri çevirisi

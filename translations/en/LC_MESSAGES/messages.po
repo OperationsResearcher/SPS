@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 04:22+0300\n"
+"POT-Creation-Date: 2026-06-24 04:34+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -112,10 +112,15 @@ msgstr "System"
 msgid "Bildirimler"
 msgstr "Notifications"
 
+#: ui/templates/platform/ayarlar/eposta.html:10
+#: ui/templates/platform/ayarlar/index.html:2
+#: ui/templates/platform/ayarlar/index.html:3
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:7
 #: ui/templates/platform/base.html:291
 msgid "Ayarlar"
 msgstr "Settings"
 
+#: ui/templates/platform/ayarlar/index.html:33
 #: ui/templates/platform/base.html:309
 msgid "Kullanıcı"
 msgstr "User"
@@ -221,12 +226,14 @@ msgid "Çeyreklik"
 msgstr "Quarterly"
 
 #: ui/templates/platform/analiz/index.html:45
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:117
 #: ui/templates/platform/surec/karne.html:307
 #: ui/templates/platform/surec/karne.html:829
 msgid "Haftalık"
 msgstr "Weekly"
 
 #: ui/templates/platform/analiz/index.html:46
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:116
 #: ui/templates/platform/surec/karne.html:308
 #: ui/templates/platform/surec/karne.html:830
 msgid "Günlük"
@@ -324,7 +331,362 @@ msgstr "Select a process for analysis"
 msgid "Yukarıdan bir süreç seçip \"Analiz Et\" butonuna tıklayın."
 msgstr "Select a process above and click the \"Analyze\" button."
 
+#: ui/templates/platform/ayarlar/eposta.html:2
+#: ui/templates/platform/ayarlar/eposta.html:3
+msgid "E-posta Ayarları"
+msgstr "Email Settings"
+
+#: ui/templates/platform/ayarlar/eposta.html:10
+msgid "E-posta"
+msgstr "Email"
+
+#: ui/templates/platform/ayarlar/eposta.html:21
+#: ui/templates/platform/ayarlar/index.html:99
+msgid "E-posta Bildirimleri"
+msgstr "Email Notifications"
+
+#: ui/templates/platform/ayarlar/eposta.html:22
+msgid "Kurumunuza ait e-posta gönderim ayarlarını yapılandırın."
+msgstr "Configure your organization's email sending settings."
+
+#: ui/templates/platform/ayarlar/eposta.html:31
+msgid ""
+"<strong>Özel SMTP kapalıyken</strong> sırayla kullanılır: sunucuda dolu "
+"ise <code>MAIL_*</code> ortam değişkenleri; yoksa platform "
+"<strong>Admin</strong> hesabının kurumunda kayıtlı özel SMTP (varsayılan "
+"çıkış). İsterseniz her zaman bu sayfadan kendi kurum SMTP’nizi açıp "
+"kullanabilirsiniz."
+msgstr ""
+
+#: ui/templates/platform/ayarlar/eposta.html:34
+msgid ""
+"«Test Maili Gönder» önce onay penceresi açar; <strong>Gönder</strong> "
+"dediğinizde işlem yapılır."
+msgstr ""
+
+#: ui/templates/platform/ayarlar/eposta.html:41
+msgid ""
+"Kurumunuz özel SMTP kullanmıyor; gönderim <code>MAIL_*</code> tanımlıysa "
+"onunla, değilse <strong>Admin kurumunun</strong> kayıtlı SMTP’siyle "
+"yapılır. Yine de kendi alan adınızdan çıkış için buradan özel SMTP "
+"açmanız önerilir."
+msgstr ""
+
+#: ui/templates/platform/ayarlar/eposta.html:49
+msgid "Özel SMTP Sunucusu"
+msgstr "Custom SMTP Server"
+
+#: ui/templates/platform/ayarlar/eposta.html:50
+msgid "Kurumunuzun kendi e-posta sunucusunu kullanın."
+msgstr "Use your organization's own email server."
+
+#: ui/templates/platform/ayarlar/eposta.html:53
+msgid "Özel SMTP'yi etkinleştir"
+msgstr "Enable custom SMTP"
+
+#: ui/templates/platform/ayarlar/eposta.html:64
+msgid "SMTP Sunucu Adresi"
+msgstr "SMTP Server Address"
+
+#: ui/templates/platform/ayarlar/eposta.html:76
+msgid "Kullanıcı Adı / E-posta"
+msgstr "Username / Email"
+
+#: ui/templates/platform/ayarlar/eposta.html:82
+msgid "Şifre"
+msgstr "Password"
+
+#: ui/templates/platform/ayarlar/eposta.html:84
+msgid "Değiştirmek için girin"
+msgstr "Enter to change"
+
+#: ui/templates/platform/ayarlar/eposta.html:87
+msgid "Gönderici Adı"
+msgstr "Sender Name"
+
+#: ui/templates/platform/ayarlar/eposta.html:89
+msgid "Firma Adı Bildirimleri"
+msgstr "Company Name Notifications"
+
+#: ui/templates/platform/ayarlar/eposta.html:93
+msgid "Gönderici E-posta"
+msgstr "Sender Email"
+
+#: ui/templates/platform/ayarlar/eposta.html:105
+msgid "STARTTLS kullan (port 587)"
+msgstr "Use STARTTLS (port 587)"
+
+#: ui/templates/platform/ayarlar/eposta.html:110
+msgid "SSL/TLS kullan (port 465)"
+msgstr "Use SSL/TLS (port 465)"
+
+#: ui/templates/platform/ayarlar/eposta.html:117
+msgid "Bağlantıyı Test Et"
+msgstr "Test Connection"
+
+#: ui/templates/platform/ayarlar/eposta.html:127
+msgid "Hangi Olaylar İçin Mail Gitsin?"
+msgstr "Which Events Trigger Email?"
+
+#: ui/templates/platform/ayarlar/eposta.html:133
+msgid "Sürece Atama"
+msgstr "Process Assignment"
+
+#: ui/templates/platform/ayarlar/eposta.html:134
+msgid "Kullanıcı bir sürece lider veya üye olarak atandığında"
+msgstr "When a user is assigned to a process as leader or member"
+
+#: ui/templates/platform/ayarlar/eposta.html:142
+msgid "Performans Göstergesi Değişikliği"
+msgstr "Performance Indicator Change"
+
+#: ui/templates/platform/ayarlar/eposta.html:143
+msgid "Süreçte PG eklendiğinde veya güncellendiğinde"
+msgstr "When a PI is added or updated in a process"
+
+#: ui/templates/platform/ayarlar/eposta.html:151
+msgid "Faaliyet Ekleme"
+msgstr "Activity Addition"
+
+#: ui/templates/platform/ayarlar/eposta.html:152
+msgid "Sürece yeni faaliyet eklendiğinde"
+msgstr "When a new activity is added to a process"
+
+#: ui/templates/platform/ayarlar/eposta.html:160
+msgid "Görev Atama"
+msgstr "Task Assignment"
+
+#: ui/templates/platform/ayarlar/eposta.html:161
+msgid "Projede kullanıcıya görev atandığında"
+msgstr "When a task is assigned to a user in a project"
+
+#: ui/templates/platform/ayarlar/eposta.html:172
+msgid "Test Maili Gönder"
+msgstr "Send Test Email"
+
+#: ui/templates/platform/ayarlar/eposta.html:175
+#: ui/templates/platform/surec/karne.html:668
+#: ui/templates/platform/surec/karne.html:738
+#: ui/templates/platform/surec/karne.html:771
+#: ui/templates/platform/surec/karne.html:926
+msgid "Kaydet"
+msgstr "Save"
+
+#: ui/templates/platform/ayarlar/index.html:35
+msgid "rol yok"
+msgstr "no role"
+
+#: ui/templates/platform/ayarlar/index.html:38
+#: ui/templates/platform/ayarlar/index.html:40
+#: ui/templates/platform/ayarlar/index.html:92
+msgid "Kurum"
+msgstr "Organization"
+
+#: ui/templates/platform/ayarlar/index.html:43
+msgid "Tema"
+msgstr "Theme"
+
+#: ui/templates/platform/ayarlar/index.html:44
+msgid "Aydınlık"
+msgstr "Light"
+
+#: ui/templates/platform/ayarlar/index.html:45
+msgid "çoklu cihaz senkronlu"
+msgstr "synced across devices"
+
+#: ui/templates/platform/ayarlar/index.html:48
+msgid "Zamanlanmış Rapor"
+msgstr "Scheduled Report"
+
+#: ui/templates/platform/ayarlar/index.html:50
+msgid "aktif abonelik"
+msgstr "active subscription"
+
+#: ui/templates/platform/ayarlar/index.html:58
+msgid "Ayar ara…"
+msgstr "Search settings…"
+
+#: ui/templates/platform/ayarlar/index.html:66
+msgid "Kişisel"
+msgstr "Personal"
+
+#: ui/templates/platform/ayarlar/index.html:73
+msgid "Hesap Ayarları"
+msgstr "Account Settings"
+
+#: ui/templates/platform/ayarlar/index.html:74
+msgid "Bildirim tercihleri, tema, dil ve saat dilimi"
+msgstr "Notification preferences, theme, language and time zone"
+
+#: ui/templates/platform/ayarlar/index.html:82
+msgid "Profil Bilgileri"
+msgstr "Profile Information"
+
+#: ui/templates/platform/ayarlar/index.html:83
+msgid "Ad, unvan, departman ve profil fotoğrafı"
+msgstr "Name, title, department and profile photo"
+
+#: ui/templates/platform/ayarlar/index.html:100
+msgid "SMTP yapılandırması ve bildirim tercihleri"
+msgstr "SMTP configuration and notification preferences"
+
+#: ui/templates/platform/ayarlar/index.html:108
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:2
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:3
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:8
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:18
+msgid "Zamanlanmış Raporlar"
+msgstr "Scheduled Reports"
+
+#: ui/templates/platform/ayarlar/index.html:109
+msgid "Haftalık özet · sabah operasyonel · risk uyarısı · aylık PG"
+msgstr "Weekly summary · morning operational · risk alert · monthly PI"
+
+#: ui/templates/platform/ayarlar/index.html:118
+msgid "Kurum Ayarları"
+msgstr "Organization Settings"
+
+#: ui/templates/platform/ayarlar/index.html:119
+msgid "İletişim bilgileri ve logo"
+msgstr "Contact information and logo"
+
+#: ui/templates/platform/ayarlar/index.html:130
+msgid "Platform Yönetimi"
+msgstr "Platform Management"
+
+#: ui/templates/platform/ayarlar/index.html:131
+msgid "YALNIZ ADMIN"
+msgstr "ADMIN ONLY"
+
+#: ui/templates/platform/ayarlar/index.html:139
+msgid "Yönetim Paneli"
+msgstr "Management Panel"
+
+#: ui/templates/platform/ayarlar/index.html:140
+msgid "Login istatistikleri ve aktivite kayıtları"
+msgstr "Login statistics and activity logs"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:21
+#, python-format
+msgid ""
+"Düzenli aralıklarla otomatik olarak e-posta ile gönderilecek raporları "
+"seçin. Tüm raporlar <b>%(email)s</b> adresine gönderilir."
+msgstr ""
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:33
+msgid "Haftalık Strateji Özeti"
+msgstr "Weekly Strategy Summary"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:36
+msgid ""
+"Strateji sağlık skoru · PG performansı · gecikmiş faaliyetler · kritik "
+"riskler · girişim durumu. PDF eki ile gönderilir."
+msgstr ""
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:41
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:81
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:109
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:136
+msgid "Açık"
+msgstr "On"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:46
+msgid "Gün"
+msgstr "Day"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:48
+msgid "Pazartesi"
+msgstr "Monday"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:48
+msgid "Salı"
+msgstr "Tuesday"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:48
+msgid "Çarşamba"
+msgstr "Wednesday"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:48
+msgid "Perşembe"
+msgstr "Thursday"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:48
+msgid "Cuma"
+msgstr "Friday"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:48
+msgid "Cumartesi"
+msgstr "Saturday"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:48
+msgid "Pazar"
+msgstr "Sunday"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:55
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:149
+msgid "Saat"
+msgstr "Hour"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:62
+msgid "Şimdi önizle"
+msgstr "Preview now"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:63
+msgid "Önizleme"
+msgstr "Preview"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:73
+msgid "Sabah Operasyonel Özeti"
+msgstr "Morning Operational Summary"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:76
+msgid ""
+"Bugün biten/bekleyen faaliyet, atanan görev, kritik PG'ler. İş gününe "
+"başlarken kısa özet."
+msgstr ""
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:86
+msgid "Saat (her gün)"
+msgstr "Hour (every day)"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:101
+msgid "Risk & Anomali Uyarısı"
+msgstr "Risk & Anomaly Alert"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:104
+msgid ""
+"Açık kritik riskler, yüksek öncelikli PG anomalileri, ateşlenmiş replan "
+"tetikleyicileri."
+msgstr ""
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:114
+msgid "Sıklık"
+msgstr "Frequency"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:128
+msgid "Aylık PG Raporu"
+msgstr "Monthly PI Report"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:131
+msgid ""
+"Tüm PG'lerin ay sonu durumu: hedef üstü, hedef altı, veri eksikleri. "
+"Excel eki ile gönderilir."
+msgstr ""
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:141
+msgid "Ayın günü"
+msgstr "Day of month"
+
+#: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:163
+msgid ""
+"<b>Not:</b> Tercihler hemen kaydedilir. İlk e-posta seçtiğiniz takvime "
+"göre tetiklenir; geçmişe yönelik gönderim yapılmaz. E-posta gönderiminin "
+"etkin olabilmesi için sistemin <code>DIGEST_SCHEDULER_ENABLED</code> "
+"ayarı aktif olmalıdır."
+msgstr ""
+
 #: ui/templates/platform/bildirim/index.html:19
+#, python-format
 msgid "%(n)s bildirim"
 msgstr "%(n)s notifications"
 
@@ -422,7 +784,8 @@ msgstr "Year summary &amp; attention"
 msgid "Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti."
 msgstr "A brief summary of data coverage and your indicators for the selected year."
 "A brief summary of data coverage and your indicators for the selected "
-"year."
+"year.A brief summary of data coverage and your indicators for the "
+"selected year."
 
 #: ui/templates/platform/bireysel/karne.html:192
 msgid ""
@@ -1469,13 +1832,6 @@ msgstr "Above Target"
 msgid "Mükemmel"
 msgstr "Excellent"
 
-#: ui/templates/platform/surec/karne.html:668
-#: ui/templates/platform/surec/karne.html:738
-#: ui/templates/platform/surec/karne.html:771
-#: ui/templates/platform/surec/karne.html:926
-msgid "Kaydet"
-msgstr "Save"
-
 #: ui/templates/platform/surec/karne.html:681
 msgid "Veri Girişi Sihirbazı"
 msgstr "Data Entry Wizard"
@@ -1537,7 +1893,8 @@ msgid "Veri tarihi değişmez; yalnızca gerçekleşen değer ve açıklama gün
 msgstr "The data date does not change; only the actual value and description are updated."
 "The data date does not change; only the actual value and description are "
 "updated.The data date does not change; only the actual value and "
-"description are updated."
+"description are updated.The data date does not change; only the actual "
+"value and description are updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"
