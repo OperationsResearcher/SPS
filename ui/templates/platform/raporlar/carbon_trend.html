@@ -1,12 +1,12 @@
 {% extends "platform/base.html" %}
-{% block title %}Carbon Footprint Trend — Kokpitim{% endblock %}
-{% block page_title %}Carbon Footprint Trend{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Carbon Footprint Trend') }}{% endblock %}
+{% block title %}{{ _("Carbon Footprint Trend — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Carbon Footprint Trend") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Carbon Footprint Trend')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1200px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-smog" style="color:#10b981;"></i> Carbon Footprint Trend</h1>
-    <p class="mc-page-subtitle">Scope 1 + 2 + 3 toplam emisyon yıllık trend (tCO₂e) — ESG modülünden otomatik beslenir.</p>
+    <h1 class="mc-page-title"><i class="fas fa-smog" style="color:#10b981;"></i> {{ _("Carbon Footprint Trend") }}</h1>
+    <p class="mc-page-subtitle">{{ _("Scope 1 + 2 + 3 toplam emisyon yıllık trend (tCO₂e) — ESG modülünden otomatik beslenir.") }}</p>
   </div>
 </div>
 <div style="max-width:1200px;margin:0 auto;">
@@ -14,16 +14,16 @@
   <div id="content" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;" id="summary"></div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_carbon_trend.yillik_trend">
-      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">Yıllık Trend</h3>
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">{{ _("Yıllık Trend") }}</h3>
       <div id="chart"></div>
       <div style="display:flex;gap:14px;margin-top:14px;font-size:11.5px;color:#64748b;flex-wrap:wrap;">
-        <span><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:2px;margin-right:5px;"></span>Scope 1 (direkt)</span>
-        <span><span style="display:inline-block;width:12px;height:12px;background:#f59e0b;border-radius:2px;margin-right:5px;"></span>Scope 2 (enerji)</span>
-        <span><span style="display:inline-block;width:12px;height:12px;background:#0ea5e9;border-radius:2px;margin-right:5px;"></span>Scope 3 (zincir)</span>
+        <span><span style="display:inline-block;width:12px;height:12px;background:#dc2626;border-radius:2px;margin-right:5px;"></span>{{ _("Scope 1 (direkt)") }}</span>
+        <span><span style="display:inline-block;width:12px;height:12px;background:#f59e0b;border-radius:2px;margin-right:5px;"></span>{{ _("Scope 2 (enerji)") }}</span>
+        <span><span style="display:inline-block;width:12px;height:12px;background:#0ea5e9;border-radius:2px;margin-right:5px;"></span>{{ _("Scope 3 (zincir)") }}</span>
       </div>
     </div>
     <div id="empty-note" style="display:none;margin-top:14px;padding:14px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:8px;font-size:12.5px;">
-      <i class="fas fa-info-circle"></i> Henüz scope verisi yok. ESG modülünden Scope 1/2/3 emisyon verileri girilince trend oluşur.
+      <i class="fas fa-info-circle"></i> {{ _("Henüz scope verisi yok. ESG modülünden Scope 1/2/3 emisyon verileri girilince trend oluşur.") }}
     </div>
   </div>
   <div id="error" style="display:none;background:#fef2f2;border:1px solid #fecaca;color:#991b1b;padding:14px;border-radius:8px;font-size:13px;"></div>

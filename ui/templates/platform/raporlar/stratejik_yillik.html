@@ -1,12 +1,12 @@
 {% extends "platform/base.html" %}
-{% block title %}Stratejik Yıllık Kitap — Kokpitim{% endblock %}
-{% block page_title %}Stratejik Yıllık Kitap{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Stratejik Yıllık Kitap') }}{% endblock %}
+{% block title %}{{ _("Stratejik Yıllık Kitap — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Stratejik Yıllık Kitap") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Stratejik Yıllık Kitap')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-book" style="color:#dc2626;"></i> Stratejik Yıllık Kitap</h1>
-    <p class="mc-page-subtitle">Yıllık tam kitap formatında PDF — vizyon, strateji ağacı, girişimler, risk ve ESG tek dosyada.</p>
+    <h1 class="mc-page-title"><i class="fas fa-book" style="color:#dc2626;"></i> {{ _("Stratejik Yıllık Kitap") }}</h1>
+    <p class="mc-page-subtitle">{{ _("Yıllık tam kitap formatında PDF — vizyon, strateji ağacı, girişimler, risk ve ESG tek dosyada.") }}</p>
   </div>
 </div>
 <div style="max-width:1100px;margin:0 auto;">
@@ -14,16 +14,16 @@
   <div id="content" style="display:none;">
     <div style="background:linear-gradient(135deg,#eef2ff,#fff);border:1px solid #c7d2fe;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;" data-card-code="raporlar_stratejik_yillik.premium_pdf_35_sayfa">
       <div>
-        <div class="mc-stat-label" style="font-size:11px;color:#4338ca;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">PREMIUM PDF · ~35 SAYFA</div>
+        <div class="mc-stat-label" style="font-size:11px;color:#4338ca;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">{{ _("PREMIUM PDF · ~35 SAYFA") }}</div>
         <div style="font-size:22px;font-weight:800;color:#0f172a;margin-top:4px;" id="title">—</div>
-        <div style="font-size:12.5px;color:#64748b;margin-top:4px;">AI özet + tam veri tabloları + strateji ağacı</div>
+        <div style="font-size:12.5px;color:#64748b;margin-top:4px;">{{ _("AI özet + tam veri tabloları + strateji ağacı") }}</div>
       </div>
       <button id="dl" class="mc-btn mc-btn-primary" style="background:#4f46e5;font-size:14px;padding:12px 24px;">
-        <i class="fas fa-download"></i> PDF İndir
+        <i class="fas fa-download"></i> {{ _("PDF İndir") }}
       </button>
     </div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_stratejik_yillik.bolum_yapisi">
-      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📚 Bölüm Yapısı</h3>
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">📚 {{ _("Bölüm Yapısı") }}</h3>
       <div id="sections" style="display:grid;gap:6px;"></div>
     </div>
   </div>

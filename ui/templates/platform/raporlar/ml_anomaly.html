@@ -8,7 +8,7 @@
 <div class="mc-page-header" style="max-width:1240px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
     <h1 class="mc-page-title"><i class="fas fa-brain" style="color:#dc2626;"></i> ML Anomali Tespiti</h1>
-    <p class="mc-page-subtitle">scikit-learn IsolationForest algoritmasıyla KPI ölçümlerinde olağandışı değer tespiti</p>
+    <p class="mc-page-subtitle">{{ _("scikit-learn IsolationForest algoritmasıyla KPI ölçümlerinde olağandışı değer tespiti") }}</p>
   </div>
 </div>
 
@@ -16,22 +16,21 @@
 <div style="max-width:1240px;margin:0 auto 18px;background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 16px;font-size:12.5px;color:#991b1b;display:flex;gap:10px;align-items:flex-start;">
   <i class="fas fa-circle-info" style="margin-top:2px;flex-shrink:0;color:#dc2626;"></i>
   <div>
-    <strong>IsolationForest nedir?</strong> Z-score gibi istatistiksel eşiklerin ötesine geçen bir makine öğrenmesi yöntemidir.
-    Her PG için tüm tarihsel ölçüm değerleri bir model ile işlenerek <em>normalden sapan</em> ölçümler işaretlenir.
-    <span style="color:#64748b;margin-left:4px;">⚠ En az 6 ölçüm kaydı olan PG'ler analiz edilir; yetersiz veri olanlar atlanır.</span>
-    Analiz <strong>5–15 saniye</strong> sürebilir.
+    {{ _("<strong>IsolationForest nedir?</strong> Z-score gibi istatistiksel eşiklerin ötesine geçen bir makine öğrenmesi yöntemidir. Her PG için tüm tarihsel ölçüm değerleri bir model ile işlenerek <em>normalden sapan</em> ölçümler işaretlenir.") }}
+    <span style="color:#64748b;margin-left:4px;">{{ _("⚠ En az 6 ölçüm kaydı olan PG'ler analiz edilir; yetersiz veri olanlar atlanır.") }}</span>
+    {{ _("Analiz <strong>5–15 saniye</strong> sürebilir.") }}
   </div>
 </div>
 
 <div style="max-width:1240px;margin:0 auto;">
   <div id="ma-loading" style="text-align:center;padding:60px;color:#64748b;">
     <i class="fas fa-spinner fa-spin" style="font-size:24px;"></i>
-    <div style="margin-top:12px;font-size:13px;">ML modeli çalışıyor, lütfen bekleyin…</div>
+    <div style="margin-top:12px;font-size:13px;">{{ _("ML modeli çalışıyor, lütfen bekleyin…") }}</div>
   </div>
   <div id="ma-content" style="display:none;">
     <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(170px,1fr));gap:14px;margin-bottom:20px;" id="ma-summary"></div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_ml_anomaly.tespit_edilen_anomaliler">
-      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> Tespit Edilen Anomaliler</h3>
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;"><i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> {{ _("Tespit Edilen Anomaliler") }}</h3>
       <div id="ma-anomalies"></div>
     </div>
   </div>

@@ -8,27 +8,27 @@
       <h1 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;"><i class="fas {{ package.meta.icon }}" style="color:{{ package.meta.color }};"></i> {{ package.meta.name }}</h1>
       <p style="font-size:13px;color:#64748b;margin:0;">{{ package.meta.description }}</p>
     </div>
-    <a href="{{ url_for('app_bp.raporlar_sektorel') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> Sektörlere Dön</a>
+    <a href="{{ url_for('app_bp.raporlar_sektorel') }}" class="mc-btn mc-btn-secondary"><i class="fas fa-arrow-left"></i> {{ _("Sektörlere Dön") }}</a>
   </div>
 
   <div style="background:linear-gradient(135deg,{{ package.meta.color }}11,#fff);border:1px solid {{ package.meta.color }}33;border-radius:12px;padding:20px;margin-bottom:20px;display:grid;grid-template-columns:repeat(auto-fit,minmax(150px,1fr));gap:14px;">
-    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">Strateji</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.strategies|length }}</div></div>
-    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">Süreç</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.processes|length }}</div></div>
+    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">{{ _("Strateji") }}</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.strategies|length }}</div></div>
+    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">{{ _("Süreç") }}</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.processes|length }}</div></div>
     <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">PG</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.kpis|length }}</div></div>
-    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">Risk</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.risks|length }}</div></div>
-    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">ESG Metrik</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.esg_metrics|length }}</div></div>
-    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">Kurulum (h)</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">~{{ package.meta.estimated_setup_hours }}</div></div>
+    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">{{ _("Risk") }}</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.risks|length }}</div></div>
+    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">{{ _("ESG Metrik") }}</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">{{ package.esg_metrics|length }}</div></div>
+    <div><div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;margin-bottom:3px;">{{ _("Kurulum (h)") }}</div><div style="font-size:22px;font-weight:700;color:{{ package.meta.color }};">~{{ package.meta.estimated_setup_hours }}</div></div>
   </div>
 
   {% if package.meta.compliance %}
   <div style="margin-bottom:20px;font-size:12.5px;color:#475569;">
-    <b>Uyum Standartları:</b>
+    <b>{{ _("Uyum Standartları:") }}</b>
     {% for c in package.meta.compliance %}<span style="background:#eef2ff;color:#4338ca;padding:3px 9px;border-radius:6px;margin-right:4px;font-size:11px;font-weight:600;">{{ c }}</span>{% endfor %}
   </div>
   {% endif %}
 
   <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:18px;">
-    <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">🎯 Stratejiler ({{ package.strategies|length }})</h3>
+    <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">{{ _("🎯 Stratejiler (%(n)s)", n=package.strategies|length) }}</h3>
     {% for s in package.strategies %}
     <div style="border-left:3px solid {{ package.meta.color }};padding:8px 14px;margin-bottom:8px;background:#f8fafc;border-radius:0 6px 6px 0;">
       <div style="font-weight:600;color:#0f172a;font-size:13px;">{{ s.code }} — {{ s.title }} <span style="color:#94a3b8;font-weight:400;font-size:11px;">(ağırlık %{{ s.weight }})</span></div>
@@ -41,33 +41,33 @@
 
   <div style="display:grid;grid-template-columns:1fr 1fr;gap:16px;margin-bottom:18px;">
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">⚙ Süreçler ({{ package.processes|length }})</h3>
+      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">{{ _("⚙ Süreçler (%(n)s)", n=package.processes|length) }}</h3>
       <table style="width:100%;border-collapse:collapse;font-size:12px;">
-        <thead><tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0;"><th style="padding:6px;text-align:left;color:#475569;">Kod</th><th style="padding:6px;text-align:left;color:#475569;">Süreç</th><th style="padding:6px;text-align:right;color:#475569;">Ağırlık</th></tr></thead>
+        <thead><tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0;"><th style="padding:6px;text-align:left;color:#475569;">{{ _("Kod") }}</th><th style="padding:6px;text-align:left;color:#475569;">{{ _("Süreç") }}</th><th style="padding:6px;text-align:right;color:#475569;">{{ _("Ağırlık") }}</th></tr></thead>
         <tbody>{% for p in package.processes %}<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:6px;color:#0f172a;font-weight:600;">{{ p.code }}</td><td style="padding:6px;color:#475569;">{{ p.name }}</td><td style="padding:6px;text-align:right;color:#475569;">%{{ p.weight }}</td></tr>{% endfor %}</tbody>
       </table>
     </div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;">
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">⚠ Riskler ({{ package.risks|length }})</h3>
+      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">{{ _("⚠ Riskler (%(n)s)", n=package.risks|length) }}</h3>
       <table style="width:100%;border-collapse:collapse;font-size:12px;">
-        <thead><tr style="background:#fef2f2;border-bottom:1px solid #fecaca;"><th style="padding:6px;text-align:left;color:#991b1b;">Risk</th><th style="padding:6px;text-align:center;color:#991b1b;">RPN</th></tr></thead>
+        <thead><tr style="background:#fef2f2;border-bottom:1px solid #fecaca;"><th style="padding:6px;text-align:left;color:#991b1b;">{{ _("Risk") }}</th><th style="padding:6px;text-align:center;color:#991b1b;">RPN</th></tr></thead>
         <tbody>{% for r in package.risks %}<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:6px;color:#0f172a;">{{ r.title }} <span style="color:#94a3b8;font-size:10px;">({{ r.category }})</span></td><td style="padding:6px;text-align:center;color:{% if r.probability*r.impact >= 15 %}#dc2626{% elif r.probability*r.impact >= 8 %}#f59e0b{% else %}#475569{% endif %};font-weight:700;">{{ r.probability * r.impact }}</td></tr>{% endfor %}</tbody>
       </table>
     </div>
   </div>
 
   <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:18px;">
-    <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">📊 Performans Göstergeleri ({{ package.kpis|length }})</h3>
+    <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">{{ _("📊 Performans Göstergeleri (%(n)s)", n=package.kpis|length) }}</h3>
     <table style="width:100%;border-collapse:collapse;font-size:11.5px;">
-      <thead><tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0;"><th style="padding:6px;text-align:left;color:#475569;">Kod</th><th style="padding:6px;text-align:left;color:#475569;">PG</th><th style="padding:6px;text-align:left;color:#475569;">Birim</th><th style="padding:6px;text-align:left;color:#475569;">Hedef</th><th style="padding:6px;text-align:left;color:#475569;">Periyot</th><th style="padding:6px;text-align:left;color:#475569;">Yön</th></tr></thead>
+      <thead><tr style="background:#f8fafc;border-bottom:1px solid #e2e8f0;"><th style="padding:6px;text-align:left;color:#475569;">{{ _("Kod") }}</th><th style="padding:6px;text-align:left;color:#475569;">PG</th><th style="padding:6px;text-align:left;color:#475569;">{{ _("Birim") }}</th><th style="padding:6px;text-align:left;color:#475569;">{{ _("Hedef") }}</th><th style="padding:6px;text-align:left;color:#475569;">{{ _("Periyot") }}</th><th style="padding:6px;text-align:left;color:#475569;">{{ _("Yön") }}</th></tr></thead>
       <tbody>{% for k in package.kpis %}<tr style="border-bottom:1px solid #f1f5f9;"><td style="padding:6px;color:#0f172a;font-weight:600;">{{ k.code }}</td><td style="padding:6px;color:#475569;">{{ k.name }}</td><td style="padding:6px;color:#475569;">{{ k.unit }}</td><td style="padding:6px;color:#475569;font-weight:600;">{{ k.target }}</td><td style="padding:6px;color:#475569;">{{ k.period }}</td><td style="padding:6px;"><i class="fas fa-arrow-{% if k.direction == 'Increasing' %}up" style="color:#10b981;{% else %}down" style="color:#dc2626;{% endif %}"></i></td></tr>{% endfor %}</tbody>
     </table>
   </div>
 
   <div style="background:linear-gradient(135deg,#ecfdf5,#fff);border:1px solid #a7f3d0;border-radius:10px;padding:18px;text-align:center;">
     <i class="fas fa-info-circle" style="color:#16a34a;font-size:18px;margin-bottom:8px;"></i>
-    <div style="font-size:14px;color:#065f46;font-weight:600;">"Paketi Uygula" özelliği yakında</div>
-    <div style="font-size:12px;color:#475569;margin-top:4px;">Bu paket içeriği şu an önizleme. Tam paketi tek tıkla mevcut tenant'a uygulama özelliği bir sonraki sürümde gelecek.</div>
+    <div style="font-size:14px;color:#065f46;font-weight:600;">{{ _('"Paketi Uygula" özelliği yakında') }}</div>
+    <div style="font-size:12px;color:#475569;margin-top:4px;">{{ _("Bu paket içeriği şu an önizleme. Tam paketi tek tıkla mevcut tenant'a uygulama özelliği bir sonraki sürümde gelecek.") }}</div>
   </div>
 </div>
 {% endblock %}

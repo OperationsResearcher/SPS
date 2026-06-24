@@ -283,7 +283,7 @@
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap">
           <table class="mc-table">
-            <thead><tr><th>{{ _("Kullanıcı") }}</th><th>{{ _("Kod") }}</th><th>{{ _("PG Adı") }}</th><th>{{ _("Hedef") }}</th><th>{{ _("Gerçekleşen") }}</th><th>{{ _("Başarı %") }}</th><th>{{ _("Kaynak") }}</th></tr></thead>
+            <thead><tr><th>{{ _("Kullanıcı") }}</th><th>{{ _("Kod") }}</th><th>{{ _("PG Adı") }}</th><th>{{ _("Hedef") }}</th><th>{{ _("Gerçekleşen") }}</th><th>{{ _("Başarı %%") }}</th><th>{{ _("Kaynak") }}</th></tr></thead>
             <tbody id="kr-ipi-body"><tr><td colspan="7" style="text-align:center;padding:24px;color:#94a3b8;">{{ _("Yükleniyor…") }}</td></tr></tbody>
           </table>
         </div>
@@ -430,11 +430,11 @@
       <div class="mc-card" data-card-code="k_rapor_uyari.kritik_performans_gostergeleri">
         <div class="mc-card-header">
           <span class="mc-card-title"><i class="fas fa-circle-exclamation" style="color:#ef4444;"></i> {{ _("Kritik Performans Göstergeleri") }}</span>
-          <span style="font-size:11px;color:#94a3b8;margin-left:8px;">{{ _("Başarı oranı %50'nin altında olanlar") }}</span>
+          <span style="font-size:11px;color:#94a3b8;margin-left:8px;">{{ _("Başarı oranı %%50'nin altında olanlar") }}</span>
         </div>
         <div class="mc-card-body" style="padding:0;">
           <div class="mc-table-wrap"><table class="mc-table">
-            <thead><tr><th>{{ _("Kod") }}</th><th>{{ _("PG Adı") }}</th><th>{{ _("Süreç") }}</th><th>{{ _("Hedef") }}</th><th>{{ _("Gerçekleşen") }}</th><th>{{ _("Başarı %") }}</th></tr></thead>
+            <thead><tr><th>{{ _("Kod") }}</th><th>{{ _("PG Adı") }}</th><th>{{ _("Süreç") }}</th><th>{{ _("Hedef") }}</th><th>{{ _("Gerçekleşen") }}</th><th>{{ _("Başarı %%") }}</th></tr></thead>
             <tbody id="kr-kritik-pg-body"></tbody>
           </table></div>
         </div>
@@ -470,7 +470,7 @@
 
   <!-- ── TAB: K-Vektör ────────────────────────────────────────────────────── -->
   <div id="kr-panel-k-vektor" class="kr-panel">
-    <div class="kr-info-band"><i class="fas fa-circle-info"></i><span>{{ _("<b>K-Vektör Skoru:</b> Her stratejiye verilen ağırlık (%) ile o stratejinin gerçekleşen skor karşılaştırması. Yüksek ağırlık + düşük skor = en kritik odak noktası.") }}</span></div>
+    <div class="kr-info-band"><i class="fas fa-circle-info"></i><span>{{ _("<b>K-Vektör Skoru:</b> Her stratejiye verilen ağırlık (%%) ile o stratejinin gerçekleşen skor karşılaştırması. Yüksek ağırlık + düşük skor = en kritik odak noktası.") }}</span></div>
     <div class="mc-grid-2">
       <div class="mc-card" data-card-code="k_rapor_k_vektor.ana_strateji_agirliklari">
         <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-weight-scale"></i> {{ _("Ana Strateji Ağırlıkları") }}</span></div>
@@ -703,7 +703,7 @@
 
   <!-- ── TAB: PG Performans Dağılımı ──────────────────────────────────────── -->
   <div id="kr-panel-pg-dagilim" class="kr-panel">
-    <div class="kr-info-band"><i class="fas fa-circle-info"></i><span>{{ _("<b>PG Bant Dağılımı:</b> Tüm performans göstergelerinin hedef bandına göre dağılımı — üstün (≥%110), normal (%90–110), gelişim (%70–90), kritik (&lt;%70).") }}</span></div>
+    <div class="kr-info-band"><i class="fas fa-circle-info"></i><span>{{ _("<b>PG Bant Dağılımı:</b> Tüm performans göstergelerinin hedef bandına göre dağılımı — üstün (≥%%110), normal (%%90–110), gelişim (%%70–90), kritik (&lt;%%70).") }}</span></div>
     <div class="mc-grid-4" style="margin-bottom:20px;" id="kr-pgd-ozet">
       <div class="kr-loading" style="grid-column:span 4;padding:12px;">Yükleniyor…</div>
     </div>
@@ -724,7 +724,7 @@
       </div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
-          <thead><tr><th>{{ _("PG Adı") }}</th><th>{{ _("Süreç") }}</th><th>{{ _("Hedef") }}</th><th>{{ _("Gerçekleşen") }}</th><th>{{ _("Başarı %") }}</th></tr></thead>
+          <thead><tr><th>{{ _("PG Adı") }}</th><th>{{ _("Süreç") }}</th><th>{{ _("Hedef") }}</th><th>{{ _("Gerçekleşen") }}</th><th>{{ _("Başarı %%") }}</th></tr></thead>
           <tbody id="kr-pgd-body"></tbody>
         </table></div>
       </div>
@@ -750,7 +750,7 @@
       <div class="mc-card-header"><span class="mc-card-title"><i class="fas fa-table"></i> {{ _("Süreç Faaliyet Detay Tablosu") }}</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
-          <thead><tr><th>{{ _("Süreç") }}</th><th>{{ _("Toplam") }}</th><th>{{ _("Tamamlanan") }}</th><th>{{ _("Devam") }}</th><th>{{ _("Geciken") }}</th><th>{{ _("İptal") }}</th><th>{{ _("Tamamlanma %") }}</th></tr></thead>
+          <thead><tr><th>{{ _("Süreç") }}</th><th>{{ _("Toplam") }}</th><th>{{ _("Tamamlanan") }}</th><th>{{ _("Devam") }}</th><th>{{ _("Geciken") }}</th><th>{{ _("İptal") }}</th><th>{{ _("Tamamlanma %%") }}</th></tr></thead>
           <tbody id="kr-fm-body"></tbody>
         </table></div>
       </div>
@@ -850,7 +850,7 @@
       <div class="mc-card-header" data-card-code="k_rapor_sorumlu_analiz.sorumlu_detay_tablosu"><span class="mc-card-title"><i class="fas fa-users"></i> {{ _("Sorumlu Detay Tablosu") }}</span></div>
       <div class="mc-card-body" style="padding:0;">
         <div class="mc-table-wrap"><table class="mc-table">
-          <thead><tr><th>#</th><th>{{ _("Kişi") }}</th><th>{{ _("Toplam") }}</th><th>{{ _("Tamamlanan") }}</th><th>{{ _("Geciken") }}</th><th>{{ _("Devam") }}</th><th>{{ _("Tamamlanma %") }}</th><th>{{ _("Gecikme %") }}</th></tr></thead>
+          <thead><tr><th>#</th><th>{{ _("Kişi") }}</th><th>{{ _("Toplam") }}</th><th>{{ _("Tamamlanan") }}</th><th>{{ _("Geciken") }}</th><th>{{ _("Devam") }}</th><th>{{ _("Tamamlanma %%") }}</th><th>{{ _("Gecikme %%") }}</th></tr></thead>
           <tbody id="kr-sa2-body"><tr><td colspan="8" style="text-align:center;padding:24px;color:#94a3b8;">{{ _("Yükleniyor…") }}</td></tr></tbody>
         </table></div>
       </div>

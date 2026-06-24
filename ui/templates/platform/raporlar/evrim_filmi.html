@@ -1,12 +1,12 @@
 {% extends "platform/base.html" %}
-{% block title %}Yıllar Arası Evrim Filmi — Kokpitim{% endblock %}
-{% block page_title %}Yıllar Arası Evrim Filmi{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Yıllar Arası Evrim Filmi') }}{% endblock %}
+{% block title %}{{ _("Yıllar Arası Evrim Filmi — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Yıllar Arası Evrim Filmi") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Yıllar Arası Evrim Filmi')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1300px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-film" style="color:#9333ea;"></i> Yıllar Arası Evrim Filmi</h1>
-    <p class="mc-page-subtitle">Stratejik plan ağacının yıldan yıla değişim animasyonu — yılı seçin veya otomatik oynatın.</p>
+    <h1 class="mc-page-title"><i class="fas fa-film" style="color:#9333ea;"></i> {{ _("Yıllar Arası Evrim Filmi") }}</h1>
+    <p class="mc-page-subtitle">{{ _("Stratejik plan ağacının yıldan yıla değişim animasyonu — yılı seçin veya otomatik oynatın.") }}</p>
   </div>
 </div>
 <div style="max-width:1300px; margin:0 auto;">
@@ -19,9 +19,9 @@
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px 20px;margin-bottom:18px;">
       <div style="display:flex;align-items:center;gap:14px;flex-wrap:wrap;">
         <button id="play-btn" class="mc-btn mc-btn-primary" style="min-width:120px;">
-          <i class="fas fa-play"></i> Oynat
+          <i class="fas fa-play"></i> {{ _("Oynat") }}
         </button>
-        <div style="font-size:13px;color:#475569;">Yıl: <b id="current-year" style="color:#9333ea;font-size:18px;">—</b></div>
+        <div style="font-size:13px;color:#475569;">{{ _("Yıl:") }} <b id="current-year" style="color:#9333ea;font-size:18px;">—</b></div>
         <div style="flex:1;min-width:200px;display:flex;align-items:center;gap:10px;">
           <span style="font-size:11px;color:#94a3b8;" id="year-min"></span>
           <input type="range" id="year-slider" min="0" max="0" value="0" step="1"

@@ -1,18 +1,18 @@
 {% extends "platform/base.html" %}
-{% block title %}Risk Isı Haritası — Kokpitim{% endblock %}
-{% block page_title %}Risk Isı Haritası (5×5){% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Risk Isı Haritası') }}{% endblock %}
+{% block title %}{{ _("Risk Isı Haritası") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Risk Isı Haritası (5×5)") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Risk Isı Haritası')) }}{% endblock %}
 {% block content %}
 
 
 <div class="mc-page-header" style="max-width:1240px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-shield-alt" style="color:#dc2626;"></i> Risk Isı Haritası</h1>
-    <p class="mc-page-subtitle">5×5 Olasılık × Etki matrisi · RPN = Olasılık × Etki · Seçili plan yılı risklerini gösterir</p>
+    <h1 class="mc-page-title"><i class="fas fa-shield-alt" style="color:#dc2626;"></i> {{ _("Risk Isı Haritası") }}</h1>
+    <p class="mc-page-subtitle">{{ _("5×5 Olasılık × Etki matrisi · RPN = Olasılık × Etki · Seçili plan yılı risklerini gösterir") }}</p>
   </div>
   <div class="mc-page-header-right" style="display:flex;gap:10px;align-items:center;">
     <select id="rh-year" class="mc-select" style="font-size:13px;padding:6px 12px;min-width:110px;">
-      <option value="">Tüm Yıllar</option>
+      <option value="">{{ _("Tüm Yıllar") }}</option>
     </select>
   </div>
 </div>
@@ -21,12 +21,12 @@
 <div style="max-width:1240px;margin:0 auto 18px;background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:10px 16px;font-size:12.5px;color:#78350f;display:flex;gap:10px;align-items:flex-start;">
   <i class="fas fa-circle-info" style="margin-top:2px;flex-shrink:0;"></i>
   <div>
-    <strong>RPN (Risk Öncelik Puanı)</strong> = Olasılık (1–5) × Etki (1–5) &nbsp;·&nbsp; Hücre rengi:
-    <span style="background:#dc2626;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px;">Kritik ≥15</span>
-    <span style="background:#f59e0b;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px;margin:0 3px;">Yüksek 8–14</span>
-    <span style="background:#fef3c7;color:#78350f;padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid #fcd34d;">Orta 4–7</span>
-    <span style="background:#dcfce7;color:#166534;padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid #bbf7d0;margin-left:3px;">Düşük &lt;4</span>
-    &nbsp;·&nbsp; Hücredeki sayı o bölgedeki risk adedini gösterir.
+    {{ _("<strong>RPN (Risk Öncelik Puanı)</strong> = Olasılık (1–5) × Etki (1–5) &nbsp;·&nbsp; Hücre rengi:") }}
+    <span style="background:#dc2626;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px;">{{ _("Kritik ≥15") }}</span>
+    <span style="background:#f59e0b;color:#fff;padding:1px 6px;border-radius:3px;font-size:11px;margin:0 3px;">{{ _("Yüksek 8–14") }}</span>
+    <span style="background:#fef3c7;color:#78350f;padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid #fcd34d;">{{ _("Orta 4–7") }}</span>
+    <span style="background:#dcfce7;color:#166534;padding:1px 6px;border-radius:3px;font-size:11px;border:1px solid #bbf7d0;margin-left:3px;">{{ _("Düşük &lt;4") }}</span>
+    {{ _("&nbsp;·&nbsp; Hücredeki sayı o bölgedeki risk adedini gösterir.") }}
   </div>
 </div>
 
@@ -39,17 +39,17 @@
     <div style="display:grid;grid-template-columns:1fr 1fr;gap:18px;">
       <!-- 5×5 Matris -->
       <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_risk_heatmap.5_5_risk_matrisi">
-        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">5×5 Risk Matrisi</h3>
-        <p style="font-size:11.5px;color:#64748b;margin:0 0 12px;">Dikey: Olasılık (1=Çok Düşük, 5=Neredeyse Kesin) · Yatay: Etki (1=Önemsiz, 5=Felaket)</p>
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 4px;">{{ _("5×5 Risk Matrisi") }}</h3>
+        <p style="font-size:11.5px;color:#64748b;margin:0 0 12px;">{{ _("Dikey: Olasılık (1=Çok Düşük, 5=Neredeyse Kesin) · Yatay: Etki (1=Önemsiz, 5=Felaket)") }}</p>
         <div id="rh-grid" style="display:grid;grid-template-columns:60px repeat(5,1fr);gap:3px;font-size:11px;"></div>
         <div style="display:flex;justify-content:space-between;font-size:10.5px;color:#64748b;margin-top:6px;">
-          <span style="padding-left:60px;">← Düşük Etki</span><span>Yüksek Etki →</span>
+          <span style="padding-left:60px;">{{ _("← Düşük Etki") }}</span><span>{{ _("Yüksek Etki →") }}</span>
         </div>
       </div>
 
       <!-- Top 10 -->
       <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_risk_heatmap.en_yuksek_rpn_ilk_10">
-        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-ranking-star" style="color:#f59e0b;"></i> En Yüksek RPN — İlk 10</h3>
+        <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;"><i class="fas fa-ranking-star" style="color:#f59e0b;"></i> {{ _("En Yüksek RPN — İlk 10") }}</h3>
         <div id="rh-top10"></div>
       </div>
     </div>

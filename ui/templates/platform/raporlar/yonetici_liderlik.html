@@ -1,18 +1,18 @@
 {% extends "platform/base.html" %}
-{% block title %}Yönetici Liderlik Skoru — Kokpitim{% endblock %}
-{% block page_title %}Yönetici Liderlik Skoru{% endblock %}
+{% block title %}{{ _("Yönetici Liderlik Skoru — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Yönetici Liderlik Skoru") }}{% endblock %}
 
-{% block breadcrumb %}{{ mc_breadcrumb('Yönetici Liderlik Skoru') }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Yönetici Liderlik Skoru')) }}{% endblock %}
 
 {% block content %}
 <div style="max-width:1240px; margin:0 auto;">
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-user-tie" style="color:#f59e0b;"></i> Yönetici Liderlik Skoru
+        <i class="fas fa-user-tie" style="color:#f59e0b;"></i> {{ _("Yönetici Liderlik Skoru") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Süreç liderlerinin liderlik ettiği süreçlerin ortalama performans skoru
+        {{ _("Süreç liderlerinin liderlik ettiği süreçlerin ortalama performans skoru") }}
       </p>
     </div>
   </div>
@@ -23,10 +23,10 @@
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;overflow-x:auto;" data-card-code="raporlar_yonetici_liderlik.yoneticiler_karti">
       <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
         <thead><tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
-          <th style="padding:10px;text-align:left;color:#475569;">Yönetici</th>
-          <th style="padding:10px;text-align:left;color:#475569;">Departman</th>
-          <th style="padding:10px;text-align:right;color:#475569;">Liderlik Süreç</th>
-          <th style="padding:10px;text-align:right;color:#475569;">Ort. Skor</th>
+          <th style="padding:10px;text-align:left;color:#475569;">{{ _("Yönetici") }}</th>
+          <th style="padding:10px;text-align:left;color:#475569;">{{ _("Departman") }}</th>
+          <th style="padding:10px;text-align:right;color:#475569;">{{ _("Liderlik Süreç") }}</th>
+          <th style="padding:10px;text-align:right;color:#475569;">{{ _("Ort. Skor") }}</th>
         </tr></thead><tbody id="tbl"></tbody>
       </table>
     </div>

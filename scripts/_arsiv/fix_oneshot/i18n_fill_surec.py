@@ -850,8 +850,14 @@ for bi, b in enumerate(blocks):
     if (ms_val == "" or is_fuzzy) and mid_u in T:
         en = T[mid_u]
         new_block = re.sub(r'#, fuzzy\n', '', b)
-        # msgstr kısmını tek satıra yaz
-        new_block = re.sub(r'(?ms)^msgstr (?:".*?"\s*)+', 'msgstr "%s"' % esc(en).replace('\n','\\n'), new_block)
+        # msgstr kısmını tek satıra yaz. po_escape: ham newline + literal \n → \n; tırnak/backslash kaçışı.
+        def po_escape(x):
+            x = x.replace("\\", "\\\\")        # önce backslash
+            x = x.replace('\\\\n', '\\n')      # çift-kaçırılmış \n'i tek \n yap (JSON'dan gelen literal \n)
+            x = x.replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "\\n")  # ham newline
+            x = x.replace('"', '\\"')
+            return x
+        new_block = re.sub(r'(?ms)^msgstr (?:".*?"\s*)+', lambda _m: 'msgstr "%s"' % po_escape(en), new_block)
         blocks[bi] = new_block.rstrip("\n")
         multi += 1
 

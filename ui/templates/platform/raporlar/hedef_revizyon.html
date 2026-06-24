@@ -1,18 +1,18 @@
 {% extends "platform/base.html" %}
-{% block title %}PG Hedef Revizyon Sıklığı — Kokpitim{% endblock %}
-{% block page_title %}PG Hedef Revizyon Sıklığı{% endblock %}
+{% block title %}{{ _("PG Hedef Revizyon Sıklığı — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("PG Hedef Revizyon Sıklığı") }}{% endblock %}
 
-{% block breadcrumb %}{{ mc_breadcrumb('PG Hedef Revizyon Sıklığı') }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('PG Hedef Revizyon Sıklığı')) }}{% endblock %}
 
 {% block content %}
 <div style="max-width:1240px; margin:0 auto;">
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-history" style="color:#16a34a;"></i> PG Hedef Revizyon Sıklığı
+        <i class="fas fa-history" style="color:#16a34a;"></i> {{ _("PG Hedef Revizyon Sıklığı") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Yıllık plan dönemlerinde hedefi/ağırlığı revize edilen PG'ler — sık değişim ölçüm güvenilirliği işaretçisi olabilir
+        {{ _("Yıllık plan dönemlerinde hedefi/ağırlığı revize edilen PG'ler — sık değişim ölçüm güvenilirliği işaretçisi olabilir") }}
       </p>
     </div>
   </div>
@@ -21,12 +21,12 @@
     <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(160px, 1fr));gap:14px;margin-bottom:20px;" id="summary"></div>
 
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;margin-bottom:20px;" data-card-code="raporlar_hedef_revizyon.yillara_gore_revizyon">
-      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;margin:0 0 14px;color:#0f172a;">Yıllara Göre Revizyon</h3>
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;margin:0 0 14px;color:#0f172a;">{{ _("Yıllara Göre Revizyon") }}</h3>
       <div id="year-bars"></div>
     </div>
 
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_hedef_revizyon.revize_edilen_pg_ler">
-      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;margin:0 0 14px;color:#0f172a;">Revize Edilen PG'ler</h3>
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;margin:0 0 14px;color:#0f172a;">{{ _("Revize Edilen PG'ler") }}</h3>
       <div id="kpi-list"></div>
     </div>
   </div>

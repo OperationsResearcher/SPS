@@ -9,16 +9,16 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-recycle" style="color:#16a34a;"></i> 7 Muda (İsraf) Analizi
+        <i class="fas fa-recycle" style="color:#16a34a;"></i> {{ _("7 Muda (İsraf) Analizi") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Yalın yönetim 7 israf türü — süreçlerinizdeki değer üretmeyen aktiviteleri tespit edin
+        {{ _("Yalın yönetim 7 israf türü — süreçlerinizdeki değer üretmeyen aktiviteleri tespit edin") }}
       </p>
     </div>
     {% if plan_years %}
     <label class="mc-year-mini">
       <i class="fas fa-calendar-days"></i>
-      <span>Yıl:</span>
+      <span>{{ _("Yıl:") }}</span>
       <select id="muda-year-select" class="mc-year-sel">
         {% for y in plan_years %}
         <option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>
@@ -30,8 +30,7 @@
 
   <div class="mc-card mc-card--accent-success" style="padding:14px 18px; margin-bottom:14px; background:#f0fdf4">
     <div style="font-size:13px; color:#14532d; line-height:1.6;">
-      <b>Muda nedir?</b> Japonca "<i>israf</i>" anlamına gelir. Toyota Üretim Sistemi'nde tanımlanan, müşteriye değer üretmeyen 7 aktivite türü.
-      Yalın yönetimde temel ilke: <b>katma değer = toplam zaman − muda zamanı</b>. Mudayı azaltırsanız kalite ve hız aynı anda artar.
+      {{ _('<b>Muda nedir?</b> Japonca "<i>israf</i>" anlamına gelir. Toyota Üretim Sistemi\'nde tanımlanan, müşteriye değer üretmeyen 7 aktivite türü. Yalın yönetimde temel ilke: <b>katma değer = toplam zaman − muda zamanı</b>. Mudayı azaltırsanız kalite ve hız aynı anda artar.') }}
     </div>
   </div>
 
@@ -43,16 +42,16 @@
     {# Muda türleri — kart-açıklama bloğu #}
     <div class="mc-card" style="padding:18px; margin-bottom:14px;" data-card-code="raporlar_muda_analizi.7_muda_turu_bulgu_sayilari_aciklamalar">
       <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 4px;">
-        <i class="fas fa-chart-bar" style="color:#16a34a;"></i> 7 Muda Türü — Bulgu Sayıları + Açıklamalar
+        <i class="fas fa-chart-bar" style="color:#16a34a;"></i> {{ _("7 Muda Türü — Bulgu Sayıları + Açıklamalar") }}
       </h3>
-      <p style="font-size:11.5px; color:#94a3b8; margin:0 0 14px;">Her tür için bulgu adedi · tanım · örnek</p>
+      <p style="font-size:11.5px; color:#94a3b8; margin:0 0 14px;">{{ _("Her tür için bulgu adedi · tanım · örnek") }}</p>
       <div id="by-muda" style="display:grid; gap:10px;"></div>
     </div>
 
     {# Süreç bazlı bulgular #}
     <div class="mc-card" style="padding:18px;" data-card-code="raporlar_muda_analizi.bulgu_saptanan_surecler">
       <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
-        <i class="fas fa-sitemap" style="color:#6366f1;"></i> Bulgu Saptanan Süreçler
+        <i class="fas fa-sitemap" style="color:#6366f1;"></i> {{ _("Bulgu Saptanan Süreçler") }}
       </h3>
       <div id="by-process"></div>
     </div>

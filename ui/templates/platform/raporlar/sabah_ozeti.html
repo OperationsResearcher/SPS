@@ -1,18 +1,18 @@
 {% extends "platform/base.html" %}
-{% block title %}Operasyonel Sabah Özeti — Kokpitim{% endblock %}
-{% block page_title %}Operasyonel Sabah Özeti{% endblock %}
+{% block title %}{{ _("Operasyonel Sabah Özeti — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Operasyonel Sabah Özeti") }}{% endblock %}
 
-{% block breadcrumb %}{{ mc_breadcrumb('Operasyonel Sabah Özeti') }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Operasyonel Sabah Özeti')) }}{% endblock %}
 
 {% block content %}
 <div style="max-width:1240px; margin:0 auto;">
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-sun" style="color:#0d9488;"></i> Operasyonel Sabah Özeti
+        <i class="fas fa-sun" style="color:#0d9488;"></i> {{ _("Operasyonel Sabah Özeti") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Geciken faaliyetler, bugün son tarihler, son 7 gün ölçüm akışı ve en son veri girişleri
+        {{ _("Geciken faaliyetler, bugün son tarihler, son 7 gün ölçüm akışı ve en son veri girişleri") }}
       </p>
     </div>
   </div>
@@ -24,7 +24,7 @@
 
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_sabah_ozeti.son_veri_girisleri">
       <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">
-        <i class="fas fa-stream" style="color:#0ea5e9;"></i> Son Veri Girişleri
+        <i class="fas fa-stream" style="color:#0ea5e9;"></i> {{ _("Son Veri Girişleri") }}
       </h3>
       <div id="recent"></div>
     </div>

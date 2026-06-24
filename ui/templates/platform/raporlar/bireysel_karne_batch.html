@@ -1,12 +1,12 @@
 {% extends "platform/base.html" %}
-{% block title %}Bireysel Karne Batch — Kokpitim{% endblock %}
-{% block page_title %}Bireysel Karne — Toplu PDF (ZIP){% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('Bireysel Karne Batch') }}{% endblock %}
+{% block title %}{{ _("Bireysel Karne Batch — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Bireysel Karne — Toplu PDF (ZIP)") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('Bireysel Karne Batch')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-file-zipper" style="color:#8b5cf6;"></i> Bireysel Karne Batch (ZIP)</h1>
-    <p class="mc-page-subtitle">PG'si olan tüm çalışanların bireysel karneleri toplu PDF olarak tek ZIP dosyasında indir.</p>
+    <h1 class="mc-page-title"><i class="fas fa-file-zipper" style="color:#8b5cf6;"></i> {{ _("Bireysel Karne Batch (ZIP)") }}</h1>
+    <p class="mc-page-subtitle">{{ _("PG'si olan tüm çalışanların bireysel karneleri toplu PDF olarak tek ZIP dosyasında indir.") }}</p>
   </div>
 </div>
 <div style="max-width:1100px;margin:0 auto;">
@@ -14,24 +14,24 @@
   <div id="content" style="display:none;">
     <div style="background:linear-gradient(135deg,#f5f3ff,#fff);border:1px solid #ddd6fe;border-radius:12px;padding:24px;margin-bottom:20px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:16px;" data-card-code="raporlar_bireysel_karne_batch.toplu_uretim_zip">
       <div>
-        <div class="mc-stat-label" style="font-size:11px;color:#5b21b6;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">TOPLU ÜRETIM · ZIP</div>
+        <div class="mc-stat-label" style="font-size:11px;color:#5b21b6;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">{{ _("TOPLU ÜRETIM · ZIP") }}</div>
         <div style="font-size:22px;font-weight:800;color:#0f172a;margin-top:4px;" id="title">—</div>
         <div style="font-size:12.5px;color:#64748b;margin-top:4px;" id="meta">—</div>
       </div>
       <button id="dl" class="mc-btn mc-btn-primary" style="background:#8b5cf6;font-size:14px;padding:12px 24px;">
-        <i class="fas fa-download"></i> ZIP İndir
+        <i class="fas fa-download"></i> {{ _("ZIP İndir") }}
       </button>
     </div>
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;" data-card-code="raporlar_bireysel_karne_batch.her_karne_icerigi">
-      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">⚙ Her Karne İçeriği</h3>
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 14px;">{{ _("⚙ Her Karne İçeriği") }}</h3>
       <ul style="font-size:13px;color:#475569;line-height:1.8;margin:0;padding-left:20px;">
-        <li>Çalışan kimlik bilgileri (ad, e-posta, departman)</li>
-        <li>Bireysel PG sayısı + kurum stratejisine hizalama yüzdesi</li>
-        <li>PG detay tablosu (kod, ad, hedef, birim, kaynak tipi)</li>
-        <li>Otomatik üretim notu</li>
+        <li>{{ _("Çalışan kimlik bilgileri (ad, e-posta, departman)") }}</li>
+        <li>{{ _("Bireysel PG sayısı + kurum stratejisine hizalama yüzdesi") }}</li>
+        <li>{{ _("PG detay tablosu (kod, ad, hedef, birim, kaynak tipi)") }}</li>
+        <li>{{ _("Otomatik üretim notu") }}</li>
       </ul>
       <div style="margin-top:14px;padding:10px;background:#fffbeb;border:1px solid #fde68a;color:#92400e;border-radius:6px;font-size:12px;">
-        <i class="fas fa-info-circle"></i> Maksimum 100 kullanıcı tek seferde işlenir. Üretim süresi kullanıcı sayısına bağlıdır (~5-30 saniye).
+        <i class="fas fa-info-circle"></i> {{ _("Maksimum 100 kullanıcı tek seferde işlenir. Üretim süresi kullanıcı sayısına bağlıdır (~5-30 saniye).") }}
       </div>
     </div>
   </div>

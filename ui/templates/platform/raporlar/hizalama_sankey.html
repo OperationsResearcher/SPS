@@ -13,15 +13,14 @@
         <i class="fas fa-project-diagram" style="color:#4f46e5;"></i> Stratejik Akış Haritası
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
-        <b>Vizyon → Strateji → Alt Strateji → Süreç → PG</b> akış görseli.
-        Bant kalınlığı = ağırlık/katkı · Renk = mevcut skor
+        {{ _("<b>Vizyon → Strateji → Alt Strateji → Süreç → PG</b> akış görseli. Bant kalınlığı = ağırlık/katkı · Renk = mevcut skor") }}
       </p>
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       {% if plan_years %}
       <label class="mc-year-mini">
         <i class="fas fa-calendar-days"></i>
-        <span>Yıl:</span>
+        <span>{{ _("Yıl:") }}</span>
         <select id="hs-year-select" class="mc-year-sel">
           {% for y in plan_years %}
           <option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>
@@ -31,9 +30,9 @@
       {% endif %}
       <label style="display:inline-flex; align-items:center; gap:6px; font-size:12.5px; color:#475569; white-space:nowrap;">
         <i class="fas fa-filter" style="color:#8b5cf6;"></i>
-        <span style="white-space:nowrap;">Strateji:</span>
+        <span style="white-space:nowrap;">{{ _("Strateji:") }}</span>
         <select id="hs-strat-select" class="mc-form-input" style="padding:5px 10px; font-size:13px; min-width:160px;">
-          <option value="all">Tümü</option>
+          <option value="all">{{ _("Tümü") }}</option>
         </select>
       </label>
     </div>
@@ -50,12 +49,12 @@
 
     {# Legend #}
     <div style="display:flex; gap:14px; align-items:center; flex-wrap:wrap; padding:8px 14px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:8px; margin-bottom:14px; font-size:11.5px; color:#475569;">
-      <b>Renk = mevcut skor:</b>
-      <span><span style="display:inline-block; width:11px; height:11px; background:#10b981; border-radius:2px; vertical-align:middle;"></span> ≥75 sağlıklı</span>
-      <span><span style="display:inline-block; width:11px; height:11px; background:#f59e0b; border-radius:2px; vertical-align:middle;"></span> 50-74 izle</span>
-      <span><span style="display:inline-block; width:11px; height:11px; background:#ef4444; border-radius:2px; vertical-align:middle;"></span> &lt;50 kritik</span>
-      <span><span style="display:inline-block; width:11px; height:11px; background:#94a3b8; border-radius:2px; vertical-align:middle;"></span> veri yok</span>
-      <span style="margin-left:auto;"><b>Bant kalınlığı</b> = K-Vektör ağırlığı / katkı yüzdesi</span>
+      <b>{{ _("Renk = mevcut skor:") }}</b>
+      <span><span style="display:inline-block; width:11px; height:11px; background:#10b981; border-radius:2px; vertical-align:middle;"></span> {{ _("≥75 sağlıklı") }}</span>
+      <span><span style="display:inline-block; width:11px; height:11px; background:#f59e0b; border-radius:2px; vertical-align:middle;"></span> {{ _("50-74 izle") }}</span>
+      <span><span style="display:inline-block; width:11px; height:11px; background:#ef4444; border-radius:2px; vertical-align:middle;"></span> {{ _("&lt;50 kritik") }}</span>
+      <span><span style="display:inline-block; width:11px; height:11px; background:#94a3b8; border-radius:2px; vertical-align:middle;"></span> {{ _("veri yok") }}</span>
+      <span style="margin-left:auto;">{{ _("<b>Bant kalınlığı</b> = K-Vektör ağırlığı / katkı yüzdesi") }}</span>
     </div>
 
     {# Görsel #}
@@ -69,7 +68,7 @@
     {# Hizalanmamış süreçler uyarı kutusu #}
     <div id="hs-unaligned" style="display:none; background:#fef3c7; border-left:4px solid #f59e0b; padding:12px 16px; margin-top:14px; border-radius:8px;">
       <div style="font-size:13px; font-weight:600; color:#92400e; margin-bottom:6px;">
-        <i class="fas fa-triangle-exclamation"></i> Stratejiye bağlı olmayan süreçler
+        <i class="fas fa-triangle-exclamation"></i> {{ _("Stratejiye bağlı olmayan süreçler") }}
       </div>
       <div id="hs-unaligned-list" style="display:flex; flex-wrap:wrap; gap:6px; font-size:11.5px;"></div>
     </div>
@@ -77,7 +76,7 @@
     {# Boş durum #}
     <div id="hs-empty" style="display:none; text-align:center; padding:40px; color:#64748b;">
       <i class="fas fa-inbox" style="font-size:32px; color:#cbd5e1;"></i>
-      <p>Bu plan yılı için strateji veya süreç bulunamadı.</p>
+      <p>{{ _("Bu plan yılı için strateji veya süreç bulunamadı.") }}</p>
     </div>
   </div>
 

@@ -13,14 +13,14 @@
         <i class="fas fa-layer-group" style="color:#6366f1;"></i> CMMI Olgunluk Isı Haritası
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
-        Süreç olgunluk seviyesi <b>(1: Başlangıç → 5: Optimize Eden)</b> — kurumsal süreç yetkinliğinin sayısal ölçümü.
+        {{ _("Süreç olgunluk seviyesi <b>(1: Başlangıç → 5: Optimize Eden)</b> — kurumsal süreç yetkinliğinin sayısal ölçümü.") }}
       </p>
     </div>
     <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
       {% if plan_years %}
       <label class="mc-year-mini">
         <i class="fas fa-calendar-days"></i>
-        <span>Yıl:</span>
+        <span>{{ _("Yıl:") }}</span>
         <select id="cmmi-year-select" class="mc-year-sel">
           {% for y in plan_years %}
           <option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>
@@ -34,8 +34,7 @@
   {# CMMI nedir kutusu — kullanıcı kontekstini anlasın #}
   <div class="mc-card mc-card--accent-info" style="padding:14px 18px; margin-bottom:14px; background:#eef2ff">
     <div style="font-size:12.5px; color:#3730a3; line-height:1.55;">
-      <b>CMMI nedir?</b> Capability Maturity Model Integration — süreçlerin ne kadar disiplinli, ölçülen ve sürekli iyileştiren olduğunu 5 kademede değerlendiren küresel standart.
-      Yüksek seviyeler <b>tahmin edilebilirlik, kalite ve verimliliği</b> artırır. Kurumsal olgunluk = süreç olgunluklarının ortalaması.
+      {{ _("<b>CMMI nedir?</b> Capability Maturity Model Integration — süreçlerin ne kadar disiplinli, ölçülen ve sürekli iyileştiren olduğunu 5 kademede değerlendiren küresel standart. Yüksek seviyeler <b>tahmin edilebilirlik, kalite ve verimliliği</b> artırır. Kurumsal olgunluk = süreç olgunluklarının ortalaması.") }}
     </div>
   </div>
 
@@ -54,7 +53,7 @@
     {# Seviye dağılımı çubukları + açıklamalar #}
     <div class="mc-card" style="padding:18px; margin-bottom:14px;" data-card-code="raporlar_cmmi_heatmap.seviye_dagilimi_ve_aciklamalar">
       <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:#0f172a; margin:0 0 14px;">
-        <i class="fas fa-chart-column" style="color:#6366f1;"></i> Seviye Dağılımı ve Açıklamalar
+        <i class="fas fa-chart-column" style="color:#6366f1;"></i> {{ _("Seviye Dağılımı ve Açıklamalar") }}
       </h3>
       <div id="cmmi-dist" style="display:grid; gap:10px;"></div>
     </div>
@@ -63,9 +62,9 @@
     <div class="mc-card" style="padding:18px; margin-bottom:14px;" data-card-code="raporlar_cmmi_heatmap.surec_bazli_olgunluk">
       <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:12px; flex-wrap:wrap; gap:8px;">
         <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:#0f172a; margin:0;">
-          <i class="fas fa-grip" style="color:#6366f1;"></i> Süreç Bazlı Olgunluk
+          <i class="fas fa-grip" style="color:#6366f1;"></i> {{ _("Süreç Bazlı Olgunluk") }}
         </h3>
-        <span style="font-size:11.5px; color:#64748b;">Tıkla → süreç karnesine git</span>
+        <span style="font-size:11.5px; color:#64748b;">{{ _("Tıkla → süreç karnesine git") }}</span>
       </div>
       <div id="cmmi-grid" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:8px;"></div>
     </div>
@@ -73,10 +72,10 @@
     {# Ölçülmemiş süreçler #}
     <div id="cmmi-unmeasured" class="mc-card mc-card--accent-warning" style="display:none; padding:14px 18px; background:#fffbeb">
       <div style="font-size:13px; font-weight:600; color:#92400e; margin-bottom:6px;">
-        <i class="fas fa-triangle-exclamation"></i> Henüz Olgunluk Değerlendirmesi Yapılmamış Süreçler
+        <i class="fas fa-triangle-exclamation"></i> {{ _("Henüz Olgunluk Değerlendirmesi Yapılmamış Süreçler") }}
       </div>
       <p style="font-size:12px; color:#78350f; margin:0 0 8px;">
-        Bu süreçler için CMMI değerlendirmesi (1-5) henüz girilmemiş. Karne sayfasından "Olgunluk" kaydı eklemek 360° tablo verir.
+        {{ _('Bu süreçler için CMMI değerlendirmesi (1-5) henüz girilmemiş. Karne sayfasından "Olgunluk" kaydı eklemek 360° tablo verir.') }}
       </p>
       <div id="cmmi-unmeasured-list" style="display:flex; flex-wrap:wrap; gap:6px; font-size:11.5px;"></div>
     </div>

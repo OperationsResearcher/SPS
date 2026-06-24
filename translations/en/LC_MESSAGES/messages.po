@@ -5,7 +5,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-06-24 06:03+0300\n"
+"POT-Creation-Date: 2026-06-24 06:21+0300\n"
 "PO-Revision-Date: 2026-06-24 03:00+0300\n"
 "Last-Translator: Kokpitim <noreply@kokpitim.com>\n"
 "Language: en\n"
@@ -149,6 +149,7 @@ msgstr "Settings"
 #: ui/templates/platform/k_rapor/index.html:271
 #: ui/templates/platform/k_rapor/index.html:286
 #: ui/templates/platform/k_rapor/index.html:405
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:25
 msgid "Kullanıcı"
 msgstr "User"
 
@@ -261,12 +262,17 @@ msgstr "Admin Tools — Kokpitim"
 #: ui/templates/platform/admin/araclar.html:18
 msgid "Yalnız genel yönetici (Admin) erişimine açık bakım ve denetim araçları."
 msgstr "Maintenance and audit tools open only to general administrator (Admin) access."
+"Maintenance and audit tools open only to general administrator (Admin) "
+"access.Maintenance and audit tools open only to general administrator "
+"(Admin) access."
 
 #: ui/templates/platform/admin/araclar.html:26
 msgid ""
 "Bu araçlar şu an <b>yalnız Yerel</b> ortamda etkindir. Bu ortamda "
 "işlemler kilitlidir."
-msgstr "These tools are currently enabled <b>only in Local</b>. Actions are locked in this environment."
+msgstr ""
+"These tools are currently enabled <b>only in Local</b>. Actions are "
+"locked in this environment."
 
 #: ui/templates/platform/admin/araclar.html:35
 #: ui/templates/platform/admin/hata_kontrolu.html:3
@@ -279,7 +285,10 @@ msgstr "Error Check"
 msgid ""
 "Uygulamanın sayfalarını ve özelliklerini otomatik gezip çalışmayanları "
 "raporlar. İzole test kurumu (tomofiltest) üzerinde çalışır."
-msgstr "Automatically navigates the application's pages and features and reports those that don't work. Runs on the isolated test organization (tomofiltest)."
+msgstr ""
+"Automatically navigates the application's pages and features and reports "
+"those that don't work. Runs on the isolated test organization "
+"(tomofiltest)."
 
 #: ui/templates/platform/admin/araclar.html:45
 #: ui/templates/platform/admin/istatistikler.html:3
@@ -292,7 +301,9 @@ msgstr "Statistics"
 msgid ""
 "Sistemdeki kurum, kullanıcı, strateji, süreç, performans göstergesi ve "
 "proje sayılarını kurum bazında tablolar."
-msgstr "Tabulates the counts of organizations, users, strategies, processes, performance indicators and projects in the system by organization."
+msgstr ""
+"Tabulates the counts of organizations, users, strategies, processes, "
+"performance indicators and projects in the system by organization."
 
 #: ui/templates/platform/admin/araclar.html:55
 #: ui/templates/platform/admin/loglar.html:3
@@ -306,7 +317,9 @@ msgstr "Logs"
 msgid ""
 "Kurum bazında ve genel giriş kayıtları, son veri hareketleri ve hiç giriş"
 " yapmamış kullanıcılar."
-msgstr "Login records by organization and overall, recent data activity and users who never logged in."
+msgstr ""
+"Login records by organization and overall, recent data activity and users"
+" who never logged in."
 
 #: ui/templates/platform/admin/araclar.html:65
 #: ui/templates/platform/admin/yedekleme.html:3
@@ -319,7 +332,9 @@ msgstr "Backup"
 msgid ""
 "Otomatik gece yedeği (tam DB + kod fark) ve manuel indirilebilir DB/kod "
 "yedekleri. Geri yükleme dahil."
-msgstr "Automatic nightly backup (full DB + code diff) and manually downloadable DB/code backups. Includes restore."
+msgstr ""
+"Automatic nightly backup (full DB + code diff) and manually downloadable "
+"DB/code backups. Includes restore."
 
 #: ui/templates/platform/admin/araclar.html:74
 msgid "Yeni araçlar buraya eklenecek"
@@ -333,14 +348,18 @@ msgstr "Error Check — Kokpitim"
 msgid ""
 "Uygulamayı izole bir test kurumu (<b>tomofiltest</b>) üzerinde otomatik "
 "gezip çalışmayan sayfa/özellikleri raporlar."
-msgstr "Automatically navigates the application on an isolated test organization (<b>tomofiltest</b>) and reports non-working pages/features."
+msgstr ""
+"Automatically navigates the application on an isolated test organization "
+"(<b>tomofiltest</b>) and reports non-working pages/features."
 
 #: ui/templates/platform/admin/hata_kontrolu.html:37
 #: ui/templates/platform/admin/kilavuz_olusturucu.html:33
 msgid ""
 "Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre "
 "dışı."
-msgstr "This tool only works in the <b>Local</b> environment. Actions are disabled in this environment."
+msgstr ""
+"This tool only works in the <b>Local</b> environment. Actions are "
+"disabled in this environment."
 
 #: ui/templates/platform/admin/hata_kontrolu.html:47
 msgid "İzole Test Kurumu — tomofiltest"
@@ -368,7 +387,9 @@ msgstr "Discovery — Pages to Scan"
 msgid ""
 "Aktif uygulamanın güvenli (GET, parametresiz) sayfaları. Yıkıcı uçlar ve "
 "legacy hariç."
-msgstr "Safe (GET, parameterless) pages of the active application. Destructive endpoints and legacy excluded."
+msgstr ""
+"Safe (GET, parameterless) pages of the active application. Destructive "
+"endpoints and legacy excluded."
 
 #: ui/templates/platform/admin/hata_kontrolu.html:70
 msgid "Keşfet"
@@ -386,7 +407,9 @@ msgstr "Automatic Browser Test"
 msgid ""
 "Gerçek tarayıcı tomofiltest admini olarak her sayfayı açar; HTTP + JS + "
 "AJAX hatalarını yakalar."
-msgstr "A real browser opens every page as the tomofiltest admin; catches HTTP + JS + AJAX errors."
+msgstr ""
+"A real browser opens every page as the tomofiltest admin; catches HTTP + "
+"JS + AJAX errors."
 
 #: ui/templates/platform/admin/hata_kontrolu.html:87
 msgid "Limit:"
@@ -450,6 +473,8 @@ msgstr "Only Automatic Browser Test runs. Clicking a record opens it above."
 #: ui/templates/platform/k_rapor/index.html:854
 #: ui/templates/platform/k_rapor/index.html:907
 #: ui/templates/platform/masaustu/index.html:63
+#: ui/templates/platform/raporlar/esg_yonetim.html:34
+#: ui/templates/platform/raporlar/veri_kalitesi.html:32
 #: ui/templates/platform/surec/karne.html:727
 msgid "Yükleniyor…"
 msgstr "Loading…"
@@ -462,7 +487,9 @@ msgstr "Active CRUD Scenarios"
 msgid ""
 "Gerçek UI etkileşimi (buton/form/AJAX) tomofiltest'te. Bitince "
 "tomofiltest otomatik sıfırlanır."
-msgstr "Real UI interaction (button/form/AJAX) on tomofiltest. When done, tomofiltest is automatically reset."
+msgstr ""
+"Real UI interaction (button/form/AJAX) on tomofiltest. When done, "
+"tomofiltest is automatically reset."
 
 #: ui/templates/platform/admin/hata_kontrolu.html:136
 msgid "Senaryoları Çalıştır"
@@ -512,7 +539,9 @@ msgstr "Package Hierarchy"
 msgid ""
 "Paket → Modül → Bileşen → Kart → Veri kaynağı. Kartlar template "
 "işaretlerinden (data-card-*) keşfedilir."
-msgstr "Package → Module → Component → Card → Data source. Cards are discovered from template markers (data-card-*)."
+msgstr ""
+"Package → Module → Component → Card → Data source. Cards are discovered "
+"from template markers (data-card-*)."
 
 #: ui/templates/platform/admin/hierarchy.html:21
 #: ui/templates/platform/admin/packages.html:6
@@ -542,6 +571,9 @@ msgstr "Holding Consolidated View"
 #: ui/templates/platform/admin/holding_dashboard.html:22
 msgid "ve tüm alt kurumlarının özet performansı — <strong>salt okur</strong>."
 msgstr "and the summary performance of all its sub-organizations — <strong>read-only</strong>."
+"and the summary performance of all its sub-organizations — <strong>read-"
+"only</strong>.and the summary performance of all its sub-organizations — "
+"<strong>read-only</strong>."
 
 #: ui/templates/platform/admin/holding_dashboard.html:39
 msgid "Ortalama Sağlık Skoru"
@@ -643,6 +675,8 @@ msgstr "Active KPIs"
 #: ui/templates/platform/k_radar/cross_paydas.html:39
 #: ui/templates/platform/k_rapor/index.html:663
 #: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/raporlar/kv_carpiklik.html:61
+#: ui/templates/platform/raporlar/sektorel_detay.html:15
 #: ui/templates/platform/surec/karne.html:864
 msgid "Strateji"
 msgstr "Strategy"
@@ -684,7 +718,10 @@ msgstr "Statistics — Kokpitim"
 msgid ""
 "Sistemde kayıtlı kurumların kullanıcı, strateji, süreç, performans "
 "göstergesi ve proje sayıları. Salt-okuma; aktif kayıtlar sayılır."
-msgstr "User, strategy, process, performance indicator and project counts of organizations registered in the system. Read-only; active records are counted."
+msgstr ""
+"User, strategy, process, performance indicator and project counts of "
+"organizations registered in the system. Read-only; active records are "
+"counted."
 
 #: ui/templates/platform/admin/istatistikler.html:26
 msgid "İstatistikler alınamadı."
@@ -729,6 +766,8 @@ msgstr "Sub-Strategy"
 #: ui/templates/platform/k_rapor/index.html:464
 #: ui/templates/platform/k_rapor/index.html:727
 #: ui/templates/platform/k_rapor/index.html:753
+#: ui/templates/platform/raporlar/sektorel_detay.html:16
+#: ui/templates/platform/raporlar/sektorel_detay.html:46
 #: ui/templates/platform/surec/faaliyetler.html:60
 #: ui/templates/platform/surec/karne.html:691
 msgid "Süreç"
@@ -794,7 +833,10 @@ msgid ""
 "Playwright ile gizli pencerede (incognito) sıfırdan <b>YeniTomofil</b> "
 "adımlarını otonom canlandırır, kısa eğitim videoları ve görsel işaretli "
 "ekran görüntüleri alıp kılavuz PDF'ini derler."
-msgstr "Using Playwright, it autonomously enacts the <b>YeniTomofil</b> steps from scratch in an incognito window, captures short tutorial videos and visually annotated screenshots, and compiles the guide PDF."
+msgstr ""
+"Using Playwright, it autonomously enacts the <b>YeniTomofil</b> steps "
+"from scratch in an incognito window, captures short tutorial videos and "
+"visually annotated screenshots, and compiles the guide PDF."
 
 #: ui/templates/platform/admin/kilavuz_olusturucu.html:46
 msgid "Otonom Oluşturma Kontrolleri"
@@ -804,7 +846,9 @@ msgstr "Autonomous Generation Controls"
 msgid ""
 "YeniTomofil'i sıfırlar, 1920x1080 çözünürlükte video çeker ve PDF'i "
 "derler."
-msgstr "Resets YeniTomofil, records video at 1920x1080 resolution and compiles the PDF."
+msgstr ""
+"Resets YeniTomofil, records video at 1920x1080 resolution and compiles "
+"the PDF."
 
 #: ui/templates/platform/admin/kilavuz_olusturucu.html:51
 msgid "Otonom Çekimi Başlat"
@@ -826,7 +870,9 @@ msgstr "Autonomous Run Logs"
 msgid ""
 "[Sistem] Otonom çalışma bekleniyor. Lütfen \"Otonom Çekimi Başlat\" "
 "butonuna basın."
-msgstr "[System] Waiting for autonomous run. Please press the \"Start Autonomous Capture\" button."
+msgstr ""
+"[System] Waiting for autonomous run. Please press the \"Start Autonomous "
+"Capture\" button."
 
 #: ui/templates/platform/admin/kilavuz_olusturucu.html:84
 msgid "Kısa Konu Anlatım Videoları"
@@ -861,7 +907,9 @@ msgstr "Current Guide PDF"
 msgid ""
 "Otonom çekim bittikten sonra derlenen en güncel piksel kalitesindeki "
 "PDF'i indirin."
-msgstr "After the autonomous capture finishes, download the latest compiled pixel-quality PDF."
+msgstr ""
+"After the autonomous capture finishes, download the latest compiled "
+"pixel-quality PDF."
 
 #: ui/templates/platform/admin/kilavuz_olusturucu.html:120
 msgid "Kılavuz PDF'ini İndir"
@@ -871,7 +919,9 @@ msgstr "Download Guide PDF"
 msgid ""
 "Çekim <b>bittiğinde tam</b>, <b>durdurulduğunda</b> o ana kadarki "
 "(taslak) kılavuz PDF'i bu butondan indirilir."
-msgstr "When the capture <b>finishes it is complete</b>, when <b>stopped</b> the (draft) guide PDF up to that point is downloaded from this button."
+msgstr ""
+"When the capture <b>finishes it is complete</b>, when <b>stopped</b> the "
+"(draft) guide PDF up to that point is downloaded from this button."
 
 #: ui/templates/platform/admin/loglar.html:2
 #: ui/templates/platform/admin/loglar_kurum.html:2
@@ -1023,6 +1073,7 @@ msgid "Bildirim Logları"
 msgstr "Notification Logs"
 
 #: ui/templates/platform/admin/notifications.html:19
+#, python-format
 msgid "Toplam %(n)s bildirim"
 msgstr "Total %(n)s notifications"
 
@@ -1123,6 +1174,8 @@ msgstr "Date"
 #: ui/templates/platform/k_rapor/index.html:574
 #: ui/templates/platform/k_rapor/index.html:603
 #: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/raporlar/initiative_bubble.html:109
+#: ui/templates/platform/raporlar/op_istatistik.html:38
 #: ui/templates/platform/surec/faaliyetler.html:105
 #: ui/templates/platform/surec/index.html:530
 #: ui/templates/platform/surec/karne.html:221
@@ -1284,13 +1337,19 @@ msgstr "Package"
 #: ui/templates/platform/admin/sub_tenants.html:94
 msgid "İlk alt kurumu açmak için \"Yeni Alt Kurum Aç\" butonuna tıklayın."
 msgstr "Click the \"Open New Sub-Organization\" button to open the first sub-organization."
+"Click the \"Open New Sub-Organization\" button to open the first sub-"
+"organization.Click the \"Open New Sub-Organization\" button to open the "
+"first sub-organization."
 
 #: ui/templates/platform/admin/sub_tenants.html:110
 msgid ""
 "Açılan alt kurum otomatik 'normal' tipte oluşur. İlk kurum yöneticisi "
 "(admin) oluşturulur, geçici şifre üretilir. Bu kullanıcı sonra kendi "
 "kullanıcılarını ekleyebilir."
-msgstr "The opened sub-organization is automatically created as 'normal' type. The first organization administrator (admin) is created and a temporary password is generated. This user can then add their own users."
+msgstr ""
+"The opened sub-organization is automatically created as 'normal' type. "
+"The first organization administrator (admin) is created and a temporary "
+"password is generated. This user can then add their own users."
 
 #: ui/templates/platform/admin/sub_tenants.html:115
 #: ui/templates/platform/admin/tenants.html:223
@@ -1337,6 +1396,7 @@ msgstr "First Admin Information"
 #: ui/templates/platform/admin/users.html:239
 #: ui/templates/platform/admin/users.html:240
 #: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/raporlar/onay_zinciri.html:25
 msgid "Ad"
 msgstr "Name"
 
@@ -1454,6 +1514,7 @@ msgid "Kurum Yönetimi"
 msgstr "Organization Management"
 
 #: ui/templates/platform/admin/tenants.html:26
+#, python-format
 msgid "Toplam %(n)s kurum"
 msgstr "Total %(n)s organizations"
 
@@ -1627,7 +1688,11 @@ msgid ""
 "değiştirilir. \"Bayi\" → alt-tenant açar ama içine giremez. \"Holding\" →"
 " alt-tenantları konsolide salt-okur görür. \"Alt tenant\" → bir "
 "bayi/holding'e bağlı normal tenant."
-msgstr "<strong>⚠️ Warning:</strong> These fields are only changed by the Platform Admin. \"Reseller\" → opens sub-tenants but cannot access them. \"Holding\" → sees sub-tenants consolidated read-only. \"Sub-tenant\" → a normal tenant attached to a reseller/holding."
+msgstr ""
+"<strong>⚠️ Warning:</strong> These fields are only changed by the "
+"Platform Admin. \"Reseller\" → opens sub-tenants but cannot access them. "
+"\"Holding\" → sees sub-tenants consolidated read-only. \"Sub-tenant\" → a"
+" normal tenant attached to a reseller/holding."
 
 #: ui/templates/platform/admin/tenants.html:298
 msgid "Tenant Tipi"
@@ -1669,7 +1734,10 @@ msgstr "— Independent (no parent) —"
 msgid ""
 "Bağımsız bir kurum yerine bir Bayi/Holding'in alt-tenant'ı olarak açmak "
 "için seç. Alt-tenant otomatik 'normal' tipi alır."
-msgstr "Select to open as a sub-tenant of a Reseller/Holding instead of an independent organization. The sub-tenant automatically gets the 'normal' type."
+msgstr ""
+"Select to open as a sub-tenant of a Reseller/Holding instead of an "
+"independent organization. The sub-tenant automatically gets the 'normal' "
+"type."
 
 #: ui/templates/platform/admin/tenants.html:331
 #: ui/templates/platform/admin/users.html:220
@@ -1774,7 +1842,9 @@ msgstr "Reset 2FA"
 msgid ""
 "Kullanıcı telefonunu kaybettiyse veya yedek kodlara erişemiyorsa 2FA'yı "
 "sıfırlayın. Sonraki girişinde profilinden tekrar etkinleştirebilir."
-msgstr "Reset 2FA if the user has lost their phone or cannot access their backup codes. They can re-enable it from their profile on their next login."
+msgstr ""
+"Reset 2FA if the user has lost their phone or cannot access their backup "
+"codes. They can re-enable it from their profile on their next login."
 
 #: ui/templates/platform/admin/users.html:294
 msgid "Güncelle"
@@ -1788,7 +1858,9 @@ msgstr "Backup — Kokpitim"
 msgid ""
 "Otomatik gece yedeği (tam DB + kod fark) ve manuel indirilebilir "
 "yedekler. DB: PostgreSQL (pg_dump)."
-msgstr "Automatic nightly backup (full DB + code diff) and manually downloadable backups. DB: PostgreSQL (pg_dump)."
+msgstr ""
+"Automatic nightly backup (full DB + code diff) and manually downloadable "
+"backups. DB: PostgreSQL (pg_dump)."
 
 #: ui/templates/platform/admin/yedekleme.html:29
 msgid "Manuel Yedek"
@@ -1809,6 +1881,9 @@ msgstr "Download Code Backup (.tar.gz)"
 #: ui/templates/platform/admin/yedekleme.html:39
 msgid "Kod yedeği büyük olabilir (~100+ MB), hazırlanması birkaç saniye sürer."
 msgstr "The code backup can be large (~100+ MB), it takes a few seconds to prepare."
+"The code backup can be large (~100+ MB), it takes a few seconds to "
+"prepare.The code backup can be large (~100+ MB), it takes a few seconds "
+"to prepare."
 
 #: ui/templates/platform/admin/yedekleme.html:46
 msgid "Otomatik Yedek — her gece 02:00"
@@ -1819,7 +1894,9 @@ msgstr "Automatic Backup — every night at 02:00"
 msgid ""
 "Tam DB + kod (haftada bir tam, diğer günler fark). Son %(n)s yedek "
 "tutulur."
-msgstr "Full DB + code (full once a week, diff on other days). The last %(n)s backups are kept."
+msgstr ""
+"Full DB + code (full once a week, diff on other days). The last %(n)s "
+"backups are kept."
 
 #: ui/templates/platform/admin/yedekleme.html:49
 msgid "Şimdi Çalıştır"
@@ -1866,7 +1943,9 @@ msgstr "DB Restore — Destructive Action"
 msgid ""
 "Yüklenen <b>.dump</b> dosyası mevcut veritabanının <b>üzerine yazılır</b>"
 " (geri alınamaz). Şifre + onay metni gerekir."
-msgstr "The uploaded <b>.dump</b> file <b>overwrites</b> the current database (irreversible). A password + confirmation text is required."
+msgstr ""
+"The uploaded <b>.dump</b> file <b>overwrites</b> the current database "
+"(irreversible). A password + confirmation text is required."
 
 #: ui/templates/platform/admin/yedekleme.html:104
 msgid "Şifreniz"
@@ -1896,7 +1975,10 @@ msgstr "Maintenance mode"
 msgid ""
 "Açıkken yalnızca rolü <strong>Admin</strong> olan kullanıcılar sistemi "
 "normal kullanır; diğerleri bakım sayfası görür. Giriş sayfası açık kalır."
-msgstr "When enabled, only users with the <strong>Admin</strong> role use the system normally; others see a maintenance page. The login page stays open."
+msgstr ""
+"When enabled, only users with the <strong>Admin</strong> role use the "
+"system normally; others see a maintenance page. The login page stays "
+"open."
 
 #: ui/templates/platform/admin/yonetim_paneli.html:35
 msgid "Bakıma al (veritabanı bayrağı)"
@@ -2546,6 +2628,7 @@ msgid "İşaretlenen aylar / toplam ay"
 msgstr "Marked months / total months"
 
 #: ui/templates/platform/bireysel/karne.html:161
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:27
 #: ui/templates/platform/surec/index.html:105
 msgid "Toplam PG"
 msgstr "Total PIs"
@@ -2584,7 +2667,9 @@ msgstr "A brief summary of data coverage and your indicators for the selected ye
 "the selected year.A brief summary of data coverage and your indicators "
 "for the selected year.A brief summary of data coverage and your "
 "indicators for the selected year.A brief summary of data coverage and "
-"your indicators for the selected year."
+"your indicators for the selected year.A brief summary of data coverage "
+"and your indicators for the selected year.A brief summary of data "
+"coverage and your indicators for the selected year."
 
 #: ui/templates/platform/bireysel/karne.html:192
 msgid ""
@@ -2646,10 +2731,12 @@ msgstr "Indicator"
 #: ui/templates/platform/k_rapor/index.html:286
 #: ui/templates/platform/k_rapor/index.html:437
 #: ui/templates/platform/k_rapor/index.html:727
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
 msgid "Hedef"
 msgstr "Target"
 
 #: ui/templates/platform/bireysel/karne.html:240
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
 #: ui/templates/platform/surec/karne.html:866
 msgid "Birim"
 msgstr "Unit"
@@ -2953,6 +3040,7 @@ msgstr ""
 #: ui/templates/platform/k_radar/hub.html:25
 #: ui/templates/platform/k_radar/index.html:106
 #: ui/templates/platform/masaustu/index.html:202
+#: ui/templates/platform/raporlar/hizalama_sankey.html:35
 msgid "Tümü"
 msgstr "All"
 
@@ -3021,10 +3109,12 @@ msgid "Ağırlıklandırılmış vizyon ve strateji skoru"
 msgstr "Weighted vision and strategy score"
 
 #: ui/templates/platform/k_radar/hub.html:54
+#: ui/templates/platform/raporlar/index.html:23
 msgid "K-Vektör Çarpıklık"
 msgstr "K-Vector Skew"
 
 #: ui/templates/platform/k_radar/hub.html:54
+#: ui/templates/platform/raporlar/index.html:23
 msgid "Strateji ağırlığı × gerçek skor uyumsuzluğu"
 msgstr "Strategy weight × actual score mismatch"
 
@@ -3048,10 +3138,12 @@ msgid "Strateji kapsama ve boşluk analizi"
 msgstr "Strategy coverage and gap analysis"
 
 #: ui/templates/platform/k_radar/hub.html:57
+#: ui/templates/platform/raporlar/index.html:24
 msgid "Stratejik Akış Haritası"
 msgstr "Strategic Flow Map"
 
 #: ui/templates/platform/k_radar/hub.html:57
+#: ui/templates/platform/raporlar/index.html:24
 msgid "Vizyon → strateji → süreç → PG akış görseli"
 msgstr "Vision → strategy → process → PI flow visual"
 
@@ -3064,6 +3156,9 @@ msgid "Strateji-proje hizalama ısı haritası"
 msgstr "Strategy-project alignment heatmap"
 
 #: ui/templates/platform/k_radar/hub.html:59
+#: ui/templates/platform/raporlar/index.html:22
+#: ui/templates/platform/raporlar/pg_proje_etki.html:2
+#: ui/templates/platform/raporlar/pg_proje_etki.html:8
 msgid "PG × Proje Çapraz Etki"
 msgstr "PI × Project Cross Impact"
 
@@ -3072,18 +3167,26 @@ msgid "Hangi proje hangi PG'yi etkiliyor?"
 msgstr "Which project affects which PI?"
 
 #: ui/templates/platform/k_radar/hub.html:60
+#: ui/templates/platform/raporlar/departman_performans.html:5
+#: ui/templates/platform/raporlar/departman_performans.html:12
 msgid "Departman Performans"
 msgstr "Department Performance"
 
 #: ui/templates/platform/k_radar/hub.html:60
+#: ui/templates/platform/raporlar/index.html:26
 msgid "Departman bazlı bireysel PG ortalaması"
 msgstr "Department-based individual PI average"
 
 #: ui/templates/platform/k_radar/hub.html:61
+#: ui/templates/platform/raporlar/index.html:27
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:3
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:5
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:12
 msgid "Yönetici Liderlik Skoru"
 msgstr "Executive Leadership Score"
 
 #: ui/templates/platform/k_radar/hub.html:61
+#: ui/templates/platform/raporlar/index.html:27
 msgid "Süreç liderlerinin etkinlik puanı"
 msgstr "Effectiveness score of process leaders"
 
@@ -3096,10 +3199,15 @@ msgid "Süreçlerin 1-5 olgunluk seviyesi (Başlangıç → Optimize)"
 msgstr "1-5 maturity level of processes (Initial → Optimized)"
 
 #: ui/templates/platform/k_radar/hub.html:63
+#: ui/templates/platform/raporlar/hedef_revizyon.html:3
+#: ui/templates/platform/raporlar/hedef_revizyon.html:5
+#: ui/templates/platform/raporlar/hedef_revizyon.html:12
+#: ui/templates/platform/raporlar/index.html:25
 msgid "PG Hedef Revizyon Sıklığı"
 msgstr "PI Target Revision Frequency"
 
 #: ui/templates/platform/k_radar/hub.html:63
+#: ui/templates/platform/raporlar/index.html:25
 msgid "Yıl içinde hedef değişen PG'ler"
 msgstr "PIs whose target changed during the year"
 
@@ -3149,6 +3257,10 @@ msgid "Bireysel karne özetleri"
 msgstr "Individual scorecard summaries"
 
 #: ui/templates/platform/k_radar/hub.html:77
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:3
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:5
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:12
+#: ui/templates/platform/raporlar/index.html:40
 msgid "Bireysel Hedef Hizalama"
 msgstr "Individual Target Alignment"
 
@@ -3165,6 +3277,7 @@ msgid "PV/EV/AC, CPI/SPI hesapları"
 msgstr "PV/EV/AC, CPI/SPI calculations"
 
 #: ui/templates/platform/k_radar/hub.html:79
+#: ui/templates/platform/raporlar/index.html:28
 msgid "Stratejik Girişim Portföyü Balon Grafiği"
 msgstr "Strategic Initiative Portfolio Bubble Chart"
 
@@ -3173,6 +3286,7 @@ msgid "Bütçe × ilerleme × öncelik balon grafiği"
 msgstr "Budget × progress × priority bubble chart"
 
 #: ui/templates/platform/k_radar/hub.html:80
+#: ui/templates/platform/raporlar/index.html:36
 msgid "Stratejik Girişim Yol Haritası"
 msgstr "Strategic Initiative Roadmap"
 
@@ -3197,13 +3311,19 @@ msgid "Kurum → Takım → Birey OKR akışı"
 msgstr "Organization → Team → Individual OKR flow"
 
 #: ui/templates/platform/k_radar/hub.html:83
+#: ui/templates/platform/raporlar/index.html:29
 msgid "Bugün biten/bekleyen faaliyet & kritik PG"
 msgstr "Activities ending/pending today & critical PIs"
-"Activities ending/pending today & critical PIsActivities due/pending "
-"today, assigned tasks, critical PIs. A short summary to start the work "
-"day."
+"Activities ending/pending today & critical PIsActivities ending/pending "
+"today & critical PIsActivities ending/pending today & critical "
+"PIsActivities due/pending today, assigned tasks, critical PIs. A short "
+"summary to start the work day."
 
 #: ui/templates/platform/k_radar/hub.html:84
+#: ui/templates/platform/raporlar/index.html:39
+#: ui/templates/platform/raporlar/op_istatistik.html:3
+#: ui/templates/platform/raporlar/op_istatistik.html:5
+#: ui/templates/platform/raporlar/op_istatistik.html:12
 msgid "Operasyonel İstatistik"
 msgstr "Operational Statistics"
 
@@ -3212,6 +3332,8 @@ msgid "Operasyonel veri özet istatistikleri"
 msgstr "Operational data summary statistics"
 
 #: ui/templates/platform/k_radar/hub.html:85
+#: ui/templates/platform/raporlar/index.html:37
+#: ui/templates/platform/raporlar/muda_analizi.html:12
 msgid "7 Muda (İsraf) Analizi"
 msgstr "7 Muda (Waste) Analysis"
 
@@ -3237,6 +3359,7 @@ msgid "Açık riskler ve kritik kayıt sayısı"
 msgstr "Open risks and critical record count"
 
 #: ui/templates/platform/k_radar/hub.html:95
+#: ui/templates/platform/raporlar/risk_heatmap.html:3
 msgid "Risk Isı Haritası (5×5)"
 msgstr "Risk Heatmap (5×5)"
 
@@ -3253,6 +3376,11 @@ msgid "Sistem uyarıları ve tetikleyiciler"
 msgstr "System alerts and triggers"
 
 #: ui/templates/platform/k_radar/hub.html:97
+#: ui/templates/platform/raporlar/early_warning.html:2
+#: ui/templates/platform/raporlar/early_warning.html:3
+#: ui/templates/platform/raporlar/early_warning.html:4
+#: ui/templates/platform/raporlar/early_warning.html:10
+#: ui/templates/platform/raporlar/index.html:46
 msgid "AI Erken Uyarı"
 msgstr "AI Early Warning"
 
@@ -3302,6 +3430,10 @@ msgid "Bildirim sıklığı ve okuma oranı"
 msgstr "Notification frequency and read rate"
 
 #: ui/templates/platform/k_radar/hub.html:103
+#: ui/templates/platform/raporlar/iki_fa.html:3
+#: ui/templates/platform/raporlar/iki_fa.html:4
+#: ui/templates/platform/raporlar/iki_fa.html:9
+#: ui/templates/platform/raporlar/index.html:42
 msgid "2FA Kullanım Raporu"
 msgstr "2FA Usage Report"
 
@@ -3351,6 +3483,10 @@ msgid "SWOT öğelerinin zaman içinde değişimi"
 msgstr "Change of SWOT items over time"
 
 #: ui/templates/platform/k_radar/hub.html:116
+#: ui/templates/platform/raporlar/index.html:34
+#: ui/templates/platform/raporlar/vrio_portfoy.html:3
+#: ui/templates/platform/raporlar/vrio_portfoy.html:4
+#: ui/templates/platform/raporlar/vrio_portfoy.html:8
 msgid "VRIO Portföy"
 msgstr "VRIO Portfolio"
 
@@ -3386,6 +3522,9 @@ msgid "Kurumlar arası karşılaştırma"
 msgstr "Inter-organization comparison"
 
 #: ui/templates/platform/k_radar/hub.html:120
+#: ui/templates/platform/raporlar/sektorel.html:3
+#: ui/templates/platform/raporlar/sektorel.html:4
+#: ui/templates/platform/raporlar/sektorel.html:8
 msgid "Sektörel Plan Paketleri"
 msgstr "Sectoral Plan Packages"
 
@@ -3402,6 +3541,10 @@ msgid "Strateji → Süreç → KPI interaktif ilişki ağı"
 msgstr "Strategy → Process → KPI interactive relationship network"
 
 #: ui/templates/platform/k_radar/hub.html:122
+#: ui/templates/platform/raporlar/index.html:33
+#: ui/templates/platform/raporlar/sunburst.html:3
+#: ui/templates/platform/raporlar/sunburst.html:4
+#: ui/templates/platform/raporlar/sunburst.html:8
 msgid "Stratejik Hiyerarşi Sunburst"
 msgstr "Strategic Hierarchy Sunburst"
 
@@ -3410,14 +3553,23 @@ msgid "Strateji ağacı sunburst görseli"
 msgstr "Strategy tree sunburst visual"
 
 #: ui/templates/platform/k_radar/hub.html:123
+#: ui/templates/platform/raporlar/evrim_filmi.html:3
+#: ui/templates/platform/raporlar/evrim_filmi.html:4
+#: ui/templates/platform/raporlar/evrim_filmi.html:8
+#: ui/templates/platform/raporlar/index.html:30
 msgid "Yıllar Arası Evrim Filmi"
 msgstr "Year-over-Year Evolution Film"
 
 #: ui/templates/platform/k_radar/hub.html:123
+#: ui/templates/platform/raporlar/index.html:30
 msgid "Strateji ağacının yıldan yıla animasyonu"
 msgstr "Year-by-year animation of the strategy tree"
 
 #: ui/templates/platform/k_radar/hub.html:124
+#: ui/templates/platform/raporlar/index.html:52
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:3
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:4
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:8
 msgid "AI Strateji Hikayeleştirici"
 msgstr "AI Strategy Storyteller"
 
@@ -3466,6 +3618,8 @@ msgid "İK ve insan kaynakları paneli"
 msgstr "HR and human resources panel"
 
 #: ui/templates/platform/k_radar/hub.html:137
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:4
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:8
 msgid "Yatırımcı Sunumu"
 msgstr "Investor Presentation"
 
@@ -3474,6 +3628,9 @@ msgid "Yatırımcı için hazır sunum paketi"
 msgstr "Ready presentation package for investors"
 
 #: ui/templates/platform/k_radar/hub.html:138
+#: ui/templates/platform/raporlar/stratejik_yillik.html:3
+#: ui/templates/platform/raporlar/stratejik_yillik.html:4
+#: ui/templates/platform/raporlar/stratejik_yillik.html:8
 msgid "Stratejik Yıllık Kitap"
 msgstr "Strategic Annual Book"
 
@@ -3482,6 +3639,8 @@ msgid "Yıllık stratejik özet kitap formatı"
 msgstr "Annual strategic summary book format"
 
 #: ui/templates/platform/k_radar/hub.html:139
+#: ui/templates/platform/raporlar/esg_rapor.html:4
+#: ui/templates/platform/raporlar/esg_rapor.html:8
 msgid "ESG Yıllık Rapor"
 msgstr "ESG Annual Report"
 
@@ -3498,6 +3657,10 @@ msgid "Karbon emisyonu zaman analizi"
 msgstr "Carbon emission time analysis"
 
 #: ui/templates/platform/k_radar/hub.html:141
+#: ui/templates/platform/raporlar/ai_danisman.html:3
+#: ui/templates/platform/raporlar/ai_danisman.html:4
+#: ui/templates/platform/raporlar/ai_danisman.html:8
+#: ui/templates/platform/raporlar/index.html:44
 msgid "AI Strateji Danışmanı"
 msgstr "AI Strategy Advisor"
 
@@ -3514,6 +3677,10 @@ msgid "Yönetici için AI koçluk asistanı"
 msgstr "AI coaching assistant for executives"
 
 #: ui/templates/platform/k_radar/hub.html:143
+#: ui/templates/platform/raporlar/ai_sunum.html:3
+#: ui/templates/platform/raporlar/ai_sunum.html:4
+#: ui/templates/platform/raporlar/ai_sunum.html:8
+#: ui/templates/platform/raporlar/index.html:31
 msgid "AI Yıl Sonu Sunum Üretici"
 msgstr "AI Year-End Presentation Generator"
 
@@ -3522,6 +3689,9 @@ msgid "Yıl sonu için AI sunum hazırlama"
 msgstr "AI presentation preparation for year-end"
 
 #: ui/templates/platform/k_radar/hub.html:144
+#: ui/templates/platform/raporlar/nlp_query.html:3
+#: ui/templates/platform/raporlar/nlp_query.html:4
+#: ui/templates/platform/raporlar/nlp_query.html:8
 msgid "AI Doğal Dil Sorgu"
 msgstr "AI Natural Language Query"
 
@@ -3530,6 +3700,7 @@ msgid "Türkçe doğal dilde veri sorgulama"
 msgstr "Data querying in natural Turkish"
 
 #: ui/templates/platform/k_radar/hub.html:145
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:8
 msgid "Bireysel Karne Batch (ZIP)"
 msgstr "Individual Scorecard Batch (ZIP)"
 
@@ -4139,6 +4310,7 @@ msgstr "At Risk"
 #: ui/templates/platform/k_radar/risk_management.html:35
 #: ui/templates/platform/k_rapor/index.html:582
 #: ui/templates/platform/k_rapor/index.html:795
+#: ui/templates/platform/raporlar/initiative_bubble.html:94
 msgid "Kritik"
 msgstr "Critical"
 
@@ -4333,15 +4505,20 @@ msgid "Tüm severity"
 msgstr "All severities"
 
 #: ui/templates/platform/k_radar/risk_management.html:36
+#: ui/templates/platform/raporlar/early_warning.html:19
+#: ui/templates/platform/raporlar/initiative_bubble.html:95
 msgid "Yüksek"
 msgstr "High"
 
 #: ui/templates/platform/k_radar/risk_management.html:37
 #: ui/templates/platform/k_rapor/anomalies.html:32
+#: ui/templates/platform/raporlar/early_warning.html:20
+#: ui/templates/platform/raporlar/initiative_bubble.html:96
 msgid "Orta"
 msgstr "Medium"
 
 #: ui/templates/platform/k_radar/risk_management.html:38
+#: ui/templates/platform/raporlar/initiative_bubble.html:97
 msgid "Düşük"
 msgstr "Low"
 
@@ -4363,6 +4540,8 @@ msgstr "Off"
 
 #: ui/templates/platform/k_radar/risk_management.html:50
 #: ui/templates/platform/k_rapor/index.html:104
+#: ui/templates/platform/raporlar/sektorel_detay.html:18
+#: ui/templates/platform/raporlar/sektorel_detay.html:53
 msgid "Risk"
 msgstr "Risk"
 
@@ -4474,6 +4653,7 @@ msgid "K-Rapor — Raporlama Merkezi"
 msgstr "K-Report — Reporting Center"
 
 #: ui/templates/platform/k_rapor/index.html:10
+#: ui/templates/platform/raporlar/esg_yonetim.html:6
 msgid "K-Rapor"
 msgstr "K-Report"
 
@@ -4705,6 +4885,8 @@ msgstr "Project Portfolio Status"
 
 #: ui/templates/platform/k_rapor/index.html:251
 #: ui/templates/platform/k_rapor/index.html:464
+#: ui/templates/platform/raporlar/initiative_bubble.html:114
+#: ui/templates/platform/raporlar/onay_zinciri.html:30
 #: ui/templates/platform/surec/karne.html:220
 msgid "İlerleme"
 msgstr "Progress"
@@ -4751,6 +4933,11 @@ msgstr "Individual PI Detail List"
 #: ui/templates/platform/k_rapor/index.html:437
 #: ui/templates/platform/k_rapor/index.html:492
 #: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/raporlar/initiative_bubble.html:107
+#: ui/templates/platform/raporlar/onay_zinciri.html:24
+#: ui/templates/platform/raporlar/op_istatistik.html:36
+#: ui/templates/platform/raporlar/sektorel_detay.html:46
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
 msgid "Kod"
 msgstr "Code"
 
@@ -4772,8 +4959,9 @@ msgstr "Actual"
 #: ui/templates/platform/k_rapor/index.html:286
 #: ui/templates/platform/k_rapor/index.html:437
 #: ui/templates/platform/k_rapor/index.html:727
-msgid "Başarı %"
-msgstr "Success %"
+#, python-format
+msgid "Başarı %%"
+msgstr "Success %%"
 
 #: ui/templates/platform/k_rapor/index.html:296
 msgid ""
@@ -4864,8 +5052,9 @@ msgid "Kritik Performans Göstergeleri"
 msgstr "Critical Performance Indicators"
 
 #: ui/templates/platform/k_rapor/index.html:433
-msgid "Başarı oranı %50'nin altında olanlar"
-msgstr "Those with a success rate below %50"
+#, python-format
+msgid "Başarı oranı %%50'nin altında olanlar"
+msgstr "Those with a success rate below %%50"
 
 #: ui/templates/platform/k_rapor/index.html:445
 msgid "Yüksek Riskler"
@@ -4888,14 +5077,15 @@ msgid "Gecikme (gün)"
 msgstr "Delay (days)"
 
 #: ui/templates/platform/k_rapor/index.html:473
+#, python-format
 msgid ""
-"<b>K-Vektör Skoru:</b> Her stratejiye verilen ağırlık (%) ile o "
+"<b>K-Vektör Skoru:</b> Her stratejiye verilen ağırlık (%%) ile o "
 "stratejinin gerçekleşen skor karşılaştırması. Yüksek ağırlık + düşük skor"
 " = en kritik odak noktası."
 msgstr ""
-"<b>K-Vector Score:</b> A comparison of the weight (%) given to each "
-"strategy against that strategy's achieved score. High weight + low score "
-"= the most critical focus point."
+"<b>K-Vector Score:</b> A comparison of the weight (%%) given to each "
+"strategy with that strategy's realized score. High weight + low score = "
+"the most critical focus point."
 
 #: ui/templates/platform/k_rapor/index.html:476
 msgid "Ana Strateji Ağırlıkları"
@@ -4946,7 +5136,9 @@ msgid "Bu tarihe kadar <b>gerçekten harcanan</b> tutar. Cebimizden ne çıktı?
 msgstr "The amount <b>actually spent</b> by this date. What came out of our pocket?"
 "The amount <b>actually spent</b> by this date. What came out of our "
 "pocket?The amount <b>actually spent</b> by this date. What came out of "
-"our pocket?"
+"our pocket?The amount <b>actually spent</b> by this date. What came out "
+"of our pocket?The amount <b>actually spent</b> by this date. What came "
+"out of our pocket?"
 
 #: ui/templates/platform/k_rapor/index.html:540
 msgid "Zaman Performans Endeksi"
@@ -5082,14 +5274,15 @@ msgid "Tedbirler"
 msgstr "Measures"
 
 #: ui/templates/platform/k_rapor/index.html:706
+#, python-format
 msgid ""
 "<b>PG Bant Dağılımı:</b> Tüm performans göstergelerinin hedef bandına "
-"göre dağılımı — üstün (≥%110), normal (%90–110), gelişim (%70–90), kritik"
-" (&lt;%70)."
+"göre dağılımı — üstün (≥%%110), normal (%%90–110), gelişim (%%70–90), "
+"kritik (&lt;%%70)."
 msgstr ""
 "<b>PI Band Distribution:</b> Distribution of all performance indicators "
-"by target band — superior (≥%110), normal (%90–110), developing (%70–90),"
-" critical (&lt;%70)."
+"by target band — superior (≥%%110), normal (%%90–110), developing "
+"(%%70–90), critical (&lt;%%70)."
 
 #: ui/templates/platform/k_rapor/index.html:712
 msgid "Başarı Yüzdesi Dağılımı (Histogram)"
@@ -5136,8 +5329,9 @@ msgstr "Delayed"
 
 #: ui/templates/platform/k_rapor/index.html:753
 #: ui/templates/platform/k_rapor/index.html:853
-msgid "Tamamlanma %"
-msgstr "Completion %"
+#, python-format
+msgid "Tamamlanma %%"
+msgstr "Completion %%"
 
 #: ui/templates/platform/k_rapor/index.html:762
 msgid ""
@@ -5174,6 +5368,7 @@ msgid "Kurum Detay Tablosu"
 msgstr "Organization Detail Table"
 
 #: ui/templates/platform/k_rapor/index.html:795
+#: ui/templates/platform/raporlar/op_istatistik.html:39
 msgid "PG Sayısı"
 msgstr "PI Count"
 
@@ -5198,6 +5393,7 @@ msgid "Strateji Bazlı Kapsama Tablosu"
 msgstr "Strategy-Based Coverage Table"
 
 #: ui/templates/platform/k_rapor/index.html:827
+#: ui/templates/platform/raporlar/kv_carpiklik.html:66
 msgid "Bağlı Süreç"
 msgstr "Linked Process"
 
@@ -5232,8 +5428,9 @@ msgid "Kişi"
 msgstr "Person"
 
 #: ui/templates/platform/k_rapor/index.html:853
-msgid "Gecikme %"
-msgstr "Delay %"
+#, python-format
+msgid "Gecikme %%"
+msgstr "Delay %%"
 
 #: ui/templates/platform/k_rapor/index.html:862
 msgid ""
@@ -5360,7 +5557,9 @@ msgstr "When enabled, the vision score is calculated hierarchically on a 1000 sc
 "When enabled, the vision score is calculated hierarchically on a 1000 "
 "scale.When enabled, the vision score is calculated hierarchically on a "
 "1000 scale.When enabled, the vision score is calculated hierarchically on"
-" a 1000 scale."
+" a 1000 scale.When enabled, the vision score is calculated hierarchically"
+" on a 1000 scale.When enabled, the vision score is calculated "
+"hierarchically on a 1000 scale."
 
 #: ui/templates/platform/kurum/ayarlar.html:94
 #, python-format
@@ -5393,7 +5592,9 @@ msgstr "Vision score and hierarchical weights are activated across the organizat
 "Vision score and hierarchical weights are activated across the "
 "organization.Vision score and hierarchical weights are activated across "
 "the organization.Vision score and hierarchical weights are activated "
-"across the organization."
+"across the organization.Vision score and hierarchical weights are "
+"activated across the organization.Vision score and hierarchical weights "
+"are activated across the organization."
 
 #: ui/templates/platform/kurum/ayarlar.html:120
 msgid "Yıllık Plan Dönemleri"
@@ -5421,7 +5622,9 @@ msgstr "A year selector is added to the SP page; KPI targets are kept separately
 "A year selector is added to the SP page; KPI targets are kept separately "
 "per year.A year selector is added to the SP page; KPI targets are kept "
 "separately per year.A year selector is added to the SP page; KPI targets "
-"are kept separately per year."
+"are kept separately per year.A year selector is added to the SP page; KPI"
+" targets are kept separately per year.A year selector is added to the SP "
+"page; KPI targets are kept separately per year."
 
 #: ui/templates/platform/kurum/ayarlar.html:147
 msgid "Geçmiş yılları dahil et"
@@ -5668,7 +5871,9 @@ msgstr "Active PIs, processes with data, open activities and tracking completed 
 "Active PIs, processes with data, open activities and tracking completed "
 "this monthActive PIs, processes with data, open activities and tracking "
 "completed this monthActive PIs, processes with data, open activities and "
-"tracking completed this month"
+"tracking completed this monthActive PIs, processes with data, open "
+"activities and tracking completed this monthActive PIs, processes with "
+"data, open activities and tracking completed this month"
 
 #: ui/templates/platform/kurum/index.html:441
 msgid "Risk &amp; uyarı"
@@ -5844,6 +6049,7 @@ msgid "Kurum Kullanıcısı"
 msgstr "Organization User"
 
 #: ui/templates/platform/masaustu/index.html:34
+#: ui/templates/platform/raporlar/mobile.html:24
 msgid "Merhaba"
 msgstr "Hello"
 
@@ -5894,6 +6100,7 @@ msgid "Geciken faaliyet (bitiş tarihi geçti)"
 msgstr "Overdue activities (past due date)"
 
 #: ui/templates/platform/masaustu/index.html:167
+#: ui/templates/platform/raporlar/departman_performans.html:27
 msgid "Bireysel PG"
 msgstr "Individual PI"
 
@@ -5938,6 +6145,7 @@ msgid "Bu hafta"
 msgstr "This week"
 
 #: ui/templates/platform/masaustu/index.html:207
+#: ui/templates/platform/raporlar/pg_proje_etki.html:24
 msgid "Yenile"
 msgstr "Refresh"
 
@@ -5992,6 +6200,1998 @@ msgstr "Mark as read"
 #: ui/templates/platform/masaustu/index.html:682
 msgid "Okunmamış bildirim yok."
 msgstr "No unread notifications."
+
+#: ui/templates/platform/raporlar/ai_coach.html:4
+msgid "AI Coach"
+msgstr "AI Coach"
+
+#: ui/templates/platform/raporlar/ai_coach.html:9
+msgid ""
+"En düşük performanslı 3 strateji için AI destekli yönetici koçluk "
+"aksiyonları."
+msgstr ""
+"AI-powered executive coaching actions for the 3 lowest performing "
+"strategies."
+
+#: ui/templates/platform/raporlar/ai_coach.html:13
+msgid "Coach hazırlanıyor…"
+msgstr "Coach is being prepared…"
+
+#: ui/templates/platform/raporlar/ai_coach.html:17
+msgid "En Düşük Performanslı 3 Strateji"
+msgstr "3 Lowest Performing Strategies"
+
+#: ui/templates/platform/raporlar/ai_coach.html:21
+msgid "AI Önerisi"
+msgstr "AI Suggestion"
+
+#: ui/templates/platform/raporlar/ai_danisman.html:2
+msgid "AI Strateji Danışmanı — Kokpitim"
+msgstr "AI Strategy Advisor — Kokpitim"
+
+#: ui/templates/platform/raporlar/ai_danisman.html:9
+msgid ""
+"Sistem verilerinden AI'nın ürettiği strateji pivot önerileri — refocus, "
+"sunset veya accelerate."
+msgstr ""
+"Strategy pivot suggestions generated by AI from system data — refocus, "
+"sunset or accelerate."
+
+#: ui/templates/platform/raporlar/ai_danisman.html:13
+msgid "AI önerileri hazırlanıyor (5-15sn)…"
+msgstr "AI suggestions are being prepared (5-15s)…"
+
+#: ui/templates/platform/raporlar/ai_sunum.html:2
+msgid "AI Yıl Sonu Sunum Üretici — Kokpitim"
+msgstr "AI Year-End Presentation Generator — Kokpitim"
+
+#: ui/templates/platform/raporlar/ai_sunum.html:9
+msgid ""
+"Yönetim kurulu için AI destekli PPTX — kurum verisini özetler, slaytları "
+"otomatik hazırlar."
+msgstr ""
+"AI-powered PPTX for the board — summarizes organization data, prepares "
+"slides automatically."
+
+#: ui/templates/platform/raporlar/ai_sunum.html:21
+msgid "SUNUM HAZIR"
+msgstr "PRESENTATION READY"
+
+#: ui/templates/platform/raporlar/ai_sunum.html:26
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:22
+msgid "PPTX İndir"
+msgstr "Download PPTX"
+
+#: ui/templates/platform/raporlar/ai_sunum.html:33
+msgid "Sunumda Kullanılacak Veriler"
+msgstr "Data to Be Used in the Presentation"
+
+#: ui/templates/platform/raporlar/ai_sunum.html:41
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:26
+msgid "Slayt Yapısı"
+msgstr "Slide Structure"
+
+#: ui/templates/platform/raporlar/ai_sunum.html:47
+msgid ""
+"<b>İlk versiyon notu:</b> Bu sunum şu an 8 ana slayt + kapak + kapanış "
+"formatında.\n"
+"          Görsel grafikler (chart) henüz dahil değil — sadece metin + "
+"veri tabloları.\n"
+"          Sonraki versiyonda matplotlib görselleri ve daha fazla AI "
+"narratif eklenecek."
+msgstr ""
+"<b>First version note:</b> This presentation is currently in the format "
+"of 8 main slides + cover + closing.\n"
+"          Visual charts are not yet included — only text + data tables.\n"
+"          In the next version, matplotlib visuals and more AI narrative "
+"will be added."
+
+#: ui/templates/platform/raporlar/audit_paketi.html:2
+msgid "Audit Çıktı Paketi — Kokpitim"
+msgstr "Audit Output Package — Kokpitim"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:3
+#: ui/templates/platform/raporlar/audit_paketi.html:10
+msgid "Üçüncü Parti Audit Çıktı Paketi"
+msgstr "Third Party Audit Output Package"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:4
+msgid "Audit Çıktı Paketi"
+msgstr "Audit Output Package"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:11
+msgid ""
+"PWC/Deloitte tarzı denetçi için kurumsal tek PDF raporu — SP + denetim "
+"günlüğü + güvenlik"
+msgstr ""
+"Single corporate PDF report for PWC/Deloitte-style auditors — SP + audit "
+"log + security"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:19
+msgid "DENETÇİ İÇİN HAZIR · PDF"
+msgstr "AUDITOR READY · PDF"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:20
+msgid "Üçüncü Parti Audit Paketi"
+msgstr "Third Party Audit Package"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:21
+msgid ""
+"Kurum bilgileri + stratejik plan yapısı + son 90 gün denetim günlüğü + "
+"kullanıcı güvenliği"
+msgstr ""
+"Organization information + strategic plan structure + last 90 days audit "
+"log + user security"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:24
+#: ui/templates/platform/raporlar/esg_rapor.html:25
+#: ui/templates/platform/raporlar/stratejik_yillik.html:22
+msgid "PDF İndir"
+msgstr "Download PDF"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:31
+msgid "PDF Bölümleri"
+msgstr "PDF Sections"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:33
+msgid "<b>Kurum Bilgileri</b> — Ad, sektör, çalışan sayısı, kurum kimliği"
+msgstr "<b>Organization Information</b> — Name, sector, employee count, organization identity"
+"<b>Organization Information</b> — Name, sector, employee count, "
+"organization identity"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:34
+msgid "<b>Stratejik Plan Yapısı</b> — Strateji, alt strateji, süreç ve PG sayımı"
+msgstr "<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies, processes and PIs"
+"<b>Strategic Plan Structure</b> — Count of strategies, sub-strategies, "
+"processes and PIs"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:35
+msgid "<b>Denetim Günlüğü (Son 90 Gün)</b> — İşlem dağılımı + son 20 giriş detayı"
+msgstr "<b>Audit Log (Last 90 Days)</b> — Action distribution + details of the last 20 entries"
+"<b>Audit Log (Last 90 Days)</b> — Action distribution + details of the "
+"last 20 entries"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:36
+msgid ""
+"<b>Kullanıcı Güvenliği</b> — 2FA etkinleştirme oranı, yönetici güvenlik "
+"durumu"
+msgstr "<b>User Security</b> — 2FA activation rate, administrator security status"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:37
+msgid "<b>KPI Özeti</b> — Aktif gösterge sayısı, ortalama başarı oranı"
+msgstr "<b>KPI Summary</b> — Number of active indicators, average success rate"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:38
+msgid "<b>Risk Özeti</b> — Açık risk sayısı, kritik RPN listesi"
+msgstr "<b>Risk Summary</b> — Number of open risks, critical RPN list"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:42
+msgid "Kullanım Amacı"
+msgstr "Purpose of Use"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:44
+msgid "Dış denetçilere (PWC, Deloitte, KPMG) kurumsal şeffaflık sunumu"
+msgstr "Corporate transparency presentation to external auditors (PWC, Deloitte, KPMG)"
+"Corporate transparency presentation to external auditors (PWC, Deloitte, "
+"KPMG)"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:45
+msgid "ISO 9001 / ISO 27001 uyum kanıtı"
+msgstr "ISO 9001 / ISO 27001 compliance evidence"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:46
+msgid "Yönetim kurulu ve üst yönetim brifinglerinde kullanım"
+msgstr "Use in board and senior management briefings"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:47
+msgid "Düzenleyici kurum raporlama gereksinimleri (BDDK, SPK vb.)"
+msgstr "Regulatory body reporting requirements (BDDK, SPK etc.)"
+
+#: ui/templates/platform/raporlar/audit_paketi.html:48
+msgid "Hassas veri — yalnızca yetkili kullanıcılar indirebilir"
+msgstr "Sensitive data — only authorized users can download"
+
+#: ui/templates/platform/raporlar/bi_connector.html:9
+msgid ""
+"Kokpitim verisini Power BI, Tableau ve Excel'e bağla — direkt CSV/JSON "
+"endpoint'leri."
+msgstr ""
+"Connect Kokpitim data to Power BI, Tableau and Excel — direct CSV/JSON "
+"endpoints."
+
+#: ui/templates/platform/raporlar/bi_connector.html:28
+msgid "Tıkla kopyala"
+msgstr "Click to copy"
+
+#: ui/templates/platform/raporlar/bi_connector.html:32
+msgid "Doğrudan indir / önizle"
+msgstr "Download directly / preview"
+
+#: ui/templates/platform/raporlar/bi_connector.html:40
+msgid "Power BI Bağlantı Rehberi"
+msgstr "Power BI Connection Guide"
+
+#: ui/templates/platform/raporlar/bi_connector.html:42
+msgid "<b>Power BI Desktop</b> → Get Data → <b>Web</b>"
+msgstr "<b>Power BI Desktop</b> → Get Data → <b>Web</b>"
+
+#: ui/templates/platform/raporlar/bi_connector.html:43
+msgid "URL alanına yukarıdaki \"KPI Ölçümleri\" CSV bağlantısını yapıştır"
+msgstr "Paste the \"KPI Measurements\" CSV link above into the URL field"
+
+#: ui/templates/platform/raporlar/bi_connector.html:44
+msgid ""
+"Authentication → <b>Anonymous</b> (Kokpitim oturumu açık olmalı) veya "
+"Basic Auth ile API token"
+msgstr ""
+"Authentication → <b>Anonymous</b> (Kokpitim session must be open) or API "
+"token with Basic Auth"
+
+#: ui/templates/platform/raporlar/bi_connector.html:45
+msgid "Veri yüklendikten sonra Power Query Editor'da gerekli dönüşümleri yap"
+msgstr "After the data is loaded, make the necessary transformations in the Power Query Editor"
+"After the data is loaded, make the necessary transformations in the Power"
+" Query Editor"
+
+#: ui/templates/platform/raporlar/bi_connector.html:46
+msgid "Direct Query desteklenmiyor — Import mode kullan (yenileme zamanlı)"
+msgstr "Direct Query is not supported — use Import mode (scheduled refresh)"
+
+#: ui/templates/platform/raporlar/bi_connector.html:52
+msgid "Tableau Bağlantı Rehberi"
+msgstr "Tableau Connection Guide"
+
+#: ui/templates/platform/raporlar/bi_connector.html:54
+msgid "Tableau Desktop → Connect → <b>To a Server / Text File</b>"
+msgstr "Tableau Desktop → Connect → <b>To a Server / Text File</b>"
+
+#: ui/templates/platform/raporlar/bi_connector.html:55
+msgid "URL ile bağlanmak için Tableau Web Data Connector (WDC) gerekir"
+msgstr "Connecting via URL requires the Tableau Web Data Connector (WDC)"
+
+#: ui/templates/platform/raporlar/bi_connector.html:56
+msgid "Veya CSV'yi indir → Tableau'da <b>Text File</b> kaynağı olarak aç"
+msgstr "Or download the CSV → open it as a <b>Text File</b> source in Tableau"
+
+#: ui/templates/platform/raporlar/bi_connector.html:57
+msgid "Yenileme manuel; otomatik refresh için Tableau Server gereklidir"
+msgstr "Refresh is manual; Tableau Server is required for automatic refresh"
+
+#: ui/templates/platform/raporlar/bi_connector.html:63
+msgid "Excel / Google Sheets"
+msgstr "Excel / Google Sheets"
+
+#: ui/templates/platform/raporlar/bi_connector.html:65
+msgid "<b>Excel:</b> Data → From Web → URL'yi yapıştır"
+msgstr "<b>Excel:</b> Data → From Web → paste the URL"
+
+#: ui/templates/platform/raporlar/bi_connector.html:66
+msgid ""
+"<b>Google Sheets:</b> <code style=\"background:#f1f5f9;padding:2px 6px"
+";border-radius:3px;\">=IMPORTDATA(\"URL\")</code>"
+msgstr ""
+"<b>Google Sheets:</b> <code style=\"background:#f1f5f9;padding:2px 6px"
+";border-radius:3px;\">=IMPORTDATA(\"URL\")</code>"
+
+#: ui/templates/platform/raporlar/bi_connector.html:67
+msgid "Veri otomatik formatlanır, sütun başlıkları algılanır"
+msgstr "Data is formatted automatically, column headers are detected"
+
+#: ui/templates/platform/raporlar/bi_connector.html:73
+msgid ""
+"<b>MVP Notu:</b> Bu MVP CSV/JSON endpoint'leri. Tam OData v4 desteği "
+"(canlı yenileme, filtre, hiyerarşi navigasyon) için ek geliştirme gerekir"
+" (60h tahmini)."
+msgstr ""
+"<b>MVP Note:</b> These are MVP CSV/JSON endpoints. Full OData v4 support "
+"(live refresh, filter, hierarchy navigation) requires additional "
+"development (60h estimate)."
+
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:2
+msgid "Bireysel Hedef Hizalama — Kokpitim"
+msgstr "Individual Goal Alignment — Kokpitim"
+
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:15
+msgid "Kullanıcıların bireysel PG'lerinin kurum stratejisine bağlanma oranı"
+msgstr "The rate at which users' individual PIs link to the organization strategy"
+
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:26
+#: ui/templates/platform/raporlar/departman_performans.html:25
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:27
+msgid "Departman"
+msgstr "Department"
+
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:28
+msgid "Bağlı PG"
+msgstr "Linked PI"
+
+#: ui/templates/platform/raporlar/bireysel_hizalama.html:29
+#, python-format
+msgid "Hizalama %%"
+msgstr "Alignment %%"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:2
+msgid "Bireysel Karne Batch — Kokpitim"
+msgstr "Individual Scorecard Batch — Kokpitim"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:3
+msgid "Bireysel Karne — Toplu PDF (ZIP)"
+msgstr "Individual Scorecard — Bulk PDF (ZIP)"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:4
+msgid "Bireysel Karne Batch"
+msgstr "Individual Scorecard Batch"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:9
+msgid ""
+"PG'si olan tüm çalışanların bireysel karneleri toplu PDF olarak tek ZIP "
+"dosyasında indir."
+msgstr ""
+"Download the individual scorecards of all employees with a PI as a bulk "
+"PDF in a single ZIP file."
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:17
+msgid "TOPLU ÜRETIM · ZIP"
+msgstr "BULK GENERATION · ZIP"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:22
+msgid "ZIP İndir"
+msgstr "Download ZIP"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:26
+msgid "⚙ Her Karne İçeriği"
+msgstr "⚙ Each Scorecard Content"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:28
+msgid "Çalışan kimlik bilgileri (ad, e-posta, departman)"
+msgstr "Employee identity information (name, email, department)"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:29
+msgid "Bireysel PG sayısı + kurum stratejisine hizalama yüzdesi"
+msgstr "Number of individual PIs + alignment percentage to organization strategy"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:30
+msgid "PG detay tablosu (kod, ad, hedef, birim, kaynak tipi)"
+msgstr "PI detail table (code, name, target, unit, source type)"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:31
+msgid "Otomatik üretim notu"
+msgstr "Automatic generation note"
+
+#: ui/templates/platform/raporlar/bireysel_karne_batch.html:34
+msgid ""
+"Maksimum 100 kullanıcı tek seferde işlenir. Üretim süresi kullanıcı "
+"sayısına bağlıdır (~5-30 saniye)."
+msgstr ""
+"A maximum of 100 users are processed at once. Generation time depends on "
+"the number of users (~5-30 seconds)."
+
+#: ui/templates/platform/raporlar/carbon_trend.html:2
+msgid "Carbon Footprint Trend — Kokpitim"
+msgstr "Carbon Footprint Trend — Kokpitim"
+
+#: ui/templates/platform/raporlar/carbon_trend.html:3
+#: ui/templates/platform/raporlar/carbon_trend.html:4
+#: ui/templates/platform/raporlar/carbon_trend.html:8
+msgid "Carbon Footprint Trend"
+msgstr "Carbon Footprint Trend"
+
+#: ui/templates/platform/raporlar/carbon_trend.html:9
+msgid ""
+"Scope 1 + 2 + 3 toplam emisyon yıllık trend (tCO₂e) — ESG modülünden "
+"otomatik beslenir."
+msgstr ""
+"Scope 1 + 2 + 3 total emission annual trend (tCO₂e) — automatically fed "
+"from the ESG module."
+
+#: ui/templates/platform/raporlar/carbon_trend.html:17
+msgid "Yıllık Trend"
+msgstr "Annual Trend"
+
+#: ui/templates/platform/raporlar/carbon_trend.html:20
+msgid "Scope 1 (direkt)"
+msgstr "Scope 1 (direct)"
+
+#: ui/templates/platform/raporlar/carbon_trend.html:21
+msgid "Scope 2 (enerji)"
+msgstr "Scope 2 (energy)"
+
+#: ui/templates/platform/raporlar/carbon_trend.html:22
+msgid "Scope 3 (zincir)"
+msgstr "Scope 3 (chain)"
+
+#: ui/templates/platform/raporlar/carbon_trend.html:26
+msgid ""
+"Henüz scope verisi yok. ESG modülünden Scope 1/2/3 emisyon verileri "
+"girilince trend oluşur."
+msgstr ""
+"No scope data yet. The trend forms once Scope 1/2/3 emission data is "
+"entered from the ESG module."
+
+#: ui/templates/platform/raporlar/cfo_dashboard.html:2
+msgid "CFO Dashboard — Kokpitim"
+msgstr "CFO Dashboard — Kokpitim"
+
+#: ui/templates/platform/raporlar/cfo_dashboard.html:3
+#: ui/templates/platform/raporlar/cfo_dashboard.html:4
+#: ui/templates/platform/raporlar/cfo_dashboard.html:8
+msgid "CFO Dashboard"
+msgstr "CFO Dashboard"
+
+#: ui/templates/platform/raporlar/cfo_dashboard.html:9
+msgid ""
+"Stratejik girişim bütçeleri, harcama oranları, ROI ve operasyonel maliyet"
+" özeti."
+msgstr ""
+"Strategic initiative budgets, spending rates, ROI and operational cost "
+"summary."
+
+#: ui/templates/platform/raporlar/cfo_dashboard.html:19
+msgid "En Büyük 5 Stratejik Girişim"
+msgstr "Top 5 Strategic Initiatives"
+
+#: ui/templates/platform/raporlar/cfo_dashboard.html:23
+msgid "Durum Dağılımı"
+msgstr "Status Distribution"
+
+#: ui/templates/platform/raporlar/cfo_dashboard.html:29
+msgid "Strateji Bazlı Bütçe Atıfı"
+msgstr "Strategy-Based Budget Attribution"
+
+#: ui/templates/platform/raporlar/chro_dashboard.html:2
+msgid "CHRO Dashboard — Kokpitim"
+msgstr "CHRO Dashboard — Kokpitim"
+
+#: ui/templates/platform/raporlar/chro_dashboard.html:3
+#: ui/templates/platform/raporlar/chro_dashboard.html:4
+#: ui/templates/platform/raporlar/chro_dashboard.html:8
+msgid "CHRO Dashboard"
+msgstr "CHRO Dashboard"
+
+#: ui/templates/platform/raporlar/chro_dashboard.html:9
+msgid ""
+"İK özeti — çalışan dağılımı, departman, bireysel PG sahipliği ve 2FA "
+"güvenlik kapsamı."
+msgstr ""
+"HR summary — employee distribution, department, individual PI ownership "
+"and 2FA security coverage."
+
+#: ui/templates/platform/raporlar/chro_dashboard.html:19
+msgid "Departman Dağılımı"
+msgstr "Department Distribution"
+
+#: ui/templates/platform/raporlar/chro_dashboard.html:23
+msgid "Rol Dağılımı"
+msgstr "Role Distribution"
+
+#: ui/templates/platform/raporlar/chro_dashboard.html:30
+msgid "🏆 En Çok Bireysel PG Sahibi (Top 10)"
+msgstr "🏆 Most Individual PI Owners (Top 10)"
+
+#: ui/templates/platform/raporlar/chro_dashboard.html:34
+msgid "📌 En Çok Süreç Üyeliği (Top 5)"
+msgstr "📌 Most Process Memberships (Top 5)"
+
+#: ui/templates/platform/raporlar/cmmi_heatmap.html:16
+msgid ""
+"Süreç olgunluk seviyesi <b>(1: Başlangıç → 5: Optimize Eden)</b> — "
+"kurumsal süreç yetkinliğinin sayısal ölçümü."
+msgstr ""
+"Process maturity level <b>(1: Initial → 5: Optimizing)</b> — numerical "
+"measurement of organizational process capability."
+
+#: ui/templates/platform/raporlar/cmmi_heatmap.html:23
+#: ui/templates/platform/raporlar/evrim_filmi.html:24
+#: ui/templates/platform/raporlar/hizalama_sankey.html:23
+#: ui/templates/platform/raporlar/kv_carpiklik.html:22
+#: ui/templates/platform/raporlar/muda_analizi.html:21
+#: ui/templates/platform/raporlar/op_istatistik.html:21
+msgid "Yıl:"
+msgstr "Year:"
+
+#: ui/templates/platform/raporlar/cmmi_heatmap.html:37
+msgid ""
+"<b>CMMI nedir?</b> Capability Maturity Model Integration — süreçlerin ne "
+"kadar disiplinli, ölçülen ve sürekli iyileştiren olduğunu 5 kademede "
+"değerlendiren küresel standart. Yüksek seviyeler <b>tahmin edilebilirlik,"
+" kalite ve verimliliği</b> artırır. Kurumsal olgunluk = süreç "
+"olgunluklarının ortalaması."
+msgstr ""
+"<b>What is CMMI?</b> Capability Maturity Model Integration — a global "
+"standard that evaluates how disciplined, measured and continuously "
+"improving processes are across 5 levels. Higher levels increase "
+"<b>predictability, quality and efficiency</b>. Organizational maturity = "
+"the average of process maturities."
+
+#: ui/templates/platform/raporlar/cmmi_heatmap.html:56
+msgid "Seviye Dağılımı ve Açıklamalar"
+msgstr "Level Distribution and Descriptions"
+
+#: ui/templates/platform/raporlar/cmmi_heatmap.html:65
+msgid "Süreç Bazlı Olgunluk"
+msgstr "Process-Based Maturity"
+
+#: ui/templates/platform/raporlar/cmmi_heatmap.html:67
+msgid "Tıkla → süreç karnesine git"
+msgstr "Click → go to process scorecard"
+
+#: ui/templates/platform/raporlar/cmmi_heatmap.html:75
+msgid "Henüz Olgunluk Değerlendirmesi Yapılmamış Süreçler"
+msgstr "Processes Without a Maturity Assessment Yet"
+
+#: ui/templates/platform/raporlar/cmmi_heatmap.html:78
+msgid ""
+"Bu süreçler için CMMI değerlendirmesi (1-5) henüz girilmemiş. Karne "
+"sayfasından \"Olgunluk\" kaydı eklemek 360° tablo verir."
+msgstr ""
+"CMMI assessment (1-5) for these processes has not been entered yet. "
+"Adding a \"Maturity\" record from the scorecard page gives a 360° table."
+
+#: ui/templates/platform/raporlar/coo_dashboard.html:2
+msgid "COO Dashboard — Kokpitim"
+msgstr "COO Dashboard — Kokpitim"
+
+#: ui/templates/platform/raporlar/coo_dashboard.html:3
+#: ui/templates/platform/raporlar/coo_dashboard.html:4
+#: ui/templates/platform/raporlar/coo_dashboard.html:8
+msgid "COO Dashboard"
+msgstr "COO Dashboard"
+
+#: ui/templates/platform/raporlar/coo_dashboard.html:9
+msgid ""
+"Süreç sağlığı, geciken faaliyetler, operasyonel darboğazlar ve olgunluk "
+"görünümü."
+msgstr ""
+"Process health, overdue activities, operational bottlenecks and maturity "
+"view."
+
+#: ui/templates/platform/raporlar/coo_dashboard.html:18
+msgid "Süreç Sağlık Dağılımı"
+msgstr "Process Health Distribution"
+
+#: ui/templates/platform/raporlar/coo_dashboard.html:24
+msgid "Süreçler (Sağlık Skoru)"
+msgstr "Processes (Health Score)"
+
+#: ui/templates/platform/raporlar/coo_dashboard.html:28
+msgid "Aktif Darboğazlar"
+msgstr "Active Bottlenecks"
+
+#: ui/templates/platform/raporlar/departman_performans.html:2
+msgid "Departman Performans — Kokpitim"
+msgstr "Department Performance — Kokpitim"
+
+#: ui/templates/platform/raporlar/departman_performans.html:3
+#: ui/templates/platform/raporlar/index.html:26
+msgid "Departman Performans Skoru"
+msgstr "Department Performance Score"
+
+#: ui/templates/platform/raporlar/departman_performans.html:15
+msgid "Departman bazlı çalışan + bireysel PG + 2FA güvenlik metrikleri"
+msgstr "Department-based employee + individual PI + 2FA security metrics"
+
+#: ui/templates/platform/raporlar/departman_performans.html:26
+msgid "Çalışan"
+msgstr "Employee"
+
+#: ui/templates/platform/raporlar/departman_performans.html:28
+msgid "PG / Kişi"
+msgstr "PI / Person"
+
+#: ui/templates/platform/raporlar/departman_performans.html:29
+msgid "Önemli PG"
+msgstr "Important PI"
+
+#: ui/templates/platform/raporlar/departman_performans.html:30
+msgid "2FA Oranı"
+msgstr "2FA Rate"
+
+#: ui/templates/platform/raporlar/early_warning.html:11
+msgid ""
+"Son 3+ dönem hedef altında kalan Performans Göstergeleri — proaktif "
+"müdahale gerektiren göstergeler"
+msgstr ""
+"Performance Indicators staying below target for the last 3+ periods — "
+"indicators requiring proactive intervention"
+
+#: ui/templates/platform/raporlar/early_warning.html:19
+#, python-format
+msgid ""
+"<strong>Nasıl çalışır?</strong> Her PG için son kayıtlı dönemlere ait "
+"başarı puanları incelenir. 3 veya daha fazla ardışık dönemde <strong>%%50"
+" altında</strong> kalan göstergeler"
+msgstr ""
+"<strong>How does it work?</strong> For each PI, the success scores of the"
+" most recent recorded periods are examined. Indicators staying "
+"<strong>below %%50</strong> for 3 or more consecutive periods"
+
+#: ui/templates/platform/raporlar/early_warning.html:19
+msgid "önceliğe,"
+msgstr "to priority,"
+
+#: ui/templates/platform/raporlar/early_warning.html:20
+#, python-format
+msgid "3 dönem <strong>%%50–79 arası</strong> kalanlar"
+msgstr "Those staying <strong>between %%50–79</strong> for 3 periods"
+
+#: ui/templates/platform/raporlar/early_warning.html:20
+msgid "önceliğe atanır."
+msgstr "is assigned to priority."
+
+#: ui/templates/platform/raporlar/early_warning.html:29
+msgid "Uyarı Listesi"
+msgstr "Alert List"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:2
+msgid "ESG Rapor (GRI/CDP/TCFD) — Kokpitim"
+msgstr "ESG Report (GRI/CDP/TCFD) — Kokpitim"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:3
+msgid "ESG Yıllık Rapor (GRI/CDP/TCFD)"
+msgstr "ESG Annual Report (GRI/CDP/TCFD)"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:9
+msgid ""
+"GRI 102/305/403 + TCFD iklim risk standartlarına uygun PDF — yatırımcı ve"
+" denetçi hazır."
+msgstr ""
+"PDF compliant with GRI 102/305/403 + TCFD climate risk standards — "
+"investor and auditor ready."
+
+#: ui/templates/platform/raporlar/esg_rapor.html:13
+msgid "Metrikleri Yönet"
+msgstr "Manage Metrics"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:20
+msgid "YATIRIMCI / DENETÇI HAZIR · PDF"
+msgstr "INVESTOR / AUDITOR READY · PDF"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:21
+msgid "GRI · CDP · TCFD Uyumlu"
+msgstr "GRI · CDP · TCFD Compliant"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:22
+msgid "Tüm Tomofil ESG metriklerinden otomatik üretim"
+msgstr "Automatic generation from all Tomofil ESG metrics"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:29
+msgid "📋 Rapor İçeriği"
+msgstr "📋 Report Content"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:31
+msgid "<b>GRI 102</b> — Organizasyonel profil (kurum, sektör, çalışan)"
+msgstr "<b>GRI 102</b> — Organizational profile (organization, sector, employee)"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:32
+msgid "<b>GRI 305</b> — Emisyonlar (Scope 1+2+3, yıllık toplam tablo)"
+msgstr "<b>GRI 305</b> — Emissions (Scope 1+2+3, annual total table)"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:33
+msgid "<b>GRI 403</b> — Sosyal göstergeler (LTIFR, iş güvenliği)"
+msgstr "<b>GRI 403</b> — Social indicators (LTIFR, occupational safety)"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:34
+msgid "<b>GRI 102-22</b> — Yönetişim (çeşitlilik, etik)"
+msgstr "<b>GRI 102-22</b> — Governance (diversity, ethics)"
+
+#: ui/templates/platform/raporlar/esg_rapor.html:35
+msgid "<b>TCFD</b> — İklim risk açıklaması (4 boyut)"
+msgstr "<b>TCFD</b> — Climate risk disclosure (4 dimensions)"
+
+#: ui/templates/platform/raporlar/esg_yonetim.html:2
+msgid "ESG Yönetimi — Kokpitim"
+msgstr "ESG Management — Kokpitim"
+
+#: ui/templates/platform/raporlar/esg_yonetim.html:3
+msgid "ESG / Sürdürülebilirlik Yönetimi"
+msgstr "ESG / Sustainability Management"
+
+#: ui/templates/platform/raporlar/esg_yonetim.html:6
+msgid "ESG Yönetimi"
+msgstr "ESG Management"
+
+#: ui/templates/platform/raporlar/esg_yonetim.html:20
+msgid "ESG / Sürdürülebilirlik"
+msgstr "ESG / Sustainability"
+
+#: ui/templates/platform/raporlar/esg_yonetim.html:23
+msgid ""
+"Çevresel (E) / Sosyal (S) / Yönetişim (G) metriklerini tanımla ve yıllık "
+"değerlerini gir. Bu veriler ESG/GRI/TCFD raporunu besler."
+msgstr ""
+"Define Environmental (E) / Social (S) / Governance (G) metrics and enter "
+"their annual values. This data feeds the ESG/GRI/TCFD report."
+
+#: ui/templates/platform/raporlar/esg_yonetim.html:27
+msgid "ESG Raporu"
+msgstr "ESG Report"
+
+#: ui/templates/platform/raporlar/esg_yonetim.html:29
+msgid "Metrik ekle"
+msgstr "Add metric"
+
+#: ui/templates/platform/raporlar/esg_yonetim.html:36
+msgid "Henüz ESG metriği yok. \"Metrik ekle\" ile başla."
+msgstr "No ESG metric yet. Start with \"Add metric\"."
+
+#: ui/templates/platform/raporlar/evrim_filmi.html:2
+msgid "Yıllar Arası Evrim Filmi — Kokpitim"
+msgstr "Year-over-Year Evolution Film — Kokpitim"
+
+#: ui/templates/platform/raporlar/evrim_filmi.html:9
+msgid ""
+"Stratejik plan ağacının yıldan yıla değişim animasyonu — yılı seçin veya "
+"otomatik oynatın."
+msgstr ""
+"Year-over-year change animation of the strategic plan tree — select a "
+"year or play automatically."
+
+#: ui/templates/platform/raporlar/evrim_filmi.html:22
+msgid "Oynat"
+msgstr "Play"
+
+#: ui/templates/platform/raporlar/hedef_revizyon.html:2
+msgid "PG Hedef Revizyon Sıklığı — Kokpitim"
+msgstr "PI Target Revision Frequency — Kokpitim"
+
+#: ui/templates/platform/raporlar/hedef_revizyon.html:15
+msgid ""
+"Yıllık plan dönemlerinde hedefi/ağırlığı revize edilen PG'ler — sık "
+"değişim ölçüm güvenilirliği işaretçisi olabilir"
+msgstr ""
+"PIs whose target/weight is revised in annual plan periods — frequent "
+"change may be an indicator of measurement reliability"
+
+#: ui/templates/platform/raporlar/hedef_revizyon.html:24
+msgid "Yıllara Göre Revizyon"
+msgstr "Revision by Year"
+
+#: ui/templates/platform/raporlar/hedef_revizyon.html:29
+msgid "Revize Edilen PG'ler"
+msgstr "Revised PIs"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:16
+msgid ""
+"<b>Vizyon → Strateji → Alt Strateji → Süreç → PG</b> akış görseli. Bant "
+"kalınlığı = ağırlık/katkı · Renk = mevcut skor"
+msgstr ""
+"<b>Vision → Strategy → Sub-Strategy → Process → PI</b> flow visual. Band "
+"thickness = weight/contribution · Color = current score"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:33
+msgid "Strateji:"
+msgstr "Strategy:"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:52
+msgid "Renk = mevcut skor:"
+msgstr "Color = current score:"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:53
+msgid "≥75 sağlıklı"
+msgstr "≥75 healthy"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:54
+msgid "50-74 izle"
+msgstr "50-74 watch"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:55
+msgid "&lt;50 kritik"
+msgstr "&lt;50 critical"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:56
+msgid "veri yok"
+msgstr "no data"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:57
+msgid "<b>Bant kalınlığı</b> = K-Vektör ağırlığı / katkı yüzdesi"
+msgstr "<b>Band thickness</b> = K-Vector weight / contribution percentage"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:71
+msgid "Stratejiye bağlı olmayan süreçler"
+msgstr "Processes not linked to a strategy"
+
+#: ui/templates/platform/raporlar/hizalama_sankey.html:79
+msgid "Bu plan yılı için strateji veya süreç bulunamadı."
+msgstr "No strategy or process found for this plan year."
+
+#: ui/templates/platform/raporlar/iki_fa.html:2
+msgid "2FA Kullanım — Kokpitim"
+msgstr "2FA Usage — Kokpitim"
+
+#: ui/templates/platform/raporlar/iki_fa.html:10
+msgid "İki adımlı doğrulama (TOTP) etkinleştirme oranı — güvenlik özet raporu"
+msgstr "Two-step verification (TOTP) activation rate — security summary report"
+
+#: ui/templates/platform/raporlar/iki_fa.html:18
+msgid ""
+"<strong>2FA (İki Adımlı Doğrulama)</strong> hesap güvenliğini önemli "
+"ölçüde artırır. Özellikle yönetici hesaplarının 2FA'yı etkinleştirmemiş "
+"olması kritik bir güvenlik açığıdır. Bu rapor TOTP (Google Authenticator "
+"/ Authy) tabanlı doğrulamayı gösterir."
+msgstr ""
+"<strong>2FA (Two-Step Verification)</strong> significantly increases "
+"account security. Administrator accounts not having 2FA enabled is a "
+"critical security vulnerability in particular. This report shows TOTP "
+"(Google Authenticator / Authy) based verification."
+
+#: ui/templates/platform/raporlar/iki_fa.html:31
+msgid "⚠ 2FA'sı Olmayan Yöneticiler (kritik güvenlik açığı)"
+msgstr "⚠ Administrators Without 2FA (critical security vulnerability)"
+
+#: ui/templates/platform/raporlar/index.html:6
+#: ui/templates/platform/raporlar/pg_proje_etki.html:7
+msgid "K-Radar"
+msgstr "K-Radar"
+
+#: ui/templates/platform/raporlar/index.html:16
+msgid ""
+"Stratejik, operasyonel, finansal ve dönüşüm raporları — tüm tenant'ta "
+"gerçek zamanlı içgörüler."
+msgstr ""
+"Strategic, operational, financial and transformation reports — real-time "
+"insights across the entire tenant."
+
+#: ui/templates/platform/raporlar/index.html:21
+msgid "Veri Kalitesi"
+msgstr "Data Quality"
+
+#: ui/templates/platform/raporlar/index.html:21
+msgid "PG doluluk, eksik alan ve son giriş tarihleri"
+msgstr "PI completeness, missing fields and last entry dates"
+
+#: ui/templates/platform/raporlar/index.html:22
+msgid "Hangi proje hangi PG'leri etkiliyor?"
+msgstr "Which project affects which PIs?"
+
+#: ui/templates/platform/raporlar/index.html:28
+msgid "Bütçe × ilerleme × öncelik balon grafik"
+msgstr "Budget × progress × priority bubble chart"
+
+#: ui/templates/platform/raporlar/index.html:29
+msgid "Operasyonel Sabah Özeti+"
+msgstr "Operational Morning Digest+"
+
+#: ui/templates/platform/raporlar/index.html:31
+msgid "Yönetim kurulu için indirilebilir PPTX"
+msgstr "Downloadable PPTX for the board"
+
+#: ui/templates/platform/raporlar/index.html:33
+msgid "Vizyondan PG'ye tek görsel hiyerarşi"
+msgstr "Single visual hierarchy from vision to PI"
+
+#: ui/templates/platform/raporlar/index.html:34
+msgid "Kaynak sınıflandırma — Sürdürülebilir Avantaj"
+msgstr "Resource classification — Sustainable Advantage"
+
+#: ui/templates/platform/raporlar/index.html:35
+msgid "Hedefler + Key Result hiyerarşik görünüm"
+msgstr "Objectives + Key Result hierarchical view"
+
+#: ui/templates/platform/raporlar/index.html:36
+msgid "Çok yıllık girişim Gantt zaman çizelgesi"
+msgstr "Multi-year initiative Gantt timeline"
+
+#: ui/templates/platform/raporlar/index.html:37
+msgid "Lean prensipleri ile süreç verimsizliği"
+msgstr "Process inefficiency with Lean principles"
+
+#: ui/templates/platform/raporlar/index.html:38
+msgid "CMMI Olgunluk Heatmap"
+msgstr "CMMI Maturity Heatmap"
+
+#: ui/templates/platform/raporlar/index.html:38
+msgid "Süreç olgunluk seviyesi (L1-L5) dağılımı"
+msgstr "Process maturity level (L1-L5) distribution"
+
+#: ui/templates/platform/raporlar/index.html:39
+msgid "Tüm süreçlerin PG + faaliyet sayım tablosu"
+msgstr "PI + activity count table of all processes"
+
+#: ui/templates/platform/raporlar/index.html:40
+msgid "Bireysel PG'lerin kurum stratejisine bağ oranı"
+msgstr "Link rate of individual PIs to organization strategy"
+
+#: ui/templates/platform/raporlar/index.html:41
+msgid "Risk Heatmap (5×5)"
+msgstr "Risk Heatmap (5×5)"
+
+#: ui/templates/platform/raporlar/index.html:41
+msgid "Olasılık × Etki matrisi + Top 10 risk"
+msgstr "Probability × Impact matrix + Top 10 risks"
+
+#: ui/templates/platform/raporlar/index.html:42
+msgid "TOTP etkin oranı + risk altındaki yöneticiler"
+msgstr "TOTP enabled rate + administrators at risk"
+
+#: ui/templates/platform/raporlar/index.html:43
+msgid "Scope 1+2+3 yıllık emisyon trendi"
+msgstr "Scope 1+2+3 annual emission trend"
+
+#: ui/templates/platform/raporlar/index.html:44
+msgid "Strateji pivot önerileri (refocus/sunset/accelerate)"
+msgstr "Strategy pivot suggestions (refocus/sunset/accelerate)"
+
+#: ui/templates/platform/raporlar/index.html:45
+msgid "En düşük 3 strateji için aksiyon önerisi"
+msgstr "Action suggestion for the 3 lowest strategies"
+
+#: ui/templates/platform/raporlar/index.html:46
+msgid "Son 3+ dönem hedef altı PG tespit"
+msgstr "Detect PIs below target for the last 3+ periods"
+
+#: ui/templates/platform/raporlar/index.html:48
+msgid "Bütçe + EVM + LLM maliyet + ROI"
+msgstr "Budget + EVM + LLM cost + ROI"
+
+#: ui/templates/platform/raporlar/index.html:49
+msgid "Süreç sağlık + darboğaz + olgunluk"
+msgstr "Process health + bottleneck + maturity"
+
+#: ui/templates/platform/raporlar/index.html:50
+msgid "Çalışan + departman + bireysel PG + 2FA"
+msgstr "Employee + department + individual PI + 2FA"
+
+#: ui/templates/platform/raporlar/index.html:51
+msgid "Çeyreklik Review Hazırlayıcı"
+msgstr "Quarterly Review Preparer"
+
+#: ui/templates/platform/raporlar/index.html:51
+msgid "AI özet + agenda + ön çalışma soruları"
+msgstr "AI summary + agenda + pre-work questions"
+
+#: ui/templates/platform/raporlar/index.html:52
+msgid "Yıllar arası stratejik plan evrim anlatımı"
+msgstr "Year-over-year strategic plan evolution narration"
+
+#: ui/templates/platform/raporlar/index.html:54
+msgid "🏆 Stratejik Yıllık Kitap"
+msgstr "🏆 Strategic Annual Book"
+
+#: ui/templates/platform/raporlar/index.html:54
+msgid "~35 sayfa PREMIUM PDF — tam yıllık tablo"
+msgstr "~35-page PREMIUM PDF — full annual table"
+
+#: ui/templates/platform/raporlar/index.html:55
+msgid "🏆 Yatırımcı Sunumu"
+msgstr "🏆 Investor Presentation"
+
+#: ui/templates/platform/raporlar/index.html:55
+msgid "18 slayt PPTX — yatırımcı paketinde her şey"
+msgstr "18-slide PPTX — everything in the investor package"
+
+#: ui/templates/platform/raporlar/index.html:56
+msgid "🏆 ESG Yıllık Rapor"
+msgstr "🏆 ESG Annual Report"
+
+#: ui/templates/platform/raporlar/index.html:56
+msgid "GRI · CDP · TCFD uyumlu standart PDF"
+msgstr "GRI · CDP · TCFD compliant standard PDF"
+
+#: ui/templates/platform/raporlar/index.html:57
+msgid "🏆 Audit Çıktı Paketi"
+msgstr "🏆 Audit Output Package"
+
+#: ui/templates/platform/raporlar/index.html:57
+msgid "Üçüncü parti denetçi için kurum genel PDF"
+msgstr "General organization PDF for third party auditor"
+
+#: ui/templates/platform/raporlar/index.html:58
+msgid "🏆 Bireysel Karne Batch (ZIP)"
+msgstr "🏆 Individual Scorecard Batch (ZIP)"
+
+#: ui/templates/platform/raporlar/index.html:58
+msgid "Tüm çalışanlar için toplu PDF (ZIP'te)"
+msgstr "Bulk PDF for all employees (in ZIP)"
+
+#: ui/templates/platform/raporlar/index.html:60
+msgid "🌐 Sektörel Plan Paketleri"
+msgstr "🌐 Sector Plan Packages"
+
+#: ui/templates/platform/raporlar/index.html:60
+msgid "8 sektör için hazır şablonlar (3 hazır)"
+msgstr "Ready templates for 8 sectors (3 ready)"
+
+#: ui/templates/platform/raporlar/index.html:61
+msgid "🤖 AI Doğal Dil Sorgu"
+msgstr "🤖 AI Natural Language Query"
+
+#: ui/templates/platform/raporlar/index.html:61
+msgid "Sistemi Türkçe sorularla sorgula"
+msgstr "Query the system with Turkish questions"
+
+#: ui/templates/platform/raporlar/index.html:62
+msgid "🤖 AI Sektör Benchmark"
+msgstr "🤖 AI Sector Benchmark"
+
+#: ui/templates/platform/raporlar/index.html:62
+msgid "Kurum vs sektör ortalamaları + AI yorum"
+msgstr "Organization vs sector averages + AI comment"
+
+#: ui/templates/platform/raporlar/index.html:64
+msgid "📱 Mobile Hub (PWA)"
+msgstr "📱 Mobile Hub (PWA)"
+
+#: ui/templates/platform/raporlar/index.html:64
+msgid "Cep telefonu için kompakt arayüz önizleme"
+msgstr "Compact interface preview for mobile phone"
+
+#: ui/templates/platform/raporlar/index.html:65
+msgid "Power BI / Tableau / Excel bağlantı endpointleri"
+msgstr "Power BI / Tableau / Excel connection endpoints"
+
+#: ui/templates/platform/raporlar/index.html:66
+msgid "Z-score'un ötesi: scikit-learn anomali"
+msgstr "Beyond Z-score: scikit-learn anomaly"
+
+#: ui/templates/platform/raporlar/index.html:67
+msgid "✅ Onay Zinciri (Workflow MVP)"
+msgstr "✅ Approval Chain (Workflow MVP)"
+
+#: ui/templates/platform/raporlar/index.html:67
+msgid "Stratejik Girişim onay durumu — BPMN ileride"
+msgstr "Strategic Initiative approval status — BPMN later"
+
+#: ui/templates/platform/raporlar/index.html:78
+#: ui/templates/platform/raporlar/sektorel.html:22
+msgid "HAZIR"
+msgstr "READY"
+
+#: ui/templates/platform/raporlar/index.html:80
+msgid "YOL HARİTASI"
+msgstr "ROADMAP"
+
+#: ui/templates/platform/raporlar/index.html:82
+#: ui/templates/platform/raporlar/sektorel.html:22
+msgid "YAKINDA"
+msgstr "COMING SOON"
+
+#: ui/templates/platform/raporlar/index.html:99
+msgid ""
+"<b>Not:</b> Bu bölüm <a href=\"/docs/rapor/27mayisraporu.md\" "
+"style=\"color:#0ea5e9; text-decoration:underline;\">27 Mayıs Rapor "
+"Önerileri</a> dokümanından seçilen 10 rapor için staging alanıdır. Hazır "
+"raporlar zamanla ilgili modüllere (SP, Süreç, Bireysel, K-Radar) "
+"taşınacak."
+msgstr ""
+"<b>Note:</b> This section is a staging area for the 10 reports selected "
+"from the <a href=\"/docs/rapor/27mayisraporu.md\" style=\"color:#0ea5e9; "
+"text-decoration:underline;\">May 27 Report Suggestions</a> document. "
+"Ready reports will over time be moved to the relevant modules (SP, "
+"Process, Individual, K-Radar)."
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:2
+msgid "Girişim Portföyü — Balon Grafik"
+msgstr "Initiative Portfolio — Bubble Chart"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:3
+msgid "Girişim Portföyü"
+msgstr "Initiative Portfolio"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:5
+msgid "Girişim Portföyü Balon Grafiği"
+msgstr "Initiative Portfolio Bubble Chart"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:13
+msgid "Girişim Portföyü — Balon Grafiği"
+msgstr "Initiative Portfolio — Bubble Chart"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:16
+msgid ""
+"Tüm stratejik girişimlerin tek görselde portföy gösterimi — ilerleme, "
+"bütçe ve öncelik bir arada"
+msgstr ""
+"Portfolio display of all strategic initiatives in a single visual — "
+"progress, budget and priority together"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:24
+msgid ""
+"<b>Stratejik Girişim nedir?</b> Bir veya birden fazla stratejik alt "
+"hedefi ileriye taşıyan, <b>zaman ve kaynak sınırlı çalışma</b>dır. Bu "
+"rapor tüm girişimleri tek görselde gösterir; <b>hangileri sağlıklı "
+"ilerliyor, hangileri bütçesini aşıyor, hangileri öncelik almalı</b> "
+"sorularına anında yanıt verir."
+msgstr ""
+"<b>What is a Strategic Initiative?</b> It is a <b>time- and resource-"
+"limited effort</b> that advances one or more strategic sub-objectives. "
+"This report shows all initiatives in a single visual; it instantly "
+"answers <b>which are progressing healthily, which are exceeding budget, "
+"which should take priority</b>."
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:31
+msgid "Yatay Eksen (X)"
+msgstr "Horizontal Axis (X)"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:32
+#, python-format
+msgid "İlerleme %%"
+msgstr "Progress %%"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:33
+msgid "Sağa gittikçe tamamlanmaya yakın"
+msgstr "The further right, the closer to completion"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:36
+msgid "Dikey Eksen (Y)"
+msgstr "Vertical Axis (Y)"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:37
+#, python-format
+msgid "Bütçe Kullanımı %%"
+msgstr "Budget Usage %%"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:38
+msgid "Yukarı çıktıkça bütçesi tükeniyor"
+msgstr "The higher up, the more its budget is depleted"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:41
+msgid "Daire Boyutu"
+msgstr "Circle Size"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:42
+#: ui/templates/platform/raporlar/initiative_bubble.html:111
+msgid "Toplam Bütçe"
+msgstr "Total Budget"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:43
+msgid "Büyük daire = büyük bütçe"
+msgstr "Large circle = large budget"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:46
+msgid "Daire Rengi"
+msgstr "Circle Color"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:47
+msgid "Öncelik Seviyesi"
+msgstr "Priority Level"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:48
+msgid "Kırmızı = kritik, mavi = düşük"
+msgstr "Red = critical, blue = low"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:55
+msgid "4 Kadran nasıl yorumlanır?"
+msgstr "How to interpret the 4 quadrants?"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:59
+msgid "↘ Sağ Alt — İdeal"
+msgstr "↘ Bottom Right — Ideal"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:60
+msgid "Hızlı ilerliyor, az bütçe harcadı. Verimli portföy."
+msgstr "Progressing fast, spent little budget. Efficient portfolio."
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:63
+msgid "↗ Sağ Üst — Tamamlanıyor"
+msgstr "↗ Top Right — Completing"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:64
+msgid "İlerleme yüksek, bütçe de büyük oranda harcandı — normal bitiş."
+msgstr "Progress is high, and most of the budget was spent — a normal finish."
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:67
+msgid "↙ Sol Alt — Henüz Başlangıç"
+msgstr "↙ Bottom Left — Just Starting"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:68
+msgid "Az ilerleme + az harcama. Yeni başlamış veya tıkanmış olabilir."
+msgstr "Little progress + little spending. May have just started or be stuck."
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:71
+msgid "↖ Sol Üst — Riskli"
+msgstr "↖ Top Left — Risky"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:72
+msgid "Bütçe yandı ama ilerleme zayıf — acil aksiyon gerekir."
+msgstr "Budget burned but progress is weak — urgent action required."
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:86
+msgid "Portföy Balon Grafiği"
+msgstr "Portfolio Bubble Chart"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:89
+msgid ""
+"Daire üzerine gelince ayrıntılar açılır · tıklayınca girişim listesine "
+"gider"
+msgstr ""
+"Hovering over the circle reveals details · clicking goes to the "
+"initiative list"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:93
+msgid "Öncelik:"
+msgstr "Priority:"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:103
+msgid "Detay Tablosu"
+msgstr "Detail Table"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:108
+msgid "Girişim Adı"
+msgstr "Initiative Name"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:110
+#: ui/templates/platform/raporlar/onay_zinciri.html:27
+msgid "Öncelik"
+msgstr "Priority"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:112
+msgid "Harcanan"
+msgstr "Spent"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:113
+msgid "Bütçe Kullanımı"
+msgstr "Budget Usage"
+
+#: ui/templates/platform/raporlar/initiative_bubble.html:115
+msgid "Süre"
+msgstr "Duration"
+
+#: ui/templates/platform/raporlar/initiative_roadmap.html:2
+msgid "Girişim Yol Haritası — Kokpitim"
+msgstr "Initiative Roadmap — Kokpitim"
+
+#: ui/templates/platform/raporlar/initiative_roadmap.html:3
+#: ui/templates/platform/raporlar/initiative_roadmap.html:5
+msgid "Girişim Yol Haritası"
+msgstr "Initiative Roadmap"
+
+#: ui/templates/platform/raporlar/initiative_roadmap.html:12
+msgid "Girişim Yol Haritası (Gantt)"
+msgstr "Initiative Roadmap (Gantt)"
+
+#: ui/templates/platform/raporlar/initiative_roadmap.html:15
+msgid ""
+"Çok yıllık stratejik girişimlerin zaman çizelgesi — başlangıç/bitiş, "
+"ilerleme bantları"
+msgstr "Timeline of multi-year strategic initiatives — start/end, progress bands"
+
+#: ui/templates/platform/raporlar/initiative_roadmap.html:21
+msgid ""
+"<b>Nasıl okunur?</b> Her satır bir girişim. Çubuğun <b>uzunluğu</b> "
+"süresini, <b>dolgu yüzdesi</b> tamamlanma oranını gösterir. Çakışan zaman"
+" dilimleri kaynak çakışmasının olası göstergesidir."
+msgstr ""
+"<b>How to read?</b> Each row is an initiative. The bar's <b>length</b> "
+"shows its duration, the <b>fill percentage</b> shows its completion rate."
+" Overlapping time slots are a possible indicator of resource conflict."
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:16
+msgid ""
+"Stratejik ağırlık × gerçek performans uyumsuzluğu. <b>Yüksek ağırlık + "
+"düşük skor</b> → odaklanılması gereken alan."
+msgstr ""
+"Strategic weight × actual performance mismatch. <b>High weight + low "
+"score</b> → area to focus on."
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:43
+msgid "Strateji başına Ağırlık vs Skor"
+msgstr "Weight vs Score per strategy"
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:47
+#, python-format
+msgid "K-Vektör Ağırlık (%%)"
+msgstr "K-Vector Weight (%%)"
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:48
+msgid "Ortalama Süreç Skoru"
+msgstr "Average Process Score"
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:55
+msgid "Çarpıklık Detay Tablosu"
+msgstr "Skew Detail Table"
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:62
+#, python-format
+msgid "Ağırlık (%%)"
+msgstr "Weight (%%)"
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:63
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:29
+msgid "Ort. Skor"
+msgstr "Avg. Score"
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:64
+msgid "Çarpıklık"
+msgstr "Skew"
+
+#: ui/templates/platform/raporlar/kv_carpiklik.html:65
+msgid "Değerlendirme"
+msgstr "Assessment"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:11
+msgid ""
+"scikit-learn IsolationForest algoritmasıyla KPI ölçümlerinde olağandışı "
+"değer tespiti"
+msgstr ""
+"Detection of unusual values in KPI measurements with the scikit-learn "
+"IsolationForest algorithm"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:19
+msgid ""
+"<strong>IsolationForest nedir?</strong> Z-score gibi istatistiksel "
+"eşiklerin ötesine geçen bir makine öğrenmesi yöntemidir. Her PG için tüm "
+"tarihsel ölçüm değerleri bir model ile işlenerek <em>normalden sapan</em>"
+" ölçümler işaretlenir."
+msgstr ""
+"<strong>What is IsolationForest?</strong> It is a machine learning method"
+" that goes beyond statistical thresholds like Z-score. For each PI, all "
+"historical measurement values are processed by a model to flag "
+"measurements that <em>deviate from normal</em>."
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:20
+msgid ""
+"⚠ En az 6 ölçüm kaydı olan PG'ler analiz edilir; yetersiz veri olanlar "
+"atlanır."
+msgstr ""
+"⚠ PIs with at least 6 measurement records are analyzed; those with "
+"insufficient data are skipped."
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:21
+msgid "Analiz <strong>5–15 saniye</strong> sürebilir."
+msgstr "Analysis may take <strong>5–15 seconds</strong>."
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:28
+msgid "ML modeli çalışıyor, lütfen bekleyin…"
+msgstr "The ML model is running, please wait…"
+
+#: ui/templates/platform/raporlar/ml_anomaly.html:33
+msgid "Tespit Edilen Anomaliler"
+msgstr "Detected Anomalies"
+
+#: ui/templates/platform/raporlar/mobile.html:10
+msgid "Cep telefonu için kompakt arayüz — PWA önizleme."
+msgstr "Compact interface for mobile phone — PWA preview."
+
+#: ui/templates/platform/raporlar/mobile.html:36
+msgid "Anasayfa"
+msgstr "Home"
+
+#: ui/templates/platform/raporlar/mobile.html:39
+msgid "Görevler"
+msgstr "Tasks"
+
+#: ui/templates/platform/raporlar/mobile.html:45
+msgid "Profil"
+msgstr "Profile"
+
+#: ui/templates/platform/raporlar/mobile.html:53
+msgid ""
+"<b>MVP:</b> Bu sayfa mobile arayüz önizlemesi. Full native app (React "
+"Native, iOS+Android) yaklaşık 6-8 hafta geliştirme gerektirir."
+msgstr ""
+"<b>MVP:</b> This page is a mobile interface preview. A full native app "
+"(React Native, iOS+Android) requires approximately 6-8 weeks of "
+"development."
+
+#: ui/templates/platform/raporlar/muda_analizi.html:15
+msgid ""
+"Yalın yönetim 7 israf türü — süreçlerinizdeki değer üretmeyen "
+"aktiviteleri tespit edin"
+msgstr ""
+"Lean management 7 waste types — detect the non-value-producing activities"
+" in your processes"
+
+#: ui/templates/platform/raporlar/muda_analizi.html:33
+msgid ""
+"<b>Muda nedir?</b> Japonca \"<i>israf</i>\" anlamına gelir. Toyota Üretim"
+" Sistemi'nde tanımlanan, müşteriye değer üretmeyen 7 aktivite türü. Yalın"
+" yönetimde temel ilke: <b>katma değer = toplam zaman − muda zamanı</b>. "
+"Mudayı azaltırsanız kalite ve hız aynı anda artar."
+msgstr ""
+"<b>What is Muda?</b> It means \"<i>waste</i>\" in Japanese. The 7 types "
+"of activities defined in the Toyota Production System that do not produce"
+" value for the customer. The fundamental principle in lean management: "
+"<b>added value = total time − muda time</b>. If you reduce muda, quality "
+"and speed increase at the same time."
+
+#: ui/templates/platform/raporlar/muda_analizi.html:45
+msgid "7 Muda Türü — Bulgu Sayıları + Açıklamalar"
+msgstr "7 Muda Types — Finding Counts + Descriptions"
+
+#: ui/templates/platform/raporlar/muda_analizi.html:47
+msgid "Her tür için bulgu adedi · tanım · örnek"
+msgstr "Finding count · definition · example for each type"
+
+#: ui/templates/platform/raporlar/muda_analizi.html:54
+msgid "Bulgu Saptanan Süreçler"
+msgstr "Processes with Findings Detected"
+
+#: ui/templates/platform/raporlar/nlp_query.html:2
+msgid "AI Doğal Dil Sorgu — Kokpitim"
+msgstr "AI Natural Language Query — Kokpitim"
+
+#: ui/templates/platform/raporlar/nlp_query.html:9
+msgid ""
+"Türkçe soru yazarak sistemi sorgula — hazır sorular veya serbest metin "
+"ile anlık veri analizi."
+msgstr ""
+"Query the system by writing Turkish questions — instant data analysis "
+"with ready questions or free text."
+
+#: ui/templates/platform/raporlar/nlp_query.html:17
+msgid "Hazır Sorular"
+msgstr "Ready Questions"
+
+#: ui/templates/platform/raporlar/nlp_query.html:20
+msgid "Kendi Sorun"
+msgstr "Your Own Question"
+
+#: ui/templates/platform/raporlar/nlp_query.html:21
+msgid "Örn: 2024 yılında en başarılı süreç hangisiydi?"
+msgstr "E.g.: Which was the most successful process in 2024?"
+
+#: ui/templates/platform/raporlar/nlp_query.html:24
+msgid "AI'ya Sor"
+msgstr "Ask AI"
+
+#: ui/templates/platform/raporlar/nlp_query.html:32
+msgid "Soldan bir hazır soru seçin ya da kendi sorunuzu yazın."
+msgstr "Select a ready question on the left or write your own question."
+
+#: ui/templates/platform/raporlar/okr_cascade.html:2
+msgid "OKR Hizalama Akışı — Kokpitim"
+msgstr "OKR Alignment Flow — Kokpitim"
+
+#: ui/templates/platform/raporlar/okr_cascade.html:3
+#: ui/templates/platform/raporlar/okr_cascade.html:5
+#: ui/templates/platform/raporlar/okr_cascade.html:12
+msgid "OKR Hizalama Akışı"
+msgstr "OKR Alignment Flow"
+
+#: ui/templates/platform/raporlar/okr_cascade.html:15
+msgid ""
+"Hedef (Objective) ve Anahtar Sonuçların (Key Result) strateji bağlantısı "
+"+ ilerleme oranları"
+msgstr "Strategy link of Objectives and Key Results + progress rates"
+
+#: ui/templates/platform/raporlar/okr_cascade.html:21
+msgid ""
+"<b>OKR nedir?</b> <b>Objective</b> (Hedef) — \"Ne başarmak istiyoruz?\" "
+"sorusunun cevabıdır. <b>Key Result</b> (Anahtar Sonuç) — \"Başardığımızı "
+"nasıl ölçeceğiz?\" sorusunun cevabıdır. Bu sayfa OKR'lerin alt "
+"stratejilerle bağını ve her KR'nin yüzdesel ilerlemesini gösterir."
+msgstr ""
+"<b>What is OKR?</b> <b>Objective</b> — is the answer to \"What do we want"
+" to achieve?\". <b>Key Result</b> — is the answer to \"How will we "
+"measure what we achieved?\". This page shows the link of OKRs to sub-"
+"strategies and the percentage progress of each KR."
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:2
+msgid "Onay Zinciri — Kokpitim"
+msgstr "Approval Chain — Kokpitim"
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:3
+msgid "Stratejik Girişim Onay Zinciri (Workflow MVP)"
+msgstr "Strategic Initiative Approval Chain (Workflow MVP)"
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:4
+#: ui/templates/platform/raporlar/onay_zinciri.html:10
+msgid "Onay Zinciri"
+msgstr "Approval Chain"
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:11
+msgid "Stratejik Girişimler için durum bazlı onay görünümü — BPMN workflow MVP"
+msgstr "Status-based approval view for Strategic Initiatives — BPMN workflow MVP"
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:21
+msgid "Stratejik Girişim'ler"
+msgstr "Strategic Initiatives"
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:26
+msgid "Onay Durumu"
+msgstr "Approval Status"
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:28
+msgid "Sahip"
+msgstr "Owner"
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:29
+msgid "Bütçe"
+msgstr "Budget"
+
+#: ui/templates/platform/raporlar/onay_zinciri.html:38
+msgid ""
+"<b>MVP:</b> Bu sayfa onay durumlarını gösterir. Tam BPMN engine (görsel "
+"akış tasarımı, çoklu onaycı, geri çağırma, eskalasyon) için yaklaşık 150h"
+" iş gerekir."
+msgstr ""
+"<b>MVP:</b> This page shows approval statuses. A full BPMN engine (visual"
+" flow design, multiple approvers, recall, escalation) requires "
+"approximately 150h of work."
+
+#: ui/templates/platform/raporlar/op_istatistik.html:2
+msgid "Operasyonel İstatistik — Kokpitim"
+msgstr "Operational Statistics — Kokpitim"
+
+#: ui/templates/platform/raporlar/op_istatistik.html:15
+msgid "Tüm süreçlerin PG sayısı + faaliyet yoğunluğu özet tablosu"
+msgstr "Summary table of PI count + activity density of all processes"
+
+#: ui/templates/platform/raporlar/op_istatistik.html:37
+#: ui/templates/platform/surec/index.html:522
+msgid "Süreç Adı"
+msgstr "Process Name"
+
+#: ui/templates/platform/raporlar/op_istatistik.html:40
+msgid "Faaliyet Sayısı"
+msgstr "Activity Count"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:3
+#: ui/templates/platform/raporlar/pg_proje_etki.html:18
+msgid "PG × Proje Çapraz Etki Analizi"
+msgstr "PI × Project Cross-Impact Analysis"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:21
+msgid ""
+"Hangi projeler hangi PG'leri etkiliyor? Proje → bağlı süreç(ler) → o "
+"süreçlerdeki PG performansı"
+msgstr ""
+"Which projects affect which PIs? Project → linked process(es) → PI "
+"performance in those processes"
+
+#: ui/templates/platform/raporlar/pg_proje_etki.html:31
+#, python-format
+msgid ""
+"<b>Nasıl okunur?</b> Her satır bir projedir. Sağdaki \"PG hedef üstü %%\""
+" sütunu, o projeye bağlı tüm süreçlerdeki PG'lerin ne kadarının hedef "
+"üstünde olduğunu özetler. Satırı genişletip etkilenen süreç ve PG "
+"sayılarını görebilirsiniz. \"0 PG\" olan projeler, herhangi bir süreçle "
+"bağlı değildir."
+msgstr ""
+"<b>How to read?</b> Each row is a project. The \"PI above target %%\" "
+"column on the right summarizes how many of the PIs in all processes "
+"linked to that project are above target. You can expand the row to see "
+"the affected process and PI counts. Projects with \"0 PI\" are not linked"
+" to any process."
+
+#: ui/templates/platform/raporlar/quarterly_review.html:2
+msgid "Çeyreklik Değerlendirme Hazırlayıcısı — Kokpitim"
+msgstr "Quarterly Review Preparer — Kokpitim"
+
+#: ui/templates/platform/raporlar/quarterly_review.html:3
+#: ui/templates/platform/raporlar/quarterly_review.html:5
+#: ui/templates/platform/raporlar/quarterly_review.html:12
+msgid "Çeyreklik Değerlendirme Hazırlayıcısı"
+msgstr "Quarterly Review Preparer"
+
+#: ui/templates/platform/raporlar/quarterly_review.html:15
+msgid ""
+"Üç aylık değerlendirme toplantısı için AI üretimli özet + gündem + ön "
+"çalışma soruları"
+msgstr ""
+"AI-generated summary + agenda + pre-work questions for the quarterly "
+"review meeting"
+
+#: ui/templates/platform/raporlar/quarterly_review.html:21
+msgid ""
+"<b>Ne işe yarar?</b> Çeyrek bitiminde toplanan yönetim için: "
+"<b>yöneticiye 1 sayfa özet</b>, ekibe tartışılacak gündem maddeleri ve "
+"her katılımcının önceden hazırlanacağı sorular. Hepsi son 3 ayın gerçek "
+"verisinden AI ile türetilir."
+msgstr ""
+"<b>What is it for?</b> For management meetings held at the end of the "
+"quarter: <b>a 1-page summary for the executive</b>, agenda items for the "
+"team to discuss, and questions each participant should prepare in "
+"advance. All derived with AI from the real data of the last 3 months."
+
+#: ui/templates/platform/raporlar/quarterly_review.html:30
+msgid "AI Yönetici Özeti"
+msgstr "AI Executive Summary"
+
+#: ui/templates/platform/raporlar/quarterly_review.html:36
+msgid "Önerilen Agenda"
+msgstr "Suggested Agenda"
+
+#: ui/templates/platform/raporlar/quarterly_review.html:40
+msgid "Ön Çalışma Soruları"
+msgstr "Pre-work Questions"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:2
+#: ui/templates/platform/raporlar/risk_heatmap.html:4
+#: ui/templates/platform/raporlar/risk_heatmap.html:10
+msgid "Risk Isı Haritası"
+msgstr "Risk Heatmap"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:11
+msgid ""
+"5×5 Olasılık × Etki matrisi · RPN = Olasılık × Etki · Seçili plan yılı "
+"risklerini gösterir"
+msgstr ""
+"5×5 Probability × Impact matrix · RPN = Probability × Impact · Shows "
+"risks of the selected plan year"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:15
+msgid "Tüm Yıllar"
+msgstr "All Years"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:24
+msgid ""
+"<strong>RPN (Risk Öncelik Puanı)</strong> = Olasılık (1–5) × Etki (1–5) "
+"&nbsp;·&nbsp; Hücre rengi:"
+msgstr ""
+"<strong>RPN (Risk Priority Number)</strong> = Probability (1–5) × Impact "
+"(1–5) &nbsp;·&nbsp; Cell color:"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:25
+msgid "Kritik ≥15"
+msgstr "Critical ≥15"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:26
+msgid "Yüksek 8–14"
+msgstr "High 8–14"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:27
+msgid "Orta 4–7"
+msgstr "Medium 4–7"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:28
+msgid "Düşük &lt;4"
+msgstr "Low &lt;4"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:29
+msgid "&nbsp;·&nbsp; Hücredeki sayı o bölgedeki risk adedini gösterir."
+msgstr "&nbsp;·&nbsp; The number in the cell shows the count of risks in that region."
+"&nbsp;·&nbsp; The number in the cell shows the count of risks in that "
+"region."
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:42
+msgid "5×5 Risk Matrisi"
+msgstr "5×5 Risk Matrix"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:43
+msgid ""
+"Dikey: Olasılık (1=Çok Düşük, 5=Neredeyse Kesin) · Yatay: Etki "
+"(1=Önemsiz, 5=Felaket)"
+msgstr ""
+"Vertical: Probability (1=Very Low, 5=Almost Certain) · Horizontal: Impact"
+" (1=Negligible, 5=Catastrophic)"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:46
+msgid "← Düşük Etki"
+msgstr "← Low Impact"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:46
+msgid "Yüksek Etki →"
+msgstr "High Impact →"
+
+#: ui/templates/platform/raporlar/risk_heatmap.html:52
+msgid "En Yüksek RPN — İlk 10"
+msgstr "Highest RPN — Top 10"
+
+#: ui/templates/platform/raporlar/sabah_ozeti.html:2
+msgid "Operasyonel Sabah Özeti — Kokpitim"
+msgstr "Operational Morning Digest — Kokpitim"
+
+#: ui/templates/platform/raporlar/sabah_ozeti.html:3
+#: ui/templates/platform/raporlar/sabah_ozeti.html:5
+#: ui/templates/platform/raporlar/sabah_ozeti.html:12
+msgid "Operasyonel Sabah Özeti"
+msgstr "Operational Morning Digest"
+
+#: ui/templates/platform/raporlar/sabah_ozeti.html:15
+msgid ""
+"Geciken faaliyetler, bugün son tarihler, son 7 gün ölçüm akışı ve en son "
+"veri girişleri"
+msgstr ""
+"Overdue activities, deadlines today, last 7 days measurement flow and the"
+" most recent data entries"
+
+#: ui/templates/platform/raporlar/sabah_ozeti.html:27
+msgid "Son Veri Girişleri"
+msgstr "Latest Data Entries"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html:10
+msgid ""
+"Kurum veriniz ile sektör ortalamaları karşılaştırması — AI destekli "
+"değerlendirme."
+msgstr ""
+"Comparison of your organization data with sector averages — AI-powered "
+"assessment."
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html:31
+msgid "Sektör Ortalamaları"
+msgstr "Sector Averages"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html:36
+msgid ""
+"<b>Önemli:</b> Gösterilen değerler sektörün <b>genel ortalamasıdır</b> — "
+"kurumunuzun bu metriklerdeki gerçek değerleri değildir. Gerçek "
+"karşılaştırma yapabilmek için OEE, OTIF, NPS gibi metriklerin PG olarak "
+"sisteme eklenmesi ve ölçüm yapılması gerekir."
+msgstr ""
+"<b>Important:</b> The displayed values are the sector's <b>general "
+"average</b> — not your organization's actual values for these metrics. To"
+" make a real comparison, metrics such as OEE, OTIF, NPS need to be added "
+"to the system as PIs and measured."
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html:44
+msgid "AI Sektör Değerlendirmesi"
+msgstr "AI Sector Assessment"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html:48
+msgid "Kota kontrol ediliyor…"
+msgstr "Quota is being checked…"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html:51
+msgid "AI Yorumu Al"
+msgstr "Get AI Comment"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html:58
+msgid "AI Yorumu"
+msgstr "AI Comment"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html:65
+msgid ""
+"AI yorumu gerçek zamanlı olarak Gemini modeli ile üretilir. Her istek "
+"kota sayacına dahildir."
+msgstr ""
+"The AI comment is generated in real time with the Gemini model. Each "
+"request is included in the quota counter."
+
+#: ui/templates/platform/raporlar/sektorel.html:2
+msgid "Sektörel Paketler — Kokpitim"
+msgstr "Sector Packages — Kokpitim"
+
+#: ui/templates/platform/raporlar/sektorel.html:9
+msgid ""
+"Sektöre özel hazır strateji, süreç, PG ve risk şablonları — ilk haftadan "
+"itibaren veri girişe hazır."
+msgstr ""
+"Sector-specific ready strategy, process, PI and risk templates — ready "
+"for data entry from the first week."
+
+#: ui/templates/platform/raporlar/sektorel.html:20
+msgid "Yakında"
+msgstr "Coming soon"
+
+#: ui/templates/platform/raporlar/sektorel.html:20
+msgid "Bu sektör paketi henüz hazır değil — yol haritasında planlandı."
+msgstr "This sector package is not ready yet — planned on the roadmap."
+
+#: ui/templates/platform/raporlar/sektorel.html:34
+msgid ""
+"<b>Not:</b> Sektörel paket, bir tenant için 50-100 sayfa hazır "
+"strateji+süreç+PG seti içerir. Yeni kurulan müşteri ilk haftada veri "
+"girmeye başlayabilir. <b>Tam paket uygulama özelliği yakında.</b> "
+"Şimdilik paket içeriği önizlenebilir."
+msgstr ""
+"<b>Note:</b> The sector package contains a ready set of 50-100 pages of "
+"strategy+process+PI for a tenant. A newly onboarded customer can start "
+"entering data in the first week. <b>Full package apply feature coming "
+"soon.</b> For now the package content can be previewed."
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:11
+msgid "Sektörlere Dön"
+msgstr "Back to Sectors"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:19
+msgid "ESG Metrik"
+msgstr "ESG Metric"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:20
+msgid "Kurulum (h)"
+msgstr "Setup (h)"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:25
+msgid "Uyum Standartları:"
+msgstr "Compliance Standards:"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:31
+#, python-format
+msgid "🎯 Stratejiler (%(n)s)"
+msgstr "🎯 Strategies (%(n)s)"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:44
+#, python-format
+msgid "⚙ Süreçler (%(n)s)"
+msgstr "⚙ Processes (%(n)s)"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:46
+#: ui/templates/platform/surec/karne.html:865
+msgid "Ağırlık"
+msgstr "Weight"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:51
+#, python-format
+msgid "⚠ Riskler (%(n)s)"
+msgstr "⚠ Risks (%(n)s)"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:60
+#, python-format
+msgid "📊 Performans Göstergeleri (%(n)s)"
+msgstr "📊 Performance Indicators (%(n)s)"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
+#: ui/templates/platform/surec/karne.html:867
+msgid "Periyot"
+msgstr "Period"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:62
+msgid "Yön"
+msgstr "Direction"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:69
+msgid "\"Paketi Uygula\" özelliği yakında"
+msgstr "\"Apply Package\" feature coming soon"
+
+#: ui/templates/platform/raporlar/sektorel_detay.html:70
+msgid ""
+"Bu paket içeriği şu an önizleme. Tam paketi tek tıkla mevcut tenant'a "
+"uygulama özelliği bir sonraki sürümde gelecek."
+msgstr ""
+"This package content is currently a preview. The feature to apply the "
+"full package to the current tenant with a single click will come in the "
+"next version."
+
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:2
+msgid "AI Strateji Hikayesi — Kokpitim"
+msgstr "AI Strategy Story — Kokpitim"
+
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:9
+msgid ""
+"Kurumun stratejik plan evrimini AI anlatır — yıllık snapshot, kırılım "
+"noktaları ve narrative özet."
+msgstr ""
+"AI narrates the organization's strategic plan evolution — annual "
+"snapshot, breakpoints and narrative summary."
+
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:13
+msgid "AI yıllık hikayeyi yazıyor…"
+msgstr "AI is writing the annual story…"
+
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:18
+msgid "Hikaye"
+msgstr "Story"
+
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:24
+msgid "Yıllık Snapshot"
+msgstr "Annual Snapshot"
+
+#: ui/templates/platform/raporlar/strateji_hikayesi.html:28
+msgid "Kırılım Noktaları"
+msgstr "Breakpoints"
+
+#: ui/templates/platform/raporlar/stratejik_yillik.html:2
+msgid "Stratejik Yıllık Kitap — Kokpitim"
+msgstr "Strategic Annual Book — Kokpitim"
+
+#: ui/templates/platform/raporlar/stratejik_yillik.html:9
+msgid ""
+"Yıllık tam kitap formatında PDF — vizyon, strateji ağacı, girişimler, "
+"risk ve ESG tek dosyada."
+msgstr ""
+"PDF in full annual book format — vision, strategy tree, initiatives, risk"
+" and ESG in a single file."
+
+#: ui/templates/platform/raporlar/stratejik_yillik.html:17
+msgid "PREMIUM PDF · ~35 SAYFA"
+msgstr "PREMIUM PDF · ~35 PAGES"
+
+#: ui/templates/platform/raporlar/stratejik_yillik.html:19
+msgid "AI özet + tam veri tabloları + strateji ağacı"
+msgstr "AI summary + full data tables + strategy tree"
+
+#: ui/templates/platform/raporlar/stratejik_yillik.html:26
+msgid "Bölüm Yapısı"
+msgstr "Section Structure"
+
+#: ui/templates/platform/raporlar/sunburst.html:2
+msgid "Stratejik Hiyerarşi Sunburst — Kokpitim"
+msgstr "Strategic Hierarchy Sunburst — Kokpitim"
+
+#: ui/templates/platform/raporlar/sunburst.html:9
+msgid ""
+"Vizyondan PG'ye tek görsel hiyerarşi — iç çember vizyon, dış halkalar "
+"strateji → alt strateji → süreç."
+msgstr ""
+"Single visual hierarchy from vision to PI — inner circle vision, outer "
+"rings strategy → sub-strategy → process."
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:16
+msgid ""
+"Performans göstergesi doluluk oranı, eksik alanlar ve son veri girişi "
+"tarihleri"
+msgstr ""
+"Performance indicator completeness rate, missing fields and last data "
+"entry dates"
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:19
+msgid "Plan yılı:"
+msgstr "Plan year:"
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:21
+msgid "Aktif dönem"
+msgstr "Active period"
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:42
+msgid "Kritik PG'ler"
+msgstr "Critical PIs"
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:43
+msgid ""
+"Hiç ölçüm girilmemiş veya 3+ eksik alanı (hedef, birim, başarı aralığı, "
+"ölçüm) olan PG'ler. Acil müdahale gerektirir — veri olmadan bu PG "
+"puanlanamaz."
+msgstr ""
+"PIs with no measurement entered or with 3+ missing fields (target, unit, "
+"success range, measurement). Requires urgent intervention — without data "
+"this PI cannot be scored."
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:50
+msgid "Orta Risk PG'ler"
+msgstr "Medium Risk PIs"
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:51
+msgid ""
+"1-2 eksik alanı olan PG'ler (örn. son ölçüm 180 günden eski, hedef "
+"tanımsız, birim eksik). Puanlanabilir ama veri kalitesi düşük; eksikler "
+"giderilmeli."
+msgstr ""
+"PIs with 1-2 missing fields (e.g. last measurement older than 180 days, "
+"target undefined, unit missing). Can be scored but data quality is low; "
+"gaps should be addressed."
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:59
+msgid "Süreç Bazlı Doluluk"
+msgstr "Process-Based Completeness"
+
+#: ui/templates/platform/raporlar/veri_kalitesi.html:60
+#, python-format
+msgid ""
+"Her sürecin PG'lerinden kaçına ölçüm girildiğinin oranı (dolu/toplam). "
+"%%80+ yeşil (sağlıklı), %%50-80 sarı (orta), %%50 altı kırmızı (zayıf). "
+"Düşük oranlı süreçler veri girişi için öncelikli."
+msgstr ""
+"The rate of how many of each process's PIs have measurements entered "
+"(filled/total). %%80+ green (healthy), %%50-80 yellow (medium), below "
+"%%50 red (weak). Low-rate processes are prioritized for data entry."
+
+#: ui/templates/platform/raporlar/vrio_portfoy.html:2
+msgid "VRIO Portföy — Kokpitim"
+msgstr "VRIO Portfolio — Kokpitim"
+
+#: ui/templates/platform/raporlar/vrio_portfoy.html:9
+msgid ""
+"Kurum kaynaklarının VRIO sınıflandırma matrisi — Sürdürülebilir Rekabet "
+"Avantajı analizi."
+msgstr ""
+"VRIO classification matrix of organization resources — Sustainable "
+"Competitive Advantage analysis."
+
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:2
+msgid "Yatırımcı Sunumu — Kokpitim"
+msgstr "Investor Presentation — Kokpitim"
+
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:3
+msgid "AI Yatırımcı Sunumu (PPTX)"
+msgstr "AI Investor Presentation (PPTX)"
+
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:9
+msgid ""
+"18 slaytlık AI destekli PPTX — finansal özet, ESG metrikleri ve risk "
+"analizi."
+msgstr ""
+"18-slide AI-powered PPTX — financial summary, ESG metrics and risk "
+"analysis."
+
+#: ui/templates/platform/raporlar/yatirimci_sunum.html:17
+msgid "PPTX SUNUM · 16:9"
+msgstr "PPTX PRESENTATION · 16:9"
+
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:2
+msgid "Yönetici Liderlik Skoru — Kokpitim"
+msgstr "Executive Leadership Score — Kokpitim"
+
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:15
+msgid "Süreç liderlerinin liderlik ettiği süreçlerin ortalama performans skoru"
+msgstr "Average performance score of processes led by process leaders"
+
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:26
+msgid "Yönetici"
+msgstr "Executive"
+
+#: ui/templates/platform/raporlar/yonetici_liderlik.html:28
+msgid "Liderlik Süreç"
+msgstr "Leadership Process"
 
 #: ui/templates/platform/surec/faaliyetler.html:2
 #: ui/templates/platform/surec/faaliyetler.html:3
@@ -6145,10 +8345,6 @@ msgstr ""
 "<strong>K-Vector:</strong> Enter a contribution %% for each selected sub-"
 "strategy; the total must not exceed 100."
 
-#: ui/templates/platform/surec/index.html:522
-msgid "Süreç Adı"
-msgstr "Process Name"
-
 #: ui/templates/platform/surec/index.html:523
 msgid "Örn: Satın Alma Süreci"
 msgstr "e.g. Procurement Process"
@@ -6202,8 +8398,9 @@ msgid "İsteğe bağlı açıklama"
 msgstr "Optional description"
 
 #: ui/templates/platform/surec/index.html:578
-msgid "Alt strateji bağlantısı ve K-Vektör katkı %"
-msgstr "Sub-strategy link and K-Vector contribution %"
+#, python-format
+msgid "Alt strateji bağlantısı ve K-Vektör katkı %%"
+msgstr "Sub-strategy link and K-Vector contribution %%"
 
 #: ui/templates/platform/surec/index.html:582
 msgid "(en az bir)"
@@ -6467,8 +8664,9 @@ msgid "Listeden seçin veya kendi biriminizi yazın."
 msgstr "Select from the list or type your own unit."
 
 #: ui/templates/platform/surec/karne.html:549
-msgid "Skor Ağırlığı (%)"
-msgstr "Score Weight (%)"
+#, python-format
+msgid "Skor Ağırlığı (%%)"
+msgstr "Score Weight (%%)"
 
 #: ui/templates/platform/surec/karne.html:557
 msgid "Ölçüm Periyodu"
@@ -6685,7 +8883,10 @@ msgstr "The data date does not change; only the actual value and description are
 " actual value and description are updated.The data date does not change; "
 "only the actual value and description are updated.The data date does not "
 "change; only the actual value and description are updated.The data date "
-"does not change; only the actual value and description are updated."
+"does not change; only the actual value and description are updated.The "
+"data date does not change; only the actual value and description are "
+"updated.The data date does not change; only the actual value and "
+"description are updated."
 
 #: ui/templates/platform/surec/karne.html:783
 msgid "Kaydı pasifleştir"
@@ -6714,14 +8915,6 @@ msgstr "Add PIV"
 #: ui/templates/platform/surec/karne.html:862
 msgid "Sütun gösterimi:"
 msgstr "Column display:"
-
-#: ui/templates/platform/surec/karne.html:865
-msgid "Ağırlık"
-msgstr "Weight"
-
-#: ui/templates/platform/surec/karne.html:867
-msgid "Periyot"
-msgstr "Period"
 
 #: ui/templates/platform/surec/karne.html:868
 msgid "Yıllık hedef"

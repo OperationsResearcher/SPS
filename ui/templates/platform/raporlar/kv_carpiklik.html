@@ -13,13 +13,13 @@
         <i class="fas fa-balance-scale" style="color:#8b5cf6;"></i> K-Vektör Çarpıklık
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Stratejik ağırlık × gerçek performans uyumsuzluğu. <b>Yüksek ağırlık + düşük skor</b> → odaklanılması gereken alan.
+        {{ _("Stratejik ağırlık × gerçek performans uyumsuzluğu. <b>Yüksek ağırlık + düşük skor</b> → odaklanılması gereken alan.") }}
       </p>
     </div>
     {% if plan_years %}
     <label class="mc-year-mini">
       <i class="fas fa-calendar-days"></i>
-      <span>Yıl:</span>
+      <span>{{ _("Yıl:") }}</span>
       <select id="kvc-year-select" class="mc-year-sel">
         {% for y in plan_years %}
         <option value="{{ y }}" {% if y == active_year %}selected{% endif %}>{{ y }}</option>
@@ -40,30 +40,30 @@
     <!-- Karşılaştırma çubuk -->
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;">
       <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 16px;">
-        <i class="fas fa-chart-bar" style="color:#8b5cf6;"></i> Strateji başına Ağırlık vs Skor
+        <i class="fas fa-chart-bar" style="color:#8b5cf6;"></i> {{ _("Strateji başına Ağırlık vs Skor") }}
       </h3>
       <div id="bars"></div>
       <div style="display:flex;gap:18px;margin-top:14px;font-size:12px;color:#64748b;">
-        <span><span style="display:inline-block;width:12px;height:12px;background:#8b5cf6;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>K-Vektör Ağırlık (%)</span>
-        <span><span style="display:inline-block;width:12px;height:12px;background:#10b981;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>Ortalama Süreç Skoru</span>
+        <span><span style="display:inline-block;width:12px;height:12px;background:#8b5cf6;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>{{ _("K-Vektör Ağırlık (%%)") }}</span>
+        <span><span style="display:inline-block;width:12px;height:12px;background:#10b981;border-radius:2px;margin-right:5px;vertical-align:middle;"></span>{{ _("Ortalama Süreç Skoru") }}</span>
       </div>
     </div>
 
     <!-- Çarpıklık tablosu -->
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;">
       <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
-        <i class="fas fa-search" style="color:#dc2626;"></i> Çarpıklık Detay Tablosu
+        <i class="fas fa-search" style="color:#dc2626;"></i> {{ _("Çarpıklık Detay Tablosu") }}
       </h3>
       <div style="overflow-x:auto;">
         <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
           <thead>
             <tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">
-              <th style="padding:10px;text-align:left;font-weight:600;color:#475569;">Strateji</th>
-              <th style="padding:10px;text-align:right;font-weight:600;color:#475569;">Ağırlık (%)</th>
-              <th style="padding:10px;text-align:right;font-weight:600;color:#475569;">Ort. Skor</th>
-              <th style="padding:10px;text-align:right;font-weight:600;color:#475569;">Çarpıklık</th>
-              <th style="padding:10px;text-align:left;font-weight:600;color:#475569;">Değerlendirme</th>
-              <th style="padding:10px;text-align:right;font-weight:600;color:#475569;">Bağlı Süreç</th>
+              <th style="padding:10px;text-align:left;font-weight:600;color:#475569;">{{ _("Strateji") }}</th>
+              <th style="padding:10px;text-align:right;font-weight:600;color:#475569;">{{ _("Ağırlık (%%)") }}</th>
+              <th style="padding:10px;text-align:right;font-weight:600;color:#475569;">{{ _("Ort. Skor") }}</th>
+              <th style="padding:10px;text-align:right;font-weight:600;color:#475569;">{{ _("Çarpıklık") }}</th>
+              <th style="padding:10px;text-align:left;font-weight:600;color:#475569;">{{ _("Değerlendirme") }}</th>
+              <th style="padding:10px;text-align:right;font-weight:600;color:#475569;">{{ _("Bağlı Süreç") }}</th>
             </tr>
           </thead>
           <tbody id="tbl"></tbody>

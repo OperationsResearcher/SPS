@@ -1,12 +1,12 @@
 {% extends "platform/base.html" %}
-{% block title %}AI Doğal Dil Sorgu — Kokpitim{% endblock %}
-{% block page_title %}AI Doğal Dil Sorgu{% endblock %}
-{% block breadcrumb %}{{ mc_breadcrumb('AI Doğal Dil Sorgu') }}{% endblock %}
+{% block title %}{{ _("AI Doğal Dil Sorgu — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("AI Doğal Dil Sorgu") }}{% endblock %}
+{% block breadcrumb %}{{ mc_breadcrumb(_('AI Doğal Dil Sorgu')) }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1200px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-comment" style="color:#7c3aed;"></i> AI Doğal Dil Sorgu</h1>
-    <p class="mc-page-subtitle">Türkçe soru yazarak sistemi sorgula — hazır sorular veya serbest metin ile anlık veri analizi.</p>
+    <h1 class="mc-page-title"><i class="fas fa-comment" style="color:#7c3aed;"></i> {{ _("AI Doğal Dil Sorgu") }}</h1>
+    <p class="mc-page-subtitle">{{ _("Türkçe soru yazarak sistemi sorgula — hazır sorular veya serbest metin ile anlık veri analizi.") }}</p>
   </div>
 </div>
 <div style="max-width:1200px;margin:0 auto;">
@@ -14,14 +14,14 @@
   <div style="display:grid;grid-template-columns:1fr 2fr;gap:18px;">
     <!-- Sol: hazır sorular -->
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;" data-card-code="raporlar_nlp_query.hazir_sorular">
-      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">⚡ Hazır Sorular</h3>
+      <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:#0f172a;margin:0 0 12px;">⚡ {{ _("Hazır Sorular") }}</h3>
       <div id="patterns" style="display:grid;gap:6px;"></div>
 
-      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:20px 0 10px;">🤖 Kendi Sorun</h3>
-      <textarea id="free-q" placeholder="Örn: 2024 yılında en başarılı süreç hangisiydi?"
+      <h3 style="font-size:13px;font-weight:700;color:#0f172a;margin:20px 0 10px;">🤖 {{ _("Kendi Sorun") }}</h3>
+      <textarea id="free-q" placeholder="{{ _('Örn: 2024 yılında en başarılı süreç hangisiydi?') }}"
         style="width:100%;min-height:80px;padding:10px;border:1px solid #cbd5e1;border-radius:6px;font-size:12.5px;font-family:inherit;resize:vertical;"></textarea>
       <button id="ask-btn" class="mc-btn mc-btn-primary" style="margin-top:8px;width:100%;background:#7c3aed;">
-        <i class="fas fa-paper-plane"></i> AI'ya Sor
+        <i class="fas fa-paper-plane"></i> {{ _("AI'ya Sor") }}
       </button>
     </div>
 
@@ -29,7 +29,7 @@
     <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:20px;min-height:400px;" data-card-code="raporlar_nlp_query.cevap">
       <div id="result" style="font-size:13px;color:#64748b;text-align:center;padding:60px 20px;">
         <i class="fas fa-arrow-left" style="font-size:18px;color:#cbd5e1;margin-bottom:10px;display:block;"></i>
-        Soldan bir hazır soru seçin ya da kendi sorunuzu yazın.
+        {{ _("Soldan bir hazır soru seçin ya da kendi sorunuzu yazın.") }}
       </div>
     </div>
   </div>
