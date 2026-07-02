@@ -150,7 +150,6 @@ _SYSTEM_CODE_TO_LAUNCHER_ID = {
     "performans_analitigi_modulu": "analiz",
     "k_radar_modulu": "k_radar",
     "k_rapor_modulu": "k_rapor",
-    # musteri_iliskileri_* (CRM) — launcher'da karşılığı yok (placeholder), eşlenmez
 }
 
 _LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)
