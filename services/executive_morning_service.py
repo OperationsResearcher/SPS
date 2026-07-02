@@ -3,6 +3,7 @@
 from __future__ import annotations
 from datetime import date, timedelta, datetime, timezone
 from sqlalchemy import func
+from flask_babel import gettext as _
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData, ProcessActivity
 from app.models.portfolio_project import Project, Task
@@ -167,16 +168,16 @@ def get_morning_summary(tenant_id: int, user_id: int) -> dict:
     # ── Özet metin ────────────────────────────────────────────────────────────
     parts = []
     if kpis_below_target:
-        parts.append(f"{len(kpis_below_target)} KPI hedefin %80 altında")
+        parts.append(_("%(n)s PG hedefin %%80 altında", n=len(kpis_below_target)))
     if overdue_activities:
-        parts.append(f"{len(overdue_activities)} geciken faaliyet")
+        parts.append(_("%(n)s geciken faaliyet", n=len(overdue_activities)))
     if overdue_projects:
-        parts.append(f"{len(overdue_projects)} geciken proje")
+        parts.append(_("%(n)s geciken proje", n=len(overdue_projects)))
 
     if parts:
-        summary_text = "Dikkat: " + ", ".join(parts) + ". Detaylar aşağıda."
+        summary_text = _("Dikkat: ") + ", ".join(parts) + _(". Detaylar aşağıda.")
     else:
-        summary_text = "Her şey yolunda görünüyor. Bugün iyi çalışmalar!"
+        summary_text = _("Her şey yolunda görünüyor. Bugün iyi çalışmalar!")
 
     return {
         "date": today.isoformat(),

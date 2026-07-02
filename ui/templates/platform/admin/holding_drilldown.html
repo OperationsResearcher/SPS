@@ -35,11 +35,11 @@
 
   <div id="content" style="display:none;">
     {# ─── Hero: alt kurum özet ──────────────────────────────────── #}
-    <div class="mc-card" style="padding: var(--space-6); margin-bottom: var(--space-6);
+    <div class="mc-card" data-card-code="admin_holding_drilldown.saglik_skoru" style="padding: var(--space-6); margin-bottom: var(--space-6);
          background: linear-gradient(135deg, #0f172a 0%, #312e81 100%); color:#fff; border:none; border-radius:12px;">
       <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: var(--space-6);">
         <div>
-          <div style="font-size: var(--text-xs); opacity:0.7; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">
+          <div class="mc-card-title" style="font-size: var(--text-xs); opacity:0.7; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">
             {{ _("Strateji Sağlık Skoru") }}
           </div>
           <div id="d-health" class="mc-num" style="font-size: var(--text-display); font-weight:800; line-height:1; margin: var(--space-2) 0;">—</div>
@@ -64,41 +64,41 @@
 
     {# ─── 6 KPI tile (salt-okur) ─────────────────────────────────── #}
     <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px,1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
-      <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-info);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("KPI Hedef Üstü") }}</div>
+      <div class="mc-card" data-card-code="admin_holding_drilldown.kpi_hedef_ustu" style="padding: var(--space-4); border-left:4px solid var(--color-info);">
+        <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("KPI Hedef Üstü") }}</div>
         <div id="t-kpi-pct" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong);">—</div>
         <div id="t-kpi-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
-      <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-accent);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Girişim Ortalaması") }}</div>
+      <div class="mc-card" data-card-code="admin_holding_drilldown.girisim_ortalamasi" style="padding: var(--space-4); border-left:4px solid var(--color-accent);">
+        <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Girişim Ortalaması") }}</div>
         <div id="t-init-avg" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong);">—</div>
         <div id="t-init-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
-      <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Gecikmiş Faaliyet") }}</div>
+      <div class="mc-card" data-card-code="admin_holding_drilldown.gecikmis_faaliyet" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
+        <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Gecikmiş Faaliyet") }}</div>
         <div id="t-overdue" style="font-size: var(--text-3xl); font-weight:700; color: var(--color-danger);">—</div>
         <div id="t-overdue-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
-      <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-danger);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Kritik Risk") }}</div>
+      <div class="mc-card" data-card-code="admin_holding_drilldown.kritik_risk" style="padding: var(--space-4); border-left:4px solid var(--color-danger);">
+        <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Kritik Risk") }}</div>
         <div id="t-risk" style="font-size: var(--text-3xl); font-weight:700; color: var(--color-danger);">—</div>
         <div id="t-risk-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
-      <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Yüksek Anomali") }}</div>
+      <div class="mc-card" data-card-code="admin_holding_drilldown.yuksek_anomali" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
+        <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Yüksek Anomali") }}</div>
         <div id="t-anomaly" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong);">—</div>
         <div id="t-anomaly-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
-      <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-success);">
-        <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Kullanıcı / Senaryo") }}</div>
+      <div class="mc-card" data-card-code="admin_holding_drilldown.kullanici_senaryo" style="padding: var(--space-4); border-left:4px solid var(--color-success);">
+        <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;">{{ _("Kullanıcı / Senaryo") }}</div>
         <div id="t-users" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong);">—</div>
         <div id="t-users-detail" style="font-size: var(--text-sm); color: var(--text-subtle);">—</div>
       </div>
     </div>
 
     {# ─── Stratejik girişim listesi ─────────────────────────────────────── #}
-    <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-6);">
-      <h3 style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
+    <div class="mc-card" data-card-code="admin_holding_drilldown.girisimler" style="padding: var(--space-5); margin-bottom: var(--space-6);">
+      <h3 class="mc-card-title" style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
         <i class="fas fa-rocket" style="color:#db2777;"></i> {{ _("Girişimler") }}
         <span id="init-count" style="font-size: var(--text-sm); color: var(--text-subtle); font-weight:400;"></span>
       </h3>
@@ -106,8 +106,8 @@
     </div>
 
     {# ─── Risk listesi ───────────────────────────────────────────── #}
-    <div class="mc-card" style="padding: var(--space-5);">
-      <h3 style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
+    <div class="mc-card" data-card-code="admin_holding_drilldown.risk_listesi" style="padding: var(--space-5);">
+      <h3 class="mc-card-title" style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
         <i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i> {{ _("Risk Listesi") }}
         <span id="risk-count" style="font-size: var(--text-sm); color: var(--text-subtle); font-weight:400;"></span>
       </h3>

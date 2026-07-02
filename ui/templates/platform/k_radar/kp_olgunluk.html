@@ -9,9 +9,9 @@
      data-delete-base="{{ url_for('app_bp.k_radar_api_kp_olgunluk_delete', row_id=0)[:-1] }}"
      data-can-manage="{{ '1' if can_manage_k_radar else '0' }}"
      style="max-width:1000px; margin:0 auto;">
-  <div class="mc-card">
+  <div class="mc-card" data-card-code="k_radar_kp_olgunluk.olgunluk_takip">
     <div class="mc-card-body">
-      <h3 style="margin-top:0;">{{ _("Surec Olgunluk Analizi") }}</h3>
+      <h3 class="mc-card-title" style="margin-top:0;">{{ _("Surec Olgunluk Analizi") }}</h3>
       {% if can_manage_k_radar %}
       <form id="kp-olgunluk-form" method="post" action="{{ url_for('app_bp.k_radar_kp_olgunluk_ekle') }}" style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:12px;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">

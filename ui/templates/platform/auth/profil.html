@@ -7,8 +7,11 @@
      data-update-url="{{ url_for('app_bp.profil') }}"
      data-upload-url="{{ url_for('app_bp.profil_foto_yukle') }}">
 
-  <div class="mc-card profil-header-card">
+  <div class="mc-card profil-header-card" data-card-code="auth_profil.profil_ozeti">
     <div class="mc-card-body profil-header-body">
+      <div class="mc-card-title" style="width:100%;font-size:11px;text-transform:uppercase;letter-spacing:.5px;color:#94a3b8;margin-bottom:8px;">
+        {{ _("Profil Özeti") }}
+      </div>
       <div class="profil-avatar-wrap">
         <div id="profilePhotoContainer">
           {% if current_user.profile_picture %}
@@ -50,7 +53,7 @@
     </div>
   </div>
 
-  <div class="mc-card">
+  <div class="mc-card" data-card-code="auth_profil.kisisel_bilgiler">
     <div class="mc-card-header">
       <span class="mc-card-title">
         <i class="fas fa-user-edit" style="color:#6366f1;margin-right:8px;"></i>{{ _("Kişisel Bilgiler") }}
@@ -119,12 +122,13 @@
 
   {# ─── İki Faktörlü Kimlik Doğrulama (2FA) ──────────────────────────── #}
   <div class="mc-card" id="twofa-card" style="margin-top:16px;"
+       data-card-code="auth_profil.iki_faktorlu_dogrulama"
        data-status-url="{{ url_for('totp_bp.totp_status') }}"
        data-init-url="{{ url_for('totp_bp.totp_init') }}"
        data-verify-url="{{ url_for('totp_bp.totp_verify_setup') }}"
        data-disable-url="{{ url_for('totp_bp.totp_disable') }}">
     <div class="mc-card-header">
-      <h3 style="margin:0;font-size:16px;color:var(--text-default);">
+      <h3 class="mc-card-title" style="margin:0;font-size:16px;color:var(--text-default);">
         <i class="fas fa-shield-alt" style="color:#4f46e5;margin-right:8px;"></i>
         {{ _("İki Faktörlü Kimlik Doğrulama (2FA)") }}
       </h3>

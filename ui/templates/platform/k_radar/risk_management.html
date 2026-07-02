@@ -14,9 +14,9 @@
 
     <div class="row g-3 mb-4">
         <div class="col-md-4">
-            <div class="card border-0 shadow-sm">
+            <div class="card border-0 shadow-sm" data-card-code="k_radar_risk_management.risk_matrisi">
                 <div class="card-body">
-                    <h6 class="text-muted">{{ _("Risk Matrisi (5×5)") }}</h6>
+                    <h6 class="text-muted mc-card-title">{{ _("Risk Matrisi (5×5)") }}</h6>
                     <table class="table table-bordered table-sm risk-matrix mt-2">
                         <thead><tr><th></th>
                             {% for i in range(1,6) %}<th class="text-center">{{ i }}</th>{% endfor %}
@@ -28,8 +28,9 @@
             </div>
         </div>
         <div class="col-md-8">
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100" data-card-code="k_radar_risk_management.risk_listesi">
                 <div class="card-header bg-white d-flex gap-2">
+                    <div class="mc-card-title visually-hidden">{{ _("Risk Listesi") }}</div>
                     <select id="filter-severity" class="form-select form-select-sm" onchange="loadRisks()">
                         <option value="">{{ _("Tüm severity") }}</option>
                         <option value="critical">{{ _("Kritik") }}</option>

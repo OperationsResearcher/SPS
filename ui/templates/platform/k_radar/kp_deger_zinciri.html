@@ -3,22 +3,22 @@
 {% block page_title %}KP-Radar Değer Zinciri{% endblock %}
 {% block content %}
 <div id="k-radar-kp-deger-zinciri-root" data-url="{{ url_for('app_bp.k_radar_api_kp_deger_zinciri') }}" style="max-width:1000px; margin:0 auto;">
-  <div class="mc-card"><div class="mc-card-body">
-    <h3 style="margin-top:0;">{{ _("Değer Zinciri Özeti") }}</h3>
+  <div class="mc-card" data-card-code="k_radar_kp_deger_zinciri.ozet"><div class="mc-card-body">
+    <h3 class="mc-card-title" style="margin-top:0;">{{ _("Değer Zinciri Özeti") }}</h3>
     <div><strong>{{ _("Eşlenen Süreç:") }}</strong> <span id="kp-dz-mapped">-</span></div>
     <div><strong>{{ _("Muda Riski:") }}</strong> <span id="kp-dz-muda">-</span></div>
     <div><strong>{{ _("30g Trend:") }}</strong> <span id="kp-dz-trend">-</span></div>
   </div></div>
 
   {# Değer zinciri öğe yönetimi (Porter: birincil + destek faaliyetler) #}
-  <div id="vc-items-root" style="margin-top:20px;"
+  <div id="vc-items-root" style="margin-top:20px;" data-card-code="k_radar_kp_deger_zinciri.faaliyetler"
        data-list-url="{{ url_for('app_bp.k_radar_api_vc_items_list') }}"
        data-add-url="{{ url_for('app_bp.k_radar_api_vc_item_add') }}"
        data-update-base="/k-radar/api/kp/value-chain/items/"
        data-can-edit="{{ 'true' if can_manage_k_radar else 'false' }}">
 
     <div style="display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:10px;margin-bottom:12px;">
-      <h3 style="margin:0;font-size:16px;font-weight:700;color:var(--text-default);">
+      <h3 class="mc-card-title" style="margin:0;font-size:16px;font-weight:700;color:var(--text-default);">
         <i class="fas fa-diagram-project" style="color:#0891b2;"></i> {{ _("Değer Zinciri Faaliyetleri") }}
       </h3>
       {% if can_manage_k_radar %}

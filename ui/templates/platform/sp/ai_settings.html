@@ -21,8 +21,8 @@
   </div>
 
   {# ── Mod seçimi ────────────────────────────────────────────────────── #}
-  <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-4);">
-    <h3 style="margin:0 0 var(--space-4); font-size: var(--text-lg);">{{ _("AI Kaynak Modu") }}</h3>
+  <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-4);" data-card-code="sp_ai_settings.kaynak_modu">
+    <h3 class="mc-card-title" style="margin:0 0 var(--space-4); font-size: var(--text-lg);">{{ _("AI Kaynak Modu") }}</h3>
 
     <label style="display:block; padding: var(--space-3); border:2px solid var(--border-default); border-radius:8px; margin-bottom:var(--space-2); cursor:pointer;" data-mode-label="system">
       <input type="radio" name="ai-mode" value="system" id="mode-system">
@@ -42,8 +42,8 @@
   </div>
 
   {# ── BYOK alanları (sadece byok seçilince görünür) ─────────────────── #}
-  <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-4); display:none;" id="byok-fields">
-    <h3 style="margin:0 0 var(--space-4); font-size: var(--text-lg);">{{ _("API Anahtarı Bilgileri") }}</h3>
+  <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-4); display:none;" id="byok-fields" data-card-code="sp_ai_settings.api_anahtari_bilgileri">
+    <h3 class="mc-card-title" style="margin:0 0 var(--space-4); font-size: var(--text-lg);">{{ _("API Anahtarı Bilgileri") }}</h3>
 
     <div style="display:grid; gap: var(--space-4);">
       <div>

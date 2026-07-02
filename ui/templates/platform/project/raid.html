@@ -41,10 +41,10 @@
         <button type="button" data-raid-pane="raid-pane-dependencies" role="tab">{{ _("Bağımlılıklar") }}</button>
     </div>
 
-    <div id="raid-pane-risks" class="micro-raid-pane is-active mc-card" style="padding:14px;" role="tabpanel"><div id="risks-list"></div></div>
-    <div id="raid-pane-assumptions" class="micro-raid-pane mc-card" style="padding:14px;" role="tabpanel"><div id="assumptions-list"></div></div>
-    <div id="raid-pane-issues" class="micro-raid-pane mc-card" style="padding:14px;" role="tabpanel"><div id="issues-list"></div></div>
-    <div id="raid-pane-dependencies" class="micro-raid-pane mc-card" style="padding:14px;" role="tabpanel"><div id="dependencies-list"></div></div>
+    <div id="raid-pane-risks" class="micro-raid-pane is-active mc-card" style="padding:14px;" role="tabpanel" data-card-code="project_raid.riskler"><div class="mc-card-title">{{ _("Riskler") }}</div><div id="risks-list"></div></div>
+    <div id="raid-pane-assumptions" class="micro-raid-pane mc-card" style="padding:14px;" role="tabpanel" data-card-code="project_raid.varsayimlar"><div class="mc-card-title">{{ _("Varsayımlar") }}</div><div id="assumptions-list"></div></div>
+    <div id="raid-pane-issues" class="micro-raid-pane mc-card" style="padding:14px;" role="tabpanel" data-card-code="project_raid.sorunlar"><div class="mc-card-title">{{ _("Sorunlar") }}</div><div id="issues-list"></div></div>
+    <div id="raid-pane-dependencies" class="micro-raid-pane mc-card" style="padding:14px;" role="tabpanel" data-card-code="project_raid.bagimliliklar"><div class="mc-card-title">{{ _("Bağımlılıklar") }}</div><div id="dependencies-list"></div></div>
 </div>
 
 <div id="raidModal" class="micro-raid-modal" aria-hidden="true">

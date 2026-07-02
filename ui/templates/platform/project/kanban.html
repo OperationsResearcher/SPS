@@ -22,8 +22,8 @@
     </div>
 
     <div style="display:grid; grid-template-columns: repeat(3, 1fr); gap:12px;" class="micro-kanban-board">
-        <div class="micro-kanban-col">
-            <div class="micro-kanban-col-header">{{ _("Yapılacak") }}</div>
+        <div class="micro-kanban-col" data-card-code="project_kanban.yapilacak">
+            <div class="micro-kanban-col-header mc-card-title">{{ _("Yapılacak") }}</div>
             <div class="micro-kanban-col-body" id="col-todo">
                 {% for t in tasks_todo %}
                 <div class="micro-kanban-item" data-id="{{ t.id }}">
@@ -35,8 +35,8 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="micro-kanban-col">
-            <div class="micro-kanban-col-header">{{ _("Devam / Beklemede") }}</div>
+        <div class="micro-kanban-col" data-card-code="project_kanban.devam_beklemede">
+            <div class="micro-kanban-col-header mc-card-title">{{ _("Devam / Beklemede") }}</div>
             <div class="micro-kanban-col-body" id="col-inprogress">
                 {% for t in tasks_inprogress %}
                 <div class="micro-kanban-item" data-id="{{ t.id }}">
@@ -48,8 +48,8 @@
                 {% endfor %}
             </div>
         </div>
-        <div class="micro-kanban-col">
-            <div class="micro-kanban-col-header">{{ _("Tamamlandı") }}</div>
+        <div class="micro-kanban-col" data-card-code="project_kanban.tamamlandi">
+            <div class="micro-kanban-col-header mc-card-title">{{ _("Tamamlandı") }}</div>
             <div class="micro-kanban-col-body" id="col-done">
                 {% for t in tasks_done %}
                 <div class="micro-kanban-item" data-id="{{ t.id }}">

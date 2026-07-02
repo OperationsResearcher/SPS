@@ -13,10 +13,11 @@
 {% block content %}
 <div style="max-width:1400px; margin:0 auto;"
      id="xm-root"
+     data-card-code="sp_xmatrix.sayfa"
      data-url="{{ url_for('app_bp.sp_api_xmatrix') }}">
 
   <div class="mc-page-header" style="margin-bottom:16px;">
-    <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
+    <h2 class="mc-card-title" style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
       <i class="fas fa-th"></i> {{ _("Hoshin Kanri X-Matrisi") }}
     </h2>
     <p style="font-size:13px; color:#64748b; margin:0;">

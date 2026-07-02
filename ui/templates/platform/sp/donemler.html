@@ -38,7 +38,7 @@
     <a href="{{ url_for('app_bp.kurum_ayarlar') }}" style="font-weight:600;">{{ _("Kurum Ayarları") }}</a>{{ _("'ndan açabilirsiniz.") }}
   </div>
   {% elif not plan_years %}
-  <div class="mc-card" style="padding:40px; text-align:center;">
+  <div class="mc-card" style="padding:40px; text-align:center;" data-card-code="sp_donemler.bos_durum">
     <div style="font-size:40px; margin-bottom:12px;">📅</div>
     <p style="font-size:15px; font-weight:600; color:var(--text-default); margin:0 0 6px;">{{ _("Henüz plan dönemi tanımlanmamış") }}</p>
     <p style="font-size:13px; color:#64748b; margin:0 0 20px;">{{ _("Yeni Dönem butonu ile ilk stratejik plan dönemini oluşturun.") }}</p>
@@ -52,10 +52,10 @@
 
   {# Aktif dönem vurgusu #}
   {% if active_plan_year %}
-  <div class="mc-card mc-card--accent-info" style="margin-bottom:20px; background:linear-gradient(135deg,#f8f9ff,#fff)">
+  <div class="mc-card mc-card--accent-info" style="margin-bottom:20px; background:linear-gradient(135deg,#f8f9ff,#fff)" data-card-code="sp_donemler.aktif_donem">
     <div class="mc-card-body" style="padding:16px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
       <div>
-        <span style="font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#6366f1; font-weight:600;">{{ _("Aktif Dönem") }}</span>
+        <span class="mc-stat-label" style="font-size:11px; text-transform:uppercase; letter-spacing:.05em; color:#6366f1; font-weight:600;">{{ _("Aktif Dönem") }}</span>
         <div style="font-size:28px; font-weight:800; color:var(--text-default); line-height:1.1; margin-top:2px;">
           {{ active_plan_year.year }}{% if active_plan_year.name %} <span style="font-size:16px; font-weight:500; color:#64748b;">— {{ active_plan_year.name }}</span>{% endif %}
         </div>
@@ -78,7 +78,7 @@
   {% endif %}
 
   {# Tüm dönemler tablosu #}
-  <div class="mc-card" data-tour="py-list">
+  <div class="mc-card" data-tour="py-list" data-card-code="sp_donemler.tum_donemler">
     <div class="mc-card-header">
       <span class="mc-card-title"><i class="fas fa-list" style="color:#6366f1; margin-right:6px;"></i>{{ _("Tüm Dönemler") }}</span>
     </div>
@@ -130,7 +130,8 @@
   {# ── Dönem Karşılaştırma Paneli ──────────────────────────────────────────── #}
   {% if plan_years and plan_years|length >= 2 %}
   <div class="mc-card" style="margin-top:20px;" id="dpy-compare-panel"
-       data-compare-url="{{ url_for('app_bp.sp_api_donem_karsilastir') }}">
+       data-compare-url="{{ url_for('app_bp.sp_api_donem_karsilastir') }}"
+       data-card-code="sp_donemler.donem_karsilastir">
     <div class="mc-card-header">
       <span class="mc-card-title"><i class="fas fa-code-compare" style="color:#6366f1; margin-right:6px;"></i>{{ _("Dönem Karşılaştır") }}</span>
     </div>

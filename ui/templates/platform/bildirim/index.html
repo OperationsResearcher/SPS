@@ -27,7 +27,8 @@
     {% endif %}
   </div>
 
-  <div class="mc-card" id="bildirim-list-card">
+  <div class="mc-card" id="bildirim-list-card" data-card-code="bildirim.liste">
+    <div class="mc-card-title" style="position:absolute; width:1px; height:1px; overflow:hidden; clip:rect(0,0,0,0);">{{ _("Bildirim Listesi") }}</div>
     {% if bildirimler %}
     <div id="bildirim-list">
       {% for b in bildirimler %}

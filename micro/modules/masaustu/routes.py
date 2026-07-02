@@ -11,6 +11,7 @@ from datetime import date, timedelta, datetime, time
 
 from flask import render_template, jsonify, request
 from flask_login import login_required, current_user
+from flask_babel import gettext as _
 from sqlalchemy import case, or_, and_, inspect as sa_inspect
 from flask import session as flask_session
 
@@ -262,18 +263,18 @@ def masaustu():
 
     ay_isimleri = [
         "",
-        "Ocak",
-        "Şubat",
-        "Mart",
-        "Nisan",
-        "Mayıs",
-        "Haziran",
-        "Temmuz",
-        "Ağustos",
-        "Eylül",
-        "Ekim",
-        "Kasım",
-        "Aralık",
+        _("Ocak"),
+        _("Şubat"),
+        _("Mart"),
+        _("Nisan"),
+        _("Mayıs"),
+        _("Haziran"),
+        _("Temmuz"),
+        _("Ağustos"),
+        _("Eylül"),
+        _("Ekim"),
+        _("Kasım"),
+        _("Aralık"),
     ]
     bu_ay_ad = ay_isimleri[cm] if 1 <= cm <= 12 else str(cm)
 

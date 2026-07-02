@@ -150,8 +150,8 @@
   ] %}
 
   {% for g in groups %}
-  <div class="kr-hub-group" data-group="{{ g.key }}" style="margin-bottom:28px;">
-    <h3 style="font-size:14px; color:var(--text-default); font-weight:700; margin:0 0 4px;">
+  <div class="kr-hub-group" data-group="{{ g.key }}" data-card-code="k_radar_hub.grup_{{ g.key }}" style="margin-bottom:28px;">
+    <h3 class="mc-card-title" style="font-size:14px; color:var(--text-default); font-weight:700; margin:0 0 4px;">
       <span style="color:{{ g.color }};">{{ g.title }}</span>
       <span style="font-weight:400; color:#64748b; font-size:12px; margin-left:8px;">{{ g.cards|length }} {{ _("öğe") }}</span>
     </h3>

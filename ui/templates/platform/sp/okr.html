@@ -206,11 +206,11 @@ function renderOkrs() {
     const avgAll = allObjectives.filter(o => o.avg_progress !== null);
     const grandAvg = avgAll.length ? (avgAll.reduce((s, o) => s + o.avg_progress, 0) / avgAll.length).toFixed(1) : "—";
     summary.innerHTML = `
-        <div class="card border-0 shadow-sm">
+        <div class="card border-0 shadow-sm" data-card-code="sp_okr.ozet">
             <div class="card-body d-flex justify-content-around text-center">
-                <div><div class="fs-3 fw-bold text-primary">${allObjectives.length}</div><small class="text-muted">${t("Hedef")}</small></div>
-                <div><div class="fs-3 fw-bold text-info">${allObjectives.reduce((s, o) => s + (o.key_results || []).length, 0)}</div><small class="text-muted">${t("Anahtar Sonuç")}</small></div>
-                <div><div class="fs-3 fw-bold text-success">${grandAvg}%</div><small class="text-muted">${t("Ortalama İlerleme")}</small></div>
+                <div><div class="fs-3 fw-bold text-primary">${allObjectives.length}</div><small class="text-muted mc-stat-label">${t("Hedef")}</small></div>
+                <div><div class="fs-3 fw-bold text-info">${allObjectives.reduce((s, o) => s + (o.key_results || []).length, 0)}</div><small class="text-muted mc-stat-label">${t("Anahtar Sonuç")}</small></div>
+                <div><div class="fs-3 fw-bold text-success">${grandAvg}%</div><small class="text-muted mc-stat-label">${t("Ortalama İlerleme")}</small></div>
             </div>
         </div>`;
 
@@ -246,11 +246,11 @@ function renderOkrs() {
         const card = document.createElement("div");
         card.className = "col-md-6";
         card.innerHTML = `
-            <div class="card border-0 shadow-sm h-100">
+            <div class="card border-0 shadow-sm h-100" data-card-code="sp_okr.hedef_karti">
                 <div class="card-header bg-white border-bottom d-flex justify-content-between align-items-center">
                     <div>
                         ${obj.quarter ? `<span class="badge bg-secondary me-2">Q${obj.quarter}</span>` : `<span class="badge bg-light text-dark me-2">${t("Yıllık")}</span>`}
-                        <strong>${escapeHtml(obj.title)}</strong>
+                        <strong class="mc-card-title">${escapeHtml(obj.title)}</strong>
                     </div>
                     <div>
                         <button class="btn btn-sm btn-link" onclick="editObjective(${obj.id})"><i class="bi bi-pencil"></i></button>

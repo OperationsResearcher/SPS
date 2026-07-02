@@ -26,7 +26,10 @@
     </p>
   </div>
 
-  <div class="mc-card" style="padding:16px; margin-bottom:20px;">
+  <div class="mc-card" data-card-code="sp_ceyreklik_review.donem_secici" style="padding:16px; margin-bottom:20px;">
+    <div class="mc-card-title" style="font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
+      <i class="fas fa-filter" style="margin-right:6px;"></i>{{ _("Dönem Seçici") }}
+    </div>
     <form id="qr-form" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
       <div>
         <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Yıl") }}</label>
@@ -56,33 +59,33 @@
     <h3 id="qr-period" style="font-size:18px; color:var(--text-default); margin:0 0 16px;"></h3>
 
     <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:24px;">
-      <a href="/reports/data-quality" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit; transition:transform .15s, box-shadow .15s;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("PG Durumu") }}</div>
+      <a href="/reports/data-quality" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.pg_durumu" style="padding:16px; text-decoration:none; color:inherit; transition:transform .15s, box-shadow .15s;">
+        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("PG Durumu") }}</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-kpi-ontarget">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-kpi-detail">{{ _("— / — PG'de veri") }}</div>
       </a>
-      <a href="/sp/periods" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Strateji") }}</div>
+      <a href="/sp/periods" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.strateji" style="padding:16px; text-decoration:none; color:inherit;">
+        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Strateji") }}</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-strategy">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-strategy-detail">{{ _("— alt strateji") }}</div>
       </a>
-      <a href="/sp/okr" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("OKR İlerleme") }}</div>
+      <a href="/sp/okr" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.okr_ilerleme" style="padding:16px; text-decoration:none; color:inherit;">
+        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("OKR İlerleme") }}</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-okr">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-okr-detail">{{ _("— objektif") }}</div>
       </a>
-      <a href="/surec" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Faaliyet") }}</div>
+      <a href="/surec" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.faaliyet" style="padding:16px; text-decoration:none; color:inherit;">
+        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Faaliyet") }}</div>
         <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-activity">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-activity-detail">{{ _("— gecikmiş") }}</div>
       </a>
-      <a href="/reports/risk-heatmap" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Risk") }}</div>
+      <a href="/reports/risk-heatmap" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.risk" style="padding:16px; text-decoration:none; color:inherit;">
+        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Risk") }}</div>
         <div style="font-size:24px; font-weight:700; color:#dc2626;" id="qr-risk">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-risk-detail">{{ _("— kritik") }}</div>
       </a>
-      <a href="/reports/ml-anomaly" class="mc-card qr-card" style="padding:16px; text-decoration:none; color:inherit;">
-        <div style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Anomali") }}</div>
+      <a href="/reports/ml-anomaly" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.anomali" style="padding:16px; text-decoration:none; color:inherit;">
+        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Anomali") }}</div>
         <div style="font-size:24px; font-weight:700; color:#f59e0b;" id="qr-anomaly">—</div>
         <div style="font-size:12px; color:#64748b;" id="qr-anomaly-detail">{{ _("— orta") }}</div>
       </a>
@@ -92,8 +95,8 @@
       .qr-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
     </style>
 
-    <div class="mc-card" style="padding:20px;">
-      <h4 style="margin:0 0 12px; font-size:15px; color:var(--text-default);">
+    <div class="mc-card" data-card-code="sp_ceyreklik_review.aksiyon_onerileri" style="padding:20px;">
+      <h4 class="mc-card-title" style="margin:0 0 12px; font-size:15px; color:var(--text-default);">
         <i class="fas fa-lightbulb" style="color:#f59e0b;"></i> {{ _("Aksiyon Önerileri") }}
       </h4>
       <ul id="qr-recommendations" style="margin:0; padding-left:20px; line-height:1.8;"></ul>
@@ -115,17 +118,17 @@
   function render(d){
     document.getElementById('qr-period').textContent = d.period_label;
     document.getElementById('qr-kpi-ontarget').textContent = '%' + (d.kpi.on_target_pct||0);
-    document.getElementById('qr-kpi-detail').textContent = d.kpi.with_data + ' / ' + d.kpi.total + " PG'de veri";
+    document.getElementById('qr-kpi-detail').textContent = t("%(with)s / %(total)s PG'de veri", {with: d.kpi.with_data, total: d.kpi.total});
     document.getElementById('qr-strategy').textContent = d.strategy.count;
-    document.getElementById('qr-strategy-detail').textContent = d.strategy.sub_count + ' alt strateji • +' + d.strategy.new_this_quarter + ' yeni';
+    document.getElementById('qr-strategy-detail').textContent = t('%(sub)s alt strateji • +%(new)s yeni', {sub: d.strategy.sub_count, new: d.strategy.new_this_quarter});
     document.getElementById('qr-okr').textContent = d.okr.avg_progress_pct != null ? '%' + d.okr.avg_progress_pct : '—';
-    document.getElementById('qr-okr-detail').textContent = d.okr.objective_count + ' objektif';
+    document.getElementById('qr-okr-detail').textContent = t('%(n)s objektif', {n: d.okr.objective_count});
     document.getElementById('qr-activity').textContent = d.process.active_activities;
-    document.getElementById('qr-activity-detail').textContent = d.process.overdue_activities + ' gecikmiş • ' + d.process.closed_this_quarter + ' kapandı';
+    document.getElementById('qr-activity-detail').textContent = t('%(overdue)s gecikmiş • %(closed)s kapandı', {overdue: d.process.overdue_activities, closed: d.process.closed_this_quarter});
     document.getElementById('qr-risk').textContent = d.risk.open;
-    document.getElementById('qr-risk-detail').textContent = d.risk.critical + ' kritik';
+    document.getElementById('qr-risk-detail').textContent = t('%(n)s kritik', {n: d.risk.critical});
     document.getElementById('qr-anomaly').textContent = d.anomaly.high;
-    document.getElementById('qr-anomaly-detail').textContent = d.anomaly.medium + ' orta';
+    document.getElementById('qr-anomaly-detail').textContent = t('%(n)s orta', {n: d.anomaly.medium});
     const ul = document.getElementById('qr-recommendations');
     ul.innerHTML = '';
     (d.recommendations||[]).forEach(r => {
@@ -145,11 +148,11 @@
     try {
       const res = await fetch(apiUrl + '?year=' + year + '&quarter=' + quarter);
       const j = await res.json();
-      if (!res.ok || !j.success) throw new Error(j.error || 'Hata');
+      if (!res.ok || !j.success) throw new Error(j.error || t('Hata'));
       render(j.review);
       result.style.display = 'block';
     } catch (err) {
-      errorBox.textContent = 'Hata: ' + err.message;
+      errorBox.textContent = t('Hata:') + ' ' + err.message;
       errorBox.style.display = 'block';
     } finally {
       loading.style.display = 'none';

@@ -18,7 +18,7 @@
     </div>
 
     <!-- Adım 1: Yıl Seç -->
-    <div id="step-1" class="mc-card" style="margin-bottom:16px;">
+    <div id="step-1" class="mc-card" style="margin-bottom:16px;" data-card-code="sp_sihirbaz_yeni_yil.yil_secimi">
         <div class="mc-card-header"><span class="mc-card-title">{{ _("Kaynak ve Hedef Yıl") }}</span></div>
         <div class="mc-card-body">
             <div style="margin-bottom:14px;">
@@ -46,7 +46,7 @@
     </div>
 
     <!-- Adım 2: Önizleme -->
-    <div id="step-2" class="mc-card" style="margin-bottom:16px; display:none;">
+    <div id="step-2" class="mc-card" style="margin-bottom:16px; display:none;" data-card-code="sp_sihirbaz_yeni_yil.onizleme">
         <div class="mc-card-header"><span class="mc-card-title">{{ _("Önizleme") }}</span></div>
         <div class="mc-card-body" id="preview-body">
             <div style="text-align:center; padding:20px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i></div>
@@ -58,8 +58,9 @@
     </div>
 
     <!-- Adım 3: Sonuç -->
-    <div id="step-3" class="mc-card" style="margin-bottom:16px; display:none;">
+    <div id="step-3" class="mc-card" style="margin-bottom:16px; display:none;" data-card-code="sp_sihirbaz_yeni_yil.sonuc">
         <div class="mc-card-body" style="text-align:center; padding:40px 20px;">
+            <div class="mc-card-title" style="text-transform:uppercase; font-size:11px; letter-spacing:.05em; color:#94a3b8; margin-bottom:8px;">{{ _("Sonuç") }}</div>
             <i class="fas fa-circle-check fa-3x" style="color:#10b981; margin-bottom:16px;"></i>
             <h2 style="font-size:18px; font-weight:700; color:var(--text-default); margin:0 0 8px;" id="result-title">{{ _("Geçiş Tamamlandı!") }}</h2>
             <p style="color:#64748b; font-size:14px;" id="result-msg"></p>

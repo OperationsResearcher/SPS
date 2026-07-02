@@ -1275,9 +1275,36 @@
                    desc:t('Bugüne kadar "ne" gerçekleştirildi.')}
       };
 
+      function subComponentRow(sc) {
+        const pct = sc.max_points > 0 ? Math.round(sc.points / sc.max_points * 100) : 0;
+        const color = pct >= 75 ? '#059669' : pct >= 50 ? '#f59e0b' : '#dc2626';
+        return `
+          <div style="display:flex;align-items:center;gap:8px;padding:5px 0;border-top:1px solid #f1f5f9;">
+            <div style="flex:1;min-width:0;">
+              <div style="font-size:11px;color:#334155;font-weight:500;">${esc(sc.label)}</div>
+              <div style="font-size:10px;color:#94a3b8;">${esc(sc.raw)}</div>
+            </div>
+            <div style="background:#f1f5f9;height:4px;width:60px;border-radius:2px;overflow:hidden;flex-shrink:0;">
+              <div style="height:100%;width:${pct}%;background:${color};"></div>
+            </div>
+            <div style="font-size:11px;font-weight:700;color:${color};flex-shrink:0;width:52px;text-align:right;">${sc.points.toFixed(1)}<span style="color:#94a3b8;font-weight:500;">/${sc.max_points}</span></div>
+          </div>`;
+      }
+
       function critCard(c) {
         const scoreColor = c.score_pct >= 75 ? '#059669' :
                            c.score_pct >= 50 ? '#f59e0b' : '#dc2626';
+        const subs = c.sub_components || [];
+        const subsId = `efqm-sub-${c.key}`;
+        const subsHtml = subs.length ? `
+            <div style="margin-top:6px;">
+              <button type="button" class="efqm-sub-toggle" data-target="${subsId}" style="background:none;border:none;color:#6366f1;font-size:10.5px;font-weight:600;cursor:pointer;padding:2px 0;display:flex;align-items:center;gap:4px;">
+                <i class="fas fa-chevron-down"></i> ${t("Kırılımı Göster")} (${subs.length})
+              </button>
+              <div id="${subsId}" style="display:none;">
+                ${subs.map(subComponentRow).join('')}
+              </div>
+            </div>` : '';
         return `
           <div style="background:#fff;border:1px solid #e2e8f0;border-radius:8px;padding:12px;">
             <div style="display:flex;justify-content:space-between;align-items:start;gap:10px;margin-bottom:6px;">
@@ -1291,6 +1318,7 @@
               <div style="height:100%;width:${c.score_pct}%;background:${scoreColor};"></div>
             </div>
             <div style="font-size:11px;color:#64748b;line-height:1.4;">${esc(c.note)}</div>
+            ${subsHtml}
           </div>`;
       }
 
@@ -1398,6 +1426,17 @@
           </div>
         </div>
       `);
+
+      document.querySelectorAll(".efqm-sub-toggle").forEach(btn => {
+        btn.addEventListener("click", () => {
+          const target = document.getElementById(btn.dataset.target);
+          if (!target) return;
+          const isOpen = target.style.display !== "none";
+          target.style.display = isOpen ? "none" : "block";
+          const icon = btn.querySelector("i");
+          if (icon) icon.className = isOpen ? "fas fa-chevron-right" : "fas fa-chevron-down";
+        });
+      });
     }).catch(err => {
       setHtml("ks-modal-efqm-body", '<div style="color:#ef4444;padding:16px;">' + t("Hata:") + ' ' + err.message + '</div>');
     });

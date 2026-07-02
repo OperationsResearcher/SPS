@@ -38,29 +38,30 @@
   </div>
 
   <div class="mc-grid-4" style="margin-bottom:20px;">
-    <div class="mc-stat-card mc-stat-purple">
+    <div class="mc-stat-card mc-stat-purple" data-card-code="admin_tenants.toplam_kurum">
       <div class="mc-stat-icon"><i class="fas fa-building"></i></div>
       <div class="mc-stat-value">{{ tenants|length }}</div>
       <div class="mc-stat-label">{{ _("Toplam Kurum") }}</div>
     </div>
-    <div class="mc-stat-card mc-stat-emerald">
+    <div class="mc-stat-card mc-stat-emerald" data-card-code="admin_tenants.aktif_kurum">
       <div class="mc-stat-icon"><i class="fas fa-check-circle"></i></div>
       <div class="mc-stat-value">{{ tenants|selectattr('is_active')|list|length }}</div>
       <div class="mc-stat-label">{{ _("Aktif Kurum") }}</div>
     </div>
-    <div class="mc-stat-card mc-stat-red">
+    <div class="mc-stat-card mc-stat-red" data-card-code="admin_tenants.arsivlenmis_kurum">
       <div class="mc-stat-icon"><i class="fas fa-archive"></i></div>
       <div class="mc-stat-value">{{ tenants|rejectattr('is_active')|list|length }}</div>
       <div class="mc-stat-label">{{ _("Arşivlenmiş") }}</div>
     </div>
-    <div class="mc-stat-card mc-stat-blue">
+    <div class="mc-stat-card mc-stat-blue" data-card-code="admin_tenants.toplam_kullanici">
       <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
       <div class="mc-stat-value">{{ total_users }}</div>
       <div class="mc-stat-label">{{ _("Toplam Kullanıcı") }}</div>
     </div>
   </div>
 
-  <div class="mc-table-wrap">
+  <div class="mc-table-wrap" data-card-code="admin_tenants.kurum_listesi">
+    <div class="mc-card-title" style="font-size:11px; text-transform:uppercase; color:#94a3b8; font-weight:600; padding:0 0 8px 2px;">{{ _("Kurum Listesi") }}</div>
     <table class="mc-table" id="tenants-table">
       <thead>
         <tr>

@@ -26,9 +26,9 @@
   </div>
 
   {% if current_user.role and current_user.role.name == 'Admin' %}
-  <div class="mc-card yp-maintenance-card" id="yp-maintenance-card" data-bakim-url="{{ url_for('app_bp.admin_bakim_modu') }}">
+  <div class="mc-card yp-maintenance-card" id="yp-maintenance-card" data-card-code="admin_yonetim_paneli.bakim_modu" data-bakim-url="{{ url_for('app_bp.admin_bakim_modu') }}">
     <div class="mc-card-body">
-      <h3 class="yp-activity-title">{{ _("Bakım modu") }}</h3>
+      <h3 class="yp-activity-title mc-card-title">{{ _("Bakım modu") }}</h3>
       <p class="karne-field-hint">{{ _("Açıkken yalnızca rolü <strong>Admin</strong> olan kullanıcılar sistemi normal kullanır; diğerleri bakım sayfası görür. Giriş sayfası açık kalır.") }}</p>
       <label class="mc-form-check-label" style="display:flex;align-items:center;gap:0.5rem;margin-top:0.75rem;">
         <input type="checkbox" id="yp-maintenance-chk" />
@@ -39,9 +39,9 @@
   </div>
   {% endif %}
 
-  <div class="mc-card yp-filter-card">
+  <div class="mc-card yp-filter-card" data-card-code="admin_yonetim_paneli.kurum_secimi">
     <div class="mc-card-body yp-filter-body">
-      <label for="tenant-select" class="yp-filter-label">{{ _("Kurum Seçimi") }}</label>
+      <label for="tenant-select" class="yp-filter-label mc-card-title">{{ _("Kurum Seçimi") }}</label>
       <select id="tenant-select" class="mc-form-select yp-filter-select">
         {% if current_user.role and current_user.role.name == 'Admin' %}
         <option value="">{{ _("Tüm Kurumlar") }}</option>
@@ -56,53 +56,53 @@
   </div>
 
   <div class="yp-grid">
-    <div class="mc-card yp-stat-card">
+    <div class="mc-card yp-stat-card" data-card-code="admin_yonetim_paneli.cevrimici">
       <div class="mc-card-body">
-        <div class="yp-stat-title">{{ _("Çevrimiçi") }}</div>
+        <div class="yp-stat-title mc-stat-label">{{ _("Çevrimiçi") }}</div>
         <div class="yp-stat-value" data-key="online_now">...</div>
         <div class="yp-stat-sub">{{ _("Son 30 dakika") }}</div>
       </div>
     </div>
-    <div class="mc-card yp-stat-card">
+    <div class="mc-card yp-stat-card" data-card-code="admin_yonetim_paneli.aktif_hesap">
       <div class="mc-card-body">
-        <div class="yp-stat-title">{{ _("Aktif hesap") }}</div>
+        <div class="yp-stat-title mc-stat-label">{{ _("Aktif hesap") }}</div>
         <div class="yp-stat-value" data-key="active_now">...</div>
         <div class="yp-stat-sub">{{ _("Toplam kayıtlı kullanıcı") }}</div>
       </div>
     </div>
-    <div class="mc-card yp-stat-card">
+    <div class="mc-card yp-stat-card" data-card-code="admin_yonetim_paneli.son_24_saat">
       <div class="mc-card-body">
-        <div class="yp-stat-title">{{ _("Son 24 saat") }}</div>
+        <div class="yp-stat-title mc-stat-label">{{ _("Son 24 saat") }}</div>
         <div class="yp-stat-value" data-key="last_24h">...</div>
         <div class="yp-stat-sub">{{ _("Tekil giriş yapan") }}</div>
       </div>
     </div>
-    <div class="mc-card yp-stat-card">
+    <div class="mc-card yp-stat-card" data-card-code="admin_yonetim_paneli.son_7_gun">
       <div class="mc-card-body">
-        <div class="yp-stat-title">{{ _("Son 7 gün") }}</div>
+        <div class="yp-stat-title mc-stat-label">{{ _("Son 7 gün") }}</div>
         <div class="yp-stat-value" data-key="last_7d">...</div>
         <div class="yp-stat-sub">{{ _("Tekil giriş yapan") }}</div>
       </div>
     </div>
-    <div class="mc-card yp-stat-card">
+    <div class="mc-card yp-stat-card" data-card-code="admin_yonetim_paneli.son_30_gun">
       <div class="mc-card-body">
-        <div class="yp-stat-title">{{ _("Son 30 gün") }}</div>
+        <div class="yp-stat-title mc-stat-label">{{ _("Son 30 gün") }}</div>
         <div class="yp-stat-value" data-key="last_30d">...</div>
         <div class="yp-stat-sub">{{ _("Tekil giriş yapan") }}</div>
       </div>
     </div>
-    <div class="mc-card yp-stat-card">
+    <div class="mc-card yp-stat-card" data-card-code="admin_yonetim_paneli.tum_zamanlar">
       <div class="mc-card-body">
-        <div class="yp-stat-title">{{ _("Tüm zamanlar") }}</div>
+        <div class="yp-stat-title mc-stat-label">{{ _("Tüm zamanlar") }}</div>
         <div class="yp-stat-value" data-key="all_time">...</div>
         <div class="yp-stat-sub">{{ _("Tekil giriş yapan") }}</div>
       </div>
     </div>
   </div>
 
-  <div class="mc-card yp-accordion-card" id="acc-kullanici">
+  <div class="mc-card yp-accordion-card" id="acc-kullanici" data-card-code="admin_yonetim_paneli.kullanici_durumu">
     <button type="button" class="yp-accordion-header" aria-expanded="true" aria-controls="acc-kullanici-body">
-      <span class="yp-accordion-title">{{ _("Kullanıcı Durumu") }}</span>
+      <span class="yp-accordion-title mc-card-title">{{ _("Kullanıcı Durumu") }}</span>
       <span class="yp-accordion-chevron">&#8964;</span>
     </button>
     <div class="yp-accordion-body" id="acc-kullanici-body">
@@ -127,9 +127,9 @@
     </div>
   </div>
 
-  <div class="mc-card yp-accordion-card" id="acc-aktivite">
+  <div class="mc-card yp-accordion-card" id="acc-aktivite" data-card-code="admin_yonetim_paneli.son_aktiviteler">
     <button type="button" class="yp-accordion-header" aria-expanded="true" aria-controls="acc-aktivite-body">
-      <span class="yp-accordion-title">{{ _("Son Aktiviteler") }}</span>
+      <span class="yp-accordion-title mc-card-title">{{ _("Son Aktiviteler") }}</span>
       <span class="yp-accordion-chevron">&#8964;</span>
     </button>
     <div class="yp-accordion-body" id="acc-aktivite-body">

@@ -35,7 +35,8 @@
   </div>
 
   <!-- Arama + Filtreler -->
-  <div class="mc-card" style="margin-bottom:16px;">
+  <div class="mc-card" data-card-code="admin_users.arama_filtre" style="margin-bottom:16px;">
+    <div class="mc-card-title" style="position:absolute; opacity:0; width:1px; height:1px; overflow:hidden;">{{ _("Arama ve Filtreler") }}</div>
     <div class="mc-card-body" style="padding:12px 16px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
       <input type="text" id="user-search" class="mc-form-input"
              placeholder="{{ _('Ad, e-posta, rol veya kurum ile ara…') }}"
@@ -58,17 +59,17 @@
 
   <!-- Stat Kartları -->
   <div class="mc-grid-4" style="margin-bottom:20px;">
-    <div class="mc-stat-card mc-stat-blue">
+    <div class="mc-stat-card mc-stat-blue" data-card-code="admin_users.toplam_kullanici">
       <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
       <div class="mc-stat-value">{{ users|length }}</div>
       <div class="mc-stat-label">{{ _("Toplam Kullanıcı") }}</div>
     </div>
-    <div class="mc-stat-card mc-stat-emerald">
+    <div class="mc-stat-card mc-stat-emerald" data-card-code="admin_users.aktif_kullanici">
       <div class="mc-stat-icon"><i class="fas fa-check-circle"></i></div>
       <div class="mc-stat-value">{{ users|selectattr('is_active','eq',true)|list|length }}</div>
       <div class="mc-stat-label">{{ _("Aktif") }}</div>
     </div>
-    <div class="mc-stat-card mc-stat-red">
+    <div class="mc-stat-card mc-stat-red" data-card-code="admin_users.pasif_kullanici">
       <div class="mc-stat-icon"><i class="fas fa-ban"></i></div>
       <div class="mc-stat-value">{{ users|rejectattr('is_active','eq',true)|list|length }}</div>
       <div class="mc-stat-label">{{ _("Pasif") }}</div>
@@ -76,7 +77,8 @@
   </div>
 
   <!-- Tablo -->
-  <div class="mc-table-wrap">
+  <div class="mc-table-wrap" data-card-code="admin_users.kullanici_listesi">
+    <div class="mc-card-title" style="position:absolute; opacity:0; width:1px; height:1px; overflow:hidden;">{{ _("Kullanıcı Listesi") }}</div>
     <table class="mc-table" id="users-table" style="table-layout:fixed; width:100%;">
       <colgroup>
         {% if tenants %}

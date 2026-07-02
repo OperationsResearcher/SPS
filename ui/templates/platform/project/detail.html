@@ -30,13 +30,14 @@
     </div>
 
     {% if geciken_gorevler %}
-    <div class="mc-card mc-card--accent-warning" style="padding:12px 16px; margin-bottom:12px">
-        <strong style="font-size:13px;"><i class="fas fa-exclamation-triangle"></i> {{ _("Geciken görev:") }}</strong>
+    <div class="mc-card mc-card--accent-warning" style="padding:12px 16px; margin-bottom:12px" data-card-code="project_detail.geciken_gorev_uyarisi">
+        <strong class="mc-card-title" style="font-size:13px;"><i class="fas fa-exclamation-triangle"></i> {{ _("Geciken görev:") }}</strong>
         <span style="font-size:13px; color:#64748b;">{{ _("%(n)s adet", n=geciken_gorevler|length) }}</span>
     </div>
     {% endif %}
 
-    <div class="mc-card" style="padding:16px; margin-bottom:16px;">
+    <div class="mc-card" style="padding:16px; margin-bottom:16px;" data-card-code="project_detail.proje_ozeti">
+        <div class="mc-card-title" style="font-size:11px; font-weight:700; text-transform:uppercase; color:#94a3b8; margin-bottom:8px;">{{ _("Proje Özeti") }}</div>
         <div style="font-size:13px; color:#64748b;">
             <span class="me-3"><i class="fas fa-user-tie"></i>
               {% set lids = project.leader_user_ids() %}
@@ -85,10 +86,10 @@
     </div>
 
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:8px; margin-bottom:10px;">
-        <h3 style="font-size:15px; font-weight:600; margin:0;">{{ _("Görev özeti (durum)") }}</h3>
+        <h3 class="mc-card-title" style="font-size:15px; font-weight:600; margin:0;">{{ _("Görev özeti (durum)") }}</h3>
         <a href="{{ url_for('app_bp.project_view_kanban', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-columns"></i> {{ _("Tam Kanban panosu") }}</a>
     </div>
-    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; align-items:start;" class="micro-kanban-grid">
+    <div style="display:grid; grid-template-columns: repeat(4, 1fr); gap:10px; align-items:start;" class="micro-kanban-grid" data-card-code="project_detail.gorev_ozeti">
         {% for col_name, col_tasks in tasks_by_status.items() %}
         <div class="mc-card" style="padding:10px; min-height:120px;">
             <div style="font-size:12px; font-weight:600; color:#64748b; margin-bottom:8px;">{{ col_name }} ({{ col_tasks|length }})</div>

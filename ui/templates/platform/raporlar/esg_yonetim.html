@@ -9,6 +9,7 @@
 {% block content %}
 <div style="max-width:1100px;margin:0 auto;"
      id="esg-root"
+     data-card-code="raporlar_esg_yonetim.sayfa"
      data-list-url="{{ url_for('app_bp.esg_api_metrics_list') }}"
      data-add-url="{{ url_for('app_bp.esg_api_metric_add') }}"
      data-update-base="/reports/api/esg/metrics/"
@@ -16,7 +17,7 @@
 
   <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+      <h2 class="mc-card-title" style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
         <i class="fas fa-leaf" style="color:#22c55e;"></i> {{ _("ESG / Sürdürülebilirlik") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">

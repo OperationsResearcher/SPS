@@ -126,6 +126,9 @@ SweetAlert2 yalnızca şunlar için kullanılır:
 Başlık satırı: **[mini ikon] Kart Başlığı (i)** solda (herkese) · **Kart ID (short_id)** sağ üstte (yalnız Admin).
 - Kart konteynerine `data-card-code="<sayfa>.<kart>"` ekle; başlık `mc-card-title`/`mc-stat-label` taşısın.
 - Keşfet → `system_cards`'a yaz → `short_id` (2 harf+no) + `description` (i butonu gösterir) ata.
+- **(i) modalı i18n ZORUNLU:** başlık `{{ _() }}` ile yaz (modal bunu DOM'dan okur); `description` DB'de Türkçe
+  yazılır ama `.po`'ya msgid olarak eklenip çevrilmezse EN'de de Türkçe görünür — açıklama eklerken/değiştirirken
+  `.po`+`compile` adımı atlanmaz.
 - base.html/route değişince **`python pybasla.py`** ile yeniden başlat (auto-reload bu makinede güvenilmez).
 
 ---

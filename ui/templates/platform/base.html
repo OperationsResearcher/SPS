@@ -490,13 +490,13 @@
             {%- if items is none -%}
                 {# Hiçbir şey verilmemiş — yalnız section auto eklenir #}
             {%- elif items is string -%}
-                {%- set _ = _norm.append({'label': items, 'url': None}) -%}
+                {%- set _discard = _norm.append({'label': items, 'url': None}) -%}
             {%- elif items is iterable -%}
                 {%- for it in items -%}
                     {%- if it is mapping -%}
-                        {%- set _ = _norm.append({'label': it.label, 'url': it.url}) -%}
+                        {%- set _discard = _norm.append({'label': it.label, 'url': it.url}) -%}
                     {%- else -%}
-                        {%- set _ = _norm.append({'label': it, 'url': None}) -%}
+                        {%- set _discard = _norm.append({'label': it, 'url': None}) -%}
                     {%- endif -%}
                 {%- endfor -%}
             {%- endif -%}
@@ -639,7 +639,7 @@
         return null;
       }
 
-      function makeInfoBtn(code) {
+      function makeInfoBtn(code, titleText) {
         var info = document.createElement("button");
         info.type = "button";
         info.className = "kk-card-info-btn";
@@ -647,7 +647,7 @@
         info.title = t("Bu kart ne için? (amaç / içerik)");
         info.addEventListener("click", function (e) {
           e.preventDefault(); e.stopPropagation();
-          openInfo(code);
+          openInfo(code, titleText);
         });
         return info;
       }
@@ -660,7 +660,10 @@
 
         // (i) bilgi butonu — TÜM kullanıcılara, BAŞLIĞIN hemen sağına
         var title = findTitle(el);
-        var info = makeInfoBtn(code);
+        // Modal başlığı için kartın görünen (zaten çevrili) başlık metni kullanılır;
+        // DB'deki card.name teknik kod (örn. "masaustu.bildirimler"), kullanıcıya gösterilmez.
+        var titleText = title ? title.textContent.trim() : "";
+        var info = makeInfoBtn(code, titleText);
         if (title) {
           var gap = document.createElement("span");
           gap.className = "kk-info-gap";
@@ -733,20 +736,20 @@
           .catch(function () {});
       }
 
-      function openInfo(code) {
+      function openInfo(code, titleText) {
         var ov = document.getElementById("kk-card-info-modal-overlay");
         var codeEl = document.getElementById("kk-card-info-code");
         var nameEl = document.getElementById("kk-card-info-name");
         var bodyEl = document.getElementById("kk-card-info-body");
         if (codeEl) codeEl.textContent = "";
-        nameEl.textContent = "";
+        // Başlık: kartın DOM'daki görünen (zaten çevrili) başlığı kullanılır.
+        nameEl.textContent = titleText || "";
         bodyEl.textContent = t("Yükleniyor…");
         ov.style.display = "flex";
         fetch(INFO_URL.replace("__CODE__", encodeURIComponent(code)))
           .then(function (r) { return r.json(); })
           .then(function (j) {
             if (!j.success) { bodyEl.textContent = t("Bilgi alınamadı."); return; }
-            nameEl.textContent = j.name || "";
             // Kısa kimlik yalnız admin'e gösterilir (eleman sadece admin'de var)
             if (codeEl) codeEl.textContent = j.short_id || "";
             if (!j.found) {

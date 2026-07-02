@@ -31,15 +31,15 @@
   </div>
 
   {# Açıklama #}
-  <div class="mc-card mc-card--accent-info" style="padding:12px 16px; margin-bottom:14px; background:#eef2ff">
-    <div style="font-size:12.5px; color:#3730a3; line-height:1.5;">
+  <div class="mc-card mc-card--accent-info" data-card-code="sp_strategy_project_matrix.nasil_okunur" style="padding:12px 16px; margin-bottom:14px; background:#eef2ff">
+    <div class="mc-card-title" style="font-size:12.5px; color:#3730a3; line-height:1.5;">
       {{ _("<b>Nasıl okunur?</b> Her hücre, ilgili projenin o ana stratejiye toplam <i>alt strateji ↔ süreç</i> bağ sayısıdır. Koyu = güçlü hizalama. Boş hücreler hizalanmamış demek. Hizalanmamış proje veya strateji listesi aşağıda.") }}
     </div>
   </div>
 
   <div id="spm-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(180px,1fr)); gap:10px; margin-bottom:14px;"></div>
 
-  <div class="mc-card" style="padding:0; overflow:auto; max-height:65vh;">
+  <div class="mc-card" data-card-code="sp_strategy_project_matrix.hizalama_matrisi" style="padding:0; overflow:auto; max-height:65vh;">
     <div id="spm-matrix-wrap" style="min-width:600px; padding:14px;">
       <div style="text-align:center; padding:60px; color:#94a3b8; font-size:14px;">
         <i class="fas fa-spinner fa-spin"></i> {{ _("Matris yükleniyor…") }}
@@ -93,20 +93,20 @@
 
       // Özet
       summaryEl.innerHTML = `
-        <div class="mc-card" style="padding:10px 12px;">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Strateji")}</div>
+        <div class="mc-card" data-card-code="sp_strategy_project_matrix.ozet_strateji" style="padding:10px 12px;">
+          <div class="mc-stat-label" style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Strateji")}</div>
           <div style="font-size:22px; font-weight:800; color:#0f172a;">${d.strategies.length}</div>
         </div>
-        <div class="mc-card" style="padding:10px 12px;">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Proje")}</div>
+        <div class="mc-card" data-card-code="sp_strategy_project_matrix.ozet_proje" style="padding:10px 12px;">
+          <div class="mc-stat-label" style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Proje")}</div>
           <div style="font-size:22px; font-weight:800; color:#0f172a;">${d.projects.length}</div>
         </div>
-        <div class="mc-card" style="padding:10px 12px;">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("En Güçlü Hizalama")}</div>
+        <div class="mc-card" data-card-code="sp_strategy_project_matrix.ozet_en_guclu_hizalama" style="padding:10px 12px;">
+          <div class="mc-stat-label" style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("En Güçlü Hizalama")}</div>
           <div style="font-size:22px; font-weight:800; color:#6366f1;">${d.max_value}</div>
         </div>
-        <div class="mc-card" style="padding:10px 12px; border-left:3px solid ${d.coverage_pct >= 70 ? '#10b981' : (d.coverage_pct >= 40 ? '#f59e0b' : '#ef4444')};">
-          <div style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Hizalama Kapsama")}</div>
+        <div class="mc-card" data-card-code="sp_strategy_project_matrix.ozet_hizalama_kapsama" style="padding:10px 12px; border-left:3px solid ${d.coverage_pct >= 70 ? '#10b981' : (d.coverage_pct >= 40 ? '#f59e0b' : '#ef4444')};">
+          <div class="mc-stat-label" style="font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">${t("Hizalama Kapsama")}</div>
           <div style="font-size:22px; font-weight:800;">%${d.coverage_pct}</div>
         </div>`;
 
@@ -147,8 +147,8 @@
       // Uyarılar
       let wHtml = "";
       if (d.unaligned_projects && d.unaligned_projects.length) {
-        wHtml += `<div class="mc-card mc-card--accent-warning" style="padding:12px 14px">
-          <h3 style="margin:0 0 8px; font-size:13px; color:#92400e;">
+        wHtml += `<div class="mc-card mc-card--accent-warning" data-card-code="sp_strategy_project_matrix.hizalanmamis_projeler" style="padding:12px 14px">
+          <h3 class="mc-card-title" style="margin:0 0 8px; font-size:13px; color:#92400e;">
             <i class="fas fa-triangle-exclamation"></i> ${t("Stratejiye Bağlanmamış Projeler")} (${d.unaligned_projects.length})
           </h3>
           <div style="font-size:12px; color:#475569; line-height:1.6;">
@@ -157,8 +157,8 @@
         </div>`;
       }
       if (d.unaligned_strategies && d.unaligned_strategies.length) {
-        wHtml += `<div class="mc-card mc-card--accent-danger" style="padding:12px 14px">
-          <h3 style="margin:0 0 8px; font-size:13px; color:#991b1b;">
+        wHtml += `<div class="mc-card mc-card--accent-danger" data-card-code="sp_strategy_project_matrix.stratejisi_olmayan_projeler" style="padding:12px 14px">
+          <h3 class="mc-card-title" style="margin:0 0 8px; font-size:13px; color:#991b1b;">
             <i class="fas fa-bullseye"></i> ${t("Projesi Olmayan Stratejiler")} (${d.unaligned_strategies.length})
           </h3>
           <div style="font-size:12px; color:#475569; line-height:1.6;">

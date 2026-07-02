@@ -196,7 +196,7 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
         bsc_assigned = sum(counts.values())
         if bsc_assigned > 0:
             from app.services.bsc_auto_classifier import balance_score
-            bsc_balance, _ = balance_score(counts)
+            bsc_balance, _bsc_balance_detail = balance_score(counts)
     except Exception:
         bsc_balance = 0
 
@@ -242,82 +242,107 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
         logger.error("[efqm] KPI-327 özdeğerlendirme verisi alınamadı (tenant=%s): %s", tenant_id, _e)
 
     # ── Kriter skorlarını türet (her biri 0-100) ─────────────────────────────
+    # Her bileşen: (etiket, ham_değer_metni, katkı_puanı_0-100_ölçeğinde, bu_bileşenin_ağırlığı)
+    # katkı_puanı zaten weight ile çarpılmış haldedir (0-weight aralığında); toplamı k_score'a eşittir.
+    sub_components = {}
+
     # K1 — Amaç, Vizyon ve Strateji
     # Bileşenler: vizyon/amaç tanımlı mı (40), strateji sayısı (30), sub-strateji yapı (30)
-    k1 = (
-        (identity_filled / 4.0) * 40 +
-        min(1.0, strat_count / 6.0) * 30 +
-        min(1.0, sub_strat_count / 16.0) * 30
-    )
-    k1 = _clip(k1)
+    k1_c1 = (identity_filled / 4.0) * 40
+    k1_c2 = min(1.0, strat_count / 6.0) * 30
+    k1_c3 = min(1.0, sub_strat_count / 16.0) * 30
+    k1 = _clip(k1_c1 + k1_c2 + k1_c3)
+    sub_components["k1"] = [
+        {"label": _("Vizyon/Amaç Tanımı"), "raw": f"{identity_filled}/4", "score": round(k1_c1, 1), "max": 40},
+        {"label": _("Ana Strateji Sayısı"), "raw": f"{int(strat_count)}/6", "score": round(k1_c2, 1), "max": 30},
+        {"label": _("Alt Strateji Yapısı"), "raw": f"{int(sub_strat_count)}/16", "score": round(k1_c3, 1), "max": 30},
+    ]
 
     # K2 — Kurum Kültürü ve Liderlik
     # Bileşenler: kullanıcı tabanı (30), rol çeşitliliği (35), departman çeşitliliği (35)
-    k2 = (
-        min(1.0, user_count / 50.0) * 30 +
-        min(1.0, role_diversity / 5.0) * 35 +
-        min(1.0, department_count / 6.0) * 35
-    )
-    k2 = _clip(k2)
+    k2_c1 = min(1.0, user_count / 50.0) * 30
+    k2_c2 = min(1.0, role_diversity / 5.0) * 35
+    k2_c3 = min(1.0, department_count / 6.0) * 35
+    k2 = _clip(k2_c1 + k2_c2 + k2_c3)
+    sub_components["k2"] = [
+        {"label": _("Kullanıcı Tabanı"), "raw": f"{int(user_count)}/50", "score": round(k2_c1, 1), "max": 30},
+        {"label": _("Rol Çeşitliliği"), "raw": f"{int(role_diversity)}/5", "score": round(k2_c2, 1), "max": 35},
+        {"label": _("Departman Çeşitliliği"), "raw": f"{int(department_count)}/6", "score": round(k2_c3, 1), "max": 35},
+    ]
 
     # K3 — Paydaşlarla Bağ Kurma
     # Bileşenler: çalışan sayısı (25), OKR objektif (25), initiative (25), strateji-paydaş bağ (25)
-    k3 = (
-        min(1.0, user_count / 50.0) * 25 +
-        min(1.0, okr_count / 5.0) * 25 +
-        min(1.0, initiative_count / 15.0) * 25 +
-        min(1.0, strat_count / 6.0) * 25
-    )
-    k3 = _clip(k3)
+    k3_c1 = min(1.0, user_count / 50.0) * 25
+    k3_c2 = min(1.0, okr_count / 5.0) * 25
+    k3_c3 = min(1.0, initiative_count / 15.0) * 25
+    k3_c4 = min(1.0, strat_count / 6.0) * 25
+    k3 = _clip(k3_c1 + k3_c2 + k3_c3 + k3_c4)
+    sub_components["k3"] = [
+        {"label": _("Çalışan Tabanı"), "raw": f"{int(user_count)}/50", "score": round(k3_c1, 1), "max": 25},
+        {"label": _("OKR Objektif Sayısı"), "raw": f"{int(okr_count)}/5", "score": round(k3_c2, 1), "max": 25},
+        {"label": _("Girişim Sayısı"), "raw": f"{int(initiative_count)}/15", "score": round(k3_c3, 1), "max": 25},
+        {"label": _("Strateji-Paydaş Bağı"), "raw": f"{int(strat_count)}/6", "score": round(k3_c4, 1), "max": 25},
+    ]
 
     # K4 — Sürdürülebilir Değer Yaratma
-    # Bileşenler: BSC perspektif denge (40), initiative + tamamlanma (30), PG portföy büyüklüğü (30)
+    # Bileşenler: BSC perspektif denge (40), initiative sayısı (15), initiative tamamlanma (15), PG portföy büyüklüğü (30)
     init_completion = (init_completed / initiative_count * 100) if initiative_count else 0
-    k4 = (
-        (bsc_balance / 100.0) * 40 +
-        min(1.0, initiative_count / 15.0) * 15 +
-        (init_completion / 100.0) * 15 +
-        min(1.0, kpi_total / 50.0) * 30
-    )
-    k4 = _clip(k4)
+    k4_c1 = (bsc_balance / 100.0) * 40
+    k4_c2 = min(1.0, initiative_count / 15.0) * 15
+    k4_c3 = (init_completion / 100.0) * 15
+    k4_c4 = min(1.0, kpi_total / 50.0) * 30
+    k4 = _clip(k4_c1 + k4_c2 + k4_c3 + k4_c4)
+    sub_components["k4"] = [
+        {"label": _("BSC Perspektif Dengesi"), "raw": f"%{round(bsc_balance, 1)}", "score": round(k4_c1, 1), "max": 40},
+        {"label": _("Girişim Sayısı"), "raw": f"{int(initiative_count)}/15", "score": round(k4_c2, 1), "max": 15},
+        {"label": _("Girişim Tamamlanma Oranı"), "raw": f"%{round(init_completion, 1)}", "score": round(k4_c3, 1), "max": 15},
+        {"label": _("PG Portföy Büyüklüğü"), "raw": f"{int(kpi_total)}/50", "score": round(k4_c4, 1), "max": 30},
+    ]
 
     # K5 — Performans ve Dönüşüme Yön Verme
     # Bileşenler: veri giriş disiplini (40), risk yönetimi (20), gecikme yönetimi (40)
     data_disc = (kpi_with_data / kpi_total * 100) if kpi_total else 0
     risk_score = 100 - min(100, risk_critical * 20)  # kritik risk azaldıkça yüksek
     overdue_penalty = max(0, 100 - activity_overdue * 5)  # 20+ gecikme = 0
-    k5 = (
-        (data_disc / 100.0) * 40 +
-        (risk_score / 100.0) * 20 +
-        (overdue_penalty / 100.0) * 40
-    )
-    k5 = _clip(k5)
+    k5_c1 = (data_disc / 100.0) * 40
+    k5_c2 = (risk_score / 100.0) * 20
+    k5_c3 = (overdue_penalty / 100.0) * 40
+    k5 = _clip(k5_c1 + k5_c2 + k5_c3)
+    sub_components["k5"] = [
+        {"label": _("Veri Giriş Disiplini"), "raw": f"%{round(data_disc, 1)}", "score": round(k5_c1, 1), "max": 40},
+        {"label": _("Kritik Risk Yönetimi"), "raw": _("%(n)s kritik risk", n=int(risk_critical)), "score": round(k5_c2, 1), "max": 20},
+        {"label": _("Gecikme Yönetimi"), "raw": _("%(n)s gecikmiş faaliyet", n=int(activity_overdue)), "score": round(k5_c3, 1), "max": 40},
+    ]
 
     # K6 — Paydaş Algıları (Kokpitim'de doğrudan algı verisi yok → düşük baz skor)
     # Bileşenler: müşteri odaklı PG var mı (proxy: BSC müşteri perspektifi atama), çalışan PG'si
     persp_data = db.session.execute(text("""
         SELECT perspective, count(*) c FROM bsc_kpi_perspectives
         WHERE tenant_id=:t GROUP BY perspective
-    """), {"t": tenant_id}).fetchall() if True else []
+    """), {"t": tenant_id}).fetchall()
     persp_map = {r.perspective: int(r.c) for r in persp_data} if persp_data else {}
     customer_proxy = min(1.0, persp_map.get("musteri", 0) / 10.0)
     employee_proxy = min(1.0, persp_map.get("ogrenme", 0) / 10.0)
     # Algı verisi yokluğu büyük gap — bu nedenle baz puan düşük
-    k6 = (
-        customer_proxy * 30 +
-        employee_proxy * 30 +
-        # İş/Toplum/Tedarikçi algıları için veri yok — sabit 20 baz
-        20
-    )
-    k6 = _clip(k6)
+    k6_c1 = customer_proxy * 30
+    k6_c2 = employee_proxy * 30
+    k6_c3 = 20  # İş/Toplum/Tedarikçi algıları için veri yok — sabit baz
+    k6 = _clip(k6_c1 + k6_c2 + k6_c3)
+    sub_components["k6"] = [
+        {"label": _("Müşteri Odaklılık (proxy: BSC)"), "raw": f"{persp_map.get('musteri', 0)}/10", "score": round(k6_c1, 1), "max": 30},
+        {"label": _("Çalışan Odaklılık (proxy: BSC)"), "raw": f"{persp_map.get('ogrenme', 0)}/10", "score": round(k6_c2, 1), "max": 30},
+        {"label": _("İş/Toplum/Tedarikçi (veri yok — sabit baz)"), "raw": "—", "score": k6_c3, "max": 20},
+    ]
 
     # K7 — Stratejik ve Operasyonel Performans
     # Bileşenler: PG hedef üstü oranı (60), veri girilen PG oranı (40)
-    k7 = (
-        (on_target_pct / 100.0) * 60 +
-        (data_disc / 100.0) * 40
-    )
-    k7 = _clip(k7)
+    k7_c1 = (on_target_pct / 100.0) * 60
+    k7_c2 = (data_disc / 100.0) * 40
+    k7 = _clip(k7_c1 + k7_c2)
+    sub_components["k7"] = [
+        {"label": _("PG Hedef Üstü Oranı"), "raw": f"%{round(on_target_pct, 1)}", "score": round(k7_c1, 1), "max": 60},
+        {"label": _("Ölçülen PG Kapsamı"), "raw": f"%{round(data_disc, 1)}", "score": round(k7_c2, 1), "max": 40},
+    ]
 
     scores = {"k1": k1, "k2": k2, "k3": k3, "k4": k4, "k5": k5, "k6": k6, "k7": k7}
 
@@ -341,10 +366,22 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
     for key, label, dim, weight in CRITERIA:
         sc = scores[key]
         pts = round(sc / 100.0 * weight)
+        # Alt bileşenleri de kriterin ağırlık ölçeğine (weight) orantılı taşı —
+        # böylece her bileşenin nihai 1000 puanlık toplama katkısı görülebilir.
+        scaled_subs = [
+            {
+                "label": sc_item["label"],
+                "raw": sc_item["raw"],
+                "points": round(sc_item["score"] / 100.0 * weight, 1),
+                "max_points": round(sc_item["max"] / 100.0 * weight, 1),
+            }
+            for sc_item in sub_components.get(key, [])
+        ]
         criteria_out.append({
             "key": key, "label": label, "dimension": dim, "weight": weight,
             "score_pct": round(sc, 1), "points": pts,
             "note": notes[key],
+            "sub_components": scaled_subs,
         })
         dim_totals[dim]["pts"] += pts
         dim_totals[dim]["max"] += weight

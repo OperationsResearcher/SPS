@@ -1,0 +1,104 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Sideview - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/dashboard_sideview.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h1 class="display-5">
+                        <i class="fas fa-columns text-primary me-3"></i>
+                        Yan Görünüm
+                    </h1>
+                    <p class="lead text-muted mb-0">
+                        Hoşgeldin <strong>{% if current_user.is_authenticated %}{{ current_user.first_name or current_user.email }}{% else %}Kullanıcı{% endif %}</strong>, Sideview gösterge paneli.
+                    </p>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('dashboard_bp.index', view='classic') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-th-large me-1"></i>Klasik'e Geç
+                    </a>
+                    <a href="{{ url_for('dashboard_bp.index', view='sideview') }}" class="btn btn-primary btn-sm active" aria-current="page">
+                        <i class="fas fa-columns me-1"></i>Sideview
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div class="dashboard-sideview-wrapper">
+        <!-- Sol Panel - Ozet Istatistikler -->
+        <aside class="dashboard-sideview-sidebar">
+            <div class="card shadow-sm mb-3">
+                <div class="card-header bg-light">
+                    <h6 class="mb-0"><i class="fas fa-chart-bar me-2"></i>Özet</h6>
+                </div>
+                <div class="card-body p-2">
+                    <div class="dashboard-sideview-stat-item danger">
+                        <span><i class="fas fa-exclamation-circle me-2"></i>Kritik İşler</span>
+                        <span class="dashboard-sideview-stat-value">—</span>
+                    </div>
+                    <div class="dashboard-sideview-stat-item primary">
+                        <span><i class="fas fa-clipboard-list me-2"></i>Toplam Yük</span>
+                        <span class="dashboard-sideview-stat-value">—</span>
+                    </div>
+                    <div class="dashboard-sideview-stat-item success">
+                        <span><i class="fas fa-check-circle me-2"></i>Tamamlanan</span>
+                        <span class="dashboard-sideview-stat-value">—</span>
+                    </div>
+                    <div class="dashboard-sideview-stat-item info">
+                        <span><i class="fas fa-chart-line me-2"></i>Performans</span>
+                        <span class="dashboard-sideview-stat-value">—</span>
+                    </div>
+                </div>
+            </div>
+        </aside>
+
+        <!-- Sag Panel - Modul Kartlari -->
+        <main class="dashboard-sideview-main">
+            <div class="row">
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card dashboard-sideview-card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-cube text-primary me-2"></i>Modül 1
+                            </h5>
+                            <p class="card-text text-muted">Yakında gelecek...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card dashboard-sideview-card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-cube text-success me-2"></i>Modül 2
+                            </h5>
+                            <p class="card-text text-muted">Yakında gelecek...</p>
+                        </div>
+                    </div>
+                </div>
+                <div class="col-md-6 col-lg-4 mb-4">
+                    <div class="card dashboard-sideview-card shadow-sm">
+                        <div class="card-body">
+                            <h5 class="card-title">
+                                <i class="fas fa-cube text-warning me-2"></i>Modül 3
+                            </h5>
+                            <p class="card-text text-muted">Yakında gelecek...</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard_sideview.js') }}"></script>
+{% endblock %}

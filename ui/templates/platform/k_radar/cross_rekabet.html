@@ -3,8 +3,8 @@
 {% block page_title %}Cross Rekabet Analizi{% endblock %}
 {% block content %}
 <div id="k-radar-cross-rekabet-root" data-url="{{ url_for('app_bp.k_radar_api_cross_rekabet') }}" style="max-width:900px; margin:0 auto;">
-  <div class="mc-card"><div class="mc-card-body">
-    <h3 style="margin-top:0;">{{ _("Rekabet Özeti") }}</h3>
+  <div class="mc-card" data-card-code="k_radar_cross_rekabet.rekabet_ozeti"><div class="mc-card-body">
+    <h3 class="mc-card-title" style="margin-top:0;">{{ _("Rekabet Özeti") }}</h3>
     <div><strong>{{ _("Kayıt Sayısı:") }}</strong> <span id="cross-rekabet-count">-</span></div>
     <div><strong>{{ _("Ortalama Gap:") }}</strong> <span id="cross-rekabet-gap">-</span></div>
   </div></div>

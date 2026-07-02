@@ -1204,20 +1204,39 @@ def get_ks_gap_real(tenant_id: int, year: int | None = None) -> dict:
 
 
 @cache.memoize(timeout=300)
-def get_ks_strateji_real(tenant_id: int) -> dict:
-    """Strateji hiyerarşisi + süreç bağlantıları + skor."""
+def get_ks_strateji_real(tenant_id: int, year: int | None = None) -> dict:
+    """Strateji hiyerarşisi + süreç bağlantıları + skor (seçili plan yılına göre)."""
     from app.models.core import Strategy, SubStrategy
     from app.models.process import Process
+    from app.models.plan_year import PlanYear
 
     from app.models.process import ProcessSubStrategyLink
-    strategies = (
-        Strategy.query.options(
+
+    plan_year_id = None
+    if year:
+        py = PlanYear.query.filter_by(tenant_id=tenant_id, year=year).first()
+        plan_year_id = py.id if py else None
+
+    def _base_query():
+        return Strategy.query.options(
             selectinload(Strategy.sub_strategies)
                 .selectinload(SubStrategy.process_sub_strategy_links)
                 .joinedload(ProcessSubStrategyLink.process)
-        )
-        .filter_by(tenant_id=tenant_id, is_active=True).order_by(Strategy.code).all()
-    )
+        ).filter_by(tenant_id=tenant_id, is_active=True)
+
+    strategies = []
+    if year and plan_year_id:
+        strategies = _base_query().filter(Strategy.plan_year_id == plan_year_id).order_by(Strategy.code).all()
+    if not strategies:
+        # Yıl seçilmemiş, o yıla ait strateji yok, veya plan_year_id ataması yapılmamış
+        # legacy kayıtlar var — tüm aktif stratejileri göster (tekrarı önlemek için
+        # yalnızca plan_year_id'si NULL olan veya seçili yıla ait olanlar alınır).
+        fallback_query = _base_query()
+        if plan_year_id:
+            fallback_query = fallback_query.filter(
+                db.or_(Strategy.plan_year_id.is_(None), Strategy.plan_year_id == plan_year_id)
+            )
+        strategies = fallback_query.order_by(Strategy.code).all()
     all_processes = Process.query.filter_by(tenant_id=tenant_id, is_active=True).all()
     proc_map = {p.id: p for p in all_processes}
 

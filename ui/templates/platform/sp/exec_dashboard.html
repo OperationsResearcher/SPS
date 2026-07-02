@@ -17,12 +17,12 @@
      data-pivot-url="{{ url_for('app_bp.sp_api_ai_pivot') }}">
 
   {# ── Inline AI Yönetici Özeti (tenant geneli) ── #}
-  <div id="ai-ozet-serit" data-ozet-url="{{ url_for('app_bp.sp_api_exec_ai_ozet') }}" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
+  <div id="ai-ozet-serit" data-card-code="sp_exec_dashboard.ai_yonetici_ozeti" data-ozet-url="{{ url_for('app_bp.sp_api_exec_ai_ozet') }}" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
     <div style="display:flex; align-items:flex-start; gap:12px; padding:13px 18px;">
       <span style="flex:0 0 auto; width:32px; height:32px; border-radius:10px; background:#6366f1; color:#fff; display:flex; align-items:center; justify-content:center;"><i class="fas fa-wand-magic-sparkles"></i></span>
       <div style="flex:1; min-width:0;">
         <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
-          <span style="font-size:11.5px; font-weight:700; color:#4338ca; letter-spacing:.02em;">{{ _("AI YÖNETİCİ ÖZETİ") }}</span>
+          <span class="mc-card-title" style="font-size:11.5px; font-weight:700; color:#4338ca; letter-spacing:.02em;">{{ _("AI YÖNETİCİ ÖZETİ") }}</span>
           <span id="ai-ozet-kaynak" style="font-size:10px; font-weight:600; color:#64748b; background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:1px 7px;"></span>
         </div>
         <p id="ai-ozet-metin" style="font-size:13px; line-height:1.55; color:#1e293b; margin:0;">…</p>
@@ -93,28 +93,10 @@
     <a href="{{ url_for('app_bp.sp_tv_mode') }}" target="_blank" class="mc-btn mc-btn-sm" style="background:#0b1220;color:#7dd3fc;border:1px solid #1e293b;">
       <i class="fas fa-tv"></i> {{ _("Savaş Odası") }}
     </a>
-    <a href="{{ url_for('app_bp.sp_xmatrix_page') }}" class="mc-btn mc-btn-sm" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;">
-      <i class="fas fa-th-large"></i> X-Matrix
-    </a>
-    <a href="/sp/strategy-project-matrix" class="mc-btn mc-btn-sm" style="background:#eef2ff;color:#4338ca;border:1px solid #c7d2fe;">
-      <i class="fas fa-th"></i> {{ _("Strateji × Proje") }}
-    </a>
-    <a href="/sp/replan-triggers" class="mc-btn mc-btn-sm" style="background:#fef3c7;color:#92400e;border:1px solid #fde68a;">
-      <i class="fas fa-bell"></i> {{ _("Replan Tetikleyiciler") }}
-    </a>
-    <a href="/sp/ceyreklik-review" class="mc-btn mc-btn-sm" style="background:#dcfce7;color:#15803d;border:1px solid #bbf7d0;">
-      <i class="fas fa-calendar-check"></i> {{ _("Çeyreklik Review") }}
-    </a>
-    <a href="{{ url_for('app_bp.surec') }}" class="mc-btn mc-btn-sm" style="background:#fce7f3;color:#9d174d;border:1px solid #fbcfe8;">
-      <i class="fas fa-sitemap"></i> {{ _("Süreç Yönetimi") }}
-    </a>
-    <a href="{{ url_for('app_bp.k_radar_ks') }}" class="mc-btn mc-btn-sm" style="background:#ecfeff;color:#155e75;border:1px solid #a5f3fc;">
-      <i class="fas fa-satellite-dish"></i> {{ _("K-Analiz") }}
-    </a>
   </div>
 
   {# ─── HERO — tek büyük rakam, sayfa başına 1 (UI Kılavuzu §5) ─────────── #}
-  <div class="mc-card" style="padding: var(--space-6); margin-bottom: var(--space-6);
+  <div class="mc-card" data-card-code="sp_exec_dashboard.saglik_skoru" style="padding: var(--space-6); margin-bottom: var(--space-6);
        background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #312e81 100%);
        color:#fff; border:none; box-shadow: var(--shadow-lg); border-radius:12px;
        position:relative; overflow:hidden;">
@@ -188,9 +170,9 @@
        style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
               gap: var(--space-4); margin-bottom: var(--space-6);">
 
-    <a href="/process" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-info);
+    <a href="/process" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.pg_hedef_ustu" style="padding: var(--space-4); border-left:4px solid var(--color-info);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="kpi" title="{{ _('Süreç & PG yönetimine git') }}">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("PG Hedef Üstü") }}</div>
       <div class="mc-skeleton" id="exec-kpi-pct-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-kpi-pct" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
@@ -198,9 +180,9 @@
       <div id="exec-kpi-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/sp/initiatives" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-accent);
+    <a href="/sp/initiatives" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.girisim_sagligi" style="padding: var(--space-4); border-left:4px solid var(--color-accent);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="init" title="{{ _('Girişim listesine git') }}">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("Girişim Sağlığı") }}</div>
       <div class="mc-skeleton" id="exec-init-avg-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-init-avg" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
@@ -208,9 +190,9 @@
       <div id="exec-init-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/process" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
+    <a href="/process" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.gecikmis_faaliyet" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="overdue" title="{{ _('Süreçler ve gecikmiş faaliyetler') }}">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("Gecikmiş Faaliyet") }}</div>
       <div class="mc-skeleton" id="exec-overdue-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-overdue" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
@@ -218,9 +200,9 @@
       <div id="exec-overdue-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/k-radar/risk" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-danger);
+    <a href="/k-radar/risk" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.kritik_risk" style="padding: var(--space-4); border-left:4px solid var(--color-danger);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="risk" title="{{ _('Risk yönetimine git') }}">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("Kritik Risk") }}</div>
       <div class="mc-skeleton" id="exec-risk-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-risk" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
@@ -228,9 +210,9 @@
       <div id="exec-risk-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/analysis" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
+    <a href="/analysis" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.yuksek_anomali" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="anomaly" title="{{ _('Anomali analizine git') }}">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("Yüksek Anomali") }}</div>
       <div class="mc-skeleton" id="exec-anomaly-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-anomaly" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
@@ -238,9 +220,9 @@
       <div id="exec-anomaly-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/sp/replan-triggers" class="mc-card exec-tile" style="padding: var(--space-4); border-left:4px solid var(--color-success);
+    <a href="/sp/replan-triggers" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.aktif_tetikleyici" style="padding: var(--space-4); border-left:4px solid var(--color-success);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="trigger" title="{{ _('Replan tetikleyici yönetimi') }}">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("Aktif Tetikleyici") }}</div>
       <div class="mc-skeleton" id="exec-trigger-skel" style="height:32px; margin-top: var(--space-2); width:60%;"></div>
       <div id="exec-trigger" class="mc-num" style="display:none; font-size: var(--text-3xl); font-weight:700;
@@ -250,10 +232,10 @@
   </div>
 
   {# ── K-Vektör Puan Gelişimi (Günlük / Aylık / Çeyreklik / Yıllık) ── #}
-  <div class="mc-card" style="padding:16px 18px; margin-bottom:18px;">
+  <div class="mc-card" data-card-code="sp_exec_dashboard.kvektor_gelisimi" style="padding:16px 18px; margin-bottom:18px;">
     <div style="display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:10px; margin-bottom:12px;">
       <div>
-        <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">
+        <h3 class="mc-card-title" style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">
           <i class="fas fa-vector-square" style="color:#8b5cf6; margin-right:6px;"></i>
           {{ _("K-Vektör Vizyon Puanı — Gelişim") }}
         </h3>
@@ -300,9 +282,9 @@
   </div>
 
   {# ── 12 Aylık Sağlık Trendi ──────────────────────────────────────── #}
-  <div class="mc-card" style="padding:16px 18px; margin-bottom:18px;">
+  <div class="mc-card" data-card-code="sp_exec_dashboard.aylik_saglik_trendi" style="padding:16px 18px; margin-bottom:18px;">
     <div style="display:flex; align-items:center; justify-content:space-between; margin-bottom:8px;">
-      <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">
+      <h3 class="mc-card-title" style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">
         <i class="fas fa-chart-line" style="color:#6366f1; margin-right:6px;"></i>
         {{ _("Son 12 Ay PG Hedef Üstü Oranı") }}
       </h3>
@@ -313,15 +295,15 @@
 
   {# ── Strateji Sıralaması (Top 5 / Bottom 5) ───────────────────────── #}
   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(360px,1fr)); gap:14px; margin-bottom:18px;">
-    <div class="mc-card" style="padding:14px 18px;">
-      <h3 style="margin:0 0 10px; font-size:13.5px; font-weight:600; color:#15803d;">
+    <div class="mc-card" data-card-code="sp_exec_dashboard.strateji_siralamasi" style="padding:14px 18px;">
+      <h3 class="mc-card-title" style="margin:0 0 10px; font-size:13.5px; font-weight:600; color:#15803d;">
         <i class="fas fa-trophy" style="color:#10b981; margin-right:6px;"></i>
         {{ _("En İyi 5 Strateji (PG hedef üstü %%)") }}
       </h3>
       <div id="exec-strat-top" style="display:grid; gap:6px;"></div>
     </div>
-    <div class="mc-card" style="padding:14px 18px;">
-      <h3 style="margin:0 0 10px; font-size:13.5px; font-weight:600; color:#991b1b;">
+    <div class="mc-card" data-card-code="sp_exec_dashboard.strateji_siralamasi" style="padding:14px 18px;">
+      <h3 class="mc-card-title" style="margin:0 0 10px; font-size:13.5px; font-weight:600; color:#991b1b;">
         <i class="fas fa-triangle-exclamation" style="color:#ef4444; margin-right:6px;"></i>
         {{ _("En Düşük 5 Strateji (öncelikli aksiyon)") }}
       </h3>
@@ -330,19 +312,19 @@
   </div>
 
   {# ── Otomatik Vurgular (heuristic uyarılar) ───────────────────────── #}
-  <div class="mc-card mc-card--accent-info" id="exec-highlights" style="padding:14px 18px; margin-bottom:18px; display:none">
+  <div class="mc-card mc-card--accent-info" id="exec-highlights" data-card-code="sp_exec_dashboard.otomatik_vurgular" style="padding:14px 18px; margin-bottom:18px; display:none">
     <div style="display:flex; align-items:center; gap:8px; margin-bottom:10px;">
       <i class="fas fa-lightbulb" style="color:#0ea5e9;"></i>
-      <h3 style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">{{ _("Bu Hafta Dikkat Edilmesi Gerekenler") }}</h3>
+      <h3 class="mc-card-title" style="margin:0; font-size:14px; font-weight:600; color:var(--text-default);">{{ _("Bu Hafta Dikkat Edilmesi Gerekenler") }}</h3>
     </div>
     <div id="exec-highlights-list" style="display:grid; gap:6px;"></div>
   </div>
 
   {# ─── AI Pivot panel ────────────────────────────────────────────────── #}
-  <div class="mc-card" id="exec-pivot-panel"
+  <div class="mc-card" id="exec-pivot-panel" data-card-code="sp_exec_dashboard.ai_pivot_onerileri"
        style="padding: var(--space-6); display:none; border-left:4px solid var(--color-warning);">
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: var(--space-3);">
-      <h3 style="margin:0; font-size: var(--text-lg); font-weight:600; color: var(--text-strong);">
+      <h3 class="mc-card-title" style="margin:0; font-size: var(--text-lg); font-weight:600; color: var(--text-strong);">
         <i class="fas fa-lightbulb" style="color: var(--color-warning); margin-right: var(--space-2);"></i>
         {{ _("AI Pivot Önerileri") }}
       </h3>

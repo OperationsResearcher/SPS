@@ -35,11 +35,12 @@
 
   <div id="content" style="display:none;">
     <!-- Özet -->
-    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:16px;margin-bottom:24px;" id="summary"></div>
+    <div class="mc-card-title" style="font-size:11px;font-weight:700;color:#64748b;text-transform:uppercase;letter-spacing:0.05em;margin:0 0 8px;">{{ _("Özet") }}</div>
+    <div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(180px, 1fr));gap:16px;margin-bottom:24px;" id="summary" data-card-code="raporlar_kv_carpiklik.ozet_kartlari"></div>
 
     <!-- Karşılaştırma çubuk -->
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;">
-      <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 16px;">
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;margin-bottom:20px;" data-card-code="raporlar_kv_carpiklik.agirlik_skor_karsilastirma">
+      <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 16px;">
         <i class="fas fa-chart-bar" style="color:#8b5cf6;"></i> {{ _("Strateji başına Ağırlık vs Skor") }}
       </h3>
       <div id="bars"></div>
@@ -50,8 +51,8 @@
     </div>
 
     <!-- Çarpıklık tablosu -->
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;">
-      <h3 style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:24px;" data-card-code="raporlar_kv_carpiklik.detay_tablosu">
+      <h3 class="mc-card-title" style="font-size:14px;font-weight:700;color:#0f172a;margin:0 0 14px;">
         <i class="fas fa-search" style="color:#dc2626;"></i> {{ _("Çarpıklık Detay Tablosu") }}
       </h3>
       <div style="overflow-x:auto;">

@@ -13,6 +13,10 @@ PY=".venv/Scripts/python.exe"
 # .html içindeki <script> bloklarındaki t() çağrıları babel [javascript] extractor'ı
 # tarafından yakalanmaz (yalnız .js dosyaları). Bunları ayrıca topla:
 "$PY" scripts/_arsiv/fix_oneshot/extract_inline_t.py
+# system_cards.description DB alanı kaynak dosyada yer almaz (runtime verisi).
+# .pot'ta yoksa update adımı bu çevirileri "obsolete" işaretler → (i) modalı EN'de
+# Türkçe görünür. Update'ten ÖNCE ekle ki aktif kalsın:
+"$PY" scripts/_arsiv/fix_oneshot/extract_db_card_descriptions.py
 "$PY" -m babel.messages.frontend update -i messages.pot -d translations
 echo "[i18n_extract] messages.pot güncellendi + kataloglar update edildi."
 echo "Sıradaki: fill script + pybabel compile -d translations"
