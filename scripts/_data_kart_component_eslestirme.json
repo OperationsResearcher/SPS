@@ -1,0 +1,4876 @@
+{
+ "new_components": [
+  {
+   "code": "admin_arac_hata_kontrolu",
+   "name": "Admin Hata Kontrolü Aracı"
+  },
+  {
+   "code": "admin_arac_istatistikler",
+   "name": "Admin İstatistikler Aracı"
+  },
+  {
+   "code": "admin_arac_loglar",
+   "name": "Admin Loglar Aracı"
+  },
+  {
+   "code": "admin_arac_yedekleme",
+   "name": "Admin Yedekleme Aracı"
+  },
+  {
+   "code": "admin_hata_kontrolu_paneli",
+   "name": "Admin Hata Kontrolü Paneli"
+  },
+  {
+   "code": "admin_kart_hiyerarsisi",
+   "name": "Kart Hiyerarşisi Görünümü"
+  },
+  {
+   "code": "holding_dashboard",
+   "name": "Holding Dashboard"
+  },
+  {
+   "code": "holding_drilldown",
+   "name": "Holding Alt Kurum Detayı"
+  },
+  {
+   "code": "admin_sistem_istatistikleri",
+   "name": "Sistem İstatistikleri"
+  },
+  {
+   "code": "admin_kilavuz_olusturucu",
+   "name": "Kılavuz ve Video Oluşturucu"
+  },
+  {
+   "code": "admin_giris_loglari",
+   "name": "Giriş ve Aktivite Logları"
+  },
+  {
+   "code": "admin_bildirim_yonetimi",
+   "name": "Bildirim Yönetimi"
+  },
+  {
+   "code": "admin_paket_modul_yonetimi",
+   "name": "Paket ve Modül Yönetimi"
+  },
+  {
+   "code": "admin_alt_kurum_yonetimi",
+   "name": "Alt Kurum Yönetimi"
+  },
+  {
+   "code": "admin_alt_kurum_kullanim_raporu",
+   "name": "Alt Kurum Kullanım Raporu"
+  },
+  {
+   "code": "admin_kurum_yonetimi",
+   "name": "Kurum Yönetimi"
+  },
+  {
+   "code": "admin_kullanici_yonetimi",
+   "name": "Kullanıcı Yönetimi"
+  },
+  {
+   "code": "admin_yedekleme_araci",
+   "name": "Yedekleme Aracı"
+  },
+  {
+   "code": "admin_yonetim_paneli_ozet",
+   "name": "Yönetim Paneli Özeti"
+  },
+  {
+   "code": "eposta_bildirim_ayarlari",
+   "name": "E-posta Bildirim Ayarları"
+  },
+  {
+   "code": "hesap_ayarlari",
+   "name": "Hesap Ayarları"
+  },
+  {
+   "code": "kurum_ayarlari",
+   "name": "Kurum Ayarları"
+  },
+  {
+   "code": "admin_yonetim_paneli",
+   "name": "Yönetim Paneli (Admin)"
+  },
+  {
+   "code": "zamanlanmis_raporlar",
+   "name": "Zamanlanmış Raporlar"
+  },
+  {
+   "code": "ozel_smtp_yapilandirmasi",
+   "name": "Özel SMTP Yapılandırması"
+  },
+  {
+   "code": "bireysel_karne_ai_ozet",
+   "name": "Bireysel Karne AI Özeti"
+  },
+  {
+   "code": "bireysel_karne_ozet_gorseller",
+   "name": "Bireysel Karne Özet Görselleri"
+  },
+  {
+   "code": "bireysel_karne_istatistikleri",
+   "name": "Bireysel Karne İstatistikleri"
+  },
+  {
+   "code": "bireysel_karne_zaman_cizelgesi",
+   "name": "Bireysel Karne Zaman Çizelgesi"
+  },
+  {
+   "code": "bireysel_karne_detay_tablolari",
+   "name": "Bireysel Karne Detay Tabloları"
+  },
+  {
+   "code": "k_radar_cross_risk_analizi",
+   "name": "K-Radar Çapraz Risk Analizi"
+  },
+  {
+   "code": "k_radar_cross_a3",
+   "name": "K-Radar A3 Raporları"
+  },
+  {
+   "code": "k_radar_cross_anket",
+   "name": "K-Radar Çapraz Anket"
+  },
+  {
+   "code": "k_radar_cross_paydas",
+   "name": "K-Radar Paydaş Yönetimi"
+  },
+  {
+   "code": "k_radar_cross_rekabet",
+   "name": "K-Radar Rekabet Analizi"
+  },
+  {
+   "code": "k_radar_kp_skoru",
+   "name": "KP-Radar Skoru"
+  },
+  {
+   "code": "k_radar_kp_benchmark",
+   "name": "KP-Radar Kıyaslama"
+  },
+  {
+   "code": "k_radar_kp_darbogaz",
+   "name": "KP-Radar Darboğaz Analizi"
+  },
+  {
+   "code": "k_radar_kp_kapasite",
+   "name": "KP-Radar Kapasite Analizi"
+  },
+  {
+   "code": "k_radar_kp_oee",
+   "name": "KP-Radar OEE Analizi"
+  },
+  {
+   "code": "k_radar_kp_olgunluk",
+   "name": "KP-Radar Süreç Olgunluğu"
+  },
+  {
+   "code": "k_radar_kp_pareto",
+   "name": "KP-Radar Pareto Analizi"
+  },
+  {
+   "code": "k_radar_kp_sla",
+   "name": "KP-Radar SLA Analizi"
+  },
+  {
+   "code": "k_radar_kp_vsm",
+   "name": "KP-Radar Değer Akışı (VSM)"
+  },
+  {
+   "code": "k_radar_kpr_proje_radari",
+   "name": "KPR Proje Radarı"
+  },
+  {
+   "code": "k_radar_kpr_cpm",
+   "name": "KPR Kritik Yol Analizi"
+  },
+  {
+   "code": "k_radar_kpr_evm",
+   "name": "KPR Kazanılmış Değer Analizi"
+  },
+  {
+   "code": "k_radar_kpr_gantt",
+   "name": "KPR Gantt Takibi"
+  },
+  {
+   "code": "k_radar_kpr_kaynak_kapasite",
+   "name": "KPR Kaynak Kapasitesi"
+  },
+  {
+   "code": "k_radar_kpr_risk",
+   "name": "KPR Risk Yönetimi"
+  },
+  {
+   "code": "k_radar_ks_bsc",
+   "name": "K-Radar Balanced Scorecard"
+  },
+  {
+   "code": "k_radar_ks_efqm",
+   "name": "K-Radar EFQM Olgunluk Modeli"
+  },
+  {
+   "code": "k_radar_ks_gap_analizi",
+   "name": "K-Radar Hedef Gap Analizi"
+  },
+  {
+   "code": "k_radar_ks_skoru",
+   "name": "K-Radar Kurumsal Strateji Skoru"
+  },
+  {
+   "code": "k_radar_ks_okr",
+   "name": "K-Radar OKR Takibi"
+  },
+  {
+   "code": "k_radar_ks_strateji_surec_kapsama",
+   "name": "K-Radar Strateji-Süreç Kapsama"
+  },
+  {
+   "code": "k_radar_risk_yonetimi",
+   "name": "K-Radar Risk Yönetimi"
+  },
+  {
+   "code": "k_rapor_aktivite_takvim",
+   "name": "K-Rapor Aktivite Takvimi"
+  },
+  {
+   "code": "k_rapor_anomali_tespiti",
+   "name": "K-Rapor Anomali Tespiti"
+  },
+  {
+   "code": "k_rapor_bildirim_analiz",
+   "name": "K-Rapor Bildirim Analizi"
+  },
+  {
+   "code": "k_rapor_bireysel_pg",
+   "name": "K-Rapor Bireysel PG Analizi"
+  },
+  {
+   "code": "k_rapor_denetim",
+   "name": "K-Rapor Denetim Analizi"
+  },
+  {
+   "code": "k_rapor_evm",
+   "name": "K-Rapor Kazanılmış Değer Analizi"
+  },
+  {
+   "code": "k_rapor_faaliyet",
+   "name": "K-Rapor Faaliyet Analizi"
+  },
+  {
+   "code": "k_rapor_k_vektor",
+   "name": "K-Rapor K-Vektör Ağırlıkları"
+  },
+  {
+   "code": "k_rapor_kurum_karsilastirma",
+   "name": "K-Rapor Kurum Karşılaştırma"
+  },
+  {
+   "code": "k_rapor_kurumsal_ozet",
+   "name": "K-Rapor Kurumsal Özet"
+  },
+  {
+   "code": "k_rapor_paydas",
+   "name": "K-Rapor Paydaş Analizi"
+  },
+  {
+   "code": "k_rapor_pg_dagilim",
+   "name": "K-Rapor PG Dağılım Analizi"
+  },
+  {
+   "code": "k_rapor_rekabet",
+   "name": "K-Rapor Rekabet ve A3 Analizi"
+  },
+  {
+   "code": "k_rapor_risk",
+   "name": "K-Rapor Risk ve Süreç Analizi"
+  },
+  {
+   "code": "k_rapor_sorumlu_analiz",
+   "name": "K-Rapor Sorumlu Analizi"
+  },
+  {
+   "code": "k_rapor_strateji_kapsama",
+   "name": "K-Rapor Strateji Kapsama Analizi"
+  },
+  {
+   "code": "k_rapor_surec_pg",
+   "name": "K-Rapor Süreç-PG Analizi"
+  },
+  {
+   "code": "k_rapor_swot_trend",
+   "name": "K-Rapor SWOT/TOWS Trend Analizi"
+  },
+  {
+   "code": "k_rapor_uyari",
+   "name": "K-Rapor Uyarı Paneli"
+  },
+  {
+   "code": "k_rapor_uyum",
+   "name": "K-Rapor Strateji-Süreç Uyum Ağacı"
+  },
+  {
+   "code": "k_rapor_veri_durumu",
+   "name": "K-Rapor Veri Durumu"
+  },
+  {
+   "code": "benim_gorevlerim_karti",
+   "name": "Benim Görevlerim Kartı"
+  },
+  {
+   "code": "benim_masam_karti",
+   "name": "Benim Masam Kartı"
+  },
+  {
+   "code": "bildirimler_karti",
+   "name": "Bildirimler Kartı"
+  },
+  {
+   "code": "mini_istatistik_seridi",
+   "name": "Mini İstatistik Şeridi"
+  },
+  {
+   "code": "bugunun_ozeti_karti",
+   "name": "Bugünün Özeti Kartı"
+  },
+  {
+   "code": "dikkat_donem_verisi_karti",
+   "name": "Dikkat: Dönem Verisi Kartı"
+  },
+  {
+   "code": "favori_pglerim_karti",
+   "name": "Favori PG'lerim Kartı"
+  },
+  {
+   "code": "favori_ve_son_ziyaretlerim_karti",
+   "name": "Favori ve Son Ziyaretlerim Kartı"
+  },
+  {
+   "code": "karalama_defteri_karti",
+   "name": "Karalama Defteri Kartı"
+  },
+  {
+   "code": "kurumsal_olgunluk_endeksi_karti",
+   "name": "Kurumsal Olgunluk Endeksi Kartı"
+  },
+  {
+   "code": "ozet_listeler_karti",
+   "name": "Özet Listeler Kartı"
+  },
+  {
+   "code": "surec_pglerim_karti",
+   "name": "Süreç PG'lerim Kartı"
+  },
+  {
+   "code": "takvimim_karti",
+   "name": "Takvimim Kartı"
+  },
+  {
+   "code": "yonetici_sabah_ozeti_karti",
+   "name": "Yönetici Sabah Özeti Kartı"
+  },
+  {
+   "code": "surec_ozet_istatistikleri",
+   "name": "Süreç Özet İstatistikleri"
+  },
+  {
+   "code": "surec_karnesi_genel_bilgiler",
+   "name": "Süreç Karnesi Genel Bilgiler"
+  },
+  {
+   "code": "proje_ozet_istatistikleri",
+   "name": "Proje Özet İstatistikleri"
+  },
+  {
+   "code": "proje_operasyon_ozeti",
+   "name": "Proje Operasyon Özeti"
+  },
+  {
+   "code": "proje_listesi_yonetimi",
+   "name": "Proje Listesi Yönetimi"
+  },
+  {
+   "code": "proje_takvim_gorunumu",
+   "name": "Proje Takvim Görünümü"
+  },
+  {
+   "code": "proje_detay_ozeti",
+   "name": "Proje Detay Özeti"
+  },
+  {
+   "code": "proje_formu",
+   "name": "Proje Formu"
+  },
+  {
+   "code": "proje_gantt_semasi",
+   "name": "Proje Gantt Şeması"
+  },
+  {
+   "code": "proje_kanban_panosu",
+   "name": "Proje Kanban Panosu"
+  },
+  {
+   "code": "proje_kapasite_yonetimi",
+   "name": "Proje Kapasite Yönetimi"
+  },
+  {
+   "code": "proje_portfoy_yonetimi",
+   "name": "Proje Portföy Yönetimi"
+  },
+  {
+   "code": "proje_raid_yonetimi",
+   "name": "Proje RAID Yönetimi"
+  },
+  {
+   "code": "proje_stratejik_iliski",
+   "name": "Proje Stratejik İlişki"
+  },
+  {
+   "code": "proje_gorev_yonetimi",
+   "name": "Proje Görev Yönetimi"
+  },
+  {
+   "code": "rapor_ai_coach_grubu",
+   "name": "AI Koç Raporu"
+  },
+  {
+   "code": "rapor_ai_danisman_grubu",
+   "name": "AI Danışman Raporu"
+  },
+  {
+   "code": "rapor_ai_sunum_grubu",
+   "name": "AI Sunum Oluşturucu"
+  },
+  {
+   "code": "rapor_audit_paketi_grubu",
+   "name": "Denetim Paketi Raporu"
+  },
+  {
+   "code": "rapor_bi_connector_grubu",
+   "name": "BI Bağlayıcı"
+  },
+  {
+   "code": "rapor_bireysel_hizalama_grubu",
+   "name": "Bireysel Hizalama Raporu"
+  },
+  {
+   "code": "rapor_bireysel_karne_batch_grubu",
+   "name": "Toplu Bireysel Karne Üretimi"
+  },
+  {
+   "code": "rapor_carbon_trend_grubu",
+   "name": "Karbon Trend Raporu"
+  },
+  {
+   "code": "rapor_cfo_dashboard_grubu",
+   "name": "CFO Panosu"
+  },
+  {
+   "code": "rapor_chro_dashboard_grubu",
+   "name": "CHRO Panosu"
+  },
+  {
+   "code": "rapor_cmmi_heatmap_grubu",
+   "name": "CMMI Isı Haritası"
+  },
+  {
+   "code": "rapor_coo_dashboard_grubu",
+   "name": "COO Panosu"
+  },
+  {
+   "code": "rapor_departman_performans_grubu",
+   "name": "Departman Performans Raporu"
+  },
+  {
+   "code": "rapor_early_warning_grubu",
+   "name": "Erken Uyarı Raporu"
+  },
+  {
+   "code": "rapor_esg_rapor_grubu",
+   "name": "ESG Raporu"
+  },
+  {
+   "code": "rapor_esg_yonetim_grubu",
+   "name": "ESG Yönetim Sayfası"
+  },
+  {
+   "code": "rapor_evrim_filmi_grubu",
+   "name": "Yıllar Arası Evrim Filmi"
+  },
+  {
+   "code": "rapor_hedef_revizyon_grubu",
+   "name": "Hedef Revizyon Raporu"
+  },
+  {
+   "code": "rapor_hizalama_sankey_grubu",
+   "name": "Hizalama Sankey Diyagramı"
+  },
+  {
+   "code": "rapor_iki_fa_grubu",
+   "name": "2FA Güvenlik Raporu"
+  },
+  {
+   "code": "rapor_initiative_bubble_grubu",
+   "name": "Girişim Balon Grafiği"
+  },
+  {
+   "code": "rapor_initiative_roadmap_grubu",
+   "name": "Girişim Yol Haritası"
+  },
+  {
+   "code": "rapor_kv_carpiklik_grubu",
+   "name": "KV Çarpıklık Raporu"
+  },
+  {
+   "code": "rapor_ml_anomaly_grubu",
+   "name": "ML Anomali Tespiti"
+  },
+  {
+   "code": "rapor_mobile_grubu",
+   "name": "Mobile Hub Raporu"
+  },
+  {
+   "code": "rapor_muda_analizi_grubu",
+   "name": "Muda (İsraf) Analizi"
+  },
+  {
+   "code": "rapor_nlp_query_grubu",
+   "name": "Doğal Dil Sorgulama"
+  },
+  {
+   "code": "rapor_okr_cascade_grubu",
+   "name": "OKR Kademelendirme Raporu"
+  },
+  {
+   "code": "rapor_onay_zinciri_grubu",
+   "name": "Onay Zinciri Raporu"
+  },
+  {
+   "code": "rapor_pg_proje_etki_grubu",
+   "name": "PG-Proje Etki Raporu"
+  },
+  {
+   "code": "rapor_quarterly_review_grubu",
+   "name": "Çeyreklik Review Raporu"
+  },
+  {
+   "code": "rapor_risk_heatmap_grubu",
+   "name": "Risk Isı Haritası"
+  },
+  {
+   "code": "rapor_sabah_ozeti_grubu",
+   "name": "Sabah Özeti Raporu"
+  },
+  {
+   "code": "rapor_sektor_benchmark_grubu",
+   "name": "Sektör Kıyaslama Raporu"
+  },
+  {
+   "code": "rapor_sektorel_grubu",
+   "name": "Sektörel Plan Paketleri"
+  },
+  {
+   "code": "rapor_strateji_hikayesi_grubu",
+   "name": "Strateji Hikayesi Raporu"
+  },
+  {
+   "code": "rapor_stratejik_yillik_grubu",
+   "name": "Stratejik Yıllık Rapor"
+  },
+  {
+   "code": "rapor_sunburst_grubu",
+   "name": "Stratejik Hiyerarşi Sunburst"
+  },
+  {
+   "code": "rapor_veri_kalitesi_grubu",
+   "name": "Veri Kalitesi Raporu"
+  },
+  {
+   "code": "rapor_vrio_portfoy_grubu",
+   "name": "VRIO Portföy Raporu"
+  },
+  {
+   "code": "rapor_yatirimci_sunum_grubu",
+   "name": "Yatırımcı Sunumu"
+  },
+  {
+   "code": "rapor_yonetici_liderlik_grubu",
+   "name": "Yönetici Liderlik Raporu"
+  },
+  {
+   "code": "rapor_operasyon_istatistik_grubu",
+   "name": "Operasyon İstatistikleri"
+  },
+  {
+   "code": "rapor_sektorel_detay_grubu",
+   "name": "Sektörel Paket Detayı"
+  },
+  {
+   "code": "ai_ayarlari",
+   "name": "Yapay Zeka Ayarları"
+  },
+  {
+   "code": "mavi_okyanus_analizi",
+   "name": "Mavi Okyanus Analizi"
+  },
+  {
+   "code": "dengeli_karne_bsc",
+   "name": "Dengeli Karne (BSC)"
+  },
+  {
+   "code": "ceyreklik_degerlendirme",
+   "name": "Çeyreklik Değerlendirme"
+  },
+  {
+   "code": "sp_plan_donemleri",
+   "name": "Stratejik Plan Dönemleri"
+  },
+  {
+   "code": "sp_yonetici_paneli",
+   "name": "SP Yönetici Paneli"
+  },
+  {
+   "code": "stratejik_girisimler",
+   "name": "Stratejik Girişimler"
+  },
+  {
+   "code": "ai_kullanim_raporu",
+   "name": "Yapay Zeka Kullanım Raporu"
+  },
+  {
+   "code": "okr_yonetimi",
+   "name": "OKR Yönetimi"
+  },
+  {
+   "code": "yeniden_planlama_tetikleyicileri",
+   "name": "Yeniden Planlama Tetikleyicileri"
+  },
+  {
+   "code": "senaryo_planlama",
+   "name": "Senaryo Planlama"
+  },
+  {
+   "code": "yeni_plan_yili_sihirbazi",
+   "name": "Yeni Plan Yılı Sihirbazı"
+  },
+  {
+   "code": "strateji_proje_hizalama_matrisi",
+   "name": "Strateji-Proje Hizalama Matrisi"
+  },
+  {
+   "code": "strateji_haritasi",
+   "name": "Strateji Haritası"
+  },
+  {
+   "code": "plan_sablonlari",
+   "name": "Plan Şablonları"
+  },
+  {
+   "code": "savas_odasi_tv_panosu",
+   "name": "Savaş Odası TV Panosu"
+  },
+  {
+   "code": "hoshin_x_matrix",
+   "name": "Hoshin X-Matrix"
+  },
+  {
+   "code": "anomali_tespiti",
+   "name": "Anomali Tespiti"
+  },
+  {
+   "code": "surec_saglik_skoru",
+   "name": "Süreç Sağlık Skoru"
+  },
+  {
+   "code": "trend_tahmin_analizi",
+   "name": "Trend ve Tahmin Analizi"
+  },
+  {
+   "code": "api_erisimi",
+   "name": "API Erişimi"
+  },
+  {
+   "code": "kurum_takvimi",
+   "name": "Kurum Takvimi"
+  },
+  {
+   "code": "k_vektor_vizyon_skoru",
+   "name": "K-Vektör Vizyon Skoru"
+  },
+  {
+   "code": "bireysel_hedef_hizalama",
+   "name": "Bireysel Hedef Hizalama"
+  },
+  {
+   "code": "vizyon_karti",
+   "name": "Vizyon Kartı"
+  }
+ ],
+ "card_assignments": [
+  {
+   "card_id": 378,
+   "card_code": "admin_araclar.hata_kontrolu",
+   "mode": "new",
+   "new_component_code": "admin_arac_hata_kontrolu"
+  },
+  {
+   "card_id": 379,
+   "card_code": "admin_araclar.istatistikler",
+   "mode": "new",
+   "new_component_code": "admin_arac_istatistikler"
+  },
+  {
+   "card_id": 380,
+   "card_code": "admin_araclar.loglar",
+   "mode": "new",
+   "new_component_code": "admin_arac_loglar"
+  },
+  {
+   "card_id": 381,
+   "card_code": "admin_araclar.yedekleme",
+   "mode": "new",
+   "new_component_code": "admin_arac_yedekleme"
+  },
+  {
+   "card_id": 382,
+   "card_code": "admin_araclar.yeni_arac_yer_tutucu",
+   "mode": "skip"
+  },
+  {
+   "card_id": 387,
+   "card_code": "admin_hata_kontrolu.aktif_crud_senaryolari",
+   "mode": "new",
+   "new_component_code": "admin_hata_kontrolu_paneli"
+  },
+  {
+   "card_id": 383,
+   "card_code": "admin_hata_kontrolu.izole_test_kurumu",
+   "mode": "existing",
+   "existing_component_id": 22
+  },
+  {
+   "card_id": 384,
+   "card_code": "admin_hata_kontrolu.kesif_taranacak_sayfalar",
+   "mode": "existing",
+   "existing_component_id": 22
+  },
+  {
+   "card_id": 385,
+   "card_code": "admin_hata_kontrolu.otomatik_tarayici_testi",
+   "mode": "existing",
+   "existing_component_id": 22
+  },
+  {
+   "card_id": 388,
+   "card_code": "admin_hata_kontrolu.senaryo_gecmisi",
+   "mode": "existing",
+   "existing_component_id": 22
+  },
+  {
+   "card_id": 386,
+   "card_code": "admin_hata_kontrolu.tarama_gecmisi",
+   "mode": "existing",
+   "existing_component_id": 22
+  },
+  {
+   "card_id": 389,
+   "card_code": "admin_hierarchy.sayfa",
+   "mode": "new",
+   "new_component_code": "admin_kart_hiyerarsisi"
+  },
+  {
+   "card_id": 393,
+   "card_code": "admin_holding_dashboard.gecikmis_faaliyet",
+   "mode": "new",
+   "new_component_code": "holding_dashboard"
+  },
+  {
+   "card_id": 394,
+   "card_code": "admin_holding_dashboard.karsilastirma_grafik",
+   "mode": "new",
+   "new_component_code": "holding_dashboard"
+  },
+  {
+   "card_id": 391,
+   "card_code": "admin_holding_dashboard.kritik_risk",
+   "mode": "new",
+   "new_component_code": "holding_dashboard"
+  },
+  {
+   "card_id": 390,
+   "card_code": "admin_holding_dashboard.ozet_skor",
+   "mode": "new",
+   "new_component_code": "holding_dashboard"
+  },
+  {
+   "card_id": 392,
+   "card_code": "admin_holding_dashboard.yuksek_anomali",
+   "mode": "new",
+   "new_component_code": "holding_dashboard"
+  },
+  {
+   "card_id": 398,
+   "card_code": "admin_holding_drilldown.gecikmis_faaliyet",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 397,
+   "card_code": "admin_holding_drilldown.girisim_ortalamasi",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 402,
+   "card_code": "admin_holding_drilldown.girisimler",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 396,
+   "card_code": "admin_holding_drilldown.kpi_hedef_ustu",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 399,
+   "card_code": "admin_holding_drilldown.kritik_risk",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 401,
+   "card_code": "admin_holding_drilldown.kullanici_senaryo",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 403,
+   "card_code": "admin_holding_drilldown.risk_listesi",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 395,
+   "card_code": "admin_holding_drilldown.saglik_skoru",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 400,
+   "card_code": "admin_holding_drilldown.yuksek_anomali",
+   "mode": "new",
+   "new_component_code": "holding_drilldown"
+  },
+  {
+   "card_id": 404,
+   "card_code": "admin_istatistikler.kurum_dagilim_tablosu",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 629,
+   "card_code": "admin_istatistikler.ozet_alt_strateji",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 628,
+   "card_code": "admin_istatistikler.ozet_ana_strateji",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 627,
+   "card_code": "admin_istatistikler.ozet_kullanici",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 626,
+   "card_code": "admin_istatistikler.ozet_kurum",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 631,
+   "card_code": "admin_istatistikler.ozet_pg",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 632,
+   "card_code": "admin_istatistikler.ozet_pg_verisi",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 633,
+   "card_code": "admin_istatistikler.ozet_proje",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 634,
+   "card_code": "admin_istatistikler.ozet_proje_task",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 630,
+   "card_code": "admin_istatistikler.ozet_surec",
+   "mode": "new",
+   "new_component_code": "admin_sistem_istatistikleri"
+  },
+  {
+   "card_id": 406,
+   "card_code": "admin_kilavuz_olusturucu.calisma_loglari",
+   "mode": "new",
+   "new_component_code": "admin_kilavuz_olusturucu"
+  },
+  {
+   "card_id": 409,
+   "card_code": "admin_kilavuz_olusturucu.kilavuz_pdf_indirme",
+   "mode": "new",
+   "new_component_code": "admin_kilavuz_olusturucu"
+  },
+  {
+   "card_id": 405,
+   "card_code": "admin_kilavuz_olusturucu.kontrol_paneli",
+   "mode": "new",
+   "new_component_code": "admin_kilavuz_olusturucu"
+  },
+  {
+   "card_id": 407,
+   "card_code": "admin_kilavuz_olusturucu.video_galerisi",
+   "mode": "new",
+   "new_component_code": "admin_kilavuz_olusturucu"
+  },
+  {
+   "card_id": 408,
+   "card_code": "admin_kilavuz_olusturucu.yenitomofil_durumu",
+   "mode": "new",
+   "new_component_code": "admin_kilavuz_olusturucu"
+  },
+  {
+   "card_id": 413,
+   "card_code": "admin_loglar.hic_giris_yapmamis",
+   "mode": "new",
+   "new_component_code": "admin_giris_loglari"
+  },
+  {
+   "card_id": 415,
+   "card_code": "admin_loglar.hic_giris_yapmamis_kullanicilar",
+   "mode": "new",
+   "new_component_code": "admin_giris_loglari"
+  },
+  {
+   "card_id": 414,
+   "card_code": "admin_loglar.kurum_bazinda",
+   "mode": "new",
+   "new_component_code": "admin_giris_loglari"
+  },
+  {
+   "card_id": 411,
+   "card_code": "admin_loglar.son_giris",
+   "mode": "new",
+   "new_component_code": "admin_giris_loglari"
+  },
+  {
+   "card_id": 416,
+   "card_code": "admin_loglar.son_hareketler",
+   "mode": "new",
+   "new_component_code": "admin_giris_loglari"
+  },
+  {
+   "card_id": 412,
+   "card_code": "admin_loglar.son_veri_hareketi",
+   "mode": "new",
+   "new_component_code": "admin_giris_loglari"
+  },
+  {
+   "card_id": 410,
+   "card_code": "admin_loglar.toplam_giris",
+   "mode": "new",
+   "new_component_code": "admin_giris_loglari"
+  },
+  {
+   "card_id": 417,
+   "card_code": "admin_loglar_kurum.kategoriler",
+   "mode": "skip"
+  },
+  {
+   "card_id": 423,
+   "card_code": "admin_notifications.bildirim_listesi",
+   "mode": "new",
+   "new_component_code": "admin_bildirim_yonetimi"
+  },
+  {
+   "card_id": 422,
+   "card_code": "admin_notifications.filtre",
+   "mode": "new",
+   "new_component_code": "admin_bildirim_yonetimi"
+  },
+  {
+   "card_id": 419,
+   "card_code": "admin_notifications.okunmamis_bildirim",
+   "mode": "new",
+   "new_component_code": "admin_bildirim_yonetimi"
+  },
+  {
+   "card_id": 420,
+   "card_code": "admin_notifications.okunmus_bildirim",
+   "mode": "new",
+   "new_component_code": "admin_bildirim_yonetimi"
+  },
+  {
+   "card_id": 418,
+   "card_code": "admin_notifications.toplam_bildirim",
+   "mode": "new",
+   "new_component_code": "admin_bildirim_yonetimi"
+  },
+  {
+   "card_id": 421,
+   "card_code": "admin_notifications.yayin_bildirimi",
+   "mode": "new",
+   "new_component_code": "admin_bildirim_yonetimi"
+  },
+  {
+   "card_id": 424,
+   "card_code": "admin_packages.abonelik_paketleri",
+   "mode": "new",
+   "new_component_code": "admin_paket_modul_yonetimi"
+  },
+  {
+   "card_id": 425,
+   "card_code": "admin_packages.sistem_modulleri",
+   "mode": "new",
+   "new_component_code": "admin_paket_modul_yonetimi"
+  },
+  {
+   "card_id": 427,
+   "card_code": "admin_sub_tenants.alt_kurum_listesi",
+   "mode": "new",
+   "new_component_code": "admin_alt_kurum_yonetimi"
+  },
+  {
+   "card_id": 426,
+   "card_code": "admin_sub_tenants.ozet_kart",
+   "mode": "new",
+   "new_component_code": "admin_alt_kurum_yonetimi"
+  },
+  {
+   "card_id": 430,
+   "card_code": "admin_sub_tenants_usage.detay_tablosu",
+   "mode": "new",
+   "new_component_code": "admin_alt_kurum_kullanim_raporu"
+  },
+  {
+   "card_id": 428,
+   "card_code": "admin_sub_tenants_usage.ozet_toplam",
+   "mode": "new",
+   "new_component_code": "admin_alt_kurum_kullanim_raporu"
+  },
+  {
+   "card_id": 429,
+   "card_code": "admin_sub_tenants_usage.paket_dagilimi",
+   "mode": "new",
+   "new_component_code": "admin_alt_kurum_kullanim_raporu"
+  },
+  {
+   "card_id": 432,
+   "card_code": "admin_tenants.aktif_kurum",
+   "mode": "new",
+   "new_component_code": "admin_kurum_yonetimi"
+  },
+  {
+   "card_id": 433,
+   "card_code": "admin_tenants.arsivlenmis_kurum",
+   "mode": "new",
+   "new_component_code": "admin_kurum_yonetimi"
+  },
+  {
+   "card_id": 435,
+   "card_code": "admin_tenants.kurum_listesi",
+   "mode": "new",
+   "new_component_code": "admin_kurum_yonetimi"
+  },
+  {
+   "card_id": 434,
+   "card_code": "admin_tenants.toplam_kullanici",
+   "mode": "new",
+   "new_component_code": "admin_kurum_yonetimi"
+  },
+  {
+   "card_id": 431,
+   "card_code": "admin_tenants.toplam_kurum",
+   "mode": "new",
+   "new_component_code": "admin_kurum_yonetimi"
+  },
+  {
+   "card_id": 438,
+   "card_code": "admin_users.aktif_kullanici",
+   "mode": "new",
+   "new_component_code": "admin_kullanici_yonetimi"
+  },
+  {
+   "card_id": 436,
+   "card_code": "admin_users.arama_filtre",
+   "mode": "new",
+   "new_component_code": "admin_kullanici_yonetimi"
+  },
+  {
+   "card_id": 440,
+   "card_code": "admin_users.kullanici_listesi",
+   "mode": "new",
+   "new_component_code": "admin_kullanici_yonetimi"
+  },
+  {
+   "card_id": 439,
+   "card_code": "admin_users.pasif_kullanici",
+   "mode": "new",
+   "new_component_code": "admin_kullanici_yonetimi"
+  },
+  {
+   "card_id": 437,
+   "card_code": "admin_users.toplam_kullanici",
+   "mode": "new",
+   "new_component_code": "admin_kullanici_yonetimi"
+  },
+  {
+   "card_id": 444,
+   "card_code": "admin_yedekleme.db_geri_yukleme",
+   "mode": "new",
+   "new_component_code": "admin_yedekleme_araci"
+  },
+  {
+   "card_id": 441,
+   "card_code": "admin_yedekleme.manuel_yedek",
+   "mode": "new",
+   "new_component_code": "admin_yedekleme_araci"
+  },
+  {
+   "card_id": 442,
+   "card_code": "admin_yedekleme.otomatik_yedek_durumu",
+   "mode": "new",
+   "new_component_code": "admin_yedekleme_araci"
+  },
+  {
+   "card_id": 443,
+   "card_code": "admin_yedekleme.yedek_listesi",
+   "mode": "new",
+   "new_component_code": "admin_yedekleme_araci"
+  },
+  {
+   "card_id": 448,
+   "card_code": "admin_yonetim_paneli.aktif_hesap",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 445,
+   "card_code": "admin_yonetim_paneli.bakim_modu",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 447,
+   "card_code": "admin_yonetim_paneli.cevrimici",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 453,
+   "card_code": "admin_yonetim_paneli.kullanici_durumu",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 446,
+   "card_code": "admin_yonetim_paneli.kurum_secimi",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 449,
+   "card_code": "admin_yonetim_paneli.son_24_saat",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 451,
+   "card_code": "admin_yonetim_paneli.son_30_gun",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 450,
+   "card_code": "admin_yonetim_paneli.son_7_gun",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 454,
+   "card_code": "admin_yonetim_paneli.son_aktiviteler",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 452,
+   "card_code": "admin_yonetim_paneli.tum_zamanlar",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli_ozet"
+  },
+  {
+   "card_id": 478,
+   "card_code": "ayarlar.eposta_bildirimleri",
+   "mode": "new",
+   "new_component_code": "eposta_bildirim_ayarlari"
+  },
+  {
+   "card_id": 476,
+   "card_code": "ayarlar.hesap_ayarlari",
+   "mode": "new",
+   "new_component_code": "hesap_ayarlari"
+  },
+  {
+   "card_id": 472,
+   "card_code": "ayarlar.kullanici_ozeti",
+   "mode": "skip"
+  },
+  {
+   "card_id": 480,
+   "card_code": "ayarlar.kurum_ayarlari",
+   "mode": "new",
+   "new_component_code": "kurum_ayarlari"
+  },
+  {
+   "card_id": 473,
+   "card_code": "ayarlar.kurum_ozeti",
+   "mode": "skip"
+  },
+  {
+   "card_id": 477,
+   "card_code": "ayarlar.profil_bilgileri",
+   "mode": "new",
+   "new_component_code": "hesap_ayarlari"
+  },
+  {
+   "card_id": 474,
+   "card_code": "ayarlar.tema_durumu",
+   "mode": "skip"
+  },
+  {
+   "card_id": 481,
+   "card_code": "ayarlar.yonetim_paneli",
+   "mode": "new",
+   "new_component_code": "admin_yonetim_paneli"
+  },
+  {
+   "card_id": 475,
+   "card_code": "ayarlar.zamanlanmis_rapor_ozeti",
+   "mode": "new",
+   "new_component_code": "zamanlanmis_raporlar"
+  },
+  {
+   "card_id": 479,
+   "card_code": "ayarlar.zamanlanmis_raporlar",
+   "mode": "new",
+   "new_component_code": "zamanlanmis_raporlar"
+  },
+  {
+   "card_id": 471,
+   "card_code": "ayarlar_eposta.bildirim_tercihleri",
+   "mode": "new",
+   "new_component_code": "eposta_bildirim_ayarlari"
+  },
+  {
+   "card_id": 470,
+   "card_code": "ayarlar_eposta.ozel_smtp",
+   "mode": "new",
+   "new_component_code": "ozel_smtp_yapilandirmasi"
+  },
+  {
+   "card_id": 485,
+   "card_code": "ayarlar_zamanlanmis_raporlar.aylik_pg_raporu",
+   "mode": "new",
+   "new_component_code": "zamanlanmis_raporlar"
+  },
+  {
+   "card_id": 482,
+   "card_code": "ayarlar_zamanlanmis_raporlar.haftalik_strateji_ozeti",
+   "mode": "new",
+   "new_component_code": "zamanlanmis_raporlar"
+  },
+  {
+   "card_id": 484,
+   "card_code": "ayarlar_zamanlanmis_raporlar.risk_anomali_uyarisi",
+   "mode": "new",
+   "new_component_code": "zamanlanmis_raporlar"
+  },
+  {
+   "card_id": 483,
+   "card_code": "ayarlar_zamanlanmis_raporlar.sabah_operasyonel_ozeti",
+   "mode": "new",
+   "new_component_code": "zamanlanmis_raporlar"
+  },
+  {
+   "card_id": 487,
+   "card_code": "bireysel_karne.ai_ozet",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_ai_ozet"
+  },
+  {
+   "card_id": 488,
+   "card_code": "bireysel_karne.ust_bar",
+   "mode": "skip"
+  },
+  {
+   "card_id": 489,
+   "card_code": "bireysel_karne.ilerleme_halkalari",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_ozet_gorseller"
+  },
+  {
+   "card_id": 490,
+   "card_code": "bireysel_karne.stat_toplam_pg",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_istatistikleri"
+  },
+  {
+   "card_id": 491,
+   "card_code": "bireysel_karne.stat_veri_girilen",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_istatistikleri"
+  },
+  {
+   "card_id": 492,
+   "card_code": "bireysel_karne.stat_faaliyetler",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_istatistikleri"
+  },
+  {
+   "card_id": 493,
+   "card_code": "bireysel_karne.stat_tamamlanan",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_istatistikleri"
+  },
+  {
+   "card_id": 494,
+   "card_code": "bireysel_karne.yil_ozeti",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_ozet_gorseller"
+  },
+  {
+   "card_id": 495,
+   "card_code": "bireysel_karne.zaman_cizelgesi",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_zaman_cizelgesi"
+  },
+  {
+   "card_id": 496,
+   "card_code": "bireysel_karne.pg_tablosu",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_detay_tablolari"
+  },
+  {
+   "card_id": 497,
+   "card_code": "bireysel_karne.faaliyet_tablosu",
+   "mode": "new",
+   "new_component_code": "bireysel_karne_detay_tablolari"
+  },
+  {
+   "card_id": 499,
+   "card_code": "k_radar_cross.risk_isi_haritasi",
+   "mode": "new",
+   "new_component_code": "k_radar_cross_risk_analizi"
+  },
+  {
+   "card_id": 500,
+   "card_code": "k_radar_cross_a3.a3_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_cross_a3"
+  },
+  {
+   "card_id": 501,
+   "card_code": "k_radar_cross_anket.anket_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_cross_anket"
+  },
+  {
+   "card_id": 502,
+   "card_code": "k_radar_cross_paydas.paydas_listesi",
+   "mode": "new",
+   "new_component_code": "k_radar_cross_paydas"
+  },
+  {
+   "card_id": 503,
+   "card_code": "k_radar_cross_rekabet.rekabet_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_cross_rekabet"
+  },
+  {
+   "card_id": 639,
+   "card_code": "k_radar_hub.grup_ai",
+   "mode": "skip"
+  },
+  {
+   "card_id": 635,
+   "card_code": "k_radar_hub.grup_performans",
+   "mode": "skip"
+  },
+  {
+   "card_id": 637,
+   "card_code": "k_radar_hub.grup_risk",
+   "mode": "skip"
+  },
+  {
+   "card_id": 638,
+   "card_code": "k_radar_hub.grup_strateji",
+   "mode": "skip"
+  },
+  {
+   "card_id": 636,
+   "card_code": "k_radar_hub.grup_yurutme",
+   "mode": "skip"
+  },
+  {
+   "card_id": 84,
+   "card_code": "k_radar_kp.band",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_skoru"
+  },
+  {
+   "card_id": 86,
+   "card_code": "k_radar_kp.hesaplanan_pg",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_skoru"
+  },
+  {
+   "card_id": 85,
+   "card_code": "k_radar_kp.kritik_pg",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_skoru"
+  },
+  {
+   "card_id": 83,
+   "card_code": "k_radar_kp.toplam_skor",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_skoru"
+  },
+  {
+   "card_id": 504,
+   "card_code": "k_radar_kp_benchmark.benchmark_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_benchmark"
+  },
+  {
+   "card_id": 505,
+   "card_code": "k_radar_kp_darbogaz.ozet",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_darbogaz"
+  },
+  {
+   "card_id": 507,
+   "card_code": "k_radar_kp_deger_zinciri.faaliyetler",
+   "mode": "existing",
+   "existing_component_id": 13
+  },
+  {
+   "card_id": 506,
+   "card_code": "k_radar_kp_deger_zinciri.ozet",
+   "mode": "existing",
+   "existing_component_id": 13
+  },
+  {
+   "card_id": 508,
+   "card_code": "k_radar_kp_kapasite.kapasite_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_kapasite"
+  },
+  {
+   "card_id": 509,
+   "card_code": "k_radar_kp_oee.ozet",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_oee"
+  },
+  {
+   "card_id": 510,
+   "card_code": "k_radar_kp_olgunluk.olgunluk_takip",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_olgunluk"
+  },
+  {
+   "card_id": 511,
+   "card_code": "k_radar_kp_pareto.ozet",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_pareto"
+  },
+  {
+   "card_id": 512,
+   "card_code": "k_radar_kp_sla.ozet",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_sla"
+  },
+  {
+   "card_id": 513,
+   "card_code": "k_radar_kp_vsm.vsm_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_kp_vsm"
+  },
+  {
+   "card_id": 514,
+   "card_code": "k_radar_kpr.proje_radari",
+   "mode": "new",
+   "new_component_code": "k_radar_kpr_proje_radari"
+  },
+  {
+   "card_id": 515,
+   "card_code": "k_radar_kpr_cpm.cpm_analizi",
+   "mode": "new",
+   "new_component_code": "k_radar_kpr_cpm"
+  },
+  {
+   "card_id": 516,
+   "card_code": "k_radar_kpr_evm.ozet",
+   "mode": "new",
+   "new_component_code": "k_radar_kpr_evm"
+  },
+  {
+   "card_id": 517,
+   "card_code": "k_radar_kpr_gantt.gantt_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_kpr_gantt"
+  },
+  {
+   "card_id": 518,
+   "card_code": "k_radar_kpr_kaynak_kapasite.ozet",
+   "mode": "new",
+   "new_component_code": "k_radar_kpr_kaynak_kapasite"
+  },
+  {
+   "card_id": 519,
+   "card_code": "k_radar_kpr_risk.risk_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_kpr_risk"
+  },
+  {
+   "card_id": 72,
+   "card_code": "k_radar_ks.bsc",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_bsc"
+  },
+  {
+   "card_id": 73,
+   "card_code": "k_radar_ks.efqm",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_efqm"
+  },
+  {
+   "card_id": 70,
+   "card_code": "k_radar_ks.gap_analizi",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_gap_analizi"
+  },
+  {
+   "card_id": 65,
+   "card_code": "k_radar_ks.genel_pg_basarisi",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_skoru"
+  },
+  {
+   "card_id": 66,
+   "card_code": "k_radar_ks.ks_skoru",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_skoru"
+  },
+  {
+   "card_id": 71,
+   "card_code": "k_radar_ks.okr",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_okr"
+  },
+  {
+   "card_id": 69,
+   "card_code": "k_radar_ks.pestle_analizi",
+   "mode": "existing",
+   "existing_component_id": 7
+  },
+  {
+   "card_id": 63,
+   "card_code": "k_radar_ks.strateji_kapsami",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_skoru"
+  },
+  {
+   "card_id": 74,
+   "card_code": "k_radar_ks.strateji_surec_kapsama_ozeti",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_strateji_surec_kapsama"
+  },
+  {
+   "card_id": 67,
+   "card_code": "k_radar_ks.swot_analizi",
+   "mode": "existing",
+   "existing_component_id": 6
+  },
+  {
+   "card_id": 64,
+   "card_code": "k_radar_ks.toplam_strateji",
+   "mode": "new",
+   "new_component_code": "k_radar_ks_skoru"
+  },
+  {
+   "card_id": 68,
+   "card_code": "k_radar_ks.tows_matrisi",
+   "mode": "existing",
+   "existing_component_id": 8
+  },
+  {
+   "card_id": 521,
+   "card_code": "k_radar_risk_management.risk_listesi",
+   "mode": "new",
+   "new_component_code": "k_radar_risk_yonetimi"
+  },
+  {
+   "card_id": 520,
+   "card_code": "k_radar_risk_management.risk_matrisi",
+   "mode": "new",
+   "new_component_code": "k_radar_risk_yonetimi"
+  },
+  {
+   "card_id": 159,
+   "card_code": "k_rapor_aktivite_takvim.aktif_gun",
+   "mode": "new",
+   "new_component_code": "k_rapor_aktivite_takvim"
+  },
+  {
+   "card_id": 160,
+   "card_code": "k_rapor_aktivite_takvim.gunluk_ort",
+   "mode": "new",
+   "new_component_code": "k_rapor_aktivite_takvim"
+  },
+  {
+   "card_id": 127,
+   "card_code": "k_rapor_aktivite_takvim.gunluk_veri_giris_aktivitesi",
+   "mode": "new",
+   "new_component_code": "k_rapor_aktivite_takvim"
+  },
+  {
+   "card_id": 128,
+   "card_code": "k_rapor_aktivite_takvim.son_30_gun_trend",
+   "mode": "new",
+   "new_component_code": "k_rapor_aktivite_takvim"
+  },
+  {
+   "card_id": 158,
+   "card_code": "k_rapor_aktivite_takvim.toplam_giris",
+   "mode": "new",
+   "new_component_code": "k_rapor_aktivite_takvim"
+  },
+  {
+   "card_id": 524,
+   "card_code": "k_rapor_anomalies.anomali_listesi",
+   "mode": "new",
+   "new_component_code": "k_rapor_anomali_tespiti"
+  },
+  {
+   "card_id": 525,
+   "card_code": "k_rapor_anomalies.bos_durum",
+   "mode": "skip"
+  },
+  {
+   "card_id": 523,
+   "card_code": "k_rapor_anomalies.ozet",
+   "mode": "new",
+   "new_component_code": "k_rapor_anomali_tespiti"
+  },
+  {
+   "card_id": 522,
+   "card_code": "k_rapor_anomalies.tarama_filtreleri",
+   "mode": "new",
+   "new_component_code": "k_rapor_anomali_tespiti"
+  },
+  {
+   "card_id": 140,
+   "card_code": "k_rapor_bildirim_analiz.bildirim_turu_dagilimi",
+   "mode": "new",
+   "new_component_code": "k_rapor_bildirim_analiz"
+  },
+  {
+   "card_id": 143,
+   "card_code": "k_rapor_bildirim_analiz.en_cok_bildirim_alan_kullanicilar",
+   "mode": "new",
+   "new_component_code": "k_rapor_bildirim_analiz"
+  },
+  {
+   "card_id": 165,
+   "card_code": "k_rapor_bildirim_analiz.okunan",
+   "mode": "new",
+   "new_component_code": "k_rapor_bildirim_analiz"
+  },
+  {
+   "card_id": 166,
+   "card_code": "k_rapor_bildirim_analiz.okunmayan",
+   "mode": "new",
+   "new_component_code": "k_rapor_bildirim_analiz"
+  },
+  {
+   "card_id": 142,
+   "card_code": "k_rapor_bildirim_analiz.okunmayan_bildirimlerin_yaslanmasi",
+   "mode": "new",
+   "new_component_code": "k_rapor_bildirim_analiz"
+  },
+  {
+   "card_id": 141,
+   "card_code": "k_rapor_bildirim_analiz.son_30_gun_bildirim_trendi",
+   "mode": "new",
+   "new_component_code": "k_rapor_bildirim_analiz"
+  },
+  {
+   "card_id": 167,
+   "card_code": "k_rapor_bildirim_analiz.son_7_gun",
+   "mode": "new",
+   "new_component_code": "k_rapor_bildirim_analiz"
+  },
+  {
+   "card_id": 164,
+   "card_code": "k_rapor_bildirim_analiz.toplam_bildirim",
+   "mode": "new",
+   "new_component_code": "k_rapor_bildirim_analiz"
+  },
+  {
+   "card_id": 100,
+   "card_code": "k_rapor_bireysel.bireysel_pg_detay_listesi",
+   "mode": "new",
+   "new_component_code": "k_rapor_bireysel_pg"
+  },
+  {
+   "card_id": 99,
+   "card_code": "k_rapor_bireysel.kullanici_bazli_pg_basari_tablosu",
+   "mode": "new",
+   "new_component_code": "k_rapor_bireysel_pg"
+  },
+  {
+   "card_id": 107,
+   "card_code": "k_rapor_denetim.en_aktif_kullanicilar",
+   "mode": "new",
+   "new_component_code": "k_rapor_denetim"
+  },
+  {
+   "card_id": 106,
+   "card_code": "k_rapor_denetim.islem_dagilimi",
+   "mode": "new",
+   "new_component_code": "k_rapor_denetim"
+  },
+  {
+   "card_id": 108,
+   "card_code": "k_rapor_denetim.son_islemler",
+   "mode": "new",
+   "new_component_code": "k_rapor_denetim"
+  },
+  {
+   "card_id": 115,
+   "card_code": "k_rapor_evm.kazanilmis_deger_evm_proje_snapshot_tablosu",
+   "mode": "new",
+   "new_component_code": "k_rapor_evm"
+  },
+  {
+   "card_id": 96,
+   "card_code": "k_rapor_faaliyet.aylik_tamamlanan",
+   "mode": "new",
+   "new_component_code": "k_rapor_faaliyet"
+  },
+  {
+   "card_id": 145,
+   "card_code": "k_rapor_faaliyet.devam_ediyor",
+   "mode": "new",
+   "new_component_code": "k_rapor_faaliyet"
+  },
+  {
+   "card_id": 146,
+   "card_code": "k_rapor_faaliyet.geciken",
+   "mode": "new",
+   "new_component_code": "k_rapor_faaliyet"
+  },
+  {
+   "card_id": 97,
+   "card_code": "k_rapor_faaliyet.geciken_faaliyetler",
+   "mode": "new",
+   "new_component_code": "k_rapor_faaliyet"
+  },
+  {
+   "card_id": 98,
+   "card_code": "k_rapor_faaliyet.proje_portfoy_durumu",
+   "mode": "new",
+   "new_component_code": "k_rapor_faaliyet"
+  },
+  {
+   "card_id": 144,
+   "card_code": "k_rapor_faaliyet.tamamlanan",
+   "mode": "new",
+   "new_component_code": "k_rapor_faaliyet"
+  },
+  {
+   "card_id": 147,
+   "card_code": "k_rapor_faaliyet.toplam",
+   "mode": "new",
+   "new_component_code": "k_rapor_faaliyet"
+  },
+  {
+   "card_id": 113,
+   "card_code": "k_rapor_k_vektor.agirlik_tablosu",
+   "mode": "new",
+   "new_component_code": "k_rapor_k_vektor"
+  },
+  {
+   "card_id": 114,
+   "card_code": "k_rapor_k_vektor.alt_strateji_agirliklari",
+   "mode": "new",
+   "new_component_code": "k_rapor_k_vektor"
+  },
+  {
+   "card_id": 112,
+   "card_code": "k_rapor_k_vektor.ana_strateji_agirliklari",
+   "mode": "new",
+   "new_component_code": "k_rapor_k_vektor"
+  },
+  {
+   "card_id": 130,
+   "card_code": "k_rapor_kurum_karsilastirma.kurum_detay_tablosu",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurum_karsilastirma"
+  },
+  {
+   "card_id": 129,
+   "card_code": "k_rapor_kurum_karsilastirma.kurum_performans_karsilastirmasi",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurum_karsilastirma"
+  },
+  {
+   "card_id": 90,
+   "card_code": "k_rapor_kurumsal.en_dusuk_5_surec",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurumsal_ozet"
+  },
+  {
+   "card_id": 89,
+   "card_code": "k_rapor_kurumsal.en_iyi_5_surec",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurumsal_ozet"
+  },
+  {
+   "card_id": 91,
+   "card_code": "k_rapor_kurumsal.hedefte",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurumsal_ozet"
+  },
+  {
+   "card_id": 93,
+   "card_code": "k_rapor_kurumsal.kritik",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurumsal_ozet"
+  },
+  {
+   "card_id": 92,
+   "card_code": "k_rapor_kurumsal.riskli",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurumsal_ozet"
+  },
+  {
+   "card_id": 88,
+   "card_code": "k_rapor_kurumsal.strateji_bazli_basari",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurumsal_ozet"
+  },
+  {
+   "card_id": 87,
+   "card_code": "k_rapor_kurumsal.vizyon_skoru",
+   "mode": "new",
+   "new_component_code": "k_rapor_kurumsal_ozet"
+  },
+  {
+   "card_id": 121,
+   "card_code": "k_rapor_paydas.paydas_anket_ozeti",
+   "mode": "new",
+   "new_component_code": "k_rapor_paydas"
+  },
+  {
+   "card_id": 120,
+   "card_code": "k_rapor_paydas.paydas_haritasi",
+   "mode": "new",
+   "new_component_code": "k_rapor_paydas"
+  },
+  {
+   "card_id": 124,
+   "card_code": "k_rapor_pg_dagilim.basari_yuzdesi_dagilimi_histogram",
+   "mode": "new",
+   "new_component_code": "k_rapor_pg_dagilim"
+  },
+  {
+   "card_id": 126,
+   "card_code": "k_rapor_pg_dagilim.en_dusuk_performansli_pg_ler",
+   "mode": "new",
+   "new_component_code": "k_rapor_pg_dagilim"
+  },
+  {
+   "card_id": 156,
+   "card_code": "k_rapor_pg_dagilim.hedefte_80",
+   "mode": "new",
+   "new_component_code": "k_rapor_pg_dagilim"
+  },
+  {
+   "card_id": 157,
+   "card_code": "k_rapor_pg_dagilim.kritik_50",
+   "mode": "new",
+   "new_component_code": "k_rapor_pg_dagilim"
+  },
+  {
+   "card_id": 155,
+   "card_code": "k_rapor_pg_dagilim.ort_basari",
+   "mode": "new",
+   "new_component_code": "k_rapor_pg_dagilim"
+  },
+  {
+   "card_id": 125,
+   "card_code": "k_rapor_pg_dagilim.pg_dagilim_grafigi",
+   "mode": "new",
+   "new_component_code": "k_rapor_pg_dagilim"
+  },
+  {
+   "card_id": 154,
+   "card_code": "k_rapor_pg_dagilim.toplam_pg",
+   "mode": "new",
+   "new_component_code": "k_rapor_pg_dagilim"
+  },
+  {
+   "card_id": 123,
+   "card_code": "k_rapor_rekabet.a3_raporlari",
+   "mode": "new",
+   "new_component_code": "k_rapor_rekabet"
+  },
+  {
+   "card_id": 122,
+   "card_code": "k_rapor_rekabet.rekabetci_analiz",
+   "mode": "new",
+   "new_component_code": "k_rapor_rekabet"
+  },
+  {
+   "card_id": 105,
+   "card_code": "k_rapor_risk.darbogaz_gecmisi",
+   "mode": "new",
+   "new_component_code": "k_rapor_risk"
+  },
+  {
+   "card_id": 103,
+   "card_code": "k_rapor_risk.risk_tablosu_rpn_sirali",
+   "mode": "new",
+   "new_component_code": "k_rapor_risk"
+  },
+  {
+   "card_id": 104,
+   "card_code": "k_rapor_risk.surec_olgunluk_seviyeleri",
+   "mode": "new",
+   "new_component_code": "k_rapor_risk"
+  },
+  {
+   "card_id": 135,
+   "card_code": "k_rapor_sorumlu_analiz.en_cok_geciken_kisiler",
+   "mode": "new",
+   "new_component_code": "k_rapor_sorumlu_analiz"
+  },
+  {
+   "card_id": 134,
+   "card_code": "k_rapor_sorumlu_analiz.kisi_basina_faaliyet_yuku",
+   "mode": "new",
+   "new_component_code": "k_rapor_sorumlu_analiz"
+  },
+  {
+   "card_id": 136,
+   "card_code": "k_rapor_sorumlu_analiz.sorumlu_detay_tablosu",
+   "mode": "new",
+   "new_component_code": "k_rapor_sorumlu_analiz"
+  },
+  {
+   "card_id": 163,
+   "card_code": "k_rapor_strateji_kapsama.bos_strateji",
+   "mode": "new",
+   "new_component_code": "k_rapor_strateji_kapsama"
+  },
+  {
+   "card_id": 162,
+   "card_code": "k_rapor_strateji_kapsama.kismi",
+   "mode": "new",
+   "new_component_code": "k_rapor_strateji_kapsama"
+  },
+  {
+   "card_id": 133,
+   "card_code": "k_rapor_strateji_kapsama.strateji_bazli_kapsama_tablosu",
+   "mode": "new",
+   "new_component_code": "k_rapor_strateji_kapsama"
+  },
+  {
+   "card_id": 131,
+   "card_code": "k_rapor_strateji_kapsama.strateji_kapsama_durumu",
+   "mode": "new",
+   "new_component_code": "k_rapor_strateji_kapsama"
+  },
+  {
+   "card_id": 132,
+   "card_code": "k_rapor_strateji_kapsama.stratejisiz_surecler",
+   "mode": "new",
+   "new_component_code": "k_rapor_strateji_kapsama"
+  },
+  {
+   "card_id": 161,
+   "card_code": "k_rapor_strateji_kapsama.tam_kapsamli",
+   "mode": "new",
+   "new_component_code": "k_rapor_strateji_kapsama"
+  },
+  {
+   "card_id": 118,
+   "card_code": "k_rapor_stratejik_analiz.pestel_analizi",
+   "mode": "existing",
+   "existing_component_id": 7
+  },
+  {
+   "card_id": 119,
+   "card_code": "k_rapor_stratejik_analiz.porter_5_kuvvet",
+   "mode": "existing",
+   "existing_component_id": 9
+  },
+  {
+   "card_id": 116,
+   "card_code": "k_rapor_stratejik_analiz.swot_analizi",
+   "mode": "existing",
+   "existing_component_id": 6
+  },
+  {
+   "card_id": 117,
+   "card_code": "k_rapor_stratejik_analiz.tows_matrisi",
+   "mode": "existing",
+   "existing_component_id": 8
+  },
+  {
+   "card_id": 94,
+   "card_code": "k_rapor_surec_pg.surec_donem_isi_haritasi",
+   "mode": "new",
+   "new_component_code": "k_rapor_surec_pg"
+  },
+  {
+   "card_id": 137,
+   "card_code": "k_rapor_swot_trend.swot_madde_sayisi_trendi",
+   "mode": "new",
+   "new_component_code": "k_rapor_swot_trend"
+  },
+  {
+   "card_id": 138,
+   "card_code": "k_rapor_swot_trend.tows_strateji_sayisi_trendi",
+   "mode": "new",
+   "new_component_code": "k_rapor_swot_trend"
+  },
+  {
+   "card_id": 139,
+   "card_code": "k_rapor_swot_trend.yillik_swot_tows_ozet_tablosu",
+   "mode": "new",
+   "new_component_code": "k_rapor_swot_trend"
+  },
+  {
+   "card_id": 152,
+   "card_code": "k_rapor_uyari.geciken_faaliyet",
+   "mode": "new",
+   "new_component_code": "k_rapor_uyari"
+  },
+  {
+   "card_id": 111,
+   "card_code": "k_rapor_uyari.geciken_faaliyetler",
+   "mode": "new",
+   "new_component_code": "k_rapor_uyari"
+  },
+  {
+   "card_id": 109,
+   "card_code": "k_rapor_uyari.kritik_performans_gostergeleri",
+   "mode": "new",
+   "new_component_code": "k_rapor_uyari"
+  },
+  {
+   "card_id": 151,
+   "card_code": "k_rapor_uyari.kritik_pg",
+   "mode": "new",
+   "new_component_code": "k_rapor_uyari"
+  },
+  {
+   "card_id": 153,
+   "card_code": "k_rapor_uyari.yuksek_risk",
+   "mode": "new",
+   "new_component_code": "k_rapor_uyari"
+  },
+  {
+   "card_id": 110,
+   "card_code": "k_rapor_uyari.yuksek_riskler",
+   "mode": "new",
+   "new_component_code": "k_rapor_uyari"
+  },
+  {
+   "card_id": 95,
+   "card_code": "k_rapor_uyum.strateji_surec_katki_agaci",
+   "mode": "new",
+   "new_component_code": "k_rapor_uyum"
+  },
+  {
+   "card_id": 150,
+   "card_code": "k_rapor_veri_durumu.eksik",
+   "mode": "new",
+   "new_component_code": "k_rapor_veri_durumu"
+  },
+  {
+   "card_id": 148,
+   "card_code": "k_rapor_veri_durumu.toplam_pg",
+   "mode": "new",
+   "new_component_code": "k_rapor_veri_durumu"
+  },
+  {
+   "card_id": 101,
+   "card_code": "k_rapor_veri_durumu.veri_girilen_pg_ler",
+   "mode": "new",
+   "new_component_code": "k_rapor_veri_durumu"
+  },
+  {
+   "card_id": 102,
+   "card_code": "k_rapor_veri_durumu.veri_girilmeyen_pg_ler",
+   "mode": "new",
+   "new_component_code": "k_rapor_veri_durumu"
+  },
+  {
+   "card_id": 149,
+   "card_code": "k_rapor_veri_durumu.veri_girilmis",
+   "mode": "new",
+   "new_component_code": "k_rapor_veri_durumu"
+  },
+  {
+   "card_id": 11,
+   "card_code": "masaustu.benim_gorevlerim",
+   "mode": "new",
+   "new_component_code": "benim_gorevlerim_karti"
+  },
+  {
+   "card_id": 15,
+   "card_code": "masaustu.benim_masam",
+   "mode": "new",
+   "new_component_code": "benim_masam_karti"
+  },
+  {
+   "card_id": 19,
+   "card_code": "masaustu.bildirimler",
+   "mode": "new",
+   "new_component_code": "bildirimler_karti"
+  },
+  {
+   "card_id": 7,
+   "card_code": "masaustu.bireysel_pg",
+   "mode": "new",
+   "new_component_code": "mini_istatistik_seridi"
+  },
+  {
+   "card_id": 5,
+   "card_code": "masaustu.bugunun_ozeti",
+   "mode": "new",
+   "new_component_code": "bugunun_ozeti_karti"
+  },
+  {
+   "card_id": 8,
+   "card_code": "masaustu.devam_eden_faaliyet",
+   "mode": "new",
+   "new_component_code": "mini_istatistik_seridi"
+  },
+  {
+   "card_id": 16,
+   "card_code": "masaustu.dikkat_donem_verisi",
+   "mode": "new",
+   "new_component_code": "dikkat_donem_verisi_karti"
+  },
+  {
+   "card_id": 48,
+   "card_code": "masaustu.favori_pglerim",
+   "mode": "new",
+   "new_component_code": "favori_pglerim_karti"
+  },
+  {
+   "card_id": 12,
+   "card_code": "masaustu.favori_ve_son_ziyaretlerim",
+   "mode": "new",
+   "new_component_code": "favori_ve_son_ziyaretlerim_karti"
+  },
+  {
+   "card_id": 13,
+   "card_code": "masaustu.hizli_islemler",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 17,
+   "card_code": "masaustu.karalama_defteri",
+   "mode": "new",
+   "new_component_code": "karalama_defteri_karti"
+  },
+  {
+   "card_id": 4,
+   "card_code": "masaustu.kurumsal_olgunluk_endeksi",
+   "mode": "new",
+   "new_component_code": "kurumsal_olgunluk_endeksi_karti"
+  },
+  {
+   "card_id": 6,
+   "card_code": "masaustu.mini_kartlar",
+   "mode": "new",
+   "new_component_code": "mini_istatistik_seridi"
+  },
+  {
+   "card_id": 10,
+   "card_code": "masaustu.okunmamis_bildirim",
+   "mode": "new",
+   "new_component_code": "mini_istatistik_seridi"
+  },
+  {
+   "card_id": 18,
+   "card_code": "masaustu.ozet_listeler",
+   "mode": "new",
+   "new_component_code": "ozet_listeler_karti"
+  },
+  {
+   "card_id": 20,
+   "card_code": "masaustu.stratejik_hedefler",
+   "mode": "existing",
+   "existing_component_id": 5
+  },
+  {
+   "card_id": 9,
+   "card_code": "masaustu.surec_pg",
+   "mode": "new",
+   "new_component_code": "mini_istatistik_seridi"
+  },
+  {
+   "card_id": 355,
+   "card_code": "masaustu.surec_pglerim",
+   "mode": "new",
+   "new_component_code": "surec_pglerim_karti"
+  },
+  {
+   "card_id": 14,
+   "card_code": "masaustu.takvimim",
+   "mode": "new",
+   "new_component_code": "takvimim_karti"
+  },
+  {
+   "card_id": 3,
+   "card_code": "masaustu.yonetici_sabah_ozeti",
+   "mode": "new",
+   "new_component_code": "yonetici_sabah_ozeti_karti"
+  },
+  {
+   "card_id": 39,
+   "card_code": "process.k_vektor",
+   "mode": "new",
+   "new_component_code": "surec_ozet_istatistikleri"
+  },
+  {
+   "card_id": 38,
+   "card_code": "process.kritik_surec",
+   "mode": "new",
+   "new_component_code": "surec_ozet_istatistikleri"
+  },
+  {
+   "card_id": 36,
+   "card_code": "process.ortalama_skor",
+   "mode": "existing",
+   "existing_component_id": 4
+  },
+  {
+   "card_id": 40,
+   "card_code": "process.surecler",
+   "mode": "existing",
+   "existing_component_id": 4
+  },
+  {
+   "card_id": 35,
+   "card_code": "process.toplam_pg",
+   "mode": "new",
+   "new_component_code": "surec_ozet_istatistikleri"
+  },
+  {
+   "card_id": 34,
+   "card_code": "process.toplam_surec",
+   "mode": "new",
+   "new_component_code": "surec_ozet_istatistikleri"
+  },
+  {
+   "card_id": 37,
+   "card_code": "process.yuksek_performans",
+   "mode": "new",
+   "new_component_code": "surec_ozet_istatistikleri"
+  },
+  {
+   "card_id": 41,
+   "card_code": "process_karne.ai_yonetici_ozeti",
+   "mode": "existing",
+   "existing_component_id": 18
+  },
+  {
+   "card_id": 53,
+   "card_code": "process_karne.faaliyet_devam_edenler",
+   "mode": "existing",
+   "existing_component_id": 28
+  },
+  {
+   "card_id": 52,
+   "card_code": "process_karne.faaliyet_planlananlar",
+   "mode": "existing",
+   "existing_component_id": 28
+  },
+  {
+   "card_id": 50,
+   "card_code": "process_karne.faaliyet_tamamlanan",
+   "mode": "existing",
+   "existing_component_id": 28
+  },
+  {
+   "card_id": 54,
+   "card_code": "process_karne.faaliyet_tamamlanan_iptal",
+   "mode": "existing",
+   "existing_component_id": 28
+  },
+  {
+   "card_id": 49,
+   "card_code": "process_karne.faaliyet_toplam",
+   "mode": "existing",
+   "existing_component_id": 28
+  },
+  {
+   "card_id": 42,
+   "card_code": "process_karne.genel_bilgiler",
+   "mode": "new",
+   "new_component_code": "surec_karnesi_genel_bilgiler"
+  },
+  {
+   "card_id": 47,
+   "card_code": "process_karne.hedef_disi",
+   "mode": "existing",
+   "existing_component_id": 24
+  },
+  {
+   "card_id": 45,
+   "card_code": "process_karne.hedefte",
+   "mode": "existing",
+   "existing_component_id": 24
+  },
+  {
+   "card_id": 43,
+   "card_code": "process_karne.kpi_performans_trend_analizi",
+   "mode": "existing",
+   "existing_component_id": 27
+  },
+  {
+   "card_id": 46,
+   "card_code": "process_karne.risk_altinda",
+   "mode": "existing",
+   "existing_component_id": 24
+  },
+  {
+   "card_id": 51,
+   "card_code": "process_karne.surec_faaliyetleri",
+   "mode": "existing",
+   "existing_component_id": 28
+  },
+  {
+   "card_id": 44,
+   "card_code": "process_karne.surec_karnesi",
+   "mode": "existing",
+   "existing_component_id": 25
+  },
+  {
+   "card_id": 56,
+   "card_code": "project.acik_gorev",
+   "mode": "new",
+   "new_component_code": "proje_ozet_istatistikleri"
+  },
+  {
+   "card_id": 59,
+   "card_code": "project.acik_raid",
+   "mode": "new",
+   "new_component_code": "proje_ozet_istatistikleri"
+  },
+  {
+   "card_id": 58,
+   "card_code": "project.bu_hafta_biten",
+   "mode": "new",
+   "new_component_code": "proje_ozet_istatistikleri"
+  },
+  {
+   "card_id": 57,
+   "card_code": "project.gecikmis_gorev",
+   "mode": "new",
+   "new_component_code": "proje_ozet_istatistikleri"
+  },
+  {
+   "card_id": 60,
+   "card_code": "project.kritik_saglik",
+   "mode": "new",
+   "new_component_code": "proje_ozet_istatistikleri"
+  },
+  {
+   "card_id": 55,
+   "card_code": "project.toplam_proje",
+   "mode": "new",
+   "new_component_code": "proje_ozet_istatistikleri"
+  },
+  {
+   "card_id": 62,
+   "card_code": "project.operasyon_ozeti",
+   "mode": "new",
+   "new_component_code": "proje_operasyon_ozeti"
+  },
+  {
+   "card_id": 61,
+   "card_code": "project.proje_listesi",
+   "mode": "new",
+   "new_component_code": "proje_listesi_yonetimi"
+  },
+  {
+   "card_id": 531,
+   "card_code": "project_calendar.takvim",
+   "mode": "new",
+   "new_component_code": "proje_takvim_gorunumu"
+  },
+  {
+   "card_id": 532,
+   "card_code": "project_detail.geciken_gorev_uyarisi",
+   "mode": "new",
+   "new_component_code": "proje_detay_ozeti"
+  },
+  {
+   "card_id": 534,
+   "card_code": "project_detail.gorev_ozeti",
+   "mode": "new",
+   "new_component_code": "proje_detay_ozeti"
+  },
+  {
+   "card_id": 533,
+   "card_code": "project_detail.proje_ozeti",
+   "mode": "new",
+   "new_component_code": "proje_detay_ozeti"
+  },
+  {
+   "card_id": 535,
+   "card_code": "project_form.sayfa",
+   "mode": "new",
+   "new_component_code": "proje_formu"
+  },
+  {
+   "card_id": 536,
+   "card_code": "project_gantt.gantt_semasi",
+   "mode": "new",
+   "new_component_code": "proje_gantt_semasi"
+  },
+  {
+   "card_id": 538,
+   "card_code": "project_kanban.devam_beklemede",
+   "mode": "new",
+   "new_component_code": "proje_kanban_panosu"
+  },
+  {
+   "card_id": 539,
+   "card_code": "project_kanban.tamamlandi",
+   "mode": "new",
+   "new_component_code": "proje_kanban_panosu"
+  },
+  {
+   "card_id": 537,
+   "card_code": "project_kanban.yapilacak",
+   "mode": "new",
+   "new_component_code": "proje_kanban_panosu"
+  },
+  {
+   "card_id": 540,
+   "card_code": "project_kapasite.sayfa",
+   "mode": "new",
+   "new_component_code": "proje_kapasite_yonetimi"
+  },
+  {
+   "card_id": 542,
+   "card_code": "project_portfolio.portfoy_listesi",
+   "mode": "new",
+   "new_component_code": "proje_portfoy_yonetimi"
+  },
+  {
+   "card_id": 541,
+   "card_code": "project_portfolio.program_gantt",
+   "mode": "new",
+   "new_component_code": "proje_portfoy_yonetimi"
+  },
+  {
+   "card_id": 546,
+   "card_code": "project_raid.bagimliliklar",
+   "mode": "new",
+   "new_component_code": "proje_raid_yonetimi"
+  },
+  {
+   "card_id": 543,
+   "card_code": "project_raid.riskler",
+   "mode": "new",
+   "new_component_code": "proje_raid_yonetimi"
+  },
+  {
+   "card_id": 545,
+   "card_code": "project_raid.sorunlar",
+   "mode": "new",
+   "new_component_code": "proje_raid_yonetimi"
+  },
+  {
+   "card_id": 544,
+   "card_code": "project_raid.varsayimlar",
+   "mode": "new",
+   "new_component_code": "proje_raid_yonetimi"
+  },
+  {
+   "card_id": 549,
+   "card_code": "project_strategy_detail.bagli_surecler",
+   "mode": "new",
+   "new_component_code": "proje_stratejik_iliski"
+  },
+  {
+   "card_id": 547,
+   "card_code": "project_strategy_detail.proje_bilgisi",
+   "mode": "new",
+   "new_component_code": "proje_stratejik_iliski"
+  },
+  {
+   "card_id": 548,
+   "card_code": "project_strategy_detail.stratejik_skor",
+   "mode": "new",
+   "new_component_code": "proje_stratejik_iliski"
+  },
+  {
+   "card_id": 550,
+   "card_code": "project_task_detail.sayfa",
+   "mode": "new",
+   "new_component_code": "proje_gorev_yonetimi"
+  },
+  {
+   "card_id": 551,
+   "card_code": "project_task_form.sayfa",
+   "mode": "new",
+   "new_component_code": "proje_gorev_yonetimi"
+  },
+  {
+   "card_id": 320,
+   "card_code": "raporlar_ai_coach.ai_onerisi",
+   "mode": "new",
+   "new_component_code": "rapor_ai_coach_grubu"
+  },
+  {
+   "card_id": 330,
+   "card_code": "raporlar_ai_coach.analiz_edilen_strateji",
+   "mode": "new",
+   "new_component_code": "rapor_ai_coach_grubu"
+  },
+  {
+   "card_id": 331,
+   "card_code": "raporlar_ai_coach.en_dusuk_3",
+   "mode": "new",
+   "new_component_code": "rapor_ai_coach_grubu"
+  },
+  {
+   "card_id": 319,
+   "card_code": "raporlar_ai_coach.en_dusuk_performansli_3_strateji",
+   "mode": "new",
+   "new_component_code": "rapor_ai_coach_grubu"
+  },
+  {
+   "card_id": 552,
+   "card_code": "raporlar_ai_danisman.sayfa",
+   "mode": "new",
+   "new_component_code": "rapor_ai_danisman_grubu"
+  },
+  {
+   "card_id": 323,
+   "card_code": "raporlar_ai_sunum.slayt_yapisi",
+   "mode": "new",
+   "new_component_code": "rapor_ai_sunum_grubu"
+  },
+  {
+   "card_id": 321,
+   "card_code": "raporlar_ai_sunum.sunum_hazir",
+   "mode": "new",
+   "new_component_code": "rapor_ai_sunum_grubu"
+  },
+  {
+   "card_id": 322,
+   "card_code": "raporlar_ai_sunum.sunumda_kullanilacak_veriler",
+   "mode": "new",
+   "new_component_code": "rapor_ai_sunum_grubu"
+  },
+  {
+   "card_id": 248,
+   "card_code": "raporlar_audit_paketi.denetci_icin_hazir_pdf",
+   "mode": "new",
+   "new_component_code": "rapor_audit_paketi_grubu"
+  },
+  {
+   "card_id": 250,
+   "card_code": "raporlar_audit_paketi.kullanim_amaci",
+   "mode": "new",
+   "new_component_code": "rapor_audit_paketi_grubu"
+  },
+  {
+   "card_id": 249,
+   "card_code": "raporlar_audit_paketi.pdf_bolumleri",
+   "mode": "new",
+   "new_component_code": "rapor_audit_paketi_grubu"
+  },
+  {
+   "card_id": 327,
+   "card_code": "raporlar_bi_connector.excel_google_sheets",
+   "mode": "new",
+   "new_component_code": "rapor_bi_connector_grubu"
+  },
+  {
+   "card_id": 332,
+   "card_code": "raporlar_bi_connector.kpi_olcumleri_csv",
+   "mode": "new",
+   "new_component_code": "rapor_bi_connector_grubu"
+  },
+  {
+   "card_id": 325,
+   "card_code": "raporlar_bi_connector.power_bi_baglanti_rehberi",
+   "mode": "new",
+   "new_component_code": "rapor_bi_connector_grubu"
+  },
+  {
+   "card_id": 333,
+   "card_code": "raporlar_bi_connector.stratejiler_json",
+   "mode": "new",
+   "new_component_code": "rapor_bi_connector_grubu"
+  },
+  {
+   "card_id": 326,
+   "card_code": "raporlar_bi_connector.tableau_baglanti_rehberi",
+   "mode": "new",
+   "new_component_code": "rapor_bi_connector_grubu"
+  },
+  {
+   "card_id": 187,
+   "card_code": "raporlar_bireysel_hizalama.bireysel_pg_ler",
+   "mode": "new",
+   "new_component_code": "rapor_bireysel_hizalama_grubu"
+  },
+  {
+   "card_id": 196,
+   "card_code": "raporlar_bireysel_hizalama.genel_hizalama",
+   "mode": "new",
+   "new_component_code": "rapor_bireysel_hizalama_grubu"
+  },
+  {
+   "card_id": 197,
+   "card_code": "raporlar_bireysel_hizalama.pg_si_olan_kullanici",
+   "mode": "new",
+   "new_component_code": "rapor_bireysel_hizalama_grubu"
+  },
+  {
+   "card_id": 198,
+   "card_code": "raporlar_bireysel_hizalama.toplam_kullanici",
+   "mode": "new",
+   "new_component_code": "rapor_bireysel_hizalama_grubu"
+  },
+  {
+   "card_id": 335,
+   "card_code": "raporlar_bireysel_karne_batch.her_karne_icerigi",
+   "mode": "new",
+   "new_component_code": "rapor_bireysel_karne_batch_grubu"
+  },
+  {
+   "card_id": 334,
+   "card_code": "raporlar_bireysel_karne_batch.toplu_uretim_zip",
+   "mode": "new",
+   "new_component_code": "rapor_bireysel_karne_batch_grubu"
+  },
+  {
+   "card_id": 318,
+   "card_code": "raporlar_carbon_trend.ilk_yila_gore",
+   "mode": "new",
+   "new_component_code": "rapor_carbon_trend_grubu"
+  },
+  {
+   "card_id": 315,
+   "card_code": "raporlar_carbon_trend.metrik_sayisi",
+   "mode": "new",
+   "new_component_code": "rapor_carbon_trend_grubu"
+  },
+  {
+   "card_id": 317,
+   "card_code": "raporlar_carbon_trend.son_yil_toplam",
+   "mode": "new",
+   "new_component_code": "rapor_carbon_trend_grubu"
+  },
+  {
+   "card_id": 316,
+   "card_code": "raporlar_carbon_trend.veri_yili",
+   "mode": "new",
+   "new_component_code": "rapor_carbon_trend_grubu"
+  },
+  {
+   "card_id": 307,
+   "card_code": "raporlar_carbon_trend.yillik_trend",
+   "mode": "new",
+   "new_component_code": "rapor_carbon_trend_grubu"
+  },
+  {
+   "card_id": 294,
+   "card_code": "raporlar_cfo_dashboard.butce_asan",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 282,
+   "card_code": "raporlar_cfo_dashboard.durum_dagilimi",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 281,
+   "card_code": "raporlar_cfo_dashboard.en_buyuk_5_stratejik_girisim",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 292,
+   "card_code": "raporlar_cfo_dashboard.harcanan",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 293,
+   "card_code": "raporlar_cfo_dashboard.kalan",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 295,
+   "card_code": "raporlar_cfo_dashboard.llm_maliyet_30g",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 296,
+   "card_code": "raporlar_cfo_dashboard.recurring_task",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 283,
+   "card_code": "raporlar_cfo_dashboard.strateji_bazli_butce_atifi",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 291,
+   "card_code": "raporlar_cfo_dashboard.toplam_butce",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 306,
+   "card_code": "raporlar_chro_dashboard.2fa_orani",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 304,
+   "card_code": "raporlar_chro_dashboard.bireysel_pg",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 302,
+   "card_code": "raporlar_chro_dashboard.calisan",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 303,
+   "card_code": "raporlar_chro_dashboard.departman",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 284,
+   "card_code": "raporlar_chro_dashboard.departman_dagilimi",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 286,
+   "card_code": "raporlar_chro_dashboard.en_cok_bireysel_pg_sahibi_top_10",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 287,
+   "card_code": "raporlar_chro_dashboard.en_cok_surec_uyeligi_top_5",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 305,
+   "card_code": "raporlar_chro_dashboard.ort_pg_kisi",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 285,
+   "card_code": "raporlar_chro_dashboard.rol_dagilimi",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 183,
+   "card_code": "raporlar_cmmi_heatmap.dusuk_seviye_l1_l2",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 179,
+   "card_code": "raporlar_cmmi_heatmap.olculen_surec",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 180,
+   "card_code": "raporlar_cmmi_heatmap.olculmemis",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 182,
+   "card_code": "raporlar_cmmi_heatmap.optimize_eden_l5",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 174,
+   "card_code": "raporlar_cmmi_heatmap.ortalama_olgunluk",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 181,
+   "card_code": "raporlar_cmmi_heatmap.ortalama_seviye",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 175,
+   "card_code": "raporlar_cmmi_heatmap.seviye_dagilimi_ve_aciklamalar",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 176,
+   "card_code": "raporlar_cmmi_heatmap.surec_bazli_olgunluk",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 300,
+   "card_code": "raporlar_coo_dashboard.aktif_darbogaz",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 290,
+   "card_code": "raporlar_coo_dashboard.aktif_darbogazlar",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 299,
+   "card_code": "raporlar_coo_dashboard.geciken_faaliyet",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 301,
+   "card_code": "raporlar_coo_dashboard.ort_cmmi",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 298,
+   "card_code": "raporlar_coo_dashboard.ort_saglik",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 297,
+   "card_code": "raporlar_coo_dashboard.surec",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 288,
+   "card_code": "raporlar_coo_dashboard.surec_saglik_dagilimi",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 289,
+   "card_code": "raporlar_coo_dashboard.surecler_saglik_skoru",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 170,
+   "card_code": "raporlar_departman_performans.departman",
+   "mode": "new",
+   "new_component_code": "rapor_departman_performans_grubu"
+  },
+  {
+   "card_id": 168,
+   "card_code": "raporlar_departman_performans.departman_karti",
+   "mode": "new",
+   "new_component_code": "rapor_departman_performans_grubu"
+  },
+  {
+   "card_id": 172,
+   "card_code": "raporlar_departman_performans.toplam_bireysel_pg",
+   "mode": "new",
+   "new_component_code": "rapor_departman_performans_grubu"
+  },
+  {
+   "card_id": 171,
+   "card_code": "raporlar_departman_performans.toplam_calisan",
+   "mode": "new",
+   "new_component_code": "rapor_departman_performans_grubu"
+  },
+  {
+   "card_id": 242,
+   "card_code": "raporlar_early_warning.kontrol_edilen_pg",
+   "mode": "new",
+   "new_component_code": "rapor_early_warning_grubu"
+  },
+  {
+   "card_id": 228,
+   "card_code": "raporlar_early_warning.uyari_listesi",
+   "mode": "new",
+   "new_component_code": "rapor_early_warning_grubu"
+  },
+  {
+   "card_id": 243,
+   "card_code": "raporlar_early_warning.uyari_sayisi",
+   "mode": "new",
+   "new_component_code": "rapor_early_warning_grubu"
+  },
+  {
+   "card_id": 244,
+   "card_code": "raporlar_early_warning.yuksek_oncelik",
+   "mode": "new",
+   "new_component_code": "rapor_early_warning_grubu"
+  },
+  {
+   "card_id": 337,
+   "card_code": "raporlar_esg_rapor.rapor_icerigi",
+   "mode": "new",
+   "new_component_code": "rapor_esg_rapor_grubu"
+  },
+  {
+   "card_id": 336,
+   "card_code": "raporlar_esg_rapor.yatirimci_denetci_hazir_pdf",
+   "mode": "new",
+   "new_component_code": "rapor_esg_rapor_grubu"
+  },
+  {
+   "card_id": 553,
+   "card_code": "raporlar_esg_yonetim.sayfa",
+   "mode": "new",
+   "new_component_code": "rapor_esg_yonetim_grubu"
+  },
+  {
+   "card_id": 308,
+   "card_code": "raporlar_evrim_filmi.yillar_arasi_evrim_filmi",
+   "mode": "new",
+   "new_component_code": "rapor_evrim_filmi_grubu"
+  },
+  {
+   "card_id": 178,
+   "card_code": "raporlar_hedef_revizyon.revize_edilen_pg_ler",
+   "mode": "new",
+   "new_component_code": "rapor_hedef_revizyon_grubu"
+  },
+  {
+   "card_id": 185,
+   "card_code": "raporlar_hedef_revizyon.revizyon_yapilan_yil",
+   "mode": "new",
+   "new_component_code": "rapor_hedef_revizyon_grubu"
+  },
+  {
+   "card_id": 184,
+   "card_code": "raporlar_hedef_revizyon.toplam_plan_donemi",
+   "mode": "new",
+   "new_component_code": "rapor_hedef_revizyon_grubu"
+  },
+  {
+   "card_id": 186,
+   "card_code": "raporlar_hedef_revizyon.toplam_revizyon",
+   "mode": "new",
+   "new_component_code": "rapor_hedef_revizyon_grubu"
+  },
+  {
+   "card_id": 177,
+   "card_code": "raporlar_hedef_revizyon.yillara_gore_revizyon",
+   "mode": "new",
+   "new_component_code": "rapor_hedef_revizyon_grubu"
+  },
+  {
+   "card_id": 554,
+   "card_code": "raporlar_hizalama_sankey.akis_gorseli",
+   "mode": "new",
+   "new_component_code": "rapor_hizalama_sankey_grubu"
+  },
+  {
+   "card_id": 344,
+   "card_code": "raporlar_hizalama_sankey.alt_strateji",
+   "mode": "new",
+   "new_component_code": "rapor_hizalama_sankey_grubu"
+  },
+  {
+   "card_id": 343,
+   "card_code": "raporlar_hizalama_sankey.ana_strateji",
+   "mode": "new",
+   "new_component_code": "rapor_hizalama_sankey_grubu"
+  },
+  {
+   "card_id": 347,
+   "card_code": "raporlar_hizalama_sankey.baglanti",
+   "mode": "new",
+   "new_component_code": "rapor_hizalama_sankey_grubu"
+  },
+  {
+   "card_id": 348,
+   "card_code": "raporlar_hizalama_sankey.hizalanmamis",
+   "mode": "new",
+   "new_component_code": "rapor_hizalama_sankey_grubu"
+  },
+  {
+   "card_id": 346,
+   "card_code": "raporlar_hizalama_sankey.pg",
+   "mode": "new",
+   "new_component_code": "rapor_hizalama_sankey_grubu"
+  },
+  {
+   "card_id": 345,
+   "card_code": "raporlar_hizalama_sankey.surec",
+   "mode": "new",
+   "new_component_code": "rapor_hizalama_sankey_grubu"
+  },
+  {
+   "card_id": 251,
+   "card_code": "raporlar_iki_fa.2fa_dagilim",
+   "mode": "new",
+   "new_component_code": "rapor_iki_fa_grubu"
+  },
+  {
+   "card_id": 263,
+   "card_code": "raporlar_iki_fa.2fa_etkin",
+   "mode": "new",
+   "new_component_code": "rapor_iki_fa_grubu"
+  },
+  {
+   "card_id": 252,
+   "card_code": "raporlar_iki_fa.2fa_si_olmayan_yoneticiler_kritik_guvenlik_acigi",
+   "mode": "new",
+   "new_component_code": "rapor_iki_fa_grubu"
+  },
+  {
+   "card_id": 264,
+   "card_code": "raporlar_iki_fa.2fa_yok",
+   "mode": "new",
+   "new_component_code": "rapor_iki_fa_grubu"
+  },
+  {
+   "card_id": 265,
+   "card_code": "raporlar_iki_fa.etkinlik",
+   "mode": "new",
+   "new_component_code": "rapor_iki_fa_grubu"
+  },
+  {
+   "card_id": 262,
+   "card_code": "raporlar_iki_fa.toplam_kullanici",
+   "mode": "new",
+   "new_component_code": "rapor_iki_fa_grubu"
+  },
+  {
+   "card_id": 680,
+   "card_code": "raporlar_index.ai_coach",
+   "mode": "new",
+   "new_component_code": "rapor_ai_coach_grubu"
+  },
+  {
+   "card_id": 679,
+   "card_code": "raporlar_index.ai_danisman",
+   "mode": "new",
+   "new_component_code": "rapor_ai_danisman_grubu"
+  },
+  {
+   "card_id": 667,
+   "card_code": "raporlar_index.ai_sunum",
+   "mode": "new",
+   "new_component_code": "rapor_ai_sunum_grubu"
+  },
+  {
+   "card_id": 690,
+   "card_code": "raporlar_index.audit_paketi",
+   "mode": "new",
+   "new_component_code": "rapor_audit_paketi_grubu"
+  },
+  {
+   "card_id": 696,
+   "card_code": "raporlar_index.bi_connector",
+   "mode": "new",
+   "new_component_code": "rapor_bi_connector_grubu"
+  },
+  {
+   "card_id": 675,
+   "card_code": "raporlar_index.bireysel_hizalama",
+   "mode": "new",
+   "new_component_code": "rapor_bireysel_hizalama_grubu"
+  },
+  {
+   "card_id": 691,
+   "card_code": "raporlar_index.bireysel_karne_batch",
+   "mode": "new",
+   "new_component_code": "rapor_bireysel_karne_batch_grubu"
+  },
+  {
+   "card_id": 678,
+   "card_code": "raporlar_index.carbon_trend",
+   "mode": "new",
+   "new_component_code": "rapor_carbon_trend_grubu"
+  },
+  {
+   "card_id": 682,
+   "card_code": "raporlar_index.cfo_dashboard",
+   "mode": "new",
+   "new_component_code": "rapor_cfo_dashboard_grubu"
+  },
+  {
+   "card_id": 684,
+   "card_code": "raporlar_index.chro_dashboard",
+   "mode": "new",
+   "new_component_code": "rapor_chro_dashboard_grubu"
+  },
+  {
+   "card_id": 673,
+   "card_code": "raporlar_index.cmmi_heatmap",
+   "mode": "new",
+   "new_component_code": "rapor_cmmi_heatmap_grubu"
+  },
+  {
+   "card_id": 683,
+   "card_code": "raporlar_index.coo_dashboard",
+   "mode": "new",
+   "new_component_code": "rapor_coo_dashboard_grubu"
+  },
+  {
+   "card_id": 662,
+   "card_code": "raporlar_index.departman_performans",
+   "mode": "new",
+   "new_component_code": "rapor_departman_performans_grubu"
+  },
+  {
+   "card_id": 681,
+   "card_code": "raporlar_index.early_warning",
+   "mode": "new",
+   "new_component_code": "rapor_early_warning_grubu"
+  },
+  {
+   "card_id": 689,
+   "card_code": "raporlar_index.esg_rapor",
+   "mode": "new",
+   "new_component_code": "rapor_esg_rapor_grubu"
+  },
+  {
+   "card_id": 666,
+   "card_code": "raporlar_index.evrim_filmi",
+   "mode": "new",
+   "new_component_code": "rapor_evrim_filmi_grubu"
+  },
+  {
+   "card_id": 661,
+   "card_code": "raporlar_index.hedef_revizyon",
+   "mode": "new",
+   "new_component_code": "rapor_hedef_revizyon_grubu"
+  },
+  {
+   "card_id": 660,
+   "card_code": "raporlar_index.hizalama_sankey",
+   "mode": "new",
+   "new_component_code": "rapor_hizalama_sankey_grubu"
+  },
+  {
+   "card_id": 677,
+   "card_code": "raporlar_index.iki_fa",
+   "mode": "new",
+   "new_component_code": "rapor_iki_fa_grubu"
+  },
+  {
+   "card_id": 664,
+   "card_code": "raporlar_index.initiative_bubble",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 671,
+   "card_code": "raporlar_index.initiative_roadmap",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_roadmap_grubu"
+  },
+  {
+   "card_id": 659,
+   "card_code": "raporlar_index.kv_carpiklik",
+   "mode": "new",
+   "new_component_code": "rapor_kv_carpiklik_grubu"
+  },
+  {
+   "card_id": 697,
+   "card_code": "raporlar_index.ml_anomaly",
+   "mode": "new",
+   "new_component_code": "rapor_ml_anomaly_grubu"
+  },
+  {
+   "card_id": 695,
+   "card_code": "raporlar_index.mobile",
+   "mode": "new",
+   "new_component_code": "rapor_mobile_grubu"
+  },
+  {
+   "card_id": 672,
+   "card_code": "raporlar_index.muda_analizi",
+   "mode": "new",
+   "new_component_code": "rapor_muda_analizi_grubu"
+  },
+  {
+   "card_id": 693,
+   "card_code": "raporlar_index.nlp_query",
+   "mode": "new",
+   "new_component_code": "rapor_nlp_query_grubu"
+  },
+  {
+   "card_id": 670,
+   "card_code": "raporlar_index.okr_cascade",
+   "mode": "new",
+   "new_component_code": "rapor_okr_cascade_grubu"
+  },
+  {
+   "card_id": 698,
+   "card_code": "raporlar_index.onay_zinciri",
+   "mode": "new",
+   "new_component_code": "rapor_onay_zinciri_grubu"
+  },
+  {
+   "card_id": 674,
+   "card_code": "raporlar_index.op_istatistik",
+   "mode": "skip"
+  },
+  {
+   "card_id": 658,
+   "card_code": "raporlar_index.pg_proje_etki",
+   "mode": "new",
+   "new_component_code": "rapor_pg_proje_etki_grubu"
+  },
+  {
+   "card_id": 685,
+   "card_code": "raporlar_index.quarterly_review",
+   "mode": "new",
+   "new_component_code": "rapor_quarterly_review_grubu"
+  },
+  {
+   "card_id": 676,
+   "card_code": "raporlar_index.risk_heatmap",
+   "mode": "new",
+   "new_component_code": "rapor_risk_heatmap_grubu"
+  },
+  {
+   "card_id": 665,
+   "card_code": "raporlar_index.sabah_ozeti",
+   "mode": "new",
+   "new_component_code": "rapor_sabah_ozeti_grubu"
+  },
+  {
+   "card_id": 694,
+   "card_code": "raporlar_index.sektor_benchmark",
+   "mode": "new",
+   "new_component_code": "rapor_sektor_benchmark_grubu"
+  },
+  {
+   "card_id": 692,
+   "card_code": "raporlar_index.sektorel",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 686,
+   "card_code": "raporlar_index.strateji_hikayesi",
+   "mode": "new",
+   "new_component_code": "rapor_strateji_hikayesi_grubu"
+  },
+  {
+   "card_id": 687,
+   "card_code": "raporlar_index.stratejik_yillik",
+   "mode": "new",
+   "new_component_code": "rapor_stratejik_yillik_grubu"
+  },
+  {
+   "card_id": 668,
+   "card_code": "raporlar_index.sunburst",
+   "mode": "new",
+   "new_component_code": "rapor_sunburst_grubu"
+  },
+  {
+   "card_id": 657,
+   "card_code": "raporlar_index.veri_kalitesi",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 669,
+   "card_code": "raporlar_index.vrio_portfoy",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 688,
+   "card_code": "raporlar_index.yatirimci_sunum",
+   "mode": "new",
+   "new_component_code": "rapor_yatirimci_sunum_grubu"
+  },
+  {
+   "card_id": 663,
+   "card_code": "raporlar_index.yonetici_liderlik",
+   "mode": "new",
+   "new_component_code": "rapor_yonetici_liderlik_grubu"
+  },
+  {
+   "card_id": 192,
+   "card_code": "raporlar_initiative_bubble.4_kadran_nasil_yorumlanir",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 190,
+   "card_code": "raporlar_initiative_bubble.daire_boyutu",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 191,
+   "card_code": "raporlar_initiative_bubble.daire_rengi",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 194,
+   "card_code": "raporlar_initiative_bubble.detay_tablosu",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 189,
+   "card_code": "raporlar_initiative_bubble.dikey_eksen_y",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 201,
+   "card_code": "raporlar_initiative_bubble.harcanan_butce",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 202,
+   "card_code": "raporlar_initiative_bubble.ortalama_ilerleme",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 193,
+   "card_code": "raporlar_initiative_bubble.portfoy_balon_grafigi",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 200,
+   "card_code": "raporlar_initiative_bubble.toplam_butce",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 199,
+   "card_code": "raporlar_initiative_bubble.toplam_girisim",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 188,
+   "card_code": "raporlar_initiative_bubble.yatay_eksen_x",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_bubble_grubu"
+  },
+  {
+   "card_id": 205,
+   "card_code": "raporlar_initiative_roadmap.milestone",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_roadmap_grubu"
+  },
+  {
+   "card_id": 195,
+   "card_code": "raporlar_initiative_roadmap.stratejik_girisimler",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_roadmap_grubu"
+  },
+  {
+   "card_id": 203,
+   "card_code": "raporlar_initiative_roadmap.toplam_stratejik_girisim",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_roadmap_grubu"
+  },
+  {
+   "card_id": 204,
+   "card_code": "raporlar_initiative_roadmap.yil_araligi",
+   "mode": "new",
+   "new_component_code": "rapor_initiative_roadmap_grubu"
+  },
+  {
+   "card_id": 556,
+   "card_code": "raporlar_kv_carpiklik.agirlik_skor_karsilastirma",
+   "mode": "new",
+   "new_component_code": "rapor_kv_carpiklik_grubu"
+  },
+  {
+   "card_id": 557,
+   "card_code": "raporlar_kv_carpiklik.detay_tablosu",
+   "mode": "new",
+   "new_component_code": "rapor_kv_carpiklik_grubu"
+  },
+  {
+   "card_id": 555,
+   "card_code": "raporlar_kv_carpiklik.ozet_kartlari",
+   "mode": "new",
+   "new_component_code": "rapor_kv_carpiklik_grubu"
+  },
+  {
+   "card_id": 245,
+   "card_code": "raporlar_ml_anomaly.analiz_edilen_pg",
+   "mode": "new",
+   "new_component_code": "rapor_ml_anomaly_grubu"
+  },
+  {
+   "card_id": 247,
+   "card_code": "raporlar_ml_anomaly.anomali_tespit_edildi",
+   "mode": "new",
+   "new_component_code": "rapor_ml_anomaly_grubu"
+  },
+  {
+   "card_id": 230,
+   "card_code": "raporlar_ml_anomaly.tespit_edilen_anomaliler",
+   "mode": "new",
+   "new_component_code": "rapor_ml_anomaly_grubu"
+  },
+  {
+   "card_id": 246,
+   "card_code": "raporlar_ml_anomaly.yetersiz_veri_atlandi",
+   "mode": "new",
+   "new_component_code": "rapor_ml_anomaly_grubu"
+  },
+  {
+   "card_id": 338,
+   "card_code": "raporlar_mobile.mobile_hub",
+   "mode": "new",
+   "new_component_code": "rapor_mobile_grubu"
+  },
+  {
+   "card_id": 231,
+   "card_code": "raporlar_muda_analizi.7_muda_turu_bulgu_sayilari_aciklamalar",
+   "mode": "new",
+   "new_component_code": "rapor_muda_analizi_grubu"
+  },
+  {
+   "card_id": 235,
+   "card_code": "raporlar_muda_analizi.analiz_edilen_surec",
+   "mode": "new",
+   "new_component_code": "rapor_muda_analizi_grubu"
+  },
+  {
+   "card_id": 236,
+   "card_code": "raporlar_muda_analizi.bulgu_olan_surec",
+   "mode": "new",
+   "new_component_code": "rapor_muda_analizi_grubu"
+  },
+  {
+   "card_id": 232,
+   "card_code": "raporlar_muda_analizi.bulgu_saptanan_surecler",
+   "mode": "new",
+   "new_component_code": "rapor_muda_analizi_grubu"
+  },
+  {
+   "card_id": 237,
+   "card_code": "raporlar_muda_analizi.toplam_bulgu",
+   "mode": "new",
+   "new_component_code": "rapor_muda_analizi_grubu"
+  },
+  {
+   "card_id": 329,
+   "card_code": "raporlar_nlp_query.cevap",
+   "mode": "new",
+   "new_component_code": "rapor_nlp_query_grubu"
+  },
+  {
+   "card_id": 328,
+   "card_code": "raporlar_nlp_query.hazir_sorular",
+   "mode": "new",
+   "new_component_code": "rapor_nlp_query_grubu"
+  },
+  {
+   "card_id": 559,
+   "card_code": "raporlar_okr_cascade.hizalama_listesi",
+   "mode": "new",
+   "new_component_code": "rapor_okr_cascade_grubu"
+  },
+  {
+   "card_id": 219,
+   "card_code": "raporlar_okr_cascade.key_result",
+   "mode": "new",
+   "new_component_code": "rapor_okr_cascade_grubu"
+  },
+  {
+   "card_id": 218,
+   "card_code": "raporlar_okr_cascade.objective",
+   "mode": "new",
+   "new_component_code": "rapor_okr_cascade_grubu"
+  },
+  {
+   "card_id": 558,
+   "card_code": "raporlar_okr_cascade.okr_aciklama",
+   "mode": "new",
+   "new_component_code": "rapor_okr_cascade_grubu"
+  },
+  {
+   "card_id": 220,
+   "card_code": "raporlar_okr_cascade.ort_tamamlanma",
+   "mode": "new",
+   "new_component_code": "rapor_okr_cascade_grubu"
+  },
+  {
+   "card_id": 221,
+   "card_code": "raporlar_okr_cascade.plan_yili",
+   "mode": "new",
+   "new_component_code": "rapor_okr_cascade_grubu"
+  },
+  {
+   "card_id": 267,
+   "card_code": "raporlar_onay_zinciri.onay_bekliyor",
+   "mode": "new",
+   "new_component_code": "rapor_onay_zinciri_grubu"
+  },
+  {
+   "card_id": 268,
+   "card_code": "raporlar_onay_zinciri.onaylanmis",
+   "mode": "new",
+   "new_component_code": "rapor_onay_zinciri_grubu"
+  },
+  {
+   "card_id": 269,
+   "card_code": "raporlar_onay_zinciri.reddedilen",
+   "mode": "new",
+   "new_component_code": "rapor_onay_zinciri_grubu"
+  },
+  {
+   "card_id": 253,
+   "card_code": "raporlar_onay_zinciri.stratejik_girisim_ler",
+   "mode": "new",
+   "new_component_code": "rapor_onay_zinciri_grubu"
+  },
+  {
+   "card_id": 266,
+   "card_code": "raporlar_onay_zinciri.toplam",
+   "mode": "new",
+   "new_component_code": "rapor_onay_zinciri_grubu"
+  },
+  {
+   "card_id": 206,
+   "card_code": "raporlar_operasyon_istatistik.surecler",
+   "mode": "new",
+   "new_component_code": "rapor_operasyon_istatistik_grubu"
+  },
+  {
+   "card_id": 217,
+   "card_code": "raporlar_operasyon_istatistik.toplam_faaliyet",
+   "mode": "new",
+   "new_component_code": "rapor_operasyon_istatistik_grubu"
+  },
+  {
+   "card_id": 216,
+   "card_code": "raporlar_operasyon_istatistik.toplam_pg",
+   "mode": "new",
+   "new_component_code": "rapor_operasyon_istatistik_grubu"
+  },
+  {
+   "card_id": 215,
+   "card_code": "raporlar_operasyon_istatistik.toplam_surec",
+   "mode": "new",
+   "new_component_code": "rapor_operasyon_istatistik_grubu"
+  },
+  {
+   "card_id": 560,
+   "card_code": "raporlar_pg_proje_etki.nasil_okunur",
+   "mode": "new",
+   "new_component_code": "rapor_pg_proje_etki_grubu"
+  },
+  {
+   "card_id": 561,
+   "card_code": "raporlar_pg_proje_etki.ozet_kartlari",
+   "mode": "new",
+   "new_component_code": "rapor_pg_proje_etki_grubu"
+  },
+  {
+   "card_id": 562,
+   "card_code": "raporlar_pg_proje_etki.proje_listesi",
+   "mode": "new",
+   "new_component_code": "rapor_pg_proje_etki_grubu"
+  },
+  {
+   "card_id": 208,
+   "card_code": "raporlar_quarterly_review.ai_yonetici_ozeti",
+   "mode": "new",
+   "new_component_code": "rapor_quarterly_review_grubu"
+  },
+  {
+   "card_id": 207,
+   "card_code": "raporlar_quarterly_review.ceyreklik_review_toplantisi",
+   "mode": "new",
+   "new_component_code": "rapor_quarterly_review_grubu"
+  },
+  {
+   "card_id": 212,
+   "card_code": "raporlar_quarterly_review.olcum_hacmi_q",
+   "mode": "new",
+   "new_component_code": "rapor_quarterly_review_grubu"
+  },
+  {
+   "card_id": 210,
+   "card_code": "raporlar_quarterly_review.on_calisma_sorulari",
+   "mode": "new",
+   "new_component_code": "rapor_quarterly_review_grubu"
+  },
+  {
+   "card_id": 209,
+   "card_code": "raporlar_quarterly_review.onerilen_agenda",
+   "mode": "new",
+   "new_component_code": "rapor_quarterly_review_grubu"
+  },
+  {
+   "card_id": 214,
+   "card_code": "raporlar_quarterly_review.tamamlanan_stratejik_girisim",
+   "mode": "new",
+   "new_component_code": "rapor_quarterly_review_grubu"
+  },
+  {
+   "card_id": 213,
+   "card_code": "raporlar_quarterly_review.yeni_stratejik_girisim",
+   "mode": "new",
+   "new_component_code": "rapor_quarterly_review_grubu"
+  },
+  {
+   "card_id": 233,
+   "card_code": "raporlar_risk_heatmap.5_5_risk_matrisi",
+   "mode": "new",
+   "new_component_code": "rapor_risk_heatmap_grubu"
+  },
+  {
+   "card_id": 239,
+   "card_code": "raporlar_risk_heatmap.acik",
+   "mode": "new",
+   "new_component_code": "rapor_risk_heatmap_grubu"
+  },
+  {
+   "card_id": 240,
+   "card_code": "raporlar_risk_heatmap.azaltildi",
+   "mode": "new",
+   "new_component_code": "rapor_risk_heatmap_grubu"
+  },
+  {
+   "card_id": 234,
+   "card_code": "raporlar_risk_heatmap.en_yuksek_rpn_ilk_10",
+   "mode": "new",
+   "new_component_code": "rapor_risk_heatmap_grubu"
+  },
+  {
+   "card_id": 241,
+   "card_code": "raporlar_risk_heatmap.kritik_15",
+   "mode": "new",
+   "new_component_code": "rapor_risk_heatmap_grubu"
+  },
+  {
+   "card_id": 238,
+   "card_code": "raporlar_risk_heatmap.toplam_risk",
+   "mode": "new",
+   "new_component_code": "rapor_risk_heatmap_grubu"
+  },
+  {
+   "card_id": 223,
+   "card_code": "raporlar_sabah_ozeti.bugun_bitis",
+   "mode": "new",
+   "new_component_code": "rapor_sabah_ozeti_grubu"
+  },
+  {
+   "card_id": 226,
+   "card_code": "raporlar_sabah_ozeti.bugun_olcum",
+   "mode": "new",
+   "new_component_code": "rapor_sabah_ozeti_grubu"
+  },
+  {
+   "card_id": 222,
+   "card_code": "raporlar_sabah_ozeti.geciken_faaliyet",
+   "mode": "new",
+   "new_component_code": "rapor_sabah_ozeti_grubu"
+  },
+  {
+   "card_id": 224,
+   "card_code": "raporlar_sabah_ozeti.onumuzdeki_7_gun",
+   "mode": "new",
+   "new_component_code": "rapor_sabah_ozeti_grubu"
+  },
+  {
+   "card_id": 227,
+   "card_code": "raporlar_sabah_ozeti.son_7_gun_olcum",
+   "mode": "new",
+   "new_component_code": "rapor_sabah_ozeti_grubu"
+  },
+  {
+   "card_id": 225,
+   "card_code": "raporlar_sabah_ozeti.son_7_gun_tamamlanan",
+   "mode": "new",
+   "new_component_code": "rapor_sabah_ozeti_grubu"
+  },
+  {
+   "card_id": 211,
+   "card_code": "raporlar_sabah_ozeti.son_veri_girisleri",
+   "mode": "new",
+   "new_component_code": "rapor_sabah_ozeti_grubu"
+  },
+  {
+   "card_id": 311,
+   "card_code": "raporlar_sektor_benchmark.ai_sektor_degerlendirmesi",
+   "mode": "new",
+   "new_component_code": "rapor_sektor_benchmark_grubu"
+  },
+  {
+   "card_id": 310,
+   "card_code": "raporlar_sektor_benchmark.sektor_ortalamalari",
+   "mode": "new",
+   "new_component_code": "rapor_sektor_benchmark_grubu"
+  },
+  {
+   "card_id": 309,
+   "card_code": "raporlar_sektor_benchmark.sektor_otomotiv_yan_sanayi",
+   "mode": "new",
+   "new_component_code": "rapor_sektor_benchmark_grubu"
+  },
+  {
+   "card_id": 702,
+   "card_code": "raporlar_sektorel.sektor_egitim",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 701,
+   "card_code": "raporlar_sektorel.sektor_finans",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 706,
+   "card_code": "raporlar_sektorel.sektor_hizmet",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 705,
+   "card_code": "raporlar_sektorel.sektor_insaat",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 703,
+   "card_code": "raporlar_sektorel.sektor_kamu",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 699,
+   "card_code": "raporlar_sektorel.sektor_otomotiv",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 704,
+   "card_code": "raporlar_sektorel.sektor_perakende",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 700,
+   "card_code": "raporlar_sektorel.sektor_saglik",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_grubu"
+  },
+  {
+   "card_id": 563,
+   "card_code": "raporlar_sektorel_detay.ozet_istatistik",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_detay_grubu"
+  },
+  {
+   "card_id": 569,
+   "card_code": "raporlar_sektorel_detay.paketi_uygula_bilgi",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_detay_grubu"
+  },
+  {
+   "card_id": 568,
+   "card_code": "raporlar_sektorel_detay.performans_gostergeleri",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_detay_grubu"
+  },
+  {
+   "card_id": 567,
+   "card_code": "raporlar_sektorel_detay.riskler",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_detay_grubu"
+  },
+  {
+   "card_id": 565,
+   "card_code": "raporlar_sektorel_detay.stratejiler",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_detay_grubu"
+  },
+  {
+   "card_id": 566,
+   "card_code": "raporlar_sektorel_detay.surecler",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_detay_grubu"
+  },
+  {
+   "card_id": 564,
+   "card_code": "raporlar_sektorel_detay.uyum_standartlari",
+   "mode": "new",
+   "new_component_code": "rapor_sektorel_detay_grubu"
+  },
+  {
+   "card_id": 312,
+   "card_code": "raporlar_strateji_hikayesi.hikaye",
+   "mode": "new",
+   "new_component_code": "rapor_strateji_hikayesi_grubu"
+  },
+  {
+   "card_id": 314,
+   "card_code": "raporlar_strateji_hikayesi.kirilim_noktalari",
+   "mode": "new",
+   "new_component_code": "rapor_strateji_hikayesi_grubu"
+  },
+  {
+   "card_id": 313,
+   "card_code": "raporlar_strateji_hikayesi.yillik_snapshot",
+   "mode": "new",
+   "new_component_code": "rapor_strateji_hikayesi_grubu"
+  },
+  {
+   "card_id": 340,
+   "card_code": "raporlar_stratejik_yillik.bolum_yapisi",
+   "mode": "new",
+   "new_component_code": "rapor_stratejik_yillik_grubu"
+  },
+  {
+   "card_id": 339,
+   "card_code": "raporlar_stratejik_yillik.premium_pdf_35_sayfa",
+   "mode": "new",
+   "new_component_code": "rapor_stratejik_yillik_grubu"
+  },
+  {
+   "card_id": 270,
+   "card_code": "raporlar_sunburst.stratejik_hiyerarsi_sunburst",
+   "mode": "new",
+   "new_component_code": "rapor_sunburst_grubu"
+  },
+  {
+   "card_id": 257,
+   "card_code": "raporlar_veri_kalitesi.genel_skor",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 259,
+   "card_code": "raporlar_veri_kalitesi.kritik",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 254,
+   "card_code": "raporlar_veri_kalitesi.kritik_pg_ler",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 260,
+   "card_code": "raporlar_veri_kalitesi.orta_risk",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 255,
+   "card_code": "raporlar_veri_kalitesi.orta_risk_pg_ler",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 261,
+   "card_code": "raporlar_veri_kalitesi.saglikli",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 256,
+   "card_code": "raporlar_veri_kalitesi.surec_bazli_doluluk",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 258,
+   "card_code": "raporlar_veri_kalitesi.toplam_pg",
+   "mode": "new",
+   "new_component_code": "rapor_veri_kalitesi_grubu"
+  },
+  {
+   "card_id": 275,
+   "card_code": "raporlar_vrio_portfoy.dezavantaj",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 273,
+   "card_code": "raporlar_vrio_portfoy.gecici",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 277,
+   "card_code": "raporlar_vrio_portfoy.gecici_rekabet_avantaji_0",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 274,
+   "card_code": "raporlar_vrio_portfoy.kullanilmayan",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 278,
+   "card_code": "raporlar_vrio_portfoy.kullanilmayan_avantaj_0",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 279,
+   "card_code": "raporlar_vrio_portfoy.rekabet_paritesi_0",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 280,
+   "card_code": "raporlar_vrio_portfoy.rekabetci_dezavantaj_0",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 570,
+   "card_code": "raporlar_vrio_portfoy.sayfa",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 272,
+   "card_code": "raporlar_vrio_portfoy.surdurulebilir",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 276,
+   "card_code": "raporlar_vrio_portfoy.surdurulebilir_rekabet_avantaji_0",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 271,
+   "card_code": "raporlar_vrio_portfoy.toplam_kaynak",
+   "mode": "new",
+   "new_component_code": "rapor_vrio_portfoy_grubu"
+  },
+  {
+   "card_id": 341,
+   "card_code": "raporlar_yatirimci_sunum.pptx_sunum_16_9",
+   "mode": "new",
+   "new_component_code": "rapor_yatirimci_sunum_grubu"
+  },
+  {
+   "card_id": 342,
+   "card_code": "raporlar_yatirimci_sunum.slayt_yapisi",
+   "mode": "new",
+   "new_component_code": "rapor_yatirimci_sunum_grubu"
+  },
+  {
+   "card_id": 173,
+   "card_code": "raporlar_yonetici_liderlik.yonetici_sayisi",
+   "mode": "new",
+   "new_component_code": "rapor_yonetici_liderlik_grubu"
+  },
+  {
+   "card_id": 169,
+   "card_code": "raporlar_yonetici_liderlik.yoneticiler_karti",
+   "mode": "new",
+   "new_component_code": "rapor_yonetici_liderlik_grubu"
+  },
+  {
+   "card_id": 572,
+   "card_code": "sp_ai_settings.api_anahtari_bilgileri",
+   "mode": "new",
+   "new_component_code": "ai_ayarlari"
+  },
+  {
+   "card_id": 571,
+   "card_code": "sp_ai_settings.kaynak_modu",
+   "mode": "new",
+   "new_component_code": "ai_ayarlari"
+  },
+  {
+   "card_id": 575,
+   "card_code": "sp_blue_ocean.deger_egrisi",
+   "mode": "new",
+   "new_component_code": "mavi_okyanus_analizi"
+  },
+  {
+   "card_id": 576,
+   "card_code": "sp_blue_ocean.errc_tablosu",
+   "mode": "new",
+   "new_component_code": "mavi_okyanus_analizi"
+  },
+  {
+   "card_id": 574,
+   "card_code": "sp_blue_ocean.tuval_detay",
+   "mode": "new",
+   "new_component_code": "mavi_okyanus_analizi"
+  },
+  {
+   "card_id": 573,
+   "card_code": "sp_blue_ocean.tuval_listesi",
+   "mode": "new",
+   "new_component_code": "mavi_okyanus_analizi"
+  },
+  {
+   "card_id": 578,
+   "card_code": "sp_bsc.atanmamis_gostergeler",
+   "mode": "new",
+   "new_component_code": "dengeli_karne_bsc"
+  },
+  {
+   "card_id": 577,
+   "card_code": "sp_bsc.sayfa",
+   "mode": "new",
+   "new_component_code": "dengeli_karne_bsc"
+  },
+  {
+   "card_id": 376,
+   "card_code": "sp_ceyreklik_review.aksiyon_onerileri",
+   "mode": "new",
+   "new_component_code": "ceyreklik_degerlendirme"
+  },
+  {
+   "card_id": 375,
+   "card_code": "sp_ceyreklik_review.anomali",
+   "mode": "new",
+   "new_component_code": "ceyreklik_degerlendirme"
+  },
+  {
+   "card_id": 369,
+   "card_code": "sp_ceyreklik_review.donem_secici",
+   "mode": "new",
+   "new_component_code": "ceyreklik_degerlendirme"
+  },
+  {
+   "card_id": 373,
+   "card_code": "sp_ceyreklik_review.faaliyet",
+   "mode": "new",
+   "new_component_code": "ceyreklik_degerlendirme"
+  },
+  {
+   "card_id": 372,
+   "card_code": "sp_ceyreklik_review.okr_ilerleme",
+   "mode": "new",
+   "new_component_code": "ceyreklik_degerlendirme"
+  },
+  {
+   "card_id": 370,
+   "card_code": "sp_ceyreklik_review.pg_durumu",
+   "mode": "new",
+   "new_component_code": "ceyreklik_degerlendirme"
+  },
+  {
+   "card_id": 374,
+   "card_code": "sp_ceyreklik_review.risk",
+   "mode": "new",
+   "new_component_code": "ceyreklik_degerlendirme"
+  },
+  {
+   "card_id": 371,
+   "card_code": "sp_ceyreklik_review.strateji",
+   "mode": "new",
+   "new_component_code": "ceyreklik_degerlendirme"
+  },
+  {
+   "card_id": 579,
+   "card_code": "sp_degerler.sayfa",
+   "mode": "skip"
+  },
+  {
+   "card_id": 581,
+   "card_code": "sp_donemler.aktif_donem",
+   "mode": "new",
+   "new_component_code": "sp_plan_donemleri"
+  },
+  {
+   "card_id": 580,
+   "card_code": "sp_donemler.bos_durum",
+   "mode": "new",
+   "new_component_code": "sp_plan_donemleri"
+  },
+  {
+   "card_id": 583,
+   "card_code": "sp_donemler.donem_karsilastir",
+   "mode": "new",
+   "new_component_code": "sp_plan_donemleri"
+  },
+  {
+   "card_id": 582,
+   "card_code": "sp_donemler.tum_donemler",
+   "mode": "new",
+   "new_component_code": "sp_plan_donemleri"
+  },
+  {
+   "card_id": 584,
+   "card_code": "sp_dynamic_flow.renk_lejandi",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 585,
+   "card_code": "sp_dynamic_flow.strateji_grafigi",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 368,
+   "card_code": "sp_exec_dashboard.ai_pivot_onerileri",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 356,
+   "card_code": "sp_exec_dashboard.ai_yonetici_ozeti",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 363,
+   "card_code": "sp_exec_dashboard.aktif_tetikleyici",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 365,
+   "card_code": "sp_exec_dashboard.aylik_saglik_trendi",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 360,
+   "card_code": "sp_exec_dashboard.gecikmis_faaliyet",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 359,
+   "card_code": "sp_exec_dashboard.girisim_sagligi",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 361,
+   "card_code": "sp_exec_dashboard.kritik_risk",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 364,
+   "card_code": "sp_exec_dashboard.kvektor_gelisimi",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 367,
+   "card_code": "sp_exec_dashboard.otomatik_vurgular",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 358,
+   "card_code": "sp_exec_dashboard.pg_hedef_ustu",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 357,
+   "card_code": "sp_exec_dashboard.saglik_skoru",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 366,
+   "card_code": "sp_exec_dashboard.strateji_siralamasi",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 362,
+   "card_code": "sp_exec_dashboard.yuksek_anomali",
+   "mode": "new",
+   "new_component_code": "sp_yonetici_paneli"
+  },
+  {
+   "card_id": 587,
+   "card_code": "sp_flow.alt_strateji_sayisi",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 586,
+   "card_code": "sp_flow.ana_strateji_sayisi",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 590,
+   "card_code": "sp_flow.interaktif_grafik",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 588,
+   "card_code": "sp_flow.surec_sayisi",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 589,
+   "card_code": "sp_flow.vizyon",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 377,
+   "card_code": "sp_initiatives.girisim_listesi",
+   "mode": "new",
+   "new_component_code": "stratejik_girisimler"
+  },
+  {
+   "card_id": 591,
+   "card_code": "sp_llm_usage.kota_ozeti",
+   "mode": "new",
+   "new_component_code": "ai_kullanim_raporu"
+  },
+  {
+   "card_id": 592,
+   "card_code": "sp_llm_usage.son_cagrilar",
+   "mode": "new",
+   "new_component_code": "ai_kullanim_raporu"
+  },
+  {
+   "card_id": 640,
+   "card_code": "sp_menu.sp",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 647,
+   "card_code": "sp_menu.sp-blue-ocean",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 653,
+   "card_code": "sp_menu.sp-bsc",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 642,
+   "card_code": "sp_menu.sp-ceyreklik-review",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 641,
+   "card_code": "sp_menu.sp-exec-dashboard",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 643,
+   "card_code": "sp_menu.sp-initiatives",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 651,
+   "card_code": "sp_menu.sp-pestel",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 652,
+   "card_code": "sp_menu.sp-porter",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 645,
+   "card_code": "sp_menu.sp-replan-triggers",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 644,
+   "card_code": "sp_menu.sp-scenarios",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 655,
+   "card_code": "sp_menu.sp-settings-ai",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 649,
+   "card_code": "sp_menu.sp-swot",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 656,
+   "card_code": "sp_menu.sp-templates",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 650,
+   "card_code": "sp_menu.sp-tows",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 648,
+   "card_code": "sp_menu.sp-vrio",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 646,
+   "card_code": "sp_menu.sp-xmatrix",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 654,
+   "card_code": "sp_menu.sp-digest-weekly.pdf",
+   "mode": "existing",
+   "existing_component_id": 15
+  },
+  {
+   "card_id": 593,
+   "card_code": "sp_misyon.misyon",
+   "mode": "existing",
+   "existing_component_id": 31
+  },
+  {
+   "card_id": 595,
+   "card_code": "sp_okr.hedef_karti",
+   "mode": "new",
+   "new_component_code": "okr_yonetimi"
+  },
+  {
+   "card_id": 594,
+   "card_code": "sp_okr.ozet",
+   "mode": "new",
+   "new_component_code": "okr_yonetimi"
+  },
+  {
+   "card_id": 596,
+   "card_code": "sp_pestel.sayfa",
+   "mode": "existing",
+   "existing_component_id": 7
+  },
+  {
+   "card_id": 597,
+   "card_code": "sp_porter.sayfa",
+   "mode": "existing",
+   "existing_component_id": 9
+  },
+  {
+   "card_id": 598,
+   "card_code": "sp_replan_triggers.aktif_tetikleyiciler",
+   "mode": "new",
+   "new_component_code": "yeniden_planlama_tetikleyicileri"
+  },
+  {
+   "card_id": 599,
+   "card_code": "sp_replan_triggers.son_ateslemeler",
+   "mode": "new",
+   "new_component_code": "yeniden_planlama_tetikleyicileri"
+  },
+  {
+   "card_id": 601,
+   "card_code": "sp_scenarios.senaryo_listesi",
+   "mode": "new",
+   "new_component_code": "senaryo_planlama"
+  },
+  {
+   "card_id": 600,
+   "card_code": "sp_scenarios.senaryo_olustur",
+   "mode": "new",
+   "new_component_code": "senaryo_planlama"
+  },
+  {
+   "card_id": 602,
+   "card_code": "sp_scenarios_kiyas.secim_listesi",
+   "mode": "new",
+   "new_component_code": "senaryo_planlama"
+  },
+  {
+   "card_id": 603,
+   "card_code": "sp_scenarios_kiyas.vizyon_skoru_karsilastirma",
+   "mode": "new",
+   "new_component_code": "senaryo_planlama"
+  },
+  {
+   "card_id": 605,
+   "card_code": "sp_sihirbaz_yeni_yil.onizleme",
+   "mode": "new",
+   "new_component_code": "yeni_plan_yili_sihirbazi"
+  },
+  {
+   "card_id": 606,
+   "card_code": "sp_sihirbaz_yeni_yil.sonuc",
+   "mode": "new",
+   "new_component_code": "yeni_plan_yili_sihirbazi"
+  },
+  {
+   "card_id": 604,
+   "card_code": "sp_sihirbaz_yeni_yil.yil_secimi",
+   "mode": "new",
+   "new_component_code": "yeni_plan_yili_sihirbazi"
+  },
+  {
+   "card_id": 608,
+   "card_code": "sp_strategy_project_matrix.hizalama_matrisi",
+   "mode": "new",
+   "new_component_code": "strateji_proje_hizalama_matrisi"
+  },
+  {
+   "card_id": 613,
+   "card_code": "sp_strategy_project_matrix.hizalanmamis_projeler",
+   "mode": "new",
+   "new_component_code": "strateji_proje_hizalama_matrisi"
+  },
+  {
+   "card_id": 607,
+   "card_code": "sp_strategy_project_matrix.nasil_okunur",
+   "mode": "new",
+   "new_component_code": "strateji_proje_hizalama_matrisi"
+  },
+  {
+   "card_id": 611,
+   "card_code": "sp_strategy_project_matrix.ozet_en_guclu_hizalama",
+   "mode": "new",
+   "new_component_code": "strateji_proje_hizalama_matrisi"
+  },
+  {
+   "card_id": 612,
+   "card_code": "sp_strategy_project_matrix.ozet_hizalama_kapsama",
+   "mode": "new",
+   "new_component_code": "strateji_proje_hizalama_matrisi"
+  },
+  {
+   "card_id": 610,
+   "card_code": "sp_strategy_project_matrix.ozet_proje",
+   "mode": "new",
+   "new_component_code": "strateji_proje_hizalama_matrisi"
+  },
+  {
+   "card_id": 609,
+   "card_code": "sp_strategy_project_matrix.ozet_strateji",
+   "mode": "new",
+   "new_component_code": "strateji_proje_hizalama_matrisi"
+  },
+  {
+   "card_id": 614,
+   "card_code": "sp_strategy_project_matrix.stratejisi_olmayan_projeler",
+   "mode": "new",
+   "new_component_code": "strateji_proje_hizalama_matrisi"
+  },
+  {
+   "card_id": 350,
+   "card_code": "sp_strateji_haritasi.alt_strateji",
+   "mode": "new",
+   "new_component_code": "strateji_haritasi"
+  },
+  {
+   "card_id": 349,
+   "card_code": "sp_strateji_haritasi.ana_strateji",
+   "mode": "new",
+   "new_component_code": "strateji_haritasi"
+  },
+  {
+   "card_id": 352,
+   "card_code": "sp_strateji_haritasi.pg",
+   "mode": "new",
+   "new_component_code": "strateji_haritasi"
+  },
+  {
+   "card_id": 353,
+   "card_code": "sp_strateji_haritasi.str_girisim",
+   "mode": "new",
+   "new_component_code": "strateji_haritasi"
+  },
+  {
+   "card_id": 354,
+   "card_code": "sp_strateji_haritasi.strateji_haritasi",
+   "mode": "new",
+   "new_component_code": "strateji_haritasi"
+  },
+  {
+   "card_id": 351,
+   "card_code": "sp_strateji_haritasi.surec",
+   "mode": "new",
+   "new_component_code": "strateji_haritasi"
+  },
+  {
+   "card_id": 615,
+   "card_code": "sp_swot.sayfa",
+   "mode": "existing",
+   "existing_component_id": 6
+  },
+  {
+   "card_id": 616,
+   "card_code": "sp_templates.sablon_karti",
+   "mode": "new",
+   "new_component_code": "plan_sablonlari"
+  },
+  {
+   "card_id": 707,
+   "card_code": "sp_tows.so",
+   "mode": "existing",
+   "existing_component_id": 8
+  },
+  {
+   "card_id": 708,
+   "card_code": "sp_tows.st",
+   "mode": "existing",
+   "existing_component_id": 8
+  },
+  {
+   "card_id": 709,
+   "card_code": "sp_tows.wo",
+   "mode": "existing",
+   "existing_component_id": 8
+  },
+  {
+   "card_id": 710,
+   "card_code": "sp_tows.wt",
+   "mode": "existing",
+   "existing_component_id": 8
+  },
+  {
+   "card_id": 617,
+   "card_code": "sp_tv.sayfa",
+   "mode": "new",
+   "new_component_code": "savas_odasi_tv_panosu"
+  },
+  {
+   "card_id": 618,
+   "card_code": "sp_vizyon.vizyon",
+   "mode": "skip"
+  },
+  {
+   "card_id": 619,
+   "card_code": "sp_vrio.aciklama_degerli",
+   "mode": "existing",
+   "existing_component_id": 11
+  },
+  {
+   "card_id": 620,
+   "card_code": "sp_vrio.aciklama_nadir",
+   "mode": "existing",
+   "existing_component_id": 11
+  },
+  {
+   "card_id": 622,
+   "card_code": "sp_vrio.aciklama_organize",
+   "mode": "existing",
+   "existing_component_id": 11
+  },
+  {
+   "card_id": 621,
+   "card_code": "sp_vrio.aciklama_taklit_edilemez",
+   "mode": "existing",
+   "existing_component_id": 11
+  },
+  {
+   "card_id": 623,
+   "card_code": "sp_vrio.kaynak_tablosu",
+   "mode": "existing",
+   "existing_component_id": 11
+  },
+  {
+   "card_id": 624,
+   "card_code": "sp_vrio.sonuc_siniflandirmasi",
+   "mode": "existing",
+   "existing_component_id": 11
+  },
+  {
+   "card_id": 625,
+   "card_code": "sp_xmatrix.sayfa",
+   "mode": "new",
+   "new_component_code": "hoshin_x_matrix"
+  },
+  {
+   "card_id": 462,
+   "card_code": "analiz.anomali_listesi",
+   "mode": "new",
+   "new_component_code": "anomali_tespiti"
+  },
+  {
+   "card_id": 459,
+   "card_code": "analiz.anomali_ozet",
+   "mode": "new",
+   "new_component_code": "anomali_tespiti"
+  },
+  {
+   "card_id": 456,
+   "card_code": "analiz.saglik_skoru",
+   "mode": "new",
+   "new_component_code": "surec_saglik_skoru"
+  },
+  {
+   "card_id": 455,
+   "card_code": "analiz.secim_araclari",
+   "mode": "skip"
+  },
+  {
+   "card_id": 461,
+   "card_code": "analiz.tahmin_grafigi",
+   "mode": "new",
+   "new_component_code": "trend_tahmin_analizi"
+  },
+  {
+   "card_id": 458,
+   "card_code": "analiz.tahmin_ozet",
+   "mode": "new",
+   "new_component_code": "trend_tahmin_analizi"
+  },
+  {
+   "card_id": 460,
+   "card_code": "analiz.trend_grafigi",
+   "mode": "new",
+   "new_component_code": "trend_tahmin_analizi"
+  },
+  {
+   "card_id": 457,
+   "card_code": "analiz.trend_yonu",
+   "mode": "new",
+   "new_component_code": "trend_tahmin_analizi"
+  },
+  {
+   "card_id": 463,
+   "card_code": "api_docs.endpoint_listesi",
+   "mode": "new",
+   "new_component_code": "api_erisimi"
+  },
+  {
+   "card_id": 464,
+   "card_code": "auth_ayarlar.bildirim_ayarlari",
+   "mode": "skip"
+  },
+  {
+   "card_id": 465,
+   "card_code": "auth_ayarlar.dil_ve_bolge",
+   "mode": "skip"
+  },
+  {
+   "card_id": 466,
+   "card_code": "auth_ayarlar.gorunum",
+   "mode": "skip"
+  },
+  {
+   "card_id": 469,
+   "card_code": "auth_profil.iki_faktorlu_dogrulama",
+   "mode": "skip"
+  },
+  {
+   "card_id": 468,
+   "card_code": "auth_profil.kisisel_bilgiler",
+   "mode": "skip"
+  },
+  {
+   "card_id": 467,
+   "card_code": "auth_profil.profil_ozeti",
+   "mode": "skip"
+  },
+  {
+   "card_id": 486,
+   "card_code": "bildirim.liste",
+   "mode": "skip"
+  },
+  {
+   "card_id": 498,
+   "card_code": "calendar.kurum_takvimi",
+   "mode": "new",
+   "new_component_code": "kurum_takvimi"
+  },
+  {
+   "card_id": 527,
+   "card_code": "kurum_ayarlar.iletisim",
+   "mode": "skip"
+  },
+  {
+   "card_id": 528,
+   "card_code": "kurum_ayarlar.k_vektor",
+   "mode": "new",
+   "new_component_code": "k_vektor_vizyon_skoru"
+  },
+  {
+   "card_id": 526,
+   "card_code": "kurum_ayarlar.kurum_bilgileri",
+   "mode": "skip"
+  },
+  {
+   "card_id": 530,
+   "card_code": "kurum_ayarlar.kurum_logosu",
+   "mode": "skip"
+  },
+  {
+   "card_id": 529,
+   "card_code": "kurum_ayarlar.yillik_plan_donemleri",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 2,
+   "card_code": "kurum_ozet_kartlar",
+   "mode": "skip"
+  },
+  {
+   "card_id": 22,
+   "card_code": "sp.akis_olgunlugu",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 21,
+   "card_code": "sp.ana_strateji",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 33,
+   "card_code": "sp.bireysel_hedefler",
+   "mode": "new",
+   "new_component_code": "bireysel_hedef_hizalama"
+  },
+  {
+   "card_id": 29,
+   "card_code": "sp.degerler_ve_etik_kurallar",
+   "mode": "existing",
+   "existing_component_id": 33
+  },
+  {
+   "card_id": 25,
+   "card_code": "sp.etiketsiz_strateji",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 23,
+   "card_code": "sp.k_vektor_vizyon",
+   "mode": "new",
+   "new_component_code": "k_vektor_vizyon_skoru"
+  },
+  {
+   "card_id": 26,
+   "card_code": "sp.kimlik",
+   "mode": "existing",
+   "existing_component_id": 31
+  },
+  {
+   "card_id": 27,
+   "card_code": "sp.misyon",
+   "mode": "existing",
+   "existing_component_id": 31
+  },
+  {
+   "card_id": 24,
+   "card_code": "sp.plan_donemi",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 30,
+   "card_code": "sp.strateji_agirlik_skor_gorsellestirme",
+   "mode": "skip"
+  },
+  {
+   "card_id": 31,
+   "card_code": "sp.strateji_listesi_ana_stratejiler_alt_stratejiler",
+   "mode": "existing",
+   "existing_component_id": 20
+  },
+  {
+   "card_id": 32,
+   "card_code": "sp.surec_iyilestirme_faaliyetleri",
+   "mode": "existing",
+   "existing_component_id": 28
+  },
+  {
+   "card_id": 28,
+   "card_code": "sp.vizyon",
+   "mode": "new",
+   "new_component_code": "vizyon_karti"
+  }
+ ]
+}
