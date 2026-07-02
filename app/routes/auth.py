@@ -1,12 +1,8 @@
 """Auth Blueprint - login, logout, profile."""
 
-import os
-import uuid
-
 from flask import Blueprint, flash, redirect, render_template, request, session, url_for, current_app
 from flask_login import current_user, login_required, login_user, logout_user
 from werkzeug.security import check_password_hash, generate_password_hash
-from werkzeug.utils import secure_filename
 
 from app.models import db
 from app.models.core import User
@@ -122,132 +118,6 @@ def logout():
         _write_auth_audit("OTURUM KAPATMA", user)
     logout_user()
     return redirect(url_for("public_login"))
-
-
-@auth_bp.route("/profile", methods=["GET", "POST"])
-@login_required
-def profile():
-    """Profil sayfası - GET gösterir, POST günceller."""
-    if request.method == "POST":
-        email = (request.form.get("email") or "").strip().lower()
-        first_name = (request.form.get("first_name") or "").strip() or None
-        last_name = (request.form.get("last_name") or "").strip() or None
-        phone_number = (request.form.get("phone_number") or "").strip() or None
-        job_title = (request.form.get("job_title") or "").strip() or None
-        department = (request.form.get("department") or "").strip() or None
-        _raw_pp = (request.form.get("profile_picture") or "").strip()
-        profile_picture = _raw_pp if _raw_pp.startswith("/static/uploads/profiles/") else None
-        current_password = request.form.get("current_password") or ""
-        new_password = request.form.get("new_password") or ""
-
-        if not email:
-            flash("E-posta zorunludur.", "danger")
-            return redirect(url_for("auth_bp.profile"))
-
-        existing = User.query.filter_by(email=email).first()
-        if existing and existing.id != current_user.id:
-            flash(_("Bu e-posta adresi başka bir kullanıcı tarafından kullanılıyor."), "danger")
-            return redirect(url_for("auth_bp.profile"))
-
-        if new_password or current_password:
-            if not current_password:
-                flash(_("Şifre değiştirmek için mevcut şifrenizi girmelisiniz."), "danger")
-                return redirect(url_for("auth_bp.profile"))
-            if not check_password_hash(current_user.password_hash, current_password):
-                flash(_("Mevcut şifre yanlış."), "danger")
-                return redirect(url_for("auth_bp.profile"))
-            if len(new_password) < 8:
-                flash(_("Yeni şifre en az 8 karakter olmalıdır."), "danger")
-                return redirect(url_for("auth_bp.profile"))
-
-        current_user.email = email
-        current_user.first_name = first_name
-        current_user.last_name = last_name
-        current_user.phone_number = phone_number
-        current_user.job_title = job_title
-        current_user.department = department
-        current_user.profile_picture = profile_picture
-        password_changed = False
-        if new_password:
-            # Sprint 22: password complexity policy
-            from app.utils.password_policy import validate_password
-            ok, errs = validate_password(new_password, username=current_user.email)
-            if not ok:
-                for e in errs:
-                    flash(e, "danger")
-                return redirect(url_for("auth_bp.profile"))
-            current_user.password_hash = generate_password_hash(new_password)
-            password_changed = True
-        db.session.commit()
-        # Sprint 12.3 — password change audit log
-        if password_changed:
-            try:
-                AuditLogger.log(
-                    action="PASSWORD_CHANGED",
-                    resource_type="GÜVENLİK",
-                    resource_id=current_user.id,
-                    description=f"User {current_user.email} kendi şifresini değiştirdi",
-                )
-            except Exception as e:
-                current_app.logger.error(f"[password_audit] {e}")
-        flash(_("Profil başarıyla güncellendi."), "success")
-        return redirect(url_for("auth_bp.profile"))
-
-    return render_template("auth/profile.html")
-
-
-@auth_bp.route("/profile/upload-photo", methods=["POST"])
-@login_required
-def upload_profile_photo():
-    """Profil fotoğrafı yükle - JSON yanıt."""
-    from flask import jsonify
-
-    if "file" not in request.files:
-        return jsonify({"success": False, "message": _("Dosya seçilmedi.")}), 400
-    file = request.files["file"]
-    if not file or file.filename == "":
-        return jsonify({"success": False, "message": _("Dosya seçilmedi.")}), 400
-    allowed = {"png", "jpg", "jpeg", "gif", "webp"}  # svg XSS riski nedeniyle çıkarıldı
-    allowed_mime = {"image/png", "image/jpeg", "image/jpg", "image/gif", "image/webp"}
-    ext = file.filename.rsplit(".", 1)[-1].lower() if "." in file.filename else ""
-    if ext not in allowed:
-        return jsonify({"success": False, "message": _("Geçersiz dosya tipi. İzin verilenler: PNG, JPG, GIF, WEBP.")}), 400
-    # MIME type kontrolü: Content-Type başlığını doğrula. Not: bu başlık
-    # da istemci tarafından gönderilebilir; asıl güvenlik Pillow ile
-    # re-encode yapan micro endpoint'te (profil_foto_yukle) sağlanmaktadır.
-    # Bu legacy endpoint Pillow kullanmıyor; bu nedenle MIME check ek katman sağlar.
-    if file.mimetype and file.mimetype not in allowed_mime:
-        return jsonify({"success": False, "message": _("Geçersiz dosya içeriği. Yalnızca resim dosyaları kabul edilir.")}), 400
-
-    # Boyut limiti: 5 MB
-    MAX_BYTES = 5 * 1024 * 1024
-    file.seek(0, 2)
-    file_size = file.tell()
-    file.seek(0)
-    if file_size > MAX_BYTES:
-        return jsonify({"success": False, "message": _("Dosya boyutu 5 MB'ı aşamaz.")}), 400
-
-    filename = secure_filename(file.filename) or "photo"
-    unique = f"{uuid.uuid4().hex}_{filename}"
-    upload_dir = os.path.join("static", "uploads", "profiles")
-    os.makedirs(upload_dir, exist_ok=True)
-    file_path = os.path.join(upload_dir, unique)
-    file.save(file_path)
-
-    if current_user.profile_picture:
-        from pathlib import Path
-        _base = Path("static/uploads/profiles").resolve()
-        try:
-            old_path = Path(current_user.profile_picture.lstrip("/")).resolve()
-            # Path traversal önlemi: dosya mutlaka base dizin içinde olmalı
-            if old_path.is_relative_to(_base) and old_path.exists():
-                old_path.unlink(missing_ok=True)
-        except (OSError, ValueError):
-            pass
-
-    current_user.profile_picture = f"/static/uploads/profiles/{unique}"
-    db.session.commit()
-    return jsonify({"success": True, "message": _("Fotoğraf yüklendi."), "photo_url": current_user.profile_picture})
 
 
 def _parse_json_prefs(val, default=None):
