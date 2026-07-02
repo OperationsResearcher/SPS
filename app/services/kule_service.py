@@ -12,7 +12,7 @@ from typing import Optional
 import yaml
 from flask import current_app
 
-from app.extensions import db
+from extensions import db
 from app.models.tour import UserTourProgress
 
 
