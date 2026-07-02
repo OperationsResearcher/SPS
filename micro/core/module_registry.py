@@ -71,6 +71,13 @@ MODULES = [
         "description": _("Kurumsal raporlama merkezi — süreç, strateji, faaliyet, risk ve denetim raporları"),
     },
     {
+        "id": "raporlar",
+        "name": _("Raporlar"),
+        "url": "/reports",
+        "icon": "🗂️",
+        "description": _("İleri raporlama merkezi — CFO/CHRO/COO panoları, ESG, OKR, VRIO portföy analizleri"),
+    },
+    {
         "id": "admin",
         "name": _("Yönetim Paneli"),
         "url": "/admin/users",
@@ -150,6 +157,7 @@ _SYSTEM_CODE_TO_LAUNCHER_ID = {
     "performans_analitigi_modulu": "analiz",
     "k_radar_modulu": "k_radar",
     "k_rapor_modulu": "k_rapor",
+    "raporlar_modulu": "raporlar",
 }
 
 _LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)
