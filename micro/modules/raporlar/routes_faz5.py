@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, date as _date, timezone
 
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
+from app.utils.decorators import require_module
 from sqlalchemy import func, and_, or_, text, select
 from sqlalchemy.orm import joinedload, selectinload
 
@@ -33,12 +34,14 @@ from flask_babel import gettext as _
 
 @app_bp.route("/reports/mobile")
 @login_required
+@require_module("raporlar")
 def raporlar_mobile():
-    return render_template("platform/reports/mobile.html")
+    return render_template("platform/raporlar/mobile.html")
 
 
 @app_bp.route("/reports/api/mobile/snapshot")
 @login_required
+@require_module("raporlar")
 def raporlar_api_mobile_snapshot():
     """Mobile için kompakt veri snapshot — anasayfa metrikleri."""
     tid = _tid_or_none()
@@ -102,12 +105,14 @@ def raporlar_api_mobile_snapshot():
 
 @app_bp.route("/reports/bi-connector")
 @login_required
+@require_module("raporlar")
 def raporlar_bi_connector():
-    return render_template("platform/reports/bi_connector.html")
+    return render_template("platform/raporlar/bi_connector.html")
 
 
 @app_bp.route("/reports/api/bi/kpi-data.csv")
 @login_required
+@require_module("raporlar")
 def raporlar_api_bi_kpi_data_csv():
     """KPI ölçümlerini CSV olarak döner (Power BI/Tableau direkt çekebilir)."""
     from flask import Response
@@ -144,6 +149,7 @@ def raporlar_api_bi_kpi_data_csv():
 
 @app_bp.route("/reports/api/bi/strategies.json")
 @login_required
+@require_module("raporlar")
 def raporlar_api_bi_strategies_json():
     """Strateji ağacı + skor JSON (BI tool'lar için)."""
     tid = _tid_or_none()
@@ -170,12 +176,14 @@ def raporlar_api_bi_strategies_json():
 
 @app_bp.route("/reports/ml-anomaly")
 @login_required
+@require_module("raporlar")
 def raporlar_ml_anomaly():
-    return render_template("platform/reports/ml_anomaly.html")
+    return render_template("platform/raporlar/ml_anomaly.html")
 
 
 @app_bp.route("/reports/api/ml-anomaly")
 @login_required
+@require_module("raporlar")
 def raporlar_api_ml_anomaly():
     """IsolationForest tabanlı KPI anomali tespiti."""
     tid = _tid_or_none()
@@ -260,12 +268,14 @@ def raporlar_api_ml_anomaly():
 
 @app_bp.route("/reports/approval-chain")
 @login_required
+@require_module("raporlar")
 def raporlar_onay_zinciri():
-    return render_template("platform/reports/onay_zinciri.html")
+    return render_template("platform/raporlar/onay_zinciri.html")
 
 
 @app_bp.route("/reports/api/approval-chain")
 @login_required
+@require_module("raporlar")
 def raporlar_api_onay_zinciri():
     """Initiative onay zinciri MVP — durum + sorumlu + işlem."""
     tid = _tid_or_none()
@@ -330,13 +340,15 @@ def raporlar_api_onay_zinciri():
 
 @app_bp.route("/reports/pi-project-impact")
 @login_required
+@require_module("raporlar")
 def raporlar_pg_proje_etki():
     """PG × Proje çapraz etki analizi sayfası."""
-    return render_template("platform/reports/pg_proje_etki.html")
+    return render_template("platform/raporlar/pg_proje_etki.html")
 
 
 @app_bp.route("/reports/api/pi-project-impact")
 @login_required
+@require_module("raporlar")
 def raporlar_api_pg_proje_etki():
     """Proje × Süreç × PG matrisini ve özet metrikleri döner."""
     from sqlalchemy import text as _t

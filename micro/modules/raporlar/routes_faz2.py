@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone, date as _date
 
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
+from app.utils.decorators import require_module
 from sqlalchemy import func, and_, or_, text, select
 
 from platform_core import app_bp
@@ -31,12 +32,14 @@ from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
 
 @app_bp.route("/reports/cfo-dashboard")
 @login_required
+@require_module("raporlar")
 def raporlar_cfo_dashboard():
-    return render_template("platform/reports/cfo_dashboard.html")
+    return render_template("platform/raporlar/cfo_dashboard.html")
 
 
 @app_bp.route("/reports/api/cfo-dashboard")
 @login_required
+@require_module("raporlar")
 def raporlar_api_cfo_dashboard():
     from app.models.llm_usage import LLMUsageLog
     tid = _tid_or_none()
@@ -125,12 +128,14 @@ def raporlar_api_cfo_dashboard():
 
 @app_bp.route("/reports/coo-dashboard")
 @login_required
+@require_module("raporlar")
 def raporlar_coo_dashboard():
-    return render_template("platform/reports/coo_dashboard.html")
+    return render_template("platform/raporlar/coo_dashboard.html")
 
 
 @app_bp.route("/reports/api/coo-dashboard")
 @login_required
+@require_module("raporlar")
 def raporlar_api_coo_dashboard():
     from app.models.k_radar_domain import BottleneckLog, ProcessMaturity
     tid = _tid_or_none()
@@ -212,12 +217,14 @@ def raporlar_api_coo_dashboard():
 
 @app_bp.route("/reports/chro-dashboard")
 @login_required
+@require_module("raporlar")
 def raporlar_chro_dashboard():
-    return render_template("platform/reports/chro_dashboard.html")
+    return render_template("platform/raporlar/chro_dashboard.html")
 
 
 @app_bp.route("/reports/api/chro-dashboard")
 @login_required
+@require_module("raporlar")
 def raporlar_api_chro_dashboard():
     tid = _tid_or_none()
     if not tid:
@@ -305,12 +312,14 @@ def raporlar_api_chro_dashboard():
 
 @app_bp.route("/reports/quarterly-review")
 @login_required
+@require_module("raporlar")
 def raporlar_quarterly_review():
-    return render_template("platform/reports/quarterly_review.html")
+    return render_template("platform/raporlar/quarterly_review.html")
 
 
 @app_bp.route("/reports/api/quarterly-review")
 @login_required
+@require_module("raporlar")
 def raporlar_api_quarterly_review():
     tid = _tid_or_none()
     if not tid:
@@ -414,12 +423,14 @@ def raporlar_api_quarterly_review():
 
 @app_bp.route("/reports/strategy-story")
 @login_required
+@require_module("raporlar")
 def raporlar_strateji_hikayesi():
-    return render_template("platform/reports/strateji_hikayesi.html")
+    return render_template("platform/raporlar/strateji_hikayesi.html")
 
 
 @app_bp.route("/reports/api/strategy-story")
 @login_required
+@require_module("raporlar")
 def raporlar_api_strateji_hikayesi():
     tid = _tid_or_none()
     if not tid:

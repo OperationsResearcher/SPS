@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, timezone, date as _date
 
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
+from app.utils.decorators import require_module
 from sqlalchemy import func, and_, or_, text, select
 from sqlalchemy.orm import joinedload
 
@@ -79,24 +80,27 @@ SEKTOR_CATALOG = [
 
 @app_bp.route("/reports/sectoral")
 @login_required
+@require_module("raporlar")
 def raporlar_sektorel():
-    return render_template("platform/reports/sektorel.html", sektorler=SEKTOR_CATALOG)
+    return render_template("platform/raporlar/sektorel.html", sektorler=SEKTOR_CATALOG)
 
 
 @app_bp.route("/reports/sectoral/<code>")
 @login_required
+@require_module("raporlar")
 def raporlar_sektorel_detay(code):
     pkg = _load_sektor(code)
     if not pkg:
-        return render_template("platform/reports/sektorel.html",
+        return render_template("platform/raporlar/sektorel.html",
                                sektorler=SEKTOR_CATALOG,
                                error=f"\"{code}\" {_('sektörü için hazır paket henüz yok.')}"), 404
-    return render_template("platform/reports/sektorel_detay.html",
+    return render_template("platform/raporlar/sektorel_detay.html",
                            code=code, package=pkg)
 
 
 @app_bp.route("/reports/api/sectoral/<code>")
 @login_required
+@require_module("raporlar")
 def raporlar_api_sektorel(code):
     pkg = _load_sektor(code)
     if not pkg:
@@ -108,8 +112,9 @@ def raporlar_api_sektorel(code):
 
 @app_bp.route("/reports/nlp-query")
 @login_required
+@require_module("raporlar")
 def raporlar_nlp_query():
-    return render_template("platform/reports/nlp_query.html")
+    return render_template("platform/raporlar/nlp_query.html")
 
 
 _NLP_PATTERNS = [
@@ -158,12 +163,14 @@ _NLP_PATTERNS = [
 
 @app_bp.route("/reports/api/nlp-query/patterns")
 @login_required
+@require_module("raporlar")
 def raporlar_api_nlp_patterns():
     return jsonify({"success": True, "patterns": _NLP_PATTERNS})
 
 
 @app_bp.route("/reports/api/nlp-query", methods=["GET", "POST"])
 @login_required
+@require_module("raporlar")
 def raporlar_api_nlp_query():
     """Pattern bazlı + free-form NLP sorgu — tenant filtreli güvenli."""
     tid = _tid_or_none()
@@ -317,8 +324,9 @@ def raporlar_api_nlp_query():
 
 @app_bp.route("/reports/sektor-benchmark")
 @login_required
+@require_module("raporlar")
 def raporlar_sektor_benchmark():
-    return render_template("platform/reports/sektor_benchmark.html")
+    return render_template("platform/raporlar/sektor_benchmark.html")
 
 
 # ─── Mock sektör ortalamaları ───────────────────────────────────────────────
@@ -414,6 +422,7 @@ def _sektor_context(tid, tenant, sektor_override: str | None = None):
 
 @app_bp.route("/reports/api/sektor-benchmark")
 @login_required
+@require_module("raporlar")
 def raporlar_api_sektor_benchmark():
     tid = _tid_or_none()
     if not tid:
@@ -441,6 +450,7 @@ def raporlar_api_sektor_benchmark():
 
 @app_bp.route("/reports/api/sektor-benchmark/ai-yorum", methods=["POST"])
 @login_required
+@require_module("raporlar")
 @csrf.exempt
 def raporlar_api_sektor_benchmark_ai():
     """AI yorumu isteğe bağlı — butona basılınca çağrılır."""
@@ -486,6 +496,7 @@ def raporlar_api_sektor_benchmark_ai():
 
 @app_bp.route("/reports/api/ai-status")
 @login_required
+@require_module("raporlar")
 def raporlar_api_ai_status():
     """Kullanıcının AI kota durumu — BYOK vs sistem anahtarı."""
     tid = _tid_or_none()

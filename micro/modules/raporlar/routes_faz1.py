@@ -6,6 +6,7 @@ from datetime import datetime, timedelta, date as _date
 
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
+from app.utils.decorators import require_module
 from sqlalchemy import func, and_, or_, text, select
 from sqlalchemy.orm import joinedload, selectinload
 
@@ -37,12 +38,14 @@ def _tid_or_none():
 
 @app_bp.route("/reports/sunburst")
 @login_required
+@require_module("raporlar")
 def raporlar_sunburst():
-    return render_template("platform/reports/sunburst.html")
+    return render_template("platform/raporlar/sunburst.html")
 
 
 @app_bp.route("/reports/api/sunburst")
 @login_required
+@require_module("raporlar")
 def raporlar_api_sunburst():
     tid = _tid_or_none()
     if not tid:
@@ -104,12 +107,14 @@ def raporlar_api_sunburst():
 
 @app_bp.route("/reports/vrio-portfoy")
 @login_required
+@require_module("raporlar")
 def raporlar_vrio_portfoy():
-    return render_template("platform/reports/vrio_portfoy.html")
+    return render_template("platform/raporlar/vrio_portfoy.html")
 
 
 @app_bp.route("/reports/api/vrio-portfoy")
 @login_required
+@require_module("raporlar")
 def raporlar_api_vrio_portfoy():
     from app.models.strategy_frameworks import VRIOResource
     tid = _tid_or_none()
@@ -144,12 +149,14 @@ def raporlar_api_vrio_portfoy():
 
 @app_bp.route("/reports/okr-cascade")
 @login_required
+@require_module("raporlar")
 def raporlar_okr_cascade():
-    return render_template("platform/reports/okr_cascade.html")
+    return render_template("platform/raporlar/okr_cascade.html")
 
 
 @app_bp.route("/reports/api/okr-cascade")
 @login_required
+@require_module("raporlar")
 def raporlar_api_okr_cascade():
     from app.models.okr import OkrObjective, OkrKeyResult
     tid = _tid_or_none()
@@ -196,12 +203,14 @@ def raporlar_api_okr_cascade():
 
 @app_bp.route("/reports/initiative-roadmap")
 @login_required
+@require_module("raporlar")
 def raporlar_initiative_roadmap():
-    return render_template("platform/reports/initiative_roadmap.html")
+    return render_template("platform/raporlar/initiative_roadmap.html")
 
 
 @app_bp.route("/reports/api/initiative-roadmap")
 @login_required
+@require_module("raporlar")
 def raporlar_api_initiative_roadmap():
     from app.models.initiative import InitiativeMilestone
     tid = _tid_or_none()
@@ -237,6 +246,7 @@ def raporlar_api_initiative_roadmap():
 
 @app_bp.route("/reports/muda-analysis")
 @login_required
+@require_module("raporlar")
 def raporlar_muda_analizi():
     from app.services.plan_year_service import list_plan_years
     years, active_year = [], None
@@ -244,12 +254,13 @@ def raporlar_muda_analizi():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/reports/muda_analizi.html",
+    return render_template("platform/raporlar/muda_analizi.html",
                            plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/reports/api/muda-analysis")
 @login_required
+@require_module("raporlar")
 def raporlar_api_muda_analizi():
     from app.services.plan_year_service import get_plan_year
     tid = _tid_or_none()
@@ -317,6 +328,7 @@ def raporlar_api_muda_analizi():
 
 @app_bp.route("/reports/cmmi-heatmap")
 @login_required
+@require_module("raporlar")
 def raporlar_cmmi_heatmap():
     from app.services.plan_year_service import list_plan_years
     years, active_year = [], None
@@ -324,12 +336,13 @@ def raporlar_cmmi_heatmap():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/reports/cmmi_heatmap.html",
+    return render_template("platform/raporlar/cmmi_heatmap.html",
                            plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/reports/api/cmmi-heatmap")
 @login_required
+@require_module("raporlar")
 def raporlar_api_cmmi_heatmap():
     from app.models.k_radar_domain import ProcessMaturity
     from app.services.plan_year_service import get_plan_year
@@ -425,6 +438,7 @@ def raporlar_api_cmmi_heatmap():
 
 @app_bp.route("/reports/operation-statistics")
 @login_required
+@require_module("raporlar")
 def raporlar_op_istatistik():
     from app.services.plan_year_service import list_plan_years
     years, active_year = [], None
@@ -432,12 +446,13 @@ def raporlar_op_istatistik():
         years = [py.year for py in list_plan_years(current_user.tenant_id)]
         apy = get_active_plan_year_for_user(current_user)
         active_year = apy.year if apy else None
-    return render_template("platform/reports/op_istatistik.html",
+    return render_template("platform/raporlar/op_istatistik.html",
                            plan_years=years, active_year=active_year)
 
 
 @app_bp.route("/reports/api/operation-statistics")
 @login_required
+@require_module("raporlar")
 def raporlar_api_op_istatistik():
     from app.services.plan_year_service import get_plan_year
     tid = _tid_or_none()
@@ -489,12 +504,14 @@ def raporlar_api_op_istatistik():
 
 @app_bp.route("/reports/individual-alignment")
 @login_required
+@require_module("raporlar")
 def raporlar_bireysel_hizalama():
-    return render_template("platform/reports/bireysel_hizalama.html")
+    return render_template("platform/raporlar/bireysel_hizalama.html")
 
 
 @app_bp.route("/reports/api/individual-alignment")
 @login_required
+@require_module("raporlar")
 def raporlar_api_bireysel_hizalama():
     tid = _tid_or_none()
     if not tid:
@@ -541,12 +558,14 @@ def raporlar_api_bireysel_hizalama():
 
 @app_bp.route("/reports/risk-heatmap")
 @login_required
+@require_module("raporlar")
 def raporlar_risk_heatmap():
-    return render_template("platform/reports/risk_heatmap.html")
+    return render_template("platform/raporlar/risk_heatmap.html")
 
 
 @app_bp.route("/reports/api/risk-heatmap")
 @login_required
+@require_module("raporlar")
 def raporlar_api_risk_heatmap():
     from app.models.k_radar_domain import RiskHeatmapItem
     from sqlalchemy import or_
@@ -599,12 +618,14 @@ def raporlar_api_risk_heatmap():
 
 @app_bp.route("/reports/two-fa")
 @login_required
+@require_module("raporlar")
 def raporlar_iki_fa():
-    return render_template("platform/reports/iki_fa.html")
+    return render_template("platform/raporlar/iki_fa.html")
 
 
 @app_bp.route("/reports/api/two-fa")
 @login_required
+@require_module("raporlar")
 def raporlar_api_iki_fa():
     tid = _tid_or_none()
     if not tid:
@@ -636,12 +657,14 @@ def raporlar_api_iki_fa():
 
 @app_bp.route("/reports/carbon-trend")
 @login_required
+@require_module("raporlar")
 def raporlar_carbon_trend():
-    return render_template("platform/reports/carbon_trend.html")
+    return render_template("platform/raporlar/carbon_trend.html")
 
 
 @app_bp.route("/reports/api/carbon-trend")
 @login_required
+@require_module("raporlar")
 def raporlar_api_carbon_trend():
     from app.models.esg import EsgMetric, EsgMetricValue
     tid = _tid_or_none()
@@ -681,12 +704,14 @@ def raporlar_api_carbon_trend():
 
 @app_bp.route("/reports/ai-advisor")
 @login_required
+@require_module("raporlar")
 def raporlar_ai_danisman():
-    return render_template("platform/reports/ai_danisman.html")
+    return render_template("platform/raporlar/ai_danisman.html")
 
 
 @app_bp.route("/reports/api/ai-advisor")
 @login_required
+@require_module("raporlar")
 def raporlar_api_ai_danisman():
     tid = _tid_or_none()
     if not tid:
@@ -704,12 +729,14 @@ def raporlar_api_ai_danisman():
 
 @app_bp.route("/reports/ai-coach")
 @login_required
+@require_module("raporlar")
 def raporlar_ai_coach():
-    return render_template("platform/reports/ai_coach.html")
+    return render_template("platform/raporlar/ai_coach.html")
 
 
 @app_bp.route("/reports/api/ai-coach")
 @login_required
+@require_module("raporlar")
 def raporlar_api_ai_coach():
     tid = _tid_or_none()
     if not tid:
@@ -786,12 +813,14 @@ def raporlar_api_ai_coach():
 
 @app_bp.route("/reports/early-warning")
 @login_required
+@require_module("raporlar")
 def raporlar_early_warning():
-    return render_template("platform/reports/early_warning.html")
+    return render_template("platform/raporlar/early_warning.html")
 
 
 @app_bp.route("/reports/api/early-warning")
 @login_required
+@require_module("raporlar")
 def raporlar_api_early_warning():
     tid = _tid_or_none()
     if not tid:
