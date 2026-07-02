@@ -37,7 +37,7 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
         FROM process_kpis k
         JOIN processes p ON k.process_id=p.id
         WHERE p.tenant_id=:t
-          AND (:py_id IS NULL OR k.plan_year_id = :py_id OR k.plan_year_id IS NULL)
+          AND (CAST(:py_id AS INTEGER) IS NULL OR k.plan_year_id = CAST(:py_id AS INTEGER) OR k.plan_year_id IS NULL)
     """), {"t": tenant_id, "y": year, "py_id": plan_year_id}).fetchone()
 
     on_target_row = db.session.execute(text("""
@@ -50,7 +50,7 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
         WHERE p.tenant_id=:t AND kd.year=:y AND kd.is_active=true
           AND kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
           AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
-          AND (:py_id IS NULL OR k.plan_year_id = :py_id OR k.plan_year_id IS NULL)
+          AND (CAST(:py_id AS INTEGER) IS NULL OR k.plan_year_id = CAST(:py_id AS INTEGER) OR k.plan_year_id IS NULL)
     """), {"t": tenant_id, "y": year, "py_id": plan_year_id}).fetchone()
     on_target_pct = (
         (on_target_row.on_target / on_target_row.total) * 100
@@ -62,11 +62,11 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
         SELECT
             (SELECT count(*) FROM strategies
                 WHERE tenant_id=:t AND is_active=true
-                  AND (:py_id IS NULL OR plan_year_id = :py_id)) as strat,
+                  AND (CAST(:py_id AS INTEGER) IS NULL OR plan_year_id = CAST(:py_id AS INTEGER))) as strat,
             (SELECT count(*) FROM sub_strategies ss
                 JOIN strategies s ON ss.strategy_id=s.id
                 WHERE s.tenant_id=:t AND ss.is_active=true
-                  AND (:py_id IS NULL OR s.plan_year_id = :py_id)) as sub
+                  AND (CAST(:py_id AS INTEGER) IS NULL OR s.plan_year_id = CAST(:py_id AS INTEGER))) as sub
     """), {"t": tenant_id, "py_id": plan_year_id}).fetchone()
 
     # Girişimler (yıl aralığını kapsayanlar)
@@ -89,7 +89,7 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
         FROM process_activities a
         JOIN processes p ON a.process_id=p.id
         WHERE p.tenant_id=:t AND a.is_active=true
-          AND (:py_id IS NULL OR a.plan_year_id = :py_id OR a.plan_year_id IS NULL)
+          AND (CAST(:py_id AS INTEGER) IS NULL OR a.plan_year_id = CAST(:py_id AS INTEGER) OR a.plan_year_id IS NULL)
     """), {"t": tenant_id, "py_id": plan_year_id}).fetchone()
 
     # Risk (plan_year filtresiyle)
@@ -101,7 +101,7 @@ def build_exec_snapshot(tenant_id: int, year: int | None = None) -> dict:
                 sum(CASE WHEN (probability*impact) >= 16 THEN 1 ELSE 0 END) as crit_c
             FROM risk_heatmap_items
             WHERE tenant_id=:t AND is_active=true
-              AND (:py_id IS NULL OR plan_year_id = :py_id OR plan_year_id IS NULL)
+              AND (CAST(:py_id AS INTEGER) IS NULL OR plan_year_id = CAST(:py_id AS INTEGER) OR plan_year_id IS NULL)
         """), {"t": tenant_id, "py_id": plan_year_id}).fetchone()
         if risk_row:
             risk_data = {"open": int(risk_row.open_c or 0), "critical": int(risk_row.crit_c or 0)}

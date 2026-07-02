@@ -3628,7 +3628,7 @@
         const inp = document.querySelector(`#modal-surec-add .ss-pct-input[data-ss-id="${sid}"]`);
         const raw = inp ? inp.value.trim() : "";
         if (raw === "") {
-          showError(t("K-Vektör açıkken her seçili alt strateji için katkı % girilmelidir."));
+          showError(t("K-Vektör açıkken her seçili alt strateji için katkı yüzdesi girilmelidir."));
           return;
         }
         const p = parseFloat(String(raw).replace(",", "."));

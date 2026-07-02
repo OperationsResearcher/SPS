@@ -253,7 +253,7 @@
     const eventsUrl = root.dataset.calendarEventsUrl || "/api/calendar/events";
 
     const calendar = new FullCalendar.Calendar(calEl, {
-      locale: "tr",
+      locale: (document.documentElement.lang || "tr").toLowerCase(),
       timeZone: "Europe/Istanbul",
       initialView: "dayGridMonth",
       firstDay: 1,
@@ -370,7 +370,7 @@
           <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(130px,1fr)); gap:10px; margin-bottom:16px;">
             <div style="background:#fef2f2; border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:22px; font-weight:700; color:#ef4444;">${d.counts.kpis_critical}</div>
-              <div style="font-size:11px; color:#64748b;">${t("Kritik KPI")}</div>
+              <div style="font-size:11px; color:#64748b;">${t("Kritik PG")}</div>
             </div>
             <div style="background:#fff7ed; border-radius:8px; padding:10px; text-align:center;">
               <div style="font-size:22px; font-weight:700; color:#f59e0b;">${d.counts.activities_overdue}</div>
@@ -389,7 +389,7 @@
         if (d.kpis_below_target.length > 0) {
           html += `<div style="margin-bottom:12px;">
             <p style="font-size:12px; font-weight:600; color:#ef4444; margin:0 0 6px;">
-              <i class="fas fa-chart-line-down"></i> ${t("Hedef Altı KPI'lar")}
+              <i class="fas fa-chart-line-down"></i> ${t("Hedef Altı PG'ler")}
             </p>
             <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
           d.kpis_below_target.forEach(k => {

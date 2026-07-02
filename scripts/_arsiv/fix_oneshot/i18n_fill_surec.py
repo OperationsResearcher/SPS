@@ -857,7 +857,9 @@ for bi, b in enumerate(blocks):
             x = x.replace("\r\n", "\\n").replace("\n", "\\n").replace("\r", "\\n")  # ham newline
             x = x.replace('"', '\\"')
             return x
-        new_block = re.sub(r'(?ms)^msgstr (?:".*?"\s*)+', lambda _m: 'msgstr "%s"' % po_escape(en), new_block)
+        # msgstr satırından blok SONUNA kadar her şeyi (tüm continuation satırları dahil)
+        # tek seferde değiştir — kısmi/greedy eşleşme kalıntı satır bırakmasın.
+        new_block = re.sub(r'(?ms)^msgstr\b.*\Z', lambda _m: 'msgstr "%s"' % po_escape(en), new_block)
         blocks[bi] = new_block.rstrip("\n")
         multi += 1
 

@@ -15,6 +15,7 @@ from dataclasses import dataclass, field
 from typing import Optional
 
 from extensions import db
+from flask_babel import gettext as _
 from sqlalchemy import text
 
 logger = logging.getLogger(__name__)
@@ -252,29 +253,30 @@ def build_quarterly_review(tenant_id: int, year: int, quarter: int) -> Quarterly
     # Heuristik öneriler
     if data.kpi_on_target_pct < 50:
         data.recommendations.append(
-            f"⚠️ Performans göstergelerinin yalnızca %{data.kpi_on_target_pct:.0f}'ı hedef üstünde — "
-            "stratejik öncelikleri gözden geçirmeyi düşünün."
+            _("⚠️ Performans göstergelerinin yalnızca %%%(pct)s'ı hedef üstünde — "
+              "stratejik öncelikleri gözden geçirmeyi düşünün.", pct=f"{data.kpi_on_target_pct:.0f}")
         )
     if data.overdue_activities > 5:
         data.recommendations.append(
-            f"🔴 {data.overdue_activities} gecikmiş faaliyet var — kapasite planlaması gerekebilir."
+            _("🔴 %(n)s gecikmiş faaliyet var — kapasite planlaması gerekebilir.", n=data.overdue_activities)
         )
     if data.critical_risks > 0:
         data.recommendations.append(
-            f"🛡️ {data.critical_risks} kritik risk var — risk azaltma planları aktif mi?"
+            _("🛡️ %(n)s kritik risk var — risk azaltma planları aktif mi?", n=data.critical_risks)
         )
     if data.anomaly_high > 0:
         data.recommendations.append(
-            f"📊 {data.anomaly_high} yüksek öncelikli PG anomalisi — kök neden analizi başlat."
+            _("📊 %(n)s yüksek öncelikli PG anomalisi — kök neden analizi başlat.", n=data.anomaly_high)
         )
     if data.kpi_with_data < data.kpi_total * 0.6:
         data.recommendations.append(
-            f"📥 Bu çeyrekte PG'lerin yalnızca %{(data.kpi_with_data/max(data.kpi_total,1))*100:.0f}'ı için "
-            "veri girilmiş — veri girişi disiplinini güçlendirin."
+            _("📥 Bu çeyrekte PG'lerin yalnızca %%%(pct)s'ı için "
+              "veri girilmiş — veri girişi disiplinini güçlendirin.",
+              pct=f"{(data.kpi_with_data/max(data.kpi_total,1))*100:.0f}")
         )
     if not data.recommendations:
         data.recommendations.append(
-            "✅ Genel durum sağlıklı görünüyor. Bir sonraki çeyreğe geçebilirsiniz."
+            _("✅ Genel durum sağlıklı görünüyor. Bir sonraki çeyreğe geçebilirsiniz.")
         )
 
     return data

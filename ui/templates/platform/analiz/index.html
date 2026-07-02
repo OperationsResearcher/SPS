@@ -17,16 +17,17 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-chart-bar" style="color:#6366f1;"></i> Performans Analitiği
+        <i class="fas fa-chart-bar" style="color:#6366f1;"></i> {{ _("Performans Analitiği") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Süreç sağlığı · trend · tahmin · anomali tespiti — {{ processes|length }} süreç
+        {{ _("Süreç sağlığı · trend · tahmin · anomali tespiti") }} — {{ processes|length }} {{ _("süreç") }}
       </p>
     </div>
   </div>
 
   <!-- Süreç seçici + Aksiyon Çubuğu -->
-  <div class="mc-card" style="margin-bottom:18px;">
+  <div class="mc-card" style="margin-bottom:18px;" data-card-code="analiz.secim_araclari">
+    <div class="mc-stat-label" style="padding:10px 16px 0;">{{ _("Süreç Seçimi ve Araçlar") }}</div>
     <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
       <div style="position:relative; flex:1; min-width:260px; max-width:420px;">
         <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
@@ -69,25 +70,25 @@
 
     <!-- Sağlık skoru kartı -->
     <div class="mc-grid-4" style="margin-bottom:20px;" id="health-cards">
-      <div class="mc-stat-card mc-stat-indigo">
+      <div class="mc-stat-card mc-stat-indigo" data-card-code="analiz.saglik_skoru">
         <div class="mc-stat-icon"><i class="fas fa-heartbeat"></i></div>
         <div class="mc-stat-label">{{ _("Sağlık Skoru") }}</div>
         <div class="mc-stat-value" id="health-score-val">—</div>
         <div class="mc-stat-sub" id="health-score-label">{{ _("Hesaplanıyor…") }}</div>
       </div>
-      <div class="mc-stat-card mc-stat-emerald">
+      <div class="mc-stat-card mc-stat-emerald" data-card-code="analiz.trend_yonu">
         <div class="mc-stat-icon"><i class="fas fa-chart-line"></i></div>
         <div class="mc-stat-label">{{ _("Trend") }}</div>
         <div class="mc-stat-value" id="trend-direction">—</div>
         <div class="mc-stat-sub">{{ _("Son dönem yönü") }}</div>
       </div>
-      <div class="mc-stat-card mc-stat-blue">
+      <div class="mc-stat-card mc-stat-blue" data-card-code="analiz.tahmin_ozet">
         <div class="mc-stat-icon"><i class="fas fa-eye"></i></div>
         <div class="mc-stat-label">{{ _("Tahmin (3 Dönem)") }}</div>
         <div class="mc-stat-value" id="forecast-next">—</div>
         <div class="mc-stat-sub">{{ _("Sonraki dönem tahmini") }}</div>
       </div>
-      <div class="mc-stat-card mc-stat-amber">
+      <div class="mc-stat-card mc-stat-amber" data-card-code="analiz.anomali_ozet">
         <div class="mc-stat-icon"><i class="fas fa-exclamation-triangle"></i></div>
         <div class="mc-stat-label">{{ _("Anomali") }}</div>
         <div class="mc-stat-value" id="anomaly-count">—</div>
@@ -96,7 +97,7 @@
     </div>
 
     <!-- Trend grafiği -->
-    <div class="mc-card" style="margin-bottom:20px;">
+    <div class="mc-card" style="margin-bottom:20px;" data-card-code="analiz.trend_grafigi">
       <div class="mc-card-header">
         <span class="mc-card-title">
           <i class="fas fa-chart-area" style="color:#6366f1; margin-right:8px;"></i>{{ _("Trend Analizi") }}
@@ -115,7 +116,7 @@
     </div>
 
     <!-- Tahmin grafiği -->
-    <div class="mc-card" style="margin-bottom:20px;">
+    <div class="mc-card" style="margin-bottom:20px;" data-card-code="analiz.tahmin_grafigi">
       <div class="mc-card-header">
         <span class="mc-card-title">
           <i class="fas fa-magic" style="color:#8b5cf6; margin-right:8px;"></i>{{ _("Tahmin Analizi (3 Dönem)") }}
@@ -134,7 +135,7 @@
 
   <!-- Anomali sonuçları -->
   <div id="anomaly-results" style="display:none;">
-    <div class="mc-card">
+    <div class="mc-card" data-card-code="analiz.anomali_listesi">
       <div class="mc-card-header">
         <span class="mc-card-title">
           <i class="fas fa-exclamation-triangle" style="color:#f59e0b; margin-right:8px;"></i>{{ _("Anomali Tespiti") }}

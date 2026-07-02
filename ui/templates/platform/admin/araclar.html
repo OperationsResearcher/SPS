@@ -29,40 +29,40 @@
 
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(260px,1fr));gap:14px;">
 
-    <a href="{{ url_for('app_bp.admin_tools_hata_kontrolu') }}" class="mc-card" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #0ea5e9;">
+    <a href="{{ url_for('app_bp.admin_tools_hata_kontrolu') }}" class="mc-card" data-card-code="admin_araclar.hata_kontrolu" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #0ea5e9;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
         <span style="width:38px;height:38px;border-radius:10px;background:#e0f2fe;color:#0284c7;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="fas fa-stethoscope"></i></span>
-        <span style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("Hata Kontrolü") }}</span>
+        <span class="mc-card-title" style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("Hata Kontrolü") }}</span>
       </div>
       <p style="font-size:12.5px;color:#64748b;margin:0;line-height:1.5;">
         {{ _("Uygulamanın sayfalarını ve özelliklerini otomatik gezip çalışmayanları raporlar. İzole test kurumu (tomofiltest) üzerinde çalışır.") }}
       </p>
     </a>
 
-    <a href="{{ url_for('app_bp.admin_tools_istatistikler') }}" class="mc-card" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #6366f1;">
+    <a href="{{ url_for('app_bp.admin_tools_istatistikler') }}" class="mc-card" data-card-code="admin_araclar.istatistikler" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #6366f1;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
         <span style="width:38px;height:38px;border-radius:10px;background:#eef2ff;color:#4f46e5;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="fas fa-chart-column"></i></span>
-        <span style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("İstatistikler") }}</span>
+        <span class="mc-card-title" style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("İstatistikler") }}</span>
       </div>
       <p style="font-size:12.5px;color:#64748b;margin:0;line-height:1.5;">
         {{ _("Sistemdeki kurum, kullanıcı, strateji, süreç, performans göstergesi ve proje sayılarını kurum bazında tablolar.") }}
       </p>
     </a>
 
-    <a href="{{ url_for('app_bp.admin_tools_loglar') }}" class="mc-card" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #14b8a6;">
+    <a href="{{ url_for('app_bp.admin_tools_loglar') }}" class="mc-card" data-card-code="admin_araclar.loglar" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #14b8a6;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
         <span style="width:38px;height:38px;border-radius:10px;background:#ccfbf1;color:#0d9488;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="fas fa-clipboard-list"></i></span>
-        <span style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("Loglar") }}</span>
+        <span class="mc-card-title" style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("Loglar") }}</span>
       </div>
       <p style="font-size:12.5px;color:#64748b;margin:0;line-height:1.5;">
         {{ _("Kurum bazında ve genel giriş kayıtları, son veri hareketleri ve hiç giriş yapmamış kullanıcılar.") }}
       </p>
     </a>
 
-    <a href="{{ url_for('app_bp.admin_tools_yedekleme') }}" class="mc-card" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #0d9488;">
+    <a href="{{ url_for('app_bp.admin_tools_yedekleme') }}" class="mc-card" data-card-code="admin_araclar.yedekleme" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #0d9488;">
       <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
         <span style="width:38px;height:38px;border-radius:10px;background:#ccfbf1;color:#0d9488;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="fas fa-database"></i></span>
-        <span style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("Yedekleme") }}</span>
+        <span class="mc-card-title" style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("Yedekleme") }}</span>
       </div>
       <p style="font-size:12.5px;color:#64748b;margin:0;line-height:1.5;">
         {{ _("Otomatik gece yedeği (tam DB + kod fark) ve manuel indirilebilir DB/kod yedekleri. Geri yükleme dahil.") }}
@@ -70,8 +70,8 @@
     </a>
 
     {# İleride yeni araçlar bu ızgaraya eklenecek #}
-    <div class="mc-card" style="padding:18px;border:1px dashed #cbd5e1;background:transparent;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;min-height:120px;">
-      <span><i class="fas fa-plus"></i> {{ _("Yeni araçlar buraya eklenecek") }}</span>
+    <div class="mc-card" data-card-code="admin_araclar.yeni_arac_yer_tutucu" style="padding:18px;border:1px dashed #cbd5e1;background:transparent;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;min-height:120px;">
+      <span class="mc-card-title"><i class="fas fa-plus"></i> {{ _("Yeni araçlar buraya eklenecek") }}</span>
     </div>
 
   </div>

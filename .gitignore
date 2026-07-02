@@ -33,3 +33,8 @@ Thumbs.db
 # Log dosyaları — PII/secret/traceback içerebilir, repoya girmemeli
 *.log
 logs/
+
+# Kılavuz & Video Oluşturucu — ÜRETİLEN çıktılar (kod değil, commit'lenmez)
+static/videos/kullanim_kilavuzu/
+static/img/kullanim_kilavuzu/
+docs/kokpitim_master_kullanim_kilavuzu.pdf

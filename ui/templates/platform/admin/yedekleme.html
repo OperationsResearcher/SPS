@@ -25,8 +25,8 @@
   </div>
 
   {# ── 1. Manuel yedek (indir) ── #}
-  <div class="mc-card" style="padding:18px;margin-bottom:16px;">
-    <div style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;"><i class="fas fa-download" style="color:#0284c7;"></i> {{ _("Manuel Yedek") }}</div>
+  <div class="mc-card" style="padding:18px;margin-bottom:16px;" data-card-code="admin_yedekleme.manuel_yedek">
+    <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;"><i class="fas fa-download" style="color:#0284c7;"></i> {{ _("Manuel Yedek") }}</div>
     <div style="font-size:12.5px;color:#64748b;margin-bottom:12px;">{{ _("Şimdi anlık yedek üretip bu makineye indir.") }}</div>
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <form method="post" action="{{ url_for('app_bp.admin_tools_yedekleme_indir_db') }}">
@@ -40,10 +40,10 @@
   </div>
 
   {# ── 2. Otomatik yedek durumu ── #}
-  <div class="mc-card" style="padding:18px;margin-bottom:16px;">
+  <div class="mc-card" style="padding:18px;margin-bottom:16px;" data-card-code="admin_yedekleme.otomatik_yedek_durumu">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
       <div>
-        <div style="font-size:14px;font-weight:700;color:var(--text-default);"><i class="fas fa-clock" style="color:#7c3aed;"></i> {{ _("Otomatik Yedek — her gece 02:00") }}</div>
+        <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);"><i class="fas fa-clock" style="color:#7c3aed;"></i> {{ _("Otomatik Yedek — her gece 02:00") }}</div>
         <div style="font-size:12.5px;color:#64748b;">{{ _("Tam DB + kod (haftada bir tam, diğer günler fark). Son %(n)s yedek tutulur.", n=14) }}</div>
       </div>
       <button id="yd-run" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-play"></i> {{ _("Şimdi Çalıştır") }}</button>
@@ -59,8 +59,8 @@
   </div>
 
   {# ── 3. Yedek listesi ── #}
-  <div class="mc-card" style="padding:0;overflow:hidden;margin-bottom:16px;">
-    <div style="padding:14px 16px;border-bottom:1px solid #eef2f7;font-size:14px;font-weight:700;color:var(--text-default);">
+  <div class="mc-card" style="padding:0;overflow:hidden;margin-bottom:16px;" data-card-code="admin_yedekleme.yedek_listesi">
+    <div class="mc-card-title" style="padding:14px 16px;border-bottom:1px solid #eef2f7;font-size:14px;font-weight:700;color:var(--text-default);">
       <i class="fas fa-list" style="color:#475569;"></i> {{ _("Otomatik Yedekler") }} ({{ backups|length }})
     </div>
     <div style="overflow-x:auto;">
@@ -94,8 +94,8 @@
   </div>
 
   {# ── 4. DB Geri Yükleme (YIKICI) ── #}
-  <div class="mc-card mc-card--accent-danger" style="padding:18px;background:#fef2f2">
-    <div style="font-size:14px;font-weight:700;color:#991b1b;margin-bottom:4px;"><i class="fas fa-triangle-exclamation"></i> {{ _("DB Geri Yükleme — Yıkıcı İşlem") }}</div>
+  <div class="mc-card mc-card--accent-danger" style="padding:18px;background:#fef2f2" data-card-code="admin_yedekleme.db_geri_yukleme">
+    <div class="mc-card-title" style="font-size:14px;font-weight:700;color:#991b1b;margin-bottom:4px;"><i class="fas fa-triangle-exclamation"></i> {{ _("DB Geri Yükleme — Yıkıcı İşlem") }}</div>
     <div style="font-size:12.5px;color:#7f1d1d;margin-bottom:12px;">
       {{ _("Yüklenen <b>.dump</b> dosyası mevcut veritabanının <b>üzerine yazılır</b> (geri alınamaz). Şifre + onay metni gerekir.") }}
     </div>

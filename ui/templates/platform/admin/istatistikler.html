@@ -31,23 +31,23 @@
   {% set t = stats.totals %}
   <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:18px;">
     {% set cards = [
-      (_('Kurum'), stats.tenant_count, 'fa-building', '#0284c7', '#e0f2fe'),
-      (_('Kullanıcı'), t.users, 'fa-users', '#7c3aed', '#ede9fe'),
-      (_('Ana Strateji'), t.strategies, 'fa-bullseye', '#b45309', '#fef3c7'),
-      (_('Alt Strateji'), t.sub_strategies, 'fa-list-ul', '#b45309', '#fffbeb'),
-      (_('Süreç'), t.processes, 'fa-diagram-project', '#0e7490', '#ecfeff'),
-      ('PG', t.kpis, 'fa-gauge-high', '#15803d', '#f0fdf4'),
-      (_('PG Verisi'), t.kpi_data, 'fa-database', '#16a34a', '#f0fdf4'),
-      (_('Proje'), t.projects, 'fa-folder-open', '#9333ea', '#faf5ff'),
-      (_('Proje Task'), t.tasks, 'fa-list-check', '#9333ea', '#faf5ff')
+      (_('Kurum'), stats.tenant_count, 'fa-building', '#0284c7', '#e0f2fe', 'ozet_kurum'),
+      (_('Kullanıcı'), t.users, 'fa-users', '#7c3aed', '#ede9fe', 'ozet_kullanici'),
+      (_('Ana Strateji'), t.strategies, 'fa-bullseye', '#b45309', '#fef3c7', 'ozet_ana_strateji'),
+      (_('Alt Strateji'), t.sub_strategies, 'fa-list-ul', '#b45309', '#fffbeb', 'ozet_alt_strateji'),
+      (_('Süreç'), t.processes, 'fa-diagram-project', '#0e7490', '#ecfeff', 'ozet_surec'),
+      ('PG', t.kpis, 'fa-gauge-high', '#15803d', '#f0fdf4', 'ozet_pg'),
+      (_('PG Verisi'), t.kpi_data, 'fa-database', '#16a34a', '#f0fdf4', 'ozet_pg_verisi'),
+      (_('Proje'), t.projects, 'fa-folder-open', '#9333ea', '#faf5ff', 'ozet_proje'),
+      (_('Proje Task'), t.tasks, 'fa-list-check', '#9333ea', '#faf5ff', 'ozet_proje_task')
     ] %}
-    {% for label, value, icon, color, bg in cards %}
-    <div class="mc-card" style="padding:14px;">
+    {% for label, value, icon, color, bg, slug in cards %}
+    <div class="mc-card" style="padding:14px;" data-card-code="admin_istatistikler.{{ slug }}">
       <div style="display:flex;align-items:center;gap:9px;">
         <span style="width:34px;height:34px;border-radius:9px;background:{{ bg }};color:{{ color }};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;"><i class="fas {{ icon }}"></i></span>
         <div style="min-width:0;">
           <div style="font-size:20px;font-weight:800;color:var(--text-default);line-height:1.1;">{{ "{:,}".format(value).replace(",", ".") }}</div>
-          <div style="font-size:11.5px;color:#64748b;white-space:nowrap;">{{ label }}</div>
+          <div class="mc-stat-label" style="font-size:11.5px;color:#64748b;white-space:nowrap;">{{ label }}</div>
         </div>
       </div>
     </div>
@@ -55,10 +55,10 @@
   </div>
 
   {# ── Kurum bazlı tablo ── #}
-  <div class="mc-card" style="padding:0;overflow:hidden;">
+  <div class="mc-card" style="padding:0;overflow:hidden;" data-card-code="admin_istatistikler.kurum_dagilim_tablosu">
     <div style="padding:14px 16px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:8px;">
       <i class="fas fa-table" style="color:#475569;"></i>
-      <span style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Kurum Bazında Dağılım") }}</span>
+      <span class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Kurum Bazında Dağılım") }}</span>
       <span style="font-size:12px;color:#94a3b8;">{{ _("(%(n)s aktif kurum)", n=stats.tenant_count) }}</span>
     </div>
     <div style="overflow-x:auto;">

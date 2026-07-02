@@ -39,12 +39,12 @@
   {% endif %}
 
   {# ── Adım 1: İzole test kurumu ── #}
-  <div class="mc-card" style="padding:18px;margin-bottom:16px;">
+  <div class="mc-card" data-card-code="admin_hata_kontrolu.izole_test_kurumu" style="padding:18px;margin-bottom:16px;">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="width:34px;height:34px;border-radius:9px;background:#ecfeff;color:#0e7490;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clone"></i></span>
         <div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("İzole Test Kurumu — tomofiltest") }}</div>
+          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("İzole Test Kurumu — tomofiltest") }}</div>
           <div style="font-size:12px;color:#64748b;">{{ _("Tomofil'in birebir klonu. Testler yalnız burada koşar; gerçek veri etkilenmez.") }}</div>
         </div>
       </div>
@@ -58,12 +58,12 @@
   </div>
 
   {# ── Adım 2: Keşif — taranacak sayfalar ── #}
-  <div class="mc-card" style="padding:18px;margin-bottom:16px;">
+  <div class="mc-card" data-card-code="admin_hata_kontrolu.kesif_taranacak_sayfalar" style="padding:18px;margin-bottom:16px;">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="width:34px;height:34px;border-radius:9px;background:#eef2ff;color:#4338ca;display:flex;align-items:center;justify-content:center;"><i class="fas fa-sitemap"></i></span>
         <div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Keşif — Taranacak Sayfalar") }}</div>
+          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Keşif — Taranacak Sayfalar") }}</div>
           <div style="font-size:12px;color:#64748b;">{{ _("Aktif uygulamanın güvenli (GET, parametresiz) sayfaları. Yıkıcı uçlar ve legacy hariç.") }}</div>
         </div>
       </div>
@@ -74,12 +74,12 @@
   </div>
 
   {# ── Adım 3: Otomatik tarayıcı testi (Playwright) ── #}
-  <div class="mc-card" style="padding:18px;">
+  <div class="mc-card" data-card-code="admin_hata_kontrolu.otomatik_tarayici_testi" style="padding:18px;">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="width:34px;height:34px;border-radius:9px;background:#f0fdf4;color:#15803d;display:flex;align-items:center;justify-content:center;"><i class="fas fa-robot"></i></span>
         <div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Otomatik Tarayıcı Testi") }}</div>
+          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Otomatik Tarayıcı Testi") }}</div>
           <div style="font-size:12px;color:#64748b;">{{ _("Gerçek tarayıcı tomofiltest admini olarak her sayfayı açar; HTTP + JS + AJAX hatalarını yakalar.") }}</div>
         </div>
       </div>
@@ -104,12 +104,12 @@
   </div>
 
   {# ── Tarama geçmişi (katlanabilir, varsayılan kapalı) ── #}
-  <div class="mc-card" style="padding:18px;margin-top:16px;">
+  <div class="mc-card" data-card-code="admin_hata_kontrolu.tarama_gecmisi" style="padding:18px;margin-top:16px;">
     <div class="hk-collapse-toggle" data-collapsed="1" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="width:34px;height:34px;border-radius:9px;background:#eff6ff;color:#1d4ed8;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clock-rotate-left"></i></span>
         <div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Tarama Geçmişi") }}</div>
+          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Tarama Geçmişi") }}</div>
           <div style="font-size:12px;color:#64748b;">{{ _("Yalnız Otomatik Tarayıcı Testi koşuları. Bir kayda tıklayınca yukarıda açılır.") }}</div>
         </div>
       </div>
@@ -124,12 +124,12 @@
   </div>
 
   {# ── Adım 4: Aktif CRUD senaryoları ── #}
-  <div class="mc-card" style="padding:18px;margin-top:16px;">
+  <div class="mc-card" data-card-code="admin_hata_kontrolu.aktif_crud_senaryolari" style="padding:18px;margin-top:16px;">
     <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="width:34px;height:34px;border-radius:9px;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center;"><i class="fas fa-flask"></i></span>
         <div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Aktif CRUD Senaryoları") }}</div>
+          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Aktif CRUD Senaryoları") }}</div>
           <div style="font-size:12px;color:#64748b;">{{ _("Gerçek UI etkileşimi (buton/form/AJAX) tomofiltest'te. Bitince tomofiltest otomatik sıfırlanır.") }}</div>
         </div>
       </div>
@@ -140,12 +140,12 @@
   </div>
 
   {# ── Senaryo geçmişi (katlanabilir, varsayılan kapalı) ── #}
-  <div class="mc-card" style="padding:18px;margin-top:16px;">
+  <div class="mc-card" data-card-code="admin_hata_kontrolu.senaryo_gecmisi" style="padding:18px;margin-top:16px;">
     <div class="hk-collapse-toggle" data-collapsed="1" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
       <div style="display:flex;align-items:center;gap:10px;">
         <span style="width:34px;height:34px;border-radius:9px;background:#fffbeb;color:#b45309;display:flex;align-items:center;justify-content:center;"><i class="fas fa-vials"></i></span>
         <div>
-          <div style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Senaryo Geçmişi") }}</div>
+          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Senaryo Geçmişi") }}</div>
           <div style="font-size:12px;color:#64748b;">{{ _("Yalnız Aktif CRUD senaryo koşuları. Bir kayda tıklayınca yukarıda açılır.") }}</div>
         </div>
       </div>

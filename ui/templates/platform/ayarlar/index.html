@@ -29,23 +29,23 @@
   {% set is_kurum_admin = role_name in ['tenant_admin', 'executive_manager'] %}
   {% set is_platform_admin = role_name == 'Admin' %}
   <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:18px;">
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #3b82f6;">
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kullanıcı") }}</div>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #3b82f6;" data-card-code="ayarlar.kullanici_ozeti">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kullanıcı") }}</div>
       <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ current_user.email or '—' }}</div>
       <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ role_name or _('rol yok') }}</div>
     </div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #16a34a;">
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kurum") }}</div>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #16a34a;" data-card-code="ayarlar.kurum_ozeti">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kurum") }}</div>
       <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ (current_user.tenant.name if current_user.tenant else '—') }}</div>
       <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("Kurum") }} #{{ current_user.tenant_id or '—' }}</div>
     </div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #9333ea;">
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Tema") }}</div>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #9333ea;" data-card-code="ayarlar.tema_durumu">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Tema") }}</div>
       <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px;" id="ayarlar-stat-theme">{{ _("Aydınlık") }}</div>
       <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("çoklu cihaz senkronlu") }}</div>
     </div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
-      <div style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Zamanlanmış Rapor") }}</div>
+    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;" data-card-code="ayarlar.zamanlanmis_rapor_ozeti">
+      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Zamanlanmış Rapor") }}</div>
       <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px;" id="ayarlar-stat-sched">—</div>
       <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("aktif abonelik") }}</div>
     </div>
@@ -67,19 +67,19 @@
   </h3>
   <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
 
-    <a href="{{ url_for('app_bp.ayarlar_hesap') }}" class="ayarlar-tile" data-search="hesap bildirim tema dil saat dilimi">
+    <a href="{{ url_for('app_bp.ayarlar_hesap') }}" class="ayarlar-tile" data-search="hesap bildirim tema dil saat dilimi" data-card-code="ayarlar.hesap_ayarlari">
       <div class="ayarlar-tile-icon" style="background:#eff6ff;"><i class="fas fa-user-cog" style="color:#3b82f6;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">{{ _("Hesap Ayarları") }}</div>
+        <div class="ayarlar-tile-title mc-card-title">{{ _("Hesap Ayarları") }}</div>
         <div class="ayarlar-tile-desc">{{ _("Bildirim tercihleri, tema, dil ve saat dilimi") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>
 
-    <a href="{{ url_for('app_bp.profil') }}" class="ayarlar-tile" data-search="profil ad unvan departman foto">
+    <a href="{{ url_for('app_bp.profil') }}" class="ayarlar-tile" data-search="profil ad unvan departman foto" data-card-code="ayarlar.profil_bilgileri">
       <div class="ayarlar-tile-icon" style="background:#f0fdf4;"><i class="fas fa-id-card" style="color:#16a34a;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">{{ _("Profil Bilgileri") }}</div>
+        <div class="ayarlar-tile-title mc-card-title">{{ _("Profil Bilgileri") }}</div>
         <div class="ayarlar-tile-desc">{{ _("Ad, unvan, departman ve profil fotoğrafı") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
@@ -93,29 +93,29 @@
   </h3>
   <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
 
-    <a href="{{ url_for('app_bp.ayarlar_eposta') }}" class="ayarlar-tile" data-search="e-posta eposta smtp bildirim">
+    <a href="{{ url_for('app_bp.ayarlar_eposta') }}" class="ayarlar-tile" data-search="e-posta eposta smtp bildirim" data-card-code="ayarlar.eposta_bildirimleri">
       <div class="ayarlar-tile-icon" style="background:#fdf4ff;"><i class="fas fa-envelope-open-text" style="color:#9333ea;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">{{ _("E-posta Bildirimleri") }}</div>
+        <div class="ayarlar-tile-title mc-card-title">{{ _("E-posta Bildirimleri") }}</div>
         <div class="ayarlar-tile-desc">{{ _("SMTP yapılandırması ve bildirim tercihleri") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>
 
-    <a href="{{ url_for('app_bp.scheduled_reports_page') }}" class="ayarlar-tile" data-search="zamanlanmış rapor haftalık sabah aylık digest abonelik">
+    <a href="{{ url_for('app_bp.scheduled_reports_page') }}" class="ayarlar-tile" data-search="zamanlanmış rapor haftalık sabah aylık digest abonelik" data-card-code="ayarlar.zamanlanmis_raporlar">
       <div class="ayarlar-tile-icon" style="background:#eef2ff;"><i class="fas fa-clock" style="color:#6366f1;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">{{ _("Zamanlanmış Raporlar") }}</div>
+        <div class="ayarlar-tile-title mc-card-title">{{ _("Zamanlanmış Raporlar") }}</div>
         <div class="ayarlar-tile-desc">{{ _("Haftalık özet · sabah operasyonel · risk uyarısı · aylık PG") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
     </a>
 
     {% if is_kurum_admin %}
-    <a href="{{ url_for('app_bp.kurum_ayarlar') }}" class="ayarlar-tile" data-search="kurum şirket iletişim logo">
+    <a href="{{ url_for('app_bp.kurum_ayarlar') }}" class="ayarlar-tile" data-search="kurum şirket iletişim logo" data-card-code="ayarlar.kurum_ayarlari">
       <div class="ayarlar-tile-icon" style="background:#eff6ff;"><i class="fas fa-building" style="color:#3b82f6;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">{{ _("Kurum Ayarları") }}</div>
+        <div class="ayarlar-tile-title mc-card-title">{{ _("Kurum Ayarları") }}</div>
         <div class="ayarlar-tile-desc">{{ _("İletişim bilgileri ve logo") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>
@@ -133,10 +133,10 @@
   <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
 
 
-    <a href="{{ url_for('app_bp.yonetim_paneli') }}" class="ayarlar-tile" data-search="yönetim panel login istatistik aktivite log">
+    <a href="{{ url_for('app_bp.yonetim_paneli') }}" class="ayarlar-tile" data-search="yönetim panel login istatistik aktivite log" data-card-code="ayarlar.yonetim_paneli">
       <div class="ayarlar-tile-icon" style="background:#ecfeff;"><i class="fas fa-chart-line" style="color:#0e7490;"></i></div>
       <div class="ayarlar-tile-body">
-        <div class="ayarlar-tile-title">{{ _("Yönetim Paneli") }}</div>
+        <div class="ayarlar-tile-title mc-card-title">{{ _("Yönetim Paneli") }}</div>
         <div class="ayarlar-tile-desc">{{ _("Login istatistikleri ve aktivite kayıtları") }}</div>
       </div>
       <i class="fas fa-chevron-right ayarlar-tile-arrow"></i>

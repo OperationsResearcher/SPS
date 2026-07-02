@@ -16,6 +16,7 @@
     {% set is_ready = s.status == 'hazır' %}
     <a href="{% if is_ready %}{{ url_for('app_bp.raporlar_sektorel_detay', code=s.code) }}{% else %}#{% endif %}"
        class="mc-card mc-card-lift"
+       data-card-code="raporlar_sektorel.sektor_{{ s.code }}"
        style="display:flex;flex-direction:column;align-items:center;padding:24px 16px;text-decoration:none;text-align:center;cursor:{{ 'pointer' if is_ready else 'not-allowed' }};position:relative;{% if not is_ready %}opacity:0.55;{% endif %}"
        {% if not is_ready %}onclick="event.preventDefault();Swal&&Swal.fire({icon:'info',title:'{{ _('Yakında') }}',text:'{{ _('Bu sektör paketi henüz hazır değil — yol haritasında planlandı.') }}',timer:2000,showConfirmButton:false});"{% endif %}>
       <span style="position:absolute;top:8px;right:8px;background:{% if is_ready %}#10b981{% else %}#f59e0b{% endif %};color:#fff;font-size:9.5px;font-weight:700;padding:2px 7px;border-radius:10px;letter-spacing:0.04em;">
@@ -24,7 +25,7 @@
       <div style="width:54px;height:54px;border-radius:16px;display:flex;align-items:center;justify-content:center;font-size:24px;margin-bottom:14px;background:{{ s.bg }};">
         <i class="fas {{ s.icon }}" style="color:{{ s.color }};"></i>
       </div>
-      <span style="font-size:13.5px;font-weight:600;color:var(--text-default);margin-bottom:4px;">{{ s.name }}</span>
+      <span class="mc-card-title" style="font-size:13.5px;font-weight:600;color:var(--text-default);margin-bottom:4px;">{{ s.name }}</span>
       <span style="font-size:10.5px;color:#94a3b8;text-transform:uppercase;letter-spacing:0.05em;">{{ s.code }}</span>
     </a>
     {% endfor %}

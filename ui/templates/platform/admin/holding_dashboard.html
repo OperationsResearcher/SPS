@@ -14,7 +14,7 @@
 
   <div class="mc-page-header" style="margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap: var(--space-3);">
     <div>
-      <h2 style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1); letter-spacing:-0.01em;">
+      <h2 class="mc-card-title" style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1); letter-spacing:-0.01em;">
         <i class="fas fa-sitemap" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
         {{ _("Holding Konsolide Görünüm") }}
       </h2>
@@ -28,14 +28,14 @@
   </div>
 
   {# ─── Hero — özet kart ───────────────────────────────────────────── #}
-  <div class="mc-card" style="padding: var(--space-6); margin-bottom: var(--space-6);
+  <div class="mc-card" data-card-code="admin_holding_dashboard.ozet_skor" style="padding: var(--space-6); margin-bottom: var(--space-6);
        background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #312e81 100%);
        color:#fff; border:none; box-shadow: var(--shadow-lg); border-radius:12px; position:relative; overflow:hidden;">
     <div style="position:absolute; right:-40px; top:-40px; width:240px; height:240px;
          background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%); pointer-events:none;"></div>
     <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: var(--space-6); position:relative;">
       <div style="flex:1; min-width:240px;">
-        <div style="font-size: var(--text-xs); opacity:0.7; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">
+        <div class="mc-stat-label" style="font-size: var(--text-xs); opacity:0.7; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">
           {{ _("Ortalama Sağlık Skoru") }}
         </div>
         <div id="h-avg-health" class="mc-num"
@@ -65,26 +65,26 @@
 
   {# ─── 3 alarm tile (kritik özet) ─────────────────────────────────── #}
   <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
-    <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-danger);">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Toplam Kritik Risk") }}</div>
+    <div class="mc-card" data-card-code="admin_holding_dashboard.kritik_risk" style="padding: var(--space-4); border-left:4px solid var(--color-danger);">
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Toplam Kritik Risk") }}</div>
       <div id="h-risk" class="mc-num" style="font-size: var(--text-3xl); font-weight:700; color: var(--color-danger); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div style="font-size: var(--text-sm); color: var(--text-subtle);">{{ _("Tüm kurumlarda") }}</div>
     </div>
-    <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Yüksek Anomali") }}</div>
+    <div class="mc-card" data-card-code="admin_holding_dashboard.yuksek_anomali" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Yüksek Anomali") }}</div>
       <div id="h-anomaly" class="mc-num" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div style="font-size: var(--text-sm); color: var(--text-subtle);">{{ _("KPI sapmaları") }}</div>
     </div>
-    <div class="mc-card" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
-      <div style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Gecikmiş Faaliyet") }}</div>
+    <div class="mc-card" data-card-code="admin_holding_dashboard.gecikmis_faaliyet" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
+      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Gecikmiş Faaliyet") }}</div>
       <div id="h-overdue" class="mc-num" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
       <div style="font-size: var(--text-sm); color: var(--text-subtle);">{{ _("Toplam") }}</div>
     </div>
   </div>
 
   {# ─── Karşılaştırma grafiği ──────────────────────────────────────── #}
-  <div class="mc-card" style="padding: var(--space-5); margin-bottom: var(--space-6);">
-    <h3 style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
+  <div class="mc-card" data-card-code="admin_holding_dashboard.karsilastirma_grafik" style="padding: var(--space-5); margin-bottom: var(--space-6);">
+    <h3 class="mc-card-title" style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
       <i class="fas fa-chart-bar" style="color: var(--color-primary);"></i> {{ _("Kurum Karşılaştırma — Sağlık Skoru") }}
     </h3>
     <canvas id="health-chart" height="110"></canvas>

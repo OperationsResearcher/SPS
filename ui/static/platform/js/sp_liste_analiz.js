@@ -21,6 +21,7 @@
   const GET_URL = root.dataset.getUrl;
   const SAVE_URL = root.dataset.saveUrl;
   const CAN_EDIT = root.dataset.canEdit === "true";
+  const PAGE_CODE = root.dataset.pageCode || "";
   let KEYS = [];
   try { KEYS = JSON.parse(root.dataset.keys || "[]"); } catch (_e) { KEYS = []; }
 
@@ -62,7 +63,7 @@
       </li>`).join("");
 
     return `
-      <div class="mc-card" style="border-top:3px solid ${def.color};">
+      <div class="mc-card" style="border-top:3px solid ${def.color};" data-card-code="${PAGE_CODE}.${def.key}">
         <div class="mc-card-header" style="display:flex;align-items:center;gap:8px;">
           <i class="fas ${def.icon}" style="color:${def.color};"></i>
           <span class="mc-card-title">${esc(def.label)}</span>

@@ -3,8 +3,8 @@
 {% block page_title %}KPR-Radar Kaynak Kapasite{% endblock %}
 {% block content %}
 <div id="k-radar-kpr-kaynak-kapasite-root" data-url="{{ url_for('app_bp.k_radar_api_kpr_kaynak_kapasite') }}" style="max-width:900px; margin:0 auto;">
-  <div class="mc-card"><div class="mc-card-body">
-    <h3 style="margin-top:0;">{{ _("Kaynak Kapasite Özeti") }}</h3>
+  <div class="mc-card" data-card-code="k_radar_kpr_kaynak_kapasite.ozet"><div class="mc-card-body">
+    <h3 class="mc-card-title" style="margin-top:0;">{{ _("Kaynak Kapasite Özeti") }}</h3>
     <div><strong>{{ _("Kaynak Yükü:") }}</strong> <span id="kpr-kapasite-load">-</span></div>
     <div><strong>{{ _("Gecikmiş Açık Görev:") }}</strong> <span id="kpr-kapasite-overdue">-</span></div>
     <div><strong>{{ _("Aktif Görev:") }}</strong> <span id="kpr-kapasite-active">-</span></div>

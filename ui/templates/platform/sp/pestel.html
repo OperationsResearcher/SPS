@@ -9,6 +9,7 @@
 {% block content %}
 <div style="max-width:1100px;margin:0 auto;"
      id="sp-liste-analiz"
+     data-card-code="sp_pestel.sayfa"
      data-get-url="{{ url_for('app_bp.sp_api_pestle_get') }}"
      data-save-url="{{ url_for('app_bp.sp_api_pestle_save') }}"
      data-can-edit="{{ 'true' if can_edit else 'false' }}"
@@ -23,7 +24,7 @@
 
   <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+      <h2 class="mc-card-title" style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
         <i class="fas fa-globe" style="color:#6366f1;"></i> {{ _("PESTEL Analizi") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">{{ _("Politik/Ekonomik/Sosyal/Teknolojik/Çevresel/Yasal dış çevre faktörleri — aktif plan yılı bazlı.") }}</p>

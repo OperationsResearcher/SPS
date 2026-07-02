@@ -19,8 +19,8 @@
   </div>
 
   {# Seçim #}
-  <div class="mc-card" style="padding:18px 20px; margin-bottom:18px;">
-    <div style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:12px;" class="dark:text-white">
+  <div class="mc-card" data-card-code="sp_scenarios_kiyas.secim_listesi" style="padding:18px 20px; margin-bottom:18px;">
+    <div class="mc-card-title" style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:12px;" class="dark:text-white">
       <i class="fas fa-list-check" style="color:#6366f1;"></i> {{ _("Karşılaştırılacak plan yılları / senaryolar (2-6)") }}
     </div>
     <div id="kiyas-list" style="display:grid; grid-template-columns:repeat(auto-fill, minmax(220px, 1fr)); gap:10px;">
@@ -35,8 +35,8 @@
   </div>
 
   {# Sonuç #}
-  <div id="kiyas-sonuc" class="mc-card" style="padding:20px; display:none;">
-    <div style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:16px;" class="dark:text-white">
+  <div id="kiyas-sonuc" class="mc-card" data-card-code="sp_scenarios_kiyas.vizyon_skoru_karsilastirma" style="padding:20px; display:none;">
+    <div class="mc-card-title" style="font-size:12.5px; font-weight:700; color:#0f172a; margin-bottom:16px;" class="dark:text-white">
       <i class="fas fa-chart-simple" style="color:#6366f1;"></i> {{ _("Vizyon skoru karşılaştırması") }}
     </div>
     <div id="kiyas-bars" style="display:flex; flex-direction:column; gap:14px;"></div>

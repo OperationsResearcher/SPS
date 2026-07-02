@@ -47,12 +47,13 @@
     <a href="{{ it.url }}"
        class="mc-card mc-card-lift"
        data-tour="sp-card-{{ slug }}"
+       data-card-code="sp_menu.{{ slug }}"
        {% if 'digest_pdf' in it.url or 'digest-pdf' in it.url %}target="_blank"{% endif %}
        style="display:flex; flex-direction:column; align-items:center; padding:28px 16px 20px; text-decoration:none; text-align:center; cursor:pointer;">
       <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:{{ it.bg }};">
         <i class="fas {{ it.icon }}" style="color:{{ it.color }};"></i>
       </div>
-      <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">
+      <span class="mc-card-title dark:text-white" style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;">
         {{ it.name }}
       </span>
       <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">

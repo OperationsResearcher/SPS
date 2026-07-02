@@ -1267,6 +1267,7 @@ def admin_api_card_info(code):
     yoksa (henüz keşfedilmemiş) boş açıklama + bulundu=False döner.
     short_id de döner (kısa görünen kimlik).
     """
+    from flask_babel import gettext as _
     from app.models.saas import SystemCard
     card = SystemCard.query.filter_by(code=code).first()
     if not card:
@@ -1274,7 +1275,7 @@ def admin_api_card_info(code):
                         "short_id": None, "name": None, "description": None})
     return jsonify({"success": True, "found": True, "code": card.code,
                     "short_id": card.short_id, "name": card.name,
-                    "description": card.description})
+                    "description": _(card.description) if card.description else card.description})
 
 
 @app_bp.route("/admin/api/page-meta/<path:code>", methods=["GET"])

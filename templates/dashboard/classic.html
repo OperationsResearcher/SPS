@@ -1,0 +1,125 @@
+{% extends "base.html" %}
+
+{% block title %}Dashboard - Kokpitim{% endblock %}
+
+{% block extra_css %}
+<link href="{{ url_for('static', filename='css/dashboard_classic.css') }}" rel="stylesheet">
+{% endblock %}
+
+{% block content %}
+<div class="container-fluid">
+    <div class="row mb-4">
+        <div class="col-12">
+            <div class="d-flex justify-content-between align-items-center flex-wrap gap-2">
+                <div>
+                    <h1 class="display-5">
+                        <i class="fas fa-tachometer-alt text-primary me-3"></i>
+                        Gösterge Paneli
+                    </h1>
+                    <p class="lead text-muted mb-0">
+                        Hoşgeldin <strong>{% if current_user.is_authenticated %}{{ current_user.first_name or current_user.email }}{% else %}Kullanıcı{% endif %}</strong>, Yönetim panelinize hoş geldiniz.
+                    </p>
+                </div>
+                <div class="btn-group" role="group">
+                    <a href="{{ url_for('dashboard_bp.index', view='classic') }}" class="btn btn-primary btn-sm active" aria-current="page">
+                        <i class="fas fa-th-large me-1"></i>Klasik
+                    </a>
+                    <a href="{{ url_for('dashboard_bp.index', view='sideview') }}" class="btn btn-outline-secondary btn-sm">
+                        <i class="fas fa-columns me-1"></i>Sideview'e Geç
+                    </a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Ozet Kartlari (Bos Iskelet) -->
+    <div class="row mb-4">
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="card dashboard-stat-card card-danger text-white shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-exclamation-circle me-2"></i>Kritik İşler
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4 fw-bold mb-0">—</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="card dashboard-stat-card card-primary text-white shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-clipboard-list me-2"></i>Toplam Yük
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4 fw-bold mb-0">—</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="card dashboard-stat-card card-success text-white shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-check-circle me-2"></i>Tamamlanan
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4 fw-bold mb-0">—</h2>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-6 col-xl-3 mb-3">
+            <div class="card dashboard-stat-card card-info shadow-sm h-100">
+                <div class="card-header">
+                    <h5 class="mb-0">
+                        <i class="fas fa-chart-line me-2"></i>Performans
+                    </h5>
+                </div>
+                <div class="card-body">
+                    <h2 class="display-4 fw-bold mb-0">—</h2>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modul Placeholder Kartlari -->
+    <div class="row">
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-module-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-cube text-primary me-2"></i>Modül 1
+                    </h5>
+                    <p class="card-text text-muted">Yakında gelecek...</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-module-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-cube text-success me-2"></i>Modül 2
+                    </h5>
+                    <p class="card-text text-muted">Yakında gelecek...</p>
+                </div>
+            </div>
+        </div>
+        <div class="col-md-4 mb-4">
+            <div class="card dashboard-module-card shadow-sm">
+                <div class="card-body">
+                    <h5 class="card-title">
+                        <i class="fas fa-cube text-warning me-2"></i>Modül 3
+                    </h5>
+                    <p class="card-text text-muted">Yakında gelecek...</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block scripts %}
+<script src="{{ url_for('static', filename='js/dashboard_classic.js') }}"></script>
+{% endblock %}

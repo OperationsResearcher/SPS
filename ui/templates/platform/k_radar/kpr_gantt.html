@@ -3,8 +3,8 @@
 {% block page_title %}KPR-Radar Gantt{% endblock %}
 {% block content %}
 <div id="k-radar-kpr-gantt-root" data-url="{{ url_for('app_bp.k_radar_api_kpr_gantt') }}" style="max-width:900px; margin:0 auto;">
-  <div class="mc-card"><div class="mc-card-body">
-    <h3 style="margin-top:0;">{{ _("Gantt Özeti") }}</h3>
+  <div class="mc-card" data-card-code="k_radar_kpr_gantt.gantt_ozeti"><div class="mc-card-body">
+    <h3 class="mc-card-title" style="margin-top:0;">{{ _("Gantt Özeti") }}</h3>
     <div><strong>{{ _("Zaman Çizelgeli Görev:") }}</strong> <span id="kpr-gantt-tasks">-</span></div>
     <div><strong>{{ _("Zamanında Tamamlama:") }}</strong> <span id="kpr-gantt-ontime">-</span></div>
   </div></div>

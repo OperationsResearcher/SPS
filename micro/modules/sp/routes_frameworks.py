@@ -279,7 +279,8 @@ def sp_api_project_evm(pid):
 @login_required
 def sp_digest_html():
     # Haftalık digest okuma raporu — tüm giriş yapmış kullanıcılar görebilir.
-    tenant_name = getattr(getattr(current_user, "tenant", None), "name", "Kurumunuz")
+    tenant = getattr(current_user, "tenant", None)
+    tenant_name = getattr(tenant, "name", None)
     html = render_digest_html(current_user.tenant_id, tenant_name)
     return Response(html, mimetype="text/html")
 
@@ -288,8 +289,9 @@ def sp_digest_html():
 @login_required
 def sp_digest_pdf():
     # Haftalık digest okuma raporu — tüm giriş yapmış kullanıcılar görebilir.
-    tenant_name = getattr(getattr(current_user, "tenant", None), "name", "Kurumunuz")
-    content, mime = render_digest_pdf(current_user.tenant_id, tenant_name)
+    tenant = getattr(current_user, "tenant", None)
+    tenant_name = getattr(tenant, "name", None)
+    content, mime = render_digest_pdf(current_user.tenant_id, tenant_name, tenant=tenant)
     ext = "pdf" if mime == "application/pdf" else "html"
     headers = {
         "Content-Disposition": f'attachment; filename="kokpitim_haftalik_rapor.{ext}"'

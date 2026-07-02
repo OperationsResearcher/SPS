@@ -191,4 +191,7 @@ def k_radar_api_ks_gap_real():
 @login_required
 def k_radar_api_ks_strateji_real():
     from services.k_radar_service import get_ks_strateji_real
-    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_strateji_real(_required_tenant_id())}))
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    active_py = get_active_plan_year_for_user(current_user)
+    year = request.args.get("year", type=int) or (active_py.year if active_py else None)
+    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_strateji_real(_required_tenant_id(), year)}))

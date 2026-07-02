@@ -21,7 +21,8 @@
         </div>
         {% include "platform/project/_project_views_nav.html" %}
     </div>
-    <div class="mc-card" style="padding:16px;">
+    <div class="mc-card" style="padding:16px;" data-card-code="project_calendar.takvim">
+        <div class="mc-card-title" style="text-transform:uppercase; font-size:12px; color:#64748b; margin-bottom:8px;">{{ _("Görev Takvimi") }}</div>
         <div id="calendar-loading" style="text-align:center; padding:48px 16px; color:#64748b; font-size:14px;">
             <i class="fas fa-spinner fa-spin"></i> {{ _("Takvim yükleniyor…") }}
         </div>

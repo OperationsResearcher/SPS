@@ -36,7 +36,12 @@
   </div>
   {% include "platform/_hierarchy_help.html" %}
 
-  <div id="init-list" data-tour="init-list"></div>
+  <div class="mc-card" data-card-code="sp_initiatives.girisim_listesi" style="padding:16px;">
+    <div class="mc-card-title" style="font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:12px;">
+      <i class="fas fa-list-check" style="margin-right:6px;"></i>{{ _("Girişim Listesi") }}
+    </div>
+    <div id="init-list" data-tour="init-list"></div>
+  </div>
 
   <!-- Modal -->
   <div class="mc-modal-overlay" id="init-modal" style="display:none;">

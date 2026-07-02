@@ -79,7 +79,15 @@ ATLANAN (veri-instance / launcher — kart standardı dışı):
 ## ✅ strateji-haritasi: /sp/strateji-haritasi, sp_strateji_haritasi.* (6 kart, SP öneki)
    (5 render + str_girisim koşullu — initiative_count varsa görünür)
 
-## 🎉 TÜM KART STANDARDİZASYONU TAMAMLANDI — 345 kart DB'de
+## 📄 SAYFA KATALOĞU (SystemPage) — 68 sayfa
+- system_pages tablosu (migration e5f6a7b8c9d0): code(=kart prefix), name, url, short_id.
+- short_id modül-kısa: MA, SP, PR, PK, PJ, KD-KS/KP, KR-<tab>, RP-<sayfa>.
+- Sayfa ID rozeti base.html'de: yalnız Admin, sayfa üstünde ortada; sayfadaki ilk
+  data-card-code prefix'inden page-meta API ile çözülür.
+- Çöp DB kayıtları temizlendi (${code}, {{ ep_codes }}); keşif servisine
+  ${/{{/} guard eklendi (tekrar gelmesin).
+
+## 🎉 TÜM KART STANDARDİZASYONU TAMAMLANDI — 343 kart + 68 sayfa DB'de
 MA(masaustu) · SP(sp + strateji-haritasi) · PR(process) · PK(karne) · PJ(project) ·
 KD(k-radar) · KR(k-rapor 16 sekme) · RP(raporlar 38 sayfa).
 Atlananlar (gerekçeli, veri-instance/launcher): sektorel, ai-danisman, okr-objective örnekleri.

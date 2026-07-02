@@ -87,10 +87,30 @@ verisi görünür). Kart komple gizlenmez — kısmi çalışır.
 ### Bir kartı standarda sokmak için (geliştirici checklist)
 1. Kart konteynerine **`data-card-code="<sayfa>.<kart>"`** ekle (örn. `data-card-code="sp.misyon"`).
 2. Başlık elemanı **`mc-card-title`** veya **`mc-stat-label`** sınıfını taşısın (JS başlığı bununla bulur; yoksa (i) köşeye düşer).
+   Başlık metni **Jinja `{{ _("...") }}`** ile yazılmalı — modal başlığı bu DOM metnini kullanır (bkz. §i18n).
 3. Başlığın soluna konuyla ilgili **mini ikon** koy (`<i class="fas fa-...">`).
 4. Admin'den **kart keşfi**ni tetikle (`/admin` → Kartları Keşfet) → kart `system_cards`'a yazılır.
 5. Karta **kısa ID (short_id)** ata: `<HARF><numara>` (sayfa kısaltması + sıra).
-6. **Açıklama (description)** yaz (admin UI'dan veya seed) → (i) bunu gösterir.
+6. **Açıklama (description)** yaz (admin UI'dan veya seed) → (i) bunu gösterir. **Zorunlu:** bu Türkçe metni
+   `.po` kataloglarına (EN) msgid olarak ekleyip İngilizce çevirisini yaz (bkz. §i18n — aksi halde (i) modalı
+   İngilizce seçilmiş dilde de Türkçe gösterir).
+
+### (i) modal içeriği — i18n ZORUNLU (2026-07-01, kullanıcı mutabakatı)
+
+> **Bağlayıcı.** (i) butonuyla açılan modal, hem **başlık** hem **açıklama** için aktif dile uymalıdır.
+> Türkçe sabit metin EN seçiliyken görünmesi standart ihlalidir — TASLAK olarak bile bırakılmaz.
+
+- **Modal başlığı**: backend'den ayrıca çekilmez — kartın DOM'daki zaten görünen başlığı (`mc-card-title` /
+  `mc-stat-label`, adım 2'deki `{{ _() }}` metni) `base.html`'deki JS tarafından okunup modale taşınır.
+  Geliştirici olarak yapman gereken TEK şey: başlığı Jinja `_()` ile yazmak. Ayrıca bir "name" alanı
+  çevirmene gerek yok — `system_cards.name`/`code` teknik anahtardır (örn. `masaustu.bildirimler`),
+  kullanıcıya **asla** gösterilmez.
+- **Modal açıklaması**: `system_cards.description` DB'de Türkçe saklanır ama backend route'u
+  (`admin_api_card_info`, `micro/modules/admin/routes.py`) `flask_babel.gettext` ile sarmalayıp döner.
+  Bunun çalışması için o Türkçe açıklama metninin `translations/en/LC_MESSAGES/messages.po`'da
+  msgid olarak bulunması ve çevrilmiş olması **şart** — DB'ye yeni açıklama yazınca otomatik pipeline'a
+  girmez (kaynak dosya değil, runtime veri), bu yüzden elle/scriptle `.po`'ya eklenip
+  `pybabel compile -d translations` ile derlenmesi gerekir.
 
 ### Sayfa → harf eşlemesi (short_id öneki)
 | Sayfa | Harf | | Sayfa | Harf |

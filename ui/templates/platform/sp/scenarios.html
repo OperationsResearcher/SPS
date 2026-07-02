@@ -30,7 +30,8 @@
     </a>
   </div>
 
-  <div class="mc-card" style="padding:16px; margin-bottom:20px;">
+  <div class="mc-card" style="padding:16px; margin-bottom:20px;" data-card-code="sp_scenarios.senaryo_olustur">
+    <div class="mc-card-title" style="font-size:12px; color:#64748b; margin-bottom:8px; text-transform:uppercase;">{{ _("Senaryo Oluştur") }}</div>
     <form id="sc-form" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
       <div>
         <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Kaynak Plan Yılı") }}</label>
@@ -50,7 +51,7 @@
     </form>
   </div>
 
-  <div id="sc-list"></div>
+  <div id="sc-list" data-card-code="sp_scenarios.senaryo_listesi"></div>
 </div>
 
 <script>
@@ -60,7 +61,7 @@
   const createUrl = root.dataset.createUrl;
 
   function labelTr(l) {
-    return {optimistic:t('İyimser'), pessimistic:t('Kötümser'), baseline:'Baseline'}[l] || l;
+    return {optimistic:t('İyimser'), pessimistic:t('Kötümser'), baseline:t('Temel Senaryo')}[l] || l;
   }
 
   async function load() {

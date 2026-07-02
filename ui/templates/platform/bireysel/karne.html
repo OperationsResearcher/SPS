@@ -28,7 +28,7 @@
      style="max-width:1200px; margin:0 auto;">
 
   {# ── Inline AI Özet (bireysel) ── #}
-  <div id="ai-ozet-serit" data-ozet-url="{{ url_for('app_bp.bireysel_api_ai_ozet') }}" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
+  <div id="ai-ozet-serit" data-card-code="bireysel_karne.ai_ozet" data-ozet-url="{{ url_for('app_bp.bireysel_api_ai_ozet') }}" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
     <div style="display:flex; align-items:flex-start; gap:12px; padding:13px 18px;">
       <span style="flex:0 0 auto; width:32px; height:32px; border-radius:10px; background:#6366f1; color:#fff; display:flex; align-items:center; justify-content:center;"><i class="fas fa-wand-magic-sparkles"></i></span>
       <div style="flex:1; min-width:0;">
@@ -63,7 +63,7 @@
   </script>
 
   <!-- Üst bar -->
-  <div class="mc-card" style="margin-bottom:20px;">
+  <div class="mc-card" data-card-code="bireysel_karne.ust_bar" style="margin-bottom:20px;">
     <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
       <div style="flex:1; min-width:0;">
         <h2 class="mc-page-title" style="margin:0;">{{ _("Bireysel Performans Karnem") }}</h2>
@@ -81,7 +81,7 @@
   </div>
 
   {# Kişisel İlerleme Halkaları — SVG progress rings #}
-  <div class="mc-card" style="margin-bottom:18px; padding:20px;">
+  <div class="mc-card" data-card-code="bireysel_karne.ilerleme_halkalari" style="margin-bottom:18px; padding:20px;">
     <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap; justify-content:center;">
       <div style="text-align:center;">
         <svg id="karne-ring-pg" width="120" height="120" viewBox="0 0 120 120">
@@ -156,22 +156,22 @@
 
   <!-- Özet istatistikler -->
   <div class="mc-grid-4" style="margin-bottom:20px;">
-    <div class="mc-stat-card mc-stat-indigo">
+    <div class="mc-stat-card mc-stat-indigo" data-card-code="bireysel_karne.stat_toplam_pg">
       <div class="mc-stat-icon"><i class="fas fa-chart-line"></i></div>
       <div class="mc-stat-label">{{ _("Toplam PG") }}</div>
       <div class="mc-stat-value" id="stat-total-pg">—</div>
     </div>
-    <div class="mc-stat-card mc-stat-emerald">
+    <div class="mc-stat-card mc-stat-emerald" data-card-code="bireysel_karne.stat_veri_girilen">
       <div class="mc-stat-icon"><i class="fas fa-check-circle"></i></div>
       <div class="mc-stat-label">{{ _("Veri Girilen") }}</div>
       <div class="mc-stat-value" id="stat-filled-pg">—</div>
     </div>
-    <div class="mc-stat-card mc-stat-blue">
+    <div class="mc-stat-card mc-stat-blue" data-card-code="bireysel_karne.stat_faaliyetler">
       <div class="mc-stat-icon"><i class="fas fa-tasks"></i></div>
       <div class="mc-stat-label">{{ _("Faaliyetler") }}</div>
       <div class="mc-stat-value" id="stat-activities">—</div>
     </div>
-    <div class="mc-stat-card mc-stat-amber">
+    <div class="mc-stat-card mc-stat-amber" data-card-code="bireysel_karne.stat_tamamlanan">
       <div class="mc-stat-icon"><i class="fas fa-percentage"></i></div>
       <div class="mc-stat-label">{{ _("Tamamlanan") }}</div>
       <div class="mc-stat-value" id="stat-done-pct">—</div>
@@ -179,7 +179,7 @@
   </div>
 
   <!-- Yıl özeti / hedef–gerçekleşen (JS doldurur) -->
-  <div class="mc-card" id="karne-insights-card" style="margin-bottom:20px;">
+  <div class="mc-card" id="karne-insights-card" data-card-code="bireysel_karne.yil_ozeti" style="margin-bottom:20px;">
     <div class="mc-card-header">
       <span class="mc-card-title">
         <i class="fas fa-lightbulb" style="color:#f59e0b; margin-right:8px;"></i>{{ _("Yıl özeti &amp; dikkat") }}
@@ -195,7 +195,7 @@
   </div>
 
   <!-- Geçmişe dönük hareketler (PG verisi + faaliyet) -->
-  <div class="mc-card" id="karne-timeline-card" style="margin-bottom:20px;">
+  <div class="mc-card" id="karne-timeline-card" data-card-code="bireysel_karne.zaman_cizelgesi" style="margin-bottom:20px;">
     <div class="mc-card-header">
       <span class="mc-card-title">
         <i class="fas fa-clock-rotate-left" style="color:#6366f1; margin-right:8px;"></i>{{ _("Bu yıl ne yaptım?") }}
@@ -214,7 +214,7 @@
   </div>
 
   <!-- PG Tablosu -->
-  <div class="mc-card" style="margin-bottom:20px;">
+  <div class="mc-card" data-card-code="bireysel_karne.pg_tablosu" style="margin-bottom:20px;">
     <div class="mc-card-header">
       <span class="mc-card-title">
         <i class="fas fa-bullseye" style="color:#6366f1; margin-right:8px;"></i>{{ _("Performans Göstergelerim") }}
@@ -256,7 +256,7 @@
   </div>
 
   <!-- Faaliyet Tablosu -->
-  <div class="mc-card">
+  <div class="mc-card" data-card-code="bireysel_karne.faaliyet_tablosu">
     <div class="mc-card-header">
       <span class="mc-card-title">
         <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>{{ _("Faaliyetlerim") }}
@@ -282,7 +282,7 @@
         </thead>
         <tbody id="faaliyet-tbody">
           <tr>
-            <td colspan="16" style="text-align:center; padding:32px; color:#94a3b8;">Yükleniyor…</td>
+            <td colspan="16" style="text-align:center; padding:32px; color:#94a3b8;">{{ _("Yükleniyor…") }}</td>
           </tr>
         </tbody>
       </table>

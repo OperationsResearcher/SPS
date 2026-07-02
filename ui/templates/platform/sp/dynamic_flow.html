@@ -9,10 +9,11 @@
      style="max-width:1200px; margin:0 auto;">
 
   <!-- Araç çubuğu -->
-  <div class="mc-card" style="margin-bottom:16px;">
+  <div class="mc-card" data-card-code="sp_dynamic_flow.renk_lejandi" style="margin-bottom:16px;">
     <div class="mc-card-body" style="padding:12px 20px; display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:12px;">
       <!-- Renk açıklamaları -->
       <div style="display:flex; align-items:center; gap:16px; flex-wrap:wrap;">
+        <div class="mc-card-title" style="width:100%; font-size:11px; text-transform:uppercase; color:#94a3b8; margin-bottom:4px;">{{ _("Grafik Lejantı") }}</div>
         <span style="display:inline-flex; align-items:center; gap:6px; font-size:12px; color:#64748b;">
           <span style="width:10px; height:10px; border-radius:50%; background:#6366f1; display:inline-block;"></span> {{ _("Vizyon") }}
         </span>
@@ -42,7 +43,8 @@
   </div>
 
   <!-- Graf canvas -->
-  <div id="graph-container" class="mc-card" style="display:none; min-height:520px; overflow:auto;">
+  <div id="graph-container" class="mc-card" data-card-code="sp_dynamic_flow.strateji_grafigi" style="display:none; min-height:520px; overflow:auto;">
+    <div class="mc-card-title" style="position:absolute; font-size:11px; text-transform:uppercase; color:#94a3b8; padding:8px 12px 0;">{{ _("Strateji Grafiği") }}</div>
     <div class="mc-card-body" style="padding:0;">
       <canvas id="graph-canvas" style="width:100%;"></canvas>
     </div>
