@@ -133,73 +133,59 @@ def _parse_json_prefs(val, default=None):
         return default
 
 
-@auth_bp.route("/settings", methods=["GET", "POST"])
+@auth_bp.route("/settings/legacy-save", methods=["POST"])
 @login_required
 def settings():
-    """Ayarlar sayfası - GET gösterir, POST günceller."""
+    """Ayarlar formu POST işleyicisi (modern app_bp.ayarlar_hesap GET'ini render eder,
+    formu buraya post eder — kod tekrarını önlemek için POST mantığı burada kalır).
+
+    NOT: Bu route artık GET kabul etmiyor; /settings tam sayfası kaldırıldı
+    (route çakışması — modern app_bp.ayarlar hub sayfası hiç tetiklenmiyordu,
+    sistem taraması 2026-07-02, madde 1.5)."""
     import json as json_module
 
-    if request.method == "POST":
-        action = request.form.get("action", "all")
+    action = request.form.get("action", "all")
 
-        if action in ("notifications", "all"):
-            notify_email = request.form.get("notify_email") in ("on", "1", "true")
-            notify_process = request.form.get("notify_process") in ("on", "1", "true")
-            notify_task = request.form.get("notify_task") in ("on", "1", "true")
-            notify_deadline = request.form.get("notify_deadline") in ("on", "1", "true")
-            prefs = _parse_json_prefs(getattr(current_user, "notification_preferences", None))
-            prefs.update({
-                "email": notify_email,
-                "process": notify_process,
-                "task": notify_task,
-                "deadline": notify_deadline,
-            })
-            current_user.notification_preferences = json_module.dumps(prefs)
+    if action in ("notifications", "all"):
+        notify_email = request.form.get("notify_email") in ("on", "1", "true")
+        notify_process = request.form.get("notify_process") in ("on", "1", "true")
+        notify_task = request.form.get("notify_task") in ("on", "1", "true")
+        notify_deadline = request.form.get("notify_deadline") in ("on", "1", "true")
+        prefs = _parse_json_prefs(getattr(current_user, "notification_preferences", None))
+        prefs.update({
+            "email": notify_email,
+            "process": notify_process,
+            "task": notify_task,
+            "deadline": notify_deadline,
+        })
+        current_user.notification_preferences = json_module.dumps(prefs)
 
-        if action in ("locale", "all"):
-            language = request.form.get("language") or "tr"
-            timezone = request.form.get("timezone") or "Europe/Istanbul"
-            date_format = request.form.get("date_format") or "dd.mm.yyyy"
-            prefs = _parse_json_prefs(getattr(current_user, "locale_preferences", None))
-            prefs.update({"language": language, "timezone": timezone, "date_format": date_format})
-            current_user.locale_preferences = json_module.dumps(prefs)
+    if action in ("locale", "all"):
+        language = request.form.get("language") or "tr"
+        timezone = request.form.get("timezone") or "Europe/Istanbul"
+        date_format = request.form.get("date_format") or "dd.mm.yyyy"
+        prefs = _parse_json_prefs(getattr(current_user, "locale_preferences", None))
+        prefs.update({"language": language, "timezone": timezone, "date_format": date_format})
+        current_user.locale_preferences = json_module.dumps(prefs)
 
-        if action in ("theme", "all"):
-            theme = request.form.get("theme") or "light"
-            color = request.form.get("primary_color") or "primary"
-            prefs = _parse_json_prefs(getattr(current_user, "theme_preferences", None))
-            prefs.update({"theme": theme, "color": color})
-            current_user.theme_preferences = json_module.dumps(prefs)
+    if action in ("theme", "all"):
+        theme = request.form.get("theme") or "light"
+        color = request.form.get("primary_color") or "primary"
+        prefs = _parse_json_prefs(getattr(current_user, "theme_preferences", None))
+        prefs.update({"theme": theme, "color": color})
+        current_user.theme_preferences = json_module.dumps(prefs)
 
-        if action in ("guide", "all"):
-            show_guides = request.form.get("show_page_guides") == "on" or request.form.get("show_page_guides") == "1"
-            char_style = request.form.get("guide_character_style") or "professional"
-            if char_style not in ("professional", "friendly", "minimal"):
-                char_style = "professional"
-            current_user.show_page_guides = show_guides
-            current_user.guide_character_style = char_style
+    if action in ("guide", "all"):
+        show_guides = request.form.get("show_page_guides") == "on" or request.form.get("show_page_guides") == "1"
+        char_style = request.form.get("guide_character_style") or "professional"
+        if char_style not in ("professional", "friendly", "minimal"):
+            char_style = "professional"
+        current_user.show_page_guides = show_guides
+        current_user.guide_character_style = char_style
 
-        db.session.commit()
-        flash("Ayarlar kaydedildi.", "success")
-        return redirect(url_for("auth_bp.settings"))
-
-    # GET - load current values for template
-    notif_prefs = _parse_json_prefs(getattr(current_user, "notification_preferences", None), {
-        "email": True, "process": True, "task": True, "deadline": True
-    })
-    locale_prefs = _parse_json_prefs(getattr(current_user, "locale_preferences", None), {
-        "language": "tr", "timezone": "Europe/Istanbul", "date_format": "dd.mm.yyyy"
-    })
-    theme_prefs = _parse_json_prefs(getattr(current_user, "theme_preferences", None), {"theme": "light", "color": "primary"})
-
-    return render_template(
-        "auth/settings.html",
-        notif_prefs=notif_prefs,
-        locale_prefs=locale_prefs,
-        theme_prefs=theme_prefs,
-        show_page_guides=getattr(current_user, "show_page_guides", True),
-        guide_character_style=getattr(current_user, "guide_character_style", "professional"),
-    )
+    db.session.commit()
+    flash("Ayarlar kaydedildi.", "success")
+    return redirect(url_for("app_bp.ayarlar_hesap"))
 
 # ── KVKK / GDPR uyumu — Sprint 12 ─────────────────────────────────────────────
 

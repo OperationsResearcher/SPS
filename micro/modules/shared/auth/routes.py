@@ -164,9 +164,10 @@ def ayarlar():
 @app_bp.route("/settings/account", methods=["GET", "POST"])
 @login_required
 def ayarlar_hesap():
-    """Kişisel hesap ayarları — mevcut auth_bp.settings ile aynı mantık, micro UI."""
+    """Kişisel hesap ayarları — POST işleme mantığı auth_bp.settings'te (kod tekrarını
+    önlemek için), sonuç bu sayfaya geri döner."""
     if request.method == "POST":
-        return redirect(url_for("auth_bp.settings"), code=307)
+        return redirect(url_for("auth_bp.settings"), code=307)  # endpoint adı sabit, URL /settings/legacy-save
 
     # GET — mevcut ayarları yükle
     def _parse_json(val, default=None):
