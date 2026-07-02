@@ -2,6 +2,17 @@
 
 from datetime import datetime, timezone
 
+# .env burada, diğer tüm importlardan ÖNCE yüklenmeli — aşağıdaki
+# `from app.models import db` zinciri app/utils/encryption.py'ye kadar
+# uzanıyor ve o modül ENCRYPTION_KEY'i import anında (üretimde zorunlu)
+# kontrol ediyor. config.py'nin load_dotenv() çağrısı yalnızca
+# create_app() içinde tetikleniyordu — yani .env dosya-mount ile
+# verildiğinde (Test/Demo) bu noktada henüz os.environ'a hiç yüklenmemiş
+# oluyordu ve uygulama boot olamıyordu (yalnızca gerçek Docker env
+# değişkeni + --env-file kullanan ortamlar tesadüfen etkilenmiyordu).
+from dotenv import load_dotenv
+load_dotenv()
+
 from flask import Flask, jsonify
 from sqlalchemy import text
 from flask_login import LoginManager
