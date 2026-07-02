@@ -88,7 +88,9 @@ Eksenler → **Kim:** Yön=Yönetici, ÜY=Üst Yönetim, Kul=Kullanıcı · **Ol
 | 20 | OKR / BSC / ESG | ÜY | L3 | Orta-Yük. | Uzman | Strateji | ⛔ |
 | **LAB / KESİLECEK** |
 | 21 | `mock_*` (metaverse, DAO, doomsday, smart contract, gemba, persona… ~30+ tablo) | — | — | — | — | **Hiçbiri** | ⛔ (kaldır/Lab) |
-| 22 | Placeholder system_modules (Proje×2, CRM/Müşteri×2 — 0 bileşen) | — | — | — | — | Henüz ürün değil | — |
+| 22 | Placeholder system_modules (Proje×2, ~~CRM/Müşteri×2~~) | — | — | — | — | Henüz ürün değil | — |
+
+> **Güncelleme (2026-07-02):** CRM/Müşteri×2 (`musteri_iliskileri_yonetimi_modulu`, `ileri_iliskileri_yonetimi_modulu`) kullanıcı kararıyla **kalıcı olarak kaldırıldı** — hiçbir kod karşılığı (route/model/template/launcher) yoktu, DB'de yalnızca boş `system_modules` kaydı ve Master Package bağı olarak duruyordu (bkz. `scripts/remove_crm_placeholder_modules.py`). Proje×2 placeholder (§4 satır 21'deki `mock_*` ile karıştırılmasın — bu satır 22'deki ayrı, launcher karşılığı olmayan iskelet `system_modules` kayıtları) henüz gündemde değil.
 
 \* "Düşük\*" = veri otomatik türetilir (kullanıcı girmez); ama **yorumu** zordur. Satır 13/17/19 tam olarak düşük-yetkinlik segmentinin ihtiyacı: veri girmeden, AI yorumuyla değer.
 
