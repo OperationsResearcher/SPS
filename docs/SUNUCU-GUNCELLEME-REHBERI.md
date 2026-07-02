@@ -2,7 +2,8 @@
 
 > **Tek canonical yordam.** Eski `docs/YERELDEN_VM_YAYIN.md` bunun yerine geçti (arşiv).
 > Terminoloji bağlayıcı (KURALLAR-MASTER §8): **Yerel / Test / Demo / Yayın**. "VM" tek başına KULLANMA.
-> Son güncelleme: 2026-06-08 (Alembic baseline + 4-ortam deploy mekaniği doğrulandı).
+> Son güncelleme: 2026-07-02 (§5 container yeniden-oluşturma kalıbı + §7'ye 5 yeni tuzak — Test'in
+> haftalar sonraki ilk restart'ında art arda çıkan ENCRYPTION_KEY/port/import-sırası hataları).
 
 ---
 
@@ -12,6 +13,10 @@
 2. **Yayın = kırmızı çizgi.** Her Yayın güncellemesinden ÖNCE: **(a) kontrol dosyası** (veri sayımları) + **(b) yedek** (DB + kod). Kullanıcı verisi kaybolmaz.
 3. Deploy **kullanıcı isteyince** yapılır ("yayına çıkalım" / "test'e gönderelim" / "demo'ya gönderelim"). Otomatik değil.
 4. **SSH yalnız operatör.** Anahtar: `C:\crt\ssh-key-2026-04-18_v4.key` → `ubuntu@129.159.30.175`.
+5. **"Basit restart" büyüyebilir.** Test/Demo uzun süre restart edilmemişse, bir sonraki restart'ta
+   birikmiş env/Dockerfile/import-sırası sorunları aynı anda ortaya çıkabilir (2026-07-02'de yaşandı:
+   3 farklı önceden var olan hata art arda çıktı, basit "restart" adımı Dockerfile fix'ine kadar
+   büyüdü). Her adımda kapsam genişlerse **durup kullanıcıya bildir** — sessizce ilerleme.
 
 ---
 
@@ -103,14 +108,24 @@ curl -s -o /dev/null -w "%{http_code}\n" https://www.kokpitim.com/health
 
 ## 5. Yerel → Test / Demo (BIND-MOUNT: tarball + restart)
 
-> Test/Demo kodu mount'lu → **rebuild gerekmez** (yeni pip bağımlılığı yoksa). `.env` ve `instance` tarball'dan **hariç** (korunur).
+> Test/Demo kodu mount'lu → **rebuild gerekmez** (yeni pip bağımlılığı yoksa VE `Dockerfile` değişmediyse
+> — bkz. §7 "Dockerfile CMD sabit port" tuzağı: Dockerfile değiştiyse `docker restart` yetmez, rebuild +
+> container yeniden oluşturma gerekir). `.env` ve `instance` tarball'dan **hariç** (korunur).
 
 ```bash
 KEY=/c/crt/ssh-key-2026-04-18_v4.key
-# 1) Yerelde tarball (.env/instance/.git/.venv hariç)
+# 1) Yerelde tarball (.env/instance/.git/.venv hariç — büyük/gereksiz klasörleri de hariç tut,
+#    aksi halde tarball 180MB+ olur: docs/tomofil, docs/*.db, backups/, skills/, htmlcov/)
 tar czf /tmp/kokpitim_kod.tar.gz --exclude=.git --exclude=.venv --exclude=node_modules \
-  --exclude=__pycache__ --exclude='*.pyc' --exclude=.env --exclude=instance --exclude=docs/kontrol -C /c/kokpitim .
+  --exclude=__pycache__ --exclude='*.pyc' --exclude=.env --exclude=instance --exclude=docs/kontrol \
+  --exclude=.tmp.driveupload --exclude=docs/tomofil --exclude='docs/*.db' --exclude=backups --exclude=skills \
+  --exclude=htmlcov -C /c/kokpitim .
 scp -i $KEY /tmp/kokpitim_kod.tar.gz ubuntu@129.159.30.175:/tmp/
+# ZORUNLU: transfer bütünlüğünü doğrula (büyük dosyalarda scp sessizce kesilebilir → tar "invalid
+# compressed data" hatası verir). md5sum eşleşmiyorsa yeniden gönder, asla varsayma.
+LOCAL_MD5=$(md5sum /tmp/kokpitim_kod.tar.gz | awk '{print $1}')
+REMOTE_MD5=$(ssh -i $KEY ubuntu@129.159.30.175 'md5sum /tmp/kokpitim_kod.tar.gz' | awk '{print $1}')
+[ "$LOCAL_MD5" = "$REMOTE_MD5" ] || echo "MISMATCH — yeniden gönder"
 
 # 2) Test için (Demo için: kokpitim-test → kokpitim-demo, -test → -demo)
 ssh -i $KEY ubuntu@129.159.30.175 '
@@ -120,6 +135,27 @@ sudo tar czf /tmp/test_app_before_$TS.tar.gz -C $APP --exclude=__pycache__ .  # 
 sudo tar xzf /tmp/kokpitim_kod.tar.gz -C $APP                                 # yeni kod (.env korunur)
 sudo docker restart kokpitim-test-web
 sleep 6; curl -s -o /dev/null -w "test /health -> %{http_code}\n" http://127.0.0.1:5050/health'
+```
+
+**`docker restart` yeterli DEĞİLSE (Dockerfile değişti / container env'i güncel değil):** container'ı
+**yeniden oluşturmak** gerekir — `docker restart` yalnızca process'i yeniden başlatır, env
+değişkenlerini/image'ı **yeniden okumaz** (env container oluşturulduğu anda donar). Doğru desen
+(`scripts/ops/oracle/setup_test_env.sh`'deki orijinal kalıp — `.env` **dosya-mount** olarak verilir,
+`--env-file` DEĞİL; `PORT` ayrıca `-e` ile geçirilir):
+
+```bash
+ssh -i $KEY ubuntu@129.159.30.175 '
+cd /opt/kokpitim-test/app
+sudo docker build -t kokpitim_test:latest -f Dockerfile .   # Dockerfile değiştiyse ZORUNLU
+sudo docker rm -f kokpitim-test-web
+sudo docker run -d --name kokpitim-test-web \
+    --network host --restart unless-stopped \
+    -v /opt/kokpitim-test/app/.env:/app/.env:ro \
+    -v /opt/kokpitim-test/instance:/app/instance \
+    -v /opt/kokpitim-test/logs:/app/logs \
+    -e PORT=5050 -e FLASK_ENV=production \
+    kokpitim_test:latest
+sleep 8; curl -s -o /dev/null -w "test /health -> %{http_code}\n" http://127.0.0.1:5050/health'
 ```
 
 **Demo kırmızı çizgileri (KURALLAR §8.4):** Demo işlemleri YALNIZ `*-demo` hedeflerine dokunur. Saf kod deploy'u DB'ye dokunmaz; Tomofil baseline / demo DB'yi etkileyecek iş (seed/wipe/migration) **yalnız kullanıcı açıkça isteyince**.
@@ -160,6 +196,12 @@ sleep 6; curl -s -o /dev/null -w "test /health -> %{http_code}\n" http://127.0.0
 | Yerel 5001 stale/çift dinleyici | `Get-CimInstance Win32_Process … create_app … Stop-Process`; port 0 olana kadar bekle, tek başlat. |
 | Yayın `git pull` kodu geri alır | Önce branch→main **push** et; sonra Yayın `git reset --hard origin/main`. Aksi halde tarball deploy bir sonraki pull'da geri alınır. |
 | `error.log` git checkout'u kilitliyor | Yerel sunucuyu durdur (dosya kilidi), sonra checkout/merge. |
+| `docker restart` sonrası `ENCRYPTION_KEY … zorunludur` ile crash-loop (2026-07-02) | `.env`'de `ENCRYPTION_KEY` hiç yoktu (Test container haftalardır restart edilmemişti — sıkılaştırma commit'i sessiz kalmıştı). Yeni anahtar üret + `.env`'e ekle: `python -c "from cryptography.fernet import Fernet; print(Fernet.generate_key().decode())"`. **ÖNCE DB'de bu ortamda Fernet-şifreli veri (`tenant_email_configs.smtp_password` vb.) var mı kontrol et** — yeni anahtar eskisiyle şifrelenmiş veriyi kalıcı olarak çözülemez yapar. |
+| Aynı hata `docker restart` ile geçmiyor, `.env` güncel ama container görmüyor | Docker env değişkenleri **container oluşturulduğu anda donar** — `restart` yalnızca process'i yeniden başlatır, `.env`'i/image'ı yeniden okumaz. Container'ı **yeniden oluştur** (`docker rm -f` + `docker run`, §5'teki kalıp). |
+| `Connection in use: ('0.0.0.0', 5000)` — Test container Yayın'ın portuyla çakışıyor | `Dockerfile`'daki `CMD`, `gunicorn --bind 0.0.0.0:5000` **sabit**ti, `PORT` env'ini okumuyordu — `setup_test_env.sh`'nin `-e PORT=$APP_PORT` satırı hiçbir zaman etkili olmuyordu (2026-07-02'de düzeltildi: `--bind 0.0.0.0:${PORT:-5000}`). Bu fix yerelde YOKSA: `Dockerfile`'ı kontrol et, `docker build` ile rebuild + container'ı `-e PORT=5050` (Test) / `-e PORT=5080` (Demo) ile yeniden oluştur. Yayın'ın `.env`'inde `PORT` yok → davranışı değişmez (varsayılan 5000 korunur). |
+| `git pull`/tarball sonrası "yeni migration/model var ama DB'de tablo yok" | Kod güncellemesi (§5) **şemayı DEĞİŞTİRMEZ** — `flask db upgrade` ayrıca çalıştırılmalı (`FLASK_APP=run:app` ortam değişkeniyle; container içinde çalışmıyorsa aşağıdaki Python fallback'i kullan). Migration sonrası, **veri üreten** servisler (örn. kart keşfi `discover_cards()`, seed script'leri) de ayrıca elle tetiklenmeli — migration yalnızca boş tabloyu kurar. |
+| Container içinde `flask db …` → `ImportError: cannot import name 'create_app' from partially initialized module 'app'` | Kök dizinde hem `app.py` hem `app/` paketi hem `__init__.py` bir arada olduğunda Flask CLI'nin otomatik keşfi (`app.wsgi`) yanlış modülü buluyor; `FLASK_APP=run:app` verilse bile aynı hatayı veriyor. Fallback — Alembic'i doğrudan Python'dan çalıştır: `python3 -c "from __init__ import create_app; from flask_migrate import upgrade; app=create_app();\nwith app.app_context(): upgrade()"` (çalışma dizini `/app` olmalı). |
+| scp ile büyük tarball (80MB+) transferi "başarılı" görünüyor ama `tar xzf` sonra "invalid compressed data" veriyor | scp bazen sessizce yarım kalıp exit-code 0 dönebilir (timeout/bağlantı kesintisi). **Her büyük transferden sonra `md5sum` ile bütünlük doğrula** (§5'teki komut) — boyut aynı görünse bile içerik bozuk olabilir. |
 
 ---
 
