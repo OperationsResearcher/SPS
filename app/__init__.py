@@ -177,7 +177,19 @@ def create_app(config_class=None):
         def component_visible(slug):
             if slugs is None:
                 return True
-            return slug in slugs
+            if slug in slugs:
+                return True
+            # Hiçbir modülde kayıtlı olmayan component = gating'e hiç girmemiş
+            # (örn. admin/ayarlar/masaüstü gibi her pakette açık sabit alanlar).
+            # Yalnızca GERÇEKTEN bir modüle atanmış ama BU pakette olmayan
+            # component'ler gizlenir — atanmamış olan fail-open kalır.
+            from app.models.saas import ModuleComponentSlug
+            is_registered_anywhere = (
+                ModuleComponentSlug.query
+                .filter_by(component_slug=slug)
+                .first() is not None
+            )
+            return not is_registered_anywhere
 
         def card_data_visible(card_code, data_key):
             """Kart-içi veri parçası paket'e göre görünür mü? (KART katmanı).
