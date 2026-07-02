@@ -30,6 +30,9 @@ skills/
 Thumbs.db
 .DS_Store
 
+# Google Drive senkron klasörü (proje klasörü Drive altında) — kod değil
+.tmp.driveupload/
+
 # Log dosyaları — PII/secret/traceback içerebilir, repoya girmemeli
 *.log
 logs/
