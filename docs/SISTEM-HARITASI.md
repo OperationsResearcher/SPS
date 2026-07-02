@@ -1,7 +1,8 @@
 # KOKPİTİM — Sistem Haritası
 
 > **Amaç:** "Bu kod tabanında neyin ne olduğu" tek sayfada. Kaybolduğunda buraya bak.
-> **Son güncelleme:** 2026-06-16 (runtime + DB doğrulanmış sayılar)
+> **Son güncelleme:** 2026-07-02 (sistem taraması sonrası runtime doğrulanmış sayılar —
+> `python3 -c "from app import create_app; ..."` ile `app.url_map.iter_rules()` sayımı)
 > **Mimari yön:** Strangler — modern `micro/` + `app/` çekirdeği BÜYÜR, legacy ERİR. Bkz. [paketler/TEKNIK-BORC-ENVANTERI.md](paketler/TEKNIK-BORC-ENVANTERI.md).
 
 ---
@@ -14,7 +15,7 @@
 | **Hakim olman gereken çekirdek** | **~40** | aşağıdaki "onboarding çekirdeği" |
 | Canlı uygulama (route/model/servis) | ~184 | gerçek bedeni |
 | Çevre gürültü (script/test/arşiv) | ~550 | zihinsel yük OLMAMALI |
-| Toplam route (runtime) | **891** | aşağıda blueprint dağılımı |
+| Toplam route (runtime) | **871** | aşağıda blueprint dağılımı (2026-07-02: 20 ölü route + blueprint temizliği sonrası) |
 
 **Anahtar gerçek:** 700+ dosyada boğulmana gerek yok — **~40 dosyaya** hakimiyet yeter. Gerisi tek-seferlik/test/ölü.
 
@@ -35,20 +36,23 @@
 
 ---
 
-## 3. Blueprint dağılımı (runtime — 891 route)
+## 3. Blueprint dağılımı (runtime — 871 route, 2026-07-02 doğrulandı)
 
 | Blueprint | Route | Katman | Durum |
 |-----------|-------|--------|-------|
-| **`app_bp`** | **556** | **MODERN** (`platform_core` → `micro/modules/*`) | ✅ Asıl modern yüzey |
-| `main_bp` | 136 | LEGACY (`main/routes/*`) | ⚠️ Çoğu redirect-ölü / eski; eritiliyor |
-| `kokpitim_project_api` | 94 | API (`app/api/routes.py`) | REST API v1 |
-| `admin_bp` | 23 | `app/routes/admin.py` | Legacy admin (modern `micro/admin` ile paralel) |
+| **`app_bp`** | **593** | **MODERN** (`platform_core` → `micro/modules/*`) | ✅ Asıl modern yüzey |
+| `main` | 96 | LEGACY (`main/routes/*`, `main_bp`) | ⚠️ Çoğu redirect-ölü / eski; eritiliyor |
+| `kokpitim_project_api` | 89 | API (`app/api/routes.py`) | REST API v1 |
 | `marketing_bp` | 16 | `micro/modules/marketing` | Tanıtım/landing |
 | `api_routes` + `process_performance_api` + `ai_api` | 33 | API | REST + AI + perf |
-| `auth_bp` / `totp_bp` / `sso_bp` | 15 | `app/routes/*` | Login, 2FA, SSO |
+| `admin_bp` | 12 | `app/routes/admin.py` | Legacy admin — 11 çakışan route 2026-07-02'de kaldırıldı (modern `micro/admin` zaten kazanıyordu), kalan 12'si benzersiz (`tenants/archive`, `users/bulk-template`, `kule-iletisim` vb.) |
+| `auth_bp` / `totp_bp` / `sso_bp` | 13 | `app/routes/*` | Login, 2FA, SSO |
 | `dataconn_bp` / `push_api` / `swagger_ui` / `core_bp` | 11 | API/yardımcı | BI export, websocket, docs, health |
+| diğer (static, set_language, health, public_login/logout, dataconn token) | 8 | — | tekil route'lar |
 
-**Yön:** 556 modern vs 136 legacy → modern baskın. Yeni iş **yalnızca `app_bp` (micro/modules)**'a yazılır.
+**Yön:** 593 modern vs 96 legacy → modern baskın (fark önceki ölçümden büyüdü: legacy'den 40 ölü route temizlendi, modern tarafa `raporlar` modülü eklendi). Yeni iş **yalnızca `app_bp` (micro/modules)**'a yazılır.
+
+**2026-07-02 sistem taraması bulguları (uygulandı):** 25 route çakışması bulundu (aynı URL+metot, Flask'ın sessizce ilkini seçtiği durumlar) → 21'i temizlendi (main_bp'de 5, admin_bp'de 11, api/routes.py içi duplike 5 fonksiyon); 4 kayıtsız blueprint (`dashboard_bp`, `strategy_bp`, `main.admin`, `swagger_bp`) + 6 ölü template + 5 ölü JS kaldırıldı. Kalan 4 küçük çakışma (`/`, `/api/ai/insights`, `/login`, `/logout`) muhtemelen bilinçli routing — ayrı incelenmedi.
 
 ---
 
@@ -103,7 +107,7 @@ Paket→modül kapısı: `get_accessible_modules(user)` (paketleme/L1 için krit
 | Yüzey | Ne | Durum |
 |-------|-----|-------|
 | `main/routes/*` (`main_bp`) | Eski HTML route'ları | Çoğu `legacy_sunset` ile modern'e 301. Temizlendi: `strategy_api.py` legacy yazma (Dalga 1); 7 redirect-ölü route + safe_urls fallback (2026-06-17); **`kurum_panel.py` 1600+→433 satır** (21 ölü route: kurum_paneli/admin_panel/v3*/13 proje alt-görünüm/stratejik-planlama-akisi — runtime 301/410 teyitli; CANLI seed_db/fix-bsc/portfoy/API'ler korundu). Kalan canlı API'ler (`/api/ai/*`, `/api/strategic-planning/graph`) main_bp'de. |
-| `templates/` (kök) | Eski template'ler (127→110) | Modern `ui/templates/platform/` ile ölü ikiz. **2026-06-16:** 17 kesin-ölü (hiç render/extends/include yok: `*_backup`/`*_v2`/`*_modern`/`*_old`, eski `project_list`/`project_form` ikizleri) → `ARCHIVE/templates_dead/`. **Kalan iş:** 11 redirect-ölü template (route GET 301'leniyor, runtime teyitli — `dashboard.html`, `kurum_panel.html`, `project_list.html`… render eden route'larla birlikte temizlenecek). **Mock/deney route'ları (`/metaverse`, `/game-theory`, `/crisis`…) CANLI** (302→login, `@login_required`) — silinmez, paketlemede gizlenir. |
+| `templates/` (kök) | Eski template'ler (127→110→91) | Modern `ui/templates/platform/` ile ölü ikiz. **2026-06-16:** 17 kesin-ölü → `ARCHIVE/templates_dead/`. **2026-07-02:** 6 ölü daha (`dashboard/*` 4 dosya, `strategy/swot.html`, `strategy/dynamic_flow.html`) kaldırıldı — ait oldukları route'lar (dashboard_bp, strategy_bp) kayıtsız/ölü blueprint'lerdi. **Kalan iş:** 11 redirect-ölü template (route GET 301'leniyor, runtime teyitli — `kurum_panel.html`, `project_list.html`… render eden route'larla birlikte temizlenecek). **Mock/deney route'ları (`/metaverse`, `/game-theory`, `/crisis`…) CANLI** (302→login, `@login_required`) — silinmez, paketlemede gizlenir. |
 | `app/routes/process.py` | 1806 satır legacy süreç | `LEGACY_PROCESS_BP_ENABLED` flag'e bağlı; micro/surec canonical. |
 | `bsc/`, `v2/`, `v3/` | BSC + eski API stub | BSC perspective canlı mı belirsiz (ayrı dikkat). |
 
