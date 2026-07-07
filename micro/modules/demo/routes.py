@@ -1,11 +1,13 @@
-"""Demo modülü — landing + rol bazlı bypass login + session sonu.
+"""Demo modülü — landing + kurum bazlı admin bypass login + session sonu.
 
 KOKPITIM_DEMO_MODE config flag açık değilse hiçbir endpoint 404 döner.
 
-İlk versiyon (v1) — schema isolation YOK:
-  - Tüm demo kullanıcılar aynı Tomofil tenant'ı üzerinde çalışır
-  - Per-session schema clone (S3) sonraki TASK'ta eklenecek
-  - Bu sürüm, demo akışını (landing, bypass-login, banner, timeout) sahaya çıkarır
+v2 — 4 kurum, admin-only giriş:
+  - Ziyaretçi 4 kurumdan (Tom1/Tom2/Tom3/Tomofil, her biri farklı paket) birini
+    seçer, doğrudan o kurumun admin kullanıcısıyla giriş yapar.
+  - Rol seçimi (Yönetici/Lider/Üye) bu sürümde YOK — sonraki işe ertelendi.
+  - Per-session schema clone (S3) yok; 4 kurum da paylaşımlı, ortak sıfırlama
+    (KURALLAR §8.4 Yol B) tüm demo DB'yi kapsar.
 """
 from __future__ import annotations
 
@@ -23,57 +25,41 @@ from app.models import db
 from app.models.core import User, Role, Tenant
 
 
-# ── Rol haritası ──────────────────────────────────────────────────────────────
+# ── Kurum haritası ────────────────────────────────────────────────────────────
 # Demo landing'deki kartlar bu sözlüğe karşılık gelir.
-# Backend her rolü Tomofil tenant'ı içindeki uygun bir kullanıcıya bağlar.
-DEMO_ROLES = {
-    "yonetici": {
-        "label": _("Kurum Yöneticisi"),
-        "role_name": "tenant_admin",
-        "fallback_email": "admin@tomofil.com",
-        "icon": "fas fa-user-shield",
-        "color": "#4f46e5",
-        "color_soft": "#eef2ff",
-        "description": _("Tüm modüllere tam erişim. Stratejik plan, süreç, kullanıcı, "
-                       "PG yapılandırması. Yönetici penceresinden Kokpitim'i deneyin."),
-        "bullets": [
-            _("Vizyon / strateji ağacı düzenleme"),
-            _("Plan dönemleri ve K-Vektör ağırlıkları"),
-            _("Kullanıcı listesi ve rol görünümü"),
-            _("Karşılaştırma raporları (yıllar arası)"),
-        ],
-    },
-    "lider": {
-        "label": _("Süreç Lideri"),
-        "role_name": "yonetici",
-        "fallback_email": None,   # tenant içinde ilk yonetici-rolü olan kullanıcı
-        "icon": "fas fa-user-tie",
-        "color": "#8b5cf6",
-        "color_soft": "#f5f3ff",
-        "description": _("Sorumlu olduğu süreçlerin lideri. PG verisi girer, faaliyet "
-                       "ekler, ekibini koordine eder. Operasyonel deneyim."),
-        "bullets": [
-            _("Sorumlu süreçlerinin karne ekranı"),
-            _("PG hedef-gerçekleşme veri girişi"),
-            _("Faaliyet atama ve ilerleme"),
-            _("Süreç ekibinin görev takibi"),
-        ],
-    },
-    "uye": {
-        "label": _("Süreç Üyesi"),
-        "role_name": "calisan",
-        "fallback_email": None,   # tenant içinde ilk calisan-rolü olan kullanıcı
-        "icon": "fas fa-user",
+# Backend her kurum key'ini config.DEMO_TENANT_IDS üzerinden tenant_id'ye bağlar.
+DEMO_TENANTS = {
+    "tom1": {
+        "label": _("Tom1"),
+        "package_label": _("Başlangıç Paketi"),
+        "icon": "fas fa-seedling",
         "color": "#0ea5e9",
         "color_soft": "#e0f2fe",
-        "description": _("Süreç üyesi olarak kendi görevlerini, bireysel PG'lerini ve "
-                       "atanan faaliyetleri yönetir. Çalışan penceresi."),
-        "bullets": [
-            _("Atanan görevler ve faaliyetler"),
-            _("Bireysel PG (kişisel hedefler)"),
-            _("Süreç karnesine veri girişi"),
-            _("Bireysel performans paneli"),
-        ],
+        "description": _("Temel modüllerle başlayan küçük ölçekli bir kurum deneyimi."),
+    },
+    "tom2": {
+        "label": _("Tom2"),
+        "package_label": _("Yönetim Paketi"),
+        "icon": "fas fa-diagram-project",
+        "color": "#8b5cf6",
+        "color_soft": "#f5f3ff",
+        "description": _("Süreç ve performans yönetimi modülleriyle genişletilmiş kurum deneyimi."),
+    },
+    "tom3": {
+        "label": _("Tom3"),
+        "package_label": _("Strateji Paketi"),
+        "icon": "fas fa-chess-knight",
+        "color": "#f59e0b",
+        "color_soft": "#fffbeb",
+        "description": _("Stratejik planlama ve analiz araçlarını da içeren ileri seviye deneyim."),
+    },
+    "tomofil": {
+        "label": _("Tomofil"),
+        "package_label": _("Master Paketi"),
+        "icon": "fas fa-crown",
+        "color": "#4f46e5",
+        "color_soft": "#eef2ff",
+        "description": _("Kokpitim'in tüm modüllerine tam erişim — 7 yıllık gerçek stratejik plan verisi."),
     },
 }
 
@@ -82,30 +68,26 @@ def _demo_enabled() -> bool:
     return bool(current_app.config.get("KOKPITIM_DEMO_MODE"))
 
 
-def _demo_user_for_role(role_key: str):
-    """Demo tenant içinde rol_key'e karşılık gelen bir kullanıcıyı bul."""
-    if role_key not in DEMO_ROLES:
+def _demo_admin_for_tenant(tenant_key: str):
+    """Kurum key'ine karşılık gelen tenant içinde admin kullanıcıyı bul."""
+    if tenant_key not in DEMO_TENANTS:
         return None
-    spec = DEMO_ROLES[role_key]
-    demo_tenant_id = current_app.config.get("DEMO_TENANT_ID", 27)
+    tenant_ids = current_app.config.get("DEMO_TENANT_IDS", {})
+    tenant_id = tenant_ids.get(tenant_key)
+    if not tenant_id:
+        return None
 
     q = User.query.join(Role, isouter=True).filter(
-        User.tenant_id == demo_tenant_id,
+        User.tenant_id == tenant_id,
         User.is_active.is_(True),
     )
 
-    # 1) Sabit fallback email varsa onu kullan (Yönetici → admin@tomofil.com)
-    if spec.get("fallback_email"):
-        u = q.filter(User.email == spec["fallback_email"]).first()
-        if u:
-            return u
-
-    # 2) Rol adına göre tenant içindeki ilk kullanıcıyı seç
-    u = q.filter(Role.name == spec["role_name"]).order_by(User.id).first()
+    # 1) tenant_admin rolündeki ilk kullanıcı
+    u = q.filter(Role.name == "tenant_admin").order_by(User.id).first()
     if u:
         return u
 
-    # 3) Son fallback: tenant'taki herhangi bir aktif kullanıcı
+    # 2) Son fallback: tenant'taki herhangi bir aktif kullanıcı
     return q.order_by(User.id).first()
 
 
@@ -122,29 +104,29 @@ def demo_landing():
         return redirect(url_for("app_bp.launcher"))
     return render_template(
         "platform/demo/landing.html",
-        roles=DEMO_ROLES,
+        tenants=DEMO_TENANTS,
         demo_minutes=current_app.config.get("DEMO_SESSION_MINUTES", 60),
     )
 
 
-# ─── /demo/start/<role> — Bypass login ────────────────────────────────────────
+# ─── /demo/start/<tenant_key> — Bypass admin login ────────────────────────────
 
-@app_bp.route("/demo/start/<role>", methods=["GET", "POST"])
-def demo_start(role):
-    """Seçili role bağlı bir demo kullanıcısıyla otomatik giriş yapar."""
+@app_bp.route("/demo/start/<tenant_key>", methods=["GET", "POST"])
+def demo_start(tenant_key):
+    """Seçili kurumun admin kullanıcısıyla otomatik giriş yapar."""
     if not _demo_enabled():
         abort(404)
-    if role not in DEMO_ROLES:
+    if tenant_key not in DEMO_TENANTS:
         return redirect(url_for("app_bp.demo_landing"))
 
-    user = _demo_user_for_role(role)
+    user = _demo_admin_for_tenant(tenant_key)
     if not user:
-        current_app.logger.error(f"[demo] {role} rolü için kullanıcı bulunamadı")
+        current_app.logger.error(f"[demo] {tenant_key} kurumu için admin bulunamadı")
         return render_template(
             "platform/demo/landing.html",
-            roles=DEMO_ROLES,
+            tenants=DEMO_TENANTS,
             demo_minutes=current_app.config.get("DEMO_SESSION_MINUTES", 60),
-            error=f"\"{DEMO_ROLES[role]['label']}\" rolü için demo kullanıcı hazır değil. Yöneticiyle iletişime geçin.",
+            error=f"\"{DEMO_TENANTS[tenant_key]['label']}\" kurumu için demo hesabı hazır değil. Yöneticiyle iletişime geçin.",
         ), 503
 
     # Mevcut oturumu temizle
@@ -156,8 +138,8 @@ def demo_start(role):
     started_at = datetime.now(timezone.utc)
     expires_minutes = current_app.config.get("DEMO_SESSION_MINUTES", 60)
     flask_session["demo_session_active"] = True
-    flask_session["demo_role"] = role
-    flask_session["demo_role_label"] = str(DEMO_ROLES[role]["label"])  # lazy_gettext → str (session JSON serileştirilebilir olmalı)
+    flask_session["demo_tenant_key"] = tenant_key
+    flask_session["demo_tenant_label"] = str(DEMO_TENANTS[tenant_key]["label"])  # lazy_gettext → str (session JSON serileştirilebilir olmalı)
     flask_session["demo_started_at"] = started_at.isoformat()
     flask_session["demo_expires_at"] = (started_at + timedelta(minutes=expires_minutes)).isoformat()
     flask_session.permanent = True
@@ -167,7 +149,7 @@ def demo_start(role):
     from app.services.demo_reset_service import mark_activity
     mark_activity()
     current_app.logger.info(
-        f"[demo] session başladı role={role} user={user.id} email={user.email}"
+        f"[demo] session başladı tenant={tenant_key} user={user.id} email={user.email}"
     )
     return redirect(url_for("app_bp.launcher"))
 
@@ -180,12 +162,12 @@ def demo_end():
     if not _demo_enabled():
         abort(404)
     was_active = flask_session.get("demo_session_active", False)
-    role = flask_session.get("demo_role")
+    tenant_key = flask_session.get("demo_tenant_key")
     if current_user.is_authenticated:
         logout_user()
     flask_session.clear()
     if was_active:
-        current_app.logger.info(f"[demo] session bitti role={role}")
+        current_app.logger.info(f"[demo] session bitti tenant={tenant_key}")
         # KURALLAR §8.4: çıkışta Tomofil'i baseline'a sıfırla — ARKA PLANDA
         # (senkron çalışırsa ~1-2 dk sürüp worker timeout → 502 verir).
         from app.services.demo_reset_service import trigger_async_reset
@@ -226,6 +208,6 @@ def demo_heartbeat():
     return jsonify({
         "active": True,
         "remaining_seconds": remaining_seconds,
-        "role": flask_session.get("demo_role"),
-        "role_label": flask_session.get("demo_role_label"),
+        "tenant_key": flask_session.get("demo_tenant_key"),
+        "tenant_label": flask_session.get("demo_tenant_label"),
     })
