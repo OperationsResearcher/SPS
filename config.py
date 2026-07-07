@@ -56,8 +56,15 @@ class Config:
     KOKPITIM_DEMO_MODE = os.environ.get("KOKPITIM_DEMO_MODE", "0") == "1"
     # Demo session süresi (dk)
     DEMO_SESSION_MINUTES = int(os.environ.get("DEMO_SESSION_MINUTES", "60"))
-    # Demo verisinin bulunduğu tenant adı (Tomofil)
+    # Demo verisinin bulunduğu tenant adı (Tomofil) — geriye dönük uyumluluk için korunur
     DEMO_TENANT_ID = int(os.environ.get("DEMO_TENANT_ID", "27"))
+    # Demo'da giriş yapılabilecek 4 kurum: key → tenant_id (Tomofil'in klonları + kendisi)
+    DEMO_TENANT_IDS = {
+        "tom1": int(os.environ.get("DEMO_TENANT_ID_TOM1", "28")),
+        "tom2": int(os.environ.get("DEMO_TENANT_ID_TOM2", "29")),
+        "tom3": int(os.environ.get("DEMO_TENANT_ID_TOM3", "30")),
+        "tomofil": DEMO_TENANT_ID,
+    }
     # Demo inaktivite sıfırlama eşiği (dk) — bu süre boyunca heartbeat gelmezse
     # ve veri değişmişse Tomofil baseline'a geri yüklenir (KURALLAR §8.4)
     DEMO_INACTIVITY_MINUTES = int(os.environ.get("DEMO_INACTIVITY_MINUTES", "15"))

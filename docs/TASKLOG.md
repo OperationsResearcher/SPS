@@ -2,6 +2,33 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-228 | 2026-07-07 | ✅ Tamamlandı (kod) — Deploy BEKLİYOR
+
+**Görev:** Demo ortamını tek-Tomofil'den 4 kuruma genişletme (Tom1/Tom2/Tom3/Tomofil, admin-only giriş, her biri farklı paket)
+**Modül:** demo (micro/modules/demo), config, scripts
+**Durum:** ✅ Kod tamamlandı, dal `claude/demo-4-tenant`. Demo VM'de tenant klonlama + deploy henüz YAPILMADI.
+
+### Değiştirilen Dosyalar
+- `scripts/demo_clone_tenant.py` (yeni) → Tomofil'i (tenant 27) yeni tenant_id'ye (28/29/30) FK-remap ile klonlayan script
+- `config.py` → `DEMO_TENANT_IDS` sözlüğü eklendi (tom1/tom2/tom3/tomofil → tenant_id)
+- `micro/modules/demo/routes.py` → `DEMO_ROLES` (3 rol) yerine `DEMO_TENANTS` (4 kurum); `/demo/start/<role>` → `/demo/start/<tenant_key>`; rol seçimi kaldırıldı, admin-only bypass login
+- `ui/templates/platform/demo/landing.html` → 3 rol kartı yerine 4 kurum kartı (paket adıyla)
+- `ui/templates/platform/demo/_banner.html` → banner'da "Rol:" → "Kurum:"
+- `scripts/ops/oracle/setup_demo_env.sh` → `DEMO_TENANT_ID_TOM1/2/3` env değişkenleri eklendi
+
+### Yapılan İşlem
+Mevcut demo akışı (rol seçimi: Yönetici/Lider/Üye, tek Tomofil tenant'ı) kaldırılıp kurum seçimine
+dönüştürüldü: Tom1=Başlangıç, Tom2=Yönetim, Tom3=Strateji, Tomofil=Master paketi, hepsi admin
+girişiyle açılıyor. `tenant_backup_service.restore_tenant_data` farklı tenant_id'ye klonlamayı
+desteklemediği için yeni bir script (`demo_clone_tenant.py`) yazıldı — TABLE_PLAN'daki her tabloyu
+okuyup PK/FK'leri id-map ile yeniden yazıyor. Sıfırlama mimarisi (`demo_reset_service.py`,
+Yol B — tüm DB tek baseline) değişmedi; kullanıcı kararıyla 4 tenant da bu ortak sıfırlamaya dahil.
+
+### Notlar
+Rol seçimi (Yönetici/Lider/Üye) bu işin kapsamı DIŞINDA bırakıldı — sonraki işe ertelendi (kullanıcı onayı).
+Demo VM'de henüz: (1) `demo_clone_tenant.py` çalıştırılıp Tom1/2/3 oluşturulmadı, (2) kod deploy
+edilmedi, (3) `demo_baseline snapshot` yeniden alınmadı. Kullanıcı "demo'ya gönderelim" dediğinde yapılacak.
+
 ## TASK-227 | 2026-06-24 | ✅ Tamamlandı
 
 **Görev:** i18n gözle-doğrulama + FAZ 3 boşluğu kapatma (27 atlanan şablon)

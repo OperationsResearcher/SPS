@@ -276,7 +276,7 @@
       </a>
       <span class="demo-pill">
         <span class="dot"></span>
-        {{ _("Canlı Demo · Tomofil verisi") }}
+        {{ _("Canlı Demo · 4 kurum, 4 paket") }}
       </span>
     </div>
 
@@ -297,7 +297,7 @@
         {{ _("Kokpitim'i <span class=\"accent\">gerçek veriyle</span> deneyin") }}
       </h1>
       <p>
-        {{ _("Tomofil'in 2020–2026 dönemine ait <b>99.000 satır</b> stratejik planlama verisi üzerinde tüm modülleri kullanabilirsiniz. Performans göstergesi girin, K-Vektör puanının nasıl değiştiğini izleyin, yıllar arası karşılaştırmaları açın, süreçleri yönetin.") }}
+        {{ _("2020–2026 dönemine ait <b>99.000 satır</b> gerçek stratejik planlama verisi üzerinde 4 farklı abonelik paketini deneyin. Her kurum farklı bir paket seviyesini temsil eder — hangisinin size uygun olduğunu görün.") }}
       </p>
     </section>
 
@@ -307,7 +307,7 @@
         <i class="fas fa-bolt"></i>
         <div>
           <strong>{{ _("Kayıt zorunluluğu yok") }}</strong>
-          <span>{{ _("Tek tıkla seçtiğiniz rolle giriş.") }}</span>
+          <span>{{ _("Tek tıkla seçtiğiniz kurumla giriş.") }}</span>
         </div>
       </div>
       <div class="demo-fact">
@@ -326,15 +326,15 @@
       </div>
     </div>
 
-    <!-- Rol seçim -->
+    <!-- Kurum seçim -->
     <div class="demo-roles-title">
-      <h2>{{ _("Hangi rolle deneyimlemek istersiniz?") }}</h2>
-      <p>{{ _("Her rol farklı bir bakış sunar — Kokpitim'in tüm yüzlerini görmek için birkaçını sırayla deneyin.") }}</p>
+      <h2>{{ _("Hangi kurumla deneyimlemek istersiniz?") }}</h2>
+      <p>{{ _("Her kurum farklı bir abonelik paketini temsil eder — hepsi admin yetkisiyle açılır.") }}</p>
     </div>
 
     <div class="demo-roles">
-      {% for key, spec in roles.items() %}
-      <a href="{{ url_for('app_bp.demo_start', role=key) }}"
+      {% for key, spec in tenants.items() %}
+      <a href="{{ url_for('app_bp.demo_start', tenant_key=key) }}"
          class="demo-role-card"
          style="--card-color: {{ spec.color }}; --card-color-soft: {{ spec.color_soft }};">
         <div class="demo-role-card-icon">
@@ -343,9 +343,7 @@
         <h3>{{ spec.label }}</h3>
         <p class="demo-role-card-desc">{{ spec.description }}</p>
         <ul>
-          {% for b in spec.bullets %}
-          <li>{{ b }}</li>
-          {% endfor %}
+          <li>{{ spec.package_label }}</li>
         </ul>
         <span class="demo-role-card-btn">
           {{ _("%(label)s olarak başla", label=spec.label) }}
@@ -361,7 +359,7 @@
       <div class="demo-behavior-grid">
         <div class="demo-behavior-item">
           <strong><i class="fas fa-database"></i>{{ _("Gerçek veri") }}</strong>
-          {{ _("Tomofil'in 7 yıllık stratejik plan verisi — 71 süreç, 221 PG, 91.000+ ölçüm, 7 yıllık SWOT/PESTEL/OKR seti. Tam set.") }}
+          {{ _("Her kurum 7 yıllık gerçek stratejik plan verisiyle gelir — süreçler, PG'ler, ölçümler, SWOT/PESTEL/OKR seti. Paket seviyesine göre erişilebilen modüller değişir.") }}
         </div>
         <div class="demo-behavior-item">
           <strong><i class="fas fa-pen"></i>{{ _("Yazma erişimi açık") }}</strong>
@@ -373,7 +371,7 @@
         </div>
         <div class="demo-behavior-item">
           <strong><i class="fas fa-eraser"></i>{{ _("Veri silinir") }}</strong>
-          {{ _("Demo bitiminde yaptığınız tüm değişiklikler temizlenir. Sıradaki ziyaretçi sıfırdan başlar. Tomofil'in orijinal verisi etkilenmez.") }}
+          {{ _("Demo bitiminde yaptığınız tüm değişiklikler temizlenir. Sıradaki ziyaretçi sıfırdan başlar. Kurumların orijinal verisi etkilenmez.") }}
         </div>
         <div class="demo-behavior-item">
           <strong><i class="fas fa-envelope-open-text"></i>{{ _("E-posta gönderilmez") }}</strong>
