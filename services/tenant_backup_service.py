@@ -51,8 +51,9 @@ TABLE_PLAN = [
      "process_kpi_id IN (SELECT id FROM process_kpis"
      " WHERE process_id IN (SELECT id FROM processes WHERE tenant_id = :tid))"),
     ("kpi_data_audits",
-     "process_kpi_id IN (SELECT id FROM process_kpis"
-     " WHERE process_id IN (SELECT id FROM processes WHERE tenant_id = :tid))"),
+     "kpi_data_id IN (SELECT id FROM kpi_data WHERE process_kpi_id IN"
+     " (SELECT id FROM process_kpis"
+     " WHERE process_id IN (SELECT id FROM processes WHERE tenant_id = :tid)))"),
     ("favorite_kpis",
      "process_kpi_id IN (SELECT id FROM process_kpis"
      " WHERE process_id IN (SELECT id FROM processes WHERE tenant_id = :tid))"),

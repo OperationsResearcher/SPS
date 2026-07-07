@@ -2,14 +2,15 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
-## TASK-228 | 2026-07-07 | ✅ Tamamlandı (kod) — Deploy BEKLİYOR
+## TASK-228 | 2026-07-07 | ✅ Tamamlandı (kod + demo deploy)
 
 **Görev:** Demo ortamını tek-Tomofil'den 4 kuruma genişletme (Tom1/Tom2/Tom3/Tomofil, admin-only giriş, her biri farklı paket)
-**Modül:** demo (micro/modules/demo), config, scripts
-**Durum:** ✅ Kod tamamlandı, dal `claude/demo-4-tenant`. Demo VM'de tenant klonlama + deploy henüz YAPILMADI.
+**Modül:** demo (micro/modules/demo), config, scripts, services
+**Durum:** ✅ Tamamlandı — main'e merge edildi, demo.kokpitim.com'a deploy edildi, smoke test geçti.
 
 ### Değiştirilen Dosyalar
 - `scripts/demo_clone_tenant.py` (yeni) → Tomofil'i (tenant 27) yeni tenant_id'ye (28/29/30) FK-remap ile klonlayan script
+- `services/tenant_backup_service.py` → `kpi_data_audits` WHERE clause hatası düzeltildi (yanlış kolon `process_kpi_id` yerine gerçek `kpi_data_id`)
 - `config.py` → `DEMO_TENANT_IDS` sözlüğü eklendi (tom1/tom2/tom3/tomofil → tenant_id)
 - `micro/modules/demo/routes.py` → `DEMO_ROLES` (3 rol) yerine `DEMO_TENANTS` (4 kurum); `/demo/start/<role>` → `/demo/start/<tenant_key>`; rol seçimi kaldırıldı, admin-only bypass login
 - `ui/templates/platform/demo/landing.html` → 3 rol kartı yerine 4 kurum kartı (paket adıyla)
@@ -20,14 +21,24 @@
 Mevcut demo akışı (rol seçimi: Yönetici/Lider/Üye, tek Tomofil tenant'ı) kaldırılıp kurum seçimine
 dönüştürüldü: Tom1=Başlangıç, Tom2=Yönetim, Tom3=Strateji, Tomofil=Master paketi, hepsi admin
 girişiyle açılıyor. `tenant_backup_service.restore_tenant_data` farklı tenant_id'ye klonlamayı
-desteklemediği için yeni bir script (`demo_clone_tenant.py`) yazıldı — TABLE_PLAN'daki her tabloyu
-okuyup PK/FK'leri id-map ile yeniden yazıyor. Sıfırlama mimarisi (`demo_reset_service.py`,
-Yol B — tüm DB tek baseline) değişmedi; kullanıcı kararıyla 4 tenant da bu ortak sıfırlamaya dahil.
+desteklemediği için yeni bir script (`demo_clone_tenant.py`) yazıldı. Sıfırlama mimarisi
+(`demo_reset_service.py`, Yol B — tüm DB tek baseline) değişmedi; 4 tenant da bu ortak sıfırlamaya dahil.
+
+Demo VM'e deploy edildi (bind-mount `/opt/kokpitim-demo/app`, kod dosyaları scp ile taşınıp
+`docker restart`), Tom1/Tom2/Tom3 klonlandı (102.076 kayıt/22 tablo her biri), yeni baseline
+snapshot alındı (167 tablo, 255 FK). Smoke test: 4 kurum kartı görünüyor, her biri admin girişi
+yapıyor, `/demo/end` sonrası tüm DB baseline'a sıfırlanıyor — hepsi doğrulandı.
+
+**Kritik hata düzeltmesi (demo_clone_tenant.py):** Klonlama scripti ilk denemelerde "başarılı"
+mesajı verip hiçbir veri kalıcı kılmıyordu. Kök neden: sequence-resync döngüsünde
+`process_sub_strategy_links` gibi `id` kolonu olmayan (composite PK) bir tabloda
+`pg_get_serial_sequence` hatası oluşuyor, bu hata `except: pass` ile yutuluyor ama PostgreSQL
+transaction'ı "aborted" kalıyor — sonraki `COMMIT` sessizce `ROLLBACK`'e dönüşüyor. Çözüm:
+sequence resync'i ana veri transaction'ından tamamen ayrı, kendi `engine.begin()` bloğuna taşındı.
+Ayrıca `user` tablosu (PostgreSQL reserved keyword) ve JSON/JSONB kolon binding hataları da giderildi.
 
 ### Notlar
 Rol seçimi (Yönetici/Lider/Üye) bu işin kapsamı DIŞINDA bırakıldı — sonraki işe ertelendi (kullanıcı onayı).
-Demo VM'de henüz: (1) `demo_clone_tenant.py` çalıştırılıp Tom1/2/3 oluşturulmadı, (2) kod deploy
-edilmedi, (3) `demo_baseline snapshot` yeniden alınmadı. Kullanıcı "demo'ya gönderelim" dediğinde yapılacak.
 
 ## TASK-227 | 2026-06-24 | ✅ Tamamlandı
 

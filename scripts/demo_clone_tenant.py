@@ -20,7 +20,7 @@ import sys
 
 from sqlalchemy import text, inspect as sa_inspect
 
-from services.tenant_backup_service import TABLE_PLAN
+from services.tenant_backup_service import TABLE_PLAN, _coerce_row_bind_params
 
 # Kaynak tenant'a FK ile bağlı olup id-remap gerektirmeyen (tenant scope dışı,
 # global) tablolar TABLE_PLAN'da zaten yok — bu yüzden TABLE_PLAN'ın tamamı
@@ -40,7 +40,7 @@ _FK_COLUMNS = {
     "process_maturity": ["tenant_id", "process_id"],
     "process_kpis": ["process_id"],
     "kpi_data": ["process_kpi_id"],
-    "kpi_data_audits": ["process_kpi_id"],
+    "kpi_data_audits": ["kpi_data_id"],
     "favorite_kpis": ["process_kpi_id", "user_id"],
     "bottleneck_log": ["tenant_id", "process_id"],
     "process_activities": ["process_id"],
@@ -113,7 +113,23 @@ def clone_tenant(source_id: int, target_id: int, new_name: str, package_code: st
     from extensions import db
     from app.models.saas import SubscriptionPackage
 
-    conn = db.session.connection()
+    # ORM sorgusu önce, ayrı bir bağlamda — sonraki ham SQL transaction'ını karıştırmasın
+    pkg = SubscriptionPackage.query.filter_by(code=package_code).first()
+    if not pkg:
+        raise ValueError(f"Paket kodu bulunamadı: {package_code}")
+    pkg_id = pkg.id
+    db.session.remove()
+
+    engine = db.engine
+    with engine.begin() as conn:
+        result = _do_clone(conn, source_id, target_id, new_name, pkg_id, email_domain)
+    # engine.begin() context'i çıkışta otomatik commit eder (exception olursa rollback)
+    _resync_sequences(engine, result["table_counts"])
+    return result
+
+
+def _do_clone(conn, source_id: int, target_id: int, new_name: str, pkg_id: int,
+              email_domain: str) -> dict:
     existing = _existing_tables(conn)
 
     # Guard: hedef tenant_id zaten kullanımda olmamalı
@@ -123,10 +139,6 @@ def clone_tenant(source_id: int, target_id: int, new_name: str, package_code: st
     if already:
         raise ValueError(f"Hedef tenant_id={target_id} zaten mevcut — önce temizle veya farklı id seç")
 
-    pkg = SubscriptionPackage.query.filter_by(code=package_code).first()
-    if not pkg:
-        raise ValueError(f"Paket kodu bulunamadı: {package_code}")
-
     # id_map[table_name][old_id] = new_id  (yalnız "id" PK'si olan tablolar için)
     id_map: dict[str, dict[int, int]] = {}
     stats: dict[str, int] = {}
@@ -134,7 +146,7 @@ def clone_tenant(source_id: int, target_id: int, new_name: str, package_code: st
     for table_name, where_clause in TABLE_PLAN:
         if table_name not in existing:
             continue
-        sql = f"SELECT * FROM {table_name} WHERE {where_clause}"  # noqa: S608
+        sql = f'SELECT * FROM "{table_name}" WHERE {where_clause}'  # noqa: S608
         rows = conn.execute(text(sql), {"tid": source_id}).mappings().all()
         if not rows:
             continue
@@ -153,7 +165,7 @@ def clone_tenant(source_id: int, target_id: int, new_name: str, package_code: st
             val_str = f':id, {val_str}'
         returning = ' RETURNING "id"' if has_pk_id else ""
         insert_sql = (
-            f'INSERT INTO {table_name} ({col_str}) VALUES ({val_str}){returning}'  # noqa: S608
+            f'INSERT INTO "{table_name}" ({col_str}) VALUES ({val_str}){returning}'  # noqa: S608
         )
 
         n = 0
@@ -185,7 +197,7 @@ def clone_tenant(source_id: int, target_id: int, new_name: str, package_code: st
                 local, _, domain = str(data["email"]).partition("@")
                 data["email"] = f"{local}+{email_domain}@{domain or 'kokpitim.demo'}"
 
-            bind = {c: data.get(c) for c in insert_cols}
+            bind = _coerce_row_bind_params({c: data.get(c) for c in insert_cols})
             if table_name == "tenants":
                 bind["id"] = target_id
             result = conn.execute(text(insert_sql), bind)
@@ -201,23 +213,27 @@ def clone_tenant(source_id: int, target_id: int, new_name: str, package_code: st
     # Yeni tenant satırının adı + paketini güncelle (tenants tablosu id=target_id ile zaten eklendi)
     conn.execute(
         text("UPDATE tenants SET name = :name, short_name = :name, package_id = :pkg WHERE id = :tid"),
-        {"name": new_name, "pkg": pkg.id, "tid": target_id},
+        {"name": new_name, "pkg": pkg_id, "tid": target_id},
     )
 
-    # Sequence'leri ileri al — sonraki klon veya normal kayıt akışı PK çakışmasın
+    return {"target_id": target_id, "table_counts": stats}
+
+
+def _resync_sequences(engine, stats: dict) -> None:
+    """Ana veri transaction'ından TAMAMEN ayrı — burada hata olsa da klonlanan
+    veriyi etkilemesin (aborted-transaction'da COMMIT sessizce ROLLBACK'e döner).
+    """
     for table_name in stats:
         if table_name not in _ID_MAP_TABLES:
             continue
         try:
-            conn.execute(text(
-                f"SELECT setval(pg_get_serial_sequence('{table_name}', 'id'), "  # noqa: S608
-                f"COALESCE((SELECT MAX(id) FROM {table_name}), 1))"
-            ))
-        except Exception:
-            pass
-
-    db.session.commit()
-    return {"target_id": target_id, "table_counts": stats}
+            with engine.begin() as conn:
+                conn.execute(text(
+                    f"SELECT setval(pg_get_serial_sequence('{table_name}', 'id'), "  # noqa: S608
+                    f'COALESCE((SELECT MAX(id) FROM "{table_name}"), 1))'
+                ))
+        except Exception as e:
+            print(f"[uyarı] sequence resync başarısız ({table_name}): {e}")
 
 
 def _guess_parent_table(fk_col: str, child_table: str) -> str:
@@ -227,6 +243,7 @@ def _guess_parent_table(fk_col: str, child_table: str) -> str:
     """
     overrides = {
         "process_kpi_id": "process_kpis",
+        "kpi_data_id": "kpi_data",
         "process_id": "processes",
         "sub_strategy_id": "sub_strategies",
         "strategy_id": "strategies",
