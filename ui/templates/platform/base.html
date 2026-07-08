@@ -632,6 +632,18 @@
       var PAGE_META_URL = "{{ url_for('app_bp.admin_api_page_meta', code='__CODE__') }}";
       var META = {};            // code -> {short_id, name}
       var badges = [];          // admin rozet elemanları (short_id sonra dolar)
+      var HIDDEN = {};          // code -> true (paket dışı kartlar — kart-düzeyi zorlama)
+
+      // Kart-düzeyi paket zorlaması: paket dışı kartı DOM'dan gizle.
+      // Derin güvenlik değil (veri route-düzeyi require_component ile korunur);
+      // amaç tier'a göre sade arayüz. MutationObserver ile gelenler de kapsanır.
+      function enforceHidden(el) {
+        var code = el.getAttribute("data-card-code");
+        if (code && HIDDEN[code]) el.style.display = "none";
+      }
+      function enforceHiddenAll() {
+        document.querySelectorAll("[data-card-code]").forEach(enforceHidden);
+      }
 
       // Kart içindeki başlık elemanını bul (standart: mc-card-title / mc-stat-label).
       // İç içe kartlarda (örn. stat-grid kapsayıcı + içinde stat kartları) BAŞKA bir
@@ -659,6 +671,7 @@
       }
 
       function place(el) {
+        enforceHidden(el);  // AJAX ile gelen paket-dışı kart da gizlenir
         if (el.dataset.kkIdDone) return;
         el.dataset.kkIdDone = "1";
         var code = el.getAttribute("data-card-code");
@@ -717,7 +730,14 @@
         var url = META_URL + "?codes=" + encodeURIComponent(codes.join(","));
         fetch(url, {headers: {"Accept": "application/json"}})
           .then(function (r) { return r.json(); })
-          .then(function (j) { if (j.success) { META = j.meta || {}; fillBadges(); } })
+          .then(function (j) {
+            if (j.success) {
+              META = j.meta || {};
+              (j.hidden || []).forEach(function (c) { HIDDEN[c] = true; });
+              enforceHiddenAll();
+              fillBadges();
+            }
+          })
           .catch(function () {});
       }
 
