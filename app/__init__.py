@@ -88,10 +88,13 @@ def create_app(config_class=None):
             force_https=False,
             content_security_policy={
                 "default-src": "'self'",
+                # unsafe-eval KALDIRILDI (TASK-236): Tailwind derlenmiş CSS'e geçti,
+                # Alpine kaldırıldı — runtime eval gereksinimi bitti.
+                # unsafe-inline hâlâ gerekli: ~76 inline script + 55 inline handler
+                # (nonce dönüşümü ayrı iş — TASKLOG-236 notu).
                 "script-src": (
-                    "'self' 'unsafe-inline' 'unsafe-eval' "
-                    "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com "
-                    "https://cdn.tailwindcss.com"
+                    "'self' 'unsafe-inline' "
+                    "https://cdn.jsdelivr.net https://cdnjs.cloudflare.com"
                 ),
                 "style-src": (
                     "'self' 'unsafe-inline' "
@@ -102,8 +105,7 @@ def create_app(config_class=None):
                 ),
                 "img-src": "'self' data: https: blob:",
                 "connect-src": (
-                    "'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com "
-                    "https://cdn.tailwindcss.com"
+                    "'self' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com"
                 ),
                 "frame-ancestors": "'none'",
                 "base-uri": "'self'",

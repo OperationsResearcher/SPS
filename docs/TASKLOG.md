@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-236 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 4 — CSP frontend build: `unsafe-eval` kaldırıldı (Tailwind derlenmiş CSS + Alpine kaldırma)
+**Modül:** frontend/güvenlik (base.html, kurum, CSP)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/frontend/` (yeni) → `tailwind.config.js` (Play CDN'deki theme birebir; content: ui/templates + platform/js), `tailwind.input.css`, `build_css.ps1` (yeniden derleme)
+- `ui/static/platform/css/tailwind.css` (yeni, 37KB minify) → derlenmiş Tailwind; build artifact olarak commit'li (Yayın'da node gerekmez)
+- `ui/templates/platform/base.html` → `cdn.tailwindcss.com` + inline config script + Alpine CDN kaldırıldı; yerine tek `<link>` (?v=VERSION cache-bust)
+- `ui/static/platform/js/tailwind.config.js` → silindi (Play CDN config'iydi)
+- `ui/templates/platform/kurum/index.html` → 4 Alpine akordiyonu (identity/proc/proj/strategy, 22 buton+panel) `data-kk-accordion` desenine çevrildi; `@click.stop` → `data-kk-acc-stop`
+- `ui/static/platform/js/kurum.js` → vanilya akordiyon modülü (chevron dönüşü, `__kurumRedrawCharts` hook'u, tekli-açık davranış korunarak)
+- `app/__init__.py` → CSP `script-src`'den **`'unsafe-eval'` kaldırıldı**; `cdn.tailwindcss.com` script/connect-src'den çıkarıldı
+
+### Yapılan İşlem
+XSS'e karşı asıl kalkan deliği kapandı: Tailwind Play CDN (runtime eval ile class üretiyordu) derlenmiş statik CSS'e geçirildi; Alpine.js'in tek gerçek kullanıcısı kurum panelindeki akordiyonlardı — vanilya JS'e çevrilip kütüphane tamamen kaldırıldı. Sayfa yükü de hafifledi (2 CDN script eksildi).
+
+### Notlar
+- **`unsafe-inline` bilinçli KALDI:** ~76 inline `<script>` + 55 inline handler (21 dosya) nonce/dönüşüm gerektiriyor — ayrı faz (v2). CSP yorumunda işaretli.
+- **Yeni utility class kullanınca:** `scripts/frontend/build_css.ps1` koşulmalı; derlenmemiş class sessizce stilsiz kalır (Play CDN'deki "her class çalışır" davranışı bitti). Şüphede: build + hard refresh.
+- Doğrulama: `/m/platform/css/tailwind.css` 200/37KB; landing 200; 412 passed / 19 failed (baseline), ruff temiz. Kurum paneli akordiyonları yerelde GÖRSEL test edilmeli (`python pybasla.py`).
+
+---
+
 ## TASK-235 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 3 — Kurulum verisi import sihirbazı (mutabakatlı tasarım → uygulama)

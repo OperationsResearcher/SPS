@@ -761,3 +761,39 @@
   } /* CAN_EDIT */
 
 })();
+
+/* ── Akordiyon (Alpine yerine — TASK-236 CSP: unsafe-eval kaldırma) ──
+   data-kk-accordion konteyner; data-kk-acc-btn="key" buton; data-kk-acc-panel="key" panel.
+   data-kk-open="key": başlangıçta açık panel. data-kk-redraw="1": toggle sonrası grafik redraw.
+   data-kk-acc-stop taşıyan iç öğelere tıklama toggle tetiklemez (eski @click.stop). */
+(function () {
+  "use strict";
+  document.querySelectorAll("[data-kk-accordion]").forEach(function (group) {
+    var redraw = group.dataset.kkRedraw === "1";
+
+    function setOpen(key) {
+      group.querySelectorAll("[data-kk-acc-panel]").forEach(function (p) {
+        p.style.display = (p.dataset.kkAccPanel === key) ? "" : "none";
+      });
+      group.querySelectorAll("[data-kk-acc-btn]").forEach(function (b) {
+        var chev = b.querySelector(".fa-chevron-down");
+        if (chev) chev.classList.toggle("rotate-180", b.dataset.kkAccBtn === key);
+      });
+      if (redraw && window.__kurumRedrawCharts) {
+        setTimeout(function () { window.__kurumRedrawCharts(); }, 0);
+      }
+    }
+
+    group.querySelectorAll("[data-kk-acc-btn]").forEach(function (btn) {
+      btn.addEventListener("click", function (e) {
+        if (e.target.closest("[data-kk-acc-stop]")) return;
+        var key = btn.dataset.kkAccBtn;
+        var panel = group.querySelector('[data-kk-acc-panel="' + key + '"]');
+        var isOpen = panel && panel.style.display !== "none";
+        setOpen(isOpen ? "__none__" : key);
+      });
+    });
+
+    if (group.dataset.kkOpen) setOpen(group.dataset.kkOpen);
+  });
+})();

@@ -13,11 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="{{ url_for('app_bp.static', filename='platform/js/tailwind.config.js') }}"></script>
-
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {# Tailwind: derlenmiş CSS (TASK-236 — Play CDN + Alpine kaldırıldı; CSP unsafe-eval kapatıldı).
+       Yeniden derleme: scripts/frontend/build_css.ps1 (template'lerde yeni utility class kullanınca) #}
+    <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/tailwind.css') }}?v={{ config['VERSION'] }}">
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
