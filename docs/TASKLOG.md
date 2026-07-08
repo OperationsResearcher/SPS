@@ -2,6 +2,24 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-238 | 2026-07-08 | ✅ Tamamlandı (Yayın + Demo deploy)
+
+**Görev:** Yayın'a çıkış (964dd55 → 6de91a06) + Demo kod güncellemesi
+**Modül:** deploy/operasyon
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+- **Yayın:** `oracle_safe_deploy.sh` — PG tam yedek (`pg_kokpitim_db_full_20260708_093433.sql.gz`), satır sayıları önce/sonra BİREBİR, git pull → 6de91a06, docker rebuild (env-file ile yeniden yaratıldı — ENCRYPTION_KEY riski yok), alembic (yeni migration yok). Smoke: /health 200, /login 200, tailwind.css 200/37KB, kök 200.
+- **Demo:** bind-mount yöntemiyle (hafızadaki standart adımlar) `git archive main` tarball → extract → 3 silinen dosya elle kaldırıldı (muda_analyzer, report_service, tailwind.config.js) → chown 197609 → restart. Smoke: health 200, landing 200, tailwind 200. DB'ye DOKUNULMADI (şema/veri değişikliği yok — baseline snapshot yenileme gerekmedi).
+- Tag: `deploy-2026-07-08` push'landı.
+
+### Notlar
+- İçerik: TASK-229…237 + daha önce main'de birikmiş i18n katmanı İLK KEZ Yayın'da.
+- Kart-gating Yayın'da şu an görünmez (7 tenant Master pakette); Demo'da Tom1/2/3 farklı paketleri temsil ettiğinden tier farkı artık kartlarda görünür.
+- 4-katman: kod ✓ / şema ✓ (migration yok) / veri ✓ (satır eşit) / seed — yeni seed gerektiren değişiklik yok; yeni kartların (admin_setup_import.*) system_cards keşfi admin tetiklemesiyle yapılacak.
+
+---
+
 ## TASK-237 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Giriş sonrası tek tip iniş — tüm kullanıcılar /desktop-launcher'a
