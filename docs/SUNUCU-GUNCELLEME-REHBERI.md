@@ -17,6 +17,24 @@
    birikmiş env/Dockerfile/import-sırası sorunları aynı anda ortaya çıkabilir (2026-07-02'de yaşandı:
    3 farklı önceden var olan hata art arda çıktı, basit "restart" adımı Dockerfile fix'ine kadar
    büyüdü). Her adımda kapsam genişlerse **durup kullanıcıya bildir** — sessizce ilerleme.
+6. **Test/Demo = HER ZAMAN sıfırdan kurulum, asla tamir/yama** (2026-07-07 kararı, bağlayıcı).
+   Test veya Demo güncelleme istendiğinde (küçük bir dosya değişikliği bile olsa): container + DB +
+   kod dizini TAMAMEN silinir, yerelden sıfırdan yeniden kurulur (build + restore + Demo için ayrıca
+   Tomofil baseline seed'i). "Önce dene, olmazsa sıfırla" YOK — direkt sıfırdan kurulum tek yöntemdir.
+   Sebep: Test/Demo'da hassas kullanıcı verisi yok, parça parça tamir etmek (env/kolon/sequence/kart
+   eksikliği avı) saatler harcatıyor; sıfırdan kurulum daha hızlı ve güvenilir.
+7. **Yayın = 4 katman, HEPSİ otomatik kontrol edilir** (2026-07-07 kararı, bağlayıcı). "Yereli Yayın'a
+   ver" gibi bir istek geldiğinde, kullanıcı ayrıca istemeden, OTOMATİK olarak şu 4 katman kontrol
+   edilip eksik olan HER ŞEY TEK SEFERDE tek bir listede sunulur — kullanıcının "şu da eksikmiş,
+   bu da eksikmiş" diye tekrar tekrar fark edip söylemesi BEKLENMEZ:
+     - **Kod**: yerel `main` ile Yayın'ın çektiği commit arasında fark var mı
+     - **Şema**: Alembic migration'ları (`alembic_version`) eksik mi
+     - **Veri**: kurum/kullanıcı/PG/KPI sayıları yerelle senkron mu
+     - **Tek-seferlik işlemler**: seed script'leri (`seed_l2_*` vb.) + keşif route'ları (kart keşfi
+       `discover_cards()`, modül gating vb.) çalıştırılmış mı — bunlar migration'la OTOMATİK gelmez,
+       elle tetiklenmesi gerekir (2026-07-07'de `system_cards` boş kaldığı için keşfedildi).
+   Bu 4 katman kontrol edilip listelenmeden "deploy tamamlandı" raporu VERİLMEZ. Madde 2'deki kırmızı
+   çizgi (kontrol dosyası + yedek) bu kontrolün YERİNE GEÇMEZ, ona EK olarak hâlâ zorunludur.
 
 ---
 
@@ -32,11 +50,31 @@
 | Port | 5000 | 5050 | 5080 | 5001 |
 | DB | `kokpitim_db` / `kokpitim_user` | `kokpitim_test_db` / `kokpitim_test_user` | `kokpitim_demo_db` / `kokpitim_demo_user` | `kokpitim_db` / `kokpitim_user` |
 | `.env` | `/opt/kokpitim/.env` | `…/app/.env` | `…/app/.env` (+ `KOKPITIM_DEMO_MODE=1`) | `C:\kokpitim\.env` |
-| **Kod dağıtımı** | **IMAGE-BAKED** → `docker build` + container yeniden oluştur | **BIND-MOUNT** → kodu güncelle + `docker restart` | **BIND-MOUNT** → kodu güncelle + `docker restart` | dosya = çalışan kod |
+| **Kod dağıtımı** | **IMAGE-BAKED** → `docker build` + container yeniden oluştur | **IMAGE-BAKED** (⚠️ 2026-07-05'te doğrulandı — §1a) | **IMAGE-BAKED** (aynı kalıp varsayılır, ayrıca doğrulanmadı) | dosya = çalışan kod |
 | git checkout | **`.git` VAR** (origin/main) | `.git` YOK → **tarball/rsync** | `.git` YOK → **tarball/rsync** | `.git` VAR |
 | Yedek dizini | `/opt/kokpitim/backups` | `/opt/kokpitim-test/backups` | `/opt/kokpitim-demo/backups` | `instance/yedekler` |
 
-**Kritik fark:** Yayın kodu image'a **gömülü** (güncelleme = rebuild). Test/Demo kodu **bind-mount** (güncelleme = dosya değiştir + restart, rebuild yok — yeni Python bağımlılığı eklenmediyse).
+**Kritik fark (DÜZELTİLDİ 2026-07-05 — §1a'ya bak):** Önceden burada "Test/Demo kodu bind-mount" yazıyordu; bu **yanlıştı**. `docker inspect kokpitim-test-web` yalnızca `.env`/`instance`/`logs` mount ediyor — uygulama kodu (`/app/app`, `/app/scripts` vb.) image'a build sırasında gömülü. Host'ta `/opt/kokpitim-test/app/...` dosyasını değiştirmek **çalışan container'ı etkilemez**; `docker restart` de etkilemez (aynı image'ı yeniden başlatır). Doğru akış §5'te.
+
+---
+
+### 1a. ⚠️ Test/Demo kod güncellemesi gerçeği (2026-07-05'te düzeltildi)
+
+Önceki §5 yordamı ("tarball aç → `docker restart`") **çalışan container'ı güncellemiyordu** — yalnızca
+host dizinini güncelliyordu, container image'ının içi eskisi kalıyordu (mount olmayan yollarda `restart`
+image'ı yeniden okumaz). 2026-07-05'te bu yüzden Test'e "deploy edilen" `tour.py`/`kule_service.py`
+düzeltmesi container'a hiç ulaşmamıştı; `grep` ile container içi dosya içeriği kontrol edilince eski kod
+çıktı.
+
+**Doğru davranış:** Host dizinini güncelledikten sonra (tarball/scp — build context için gerekli, çünkü
+bir sonraki rebuild oradan okur) **ayrıca** `docker cp <host-dosya> <container>:<container-yolu>` ile
+çalışan container'ın içine de kopyala, SONRA `docker restart`. Tek başına host dosyasını değiştirmek
+yeterli değildir. Kalıcı/temiz çözüm rebuild'dir (§5'teki "container yeniden oluşturma" kalıbı) ama günlük
+küçük kod düzeltmeleri için `docker cp` + `restart` daha hızlı ve eşdeğer sonuç verir (bir sonraki
+rebuild'de zaten host'taki doğru dosya kullanılacağı için tutarlılık bozulmaz).
+
+**Doğrulama adımı (ZORUNLU, atlama):** `docker cp` sonrası `docker exec <container> grep -n "<beklenen satır>" <container-yolu>`
+ile container İÇİNDEKİ dosyanın değiştiğini teyit et — host'ta değişti diye container'da değişti sanma.
 
 ---
 
@@ -106,11 +144,12 @@ curl -s -o /dev/null -w "%{http_code}\n" https://www.kokpitim.com/health
 
 ---
 
-## 5. Yerel → Test / Demo (BIND-MOUNT: tarball + restart)
+## 5. Yerel → Test / Demo (IMAGE-BAKED: tarball + `docker cp` + restart — §1a'ya bak)
 
-> Test/Demo kodu mount'lu → **rebuild gerekmez** (yeni pip bağımlılığı yoksa VE `Dockerfile` değişmediyse
-> — bkz. §7 "Dockerfile CMD sabit port" tuzağı: Dockerfile değiştiyse `docker restart` yetmez, rebuild +
-> container yeniden oluşturma gerekir). `.env` ve `instance` tarball'dan **hariç** (korunur).
+> ⚠️ Test/Demo kodu mount'lu **DEĞİL** (yalnızca `.env`/`instance`/`logs` mount). Host dizinini
+> güncellemek TEK BAŞINA çalışan container'ı etkilemez — `docker cp` ile container'ın kendi dosya
+> sistemine de yazmak ZORUNLU, sonra `docker restart`. Rebuild yeni pip bağımlılığı eklendiyse veya
+> `Dockerfile` değiştiyse gerekir (bkz. §7 "Dockerfile CMD sabit port" tuzağı).
 
 ```bash
 KEY=/c/crt/ssh-key-2026-04-18_v4.key
@@ -131,10 +170,14 @@ REMOTE_MD5=$(ssh -i $KEY ubuntu@129.159.30.175 'md5sum /tmp/kokpitim_kod.tar.gz'
 ssh -i $KEY ubuntu@129.159.30.175 '
 set -e; APP=/opt/kokpitim-test/app; TS=$(date +%Y%m%d_%H%M%S)
 sudo cp $APP/.env /tmp/test_env_$TS 2>/dev/null || true                      # .env güvence
-sudo tar czf /tmp/test_app_before_$TS.tar.gz -C $APP --exclude=__pycache__ .  # rollback
-sudo tar xzf /tmp/kokpitim_kod.tar.gz -C $APP                                 # yeni kod (.env korunur)
+sudo tar czf /tmp/test_app_before_$TS.tar.gz -C $APP --exclude=__pycache__ .  # rollback (host kopyası)
+sudo tar xzf /tmp/kokpitim_kod.tar.gz -C $APP                                 # host dizinini güncelle (.env korunur)
+# 3) ZORUNLU — host dizinini güncellemek yetmez; ÇALIŞAN container içine de kopyala:
+sudo docker cp $APP/. kokpitim-test-web:/app/
 sudo docker restart kokpitim-test-web
 sleep 6; curl -s -o /dev/null -w "test /health -> %{http_code}\n" http://127.0.0.1:5050/health'
+# 4) DOĞRULA — container İÇİNDEKİ dosyanın değiştiğini teyit et (host değil):
+ssh -i $KEY ubuntu@129.159.30.175 "docker exec kokpitim-test-web grep -n '<beklenen-satır>' /app/<degisen-dosya>"
 ```
 
 **`docker restart` yeterli DEĞİLSE (Dockerfile değişti / container env'i güncel değil):** container'ı
@@ -190,6 +233,9 @@ sleep 8; curl -s -o /dev/null -w "test /health -> %{http_code}\n" http://127.0.0
 
 | Tuzak | Çözüm |
 |---|---|
+| Test/Demo'ya "deploy edilen" kod değişikliği etkisiz — container içinde eski davranış devam ediyor (2026-07-05) | Kök neden: Test/Demo container'ı **image-baked**, yalnızca `.env`/`instance`/`logs` mount (§1a). Host dizinine `scp`/tarball ile dosya koymak çalışan container'ı **etkilemez**, `docker restart` de etkilemez (aynı image'ı yeniden başlatır, dosya sistemini yenilemez). **Zorunlu ek adım:** `docker cp <host-dosya> <container>:<container-yolu>` ile container'ın kendi dosya sistemine de yaz, SONRA restart. Deploy sonrası `docker exec <container> grep -n "<satır>" <yol>` ile container İÇİNDEKİ dosyayı doğrula — host'ta doğru görünmesi yetmez. |
+| PostgreSQL `psql -f dump.sql` restore sonrası `permission denied for table <ad>` (app kullanıcısıyla) | Restore'u `sudo -u postgres psql -f ...` ile yaptıysan **tüm yeni tablolar `postgres` sahipliğinde** oluşur, app kullanıcısı (`kokpitim_test_user` vb.) erişemez → `INSERT`/`UPDATE` "permission denied", sequence sync script'i de sessizce "atlandı" görünür (aslında yetki hatası, `pg_get_serial_sequence` değil). Çözüm: restore sonrası tüm tablo/sequence/view sahipliğini toplu devret: `DO $$ ... ALTER TABLE public.<t> OWNER TO <app_user> ... $$;` (döngü — §7 örneğine bak) veya `REASSIGN OWNED BY postgres TO <app_user>` (dikkat: role bazlı, veritabanına özel çalıştır). |
+| PG18 (yerel) → PG14 (sunucu) arası `pg_dump -Fc` (custom format) restore'da `pg_restore: error: unsupported version (1.16)` | Custom format dump'lar hedef sunucudan **yeni** `pg_dump` sürümüyle alınırsa eski `pg_restore` açamaz. Çözüm: `--format=plain` (düz SQL) ile dump al — çapraz sürüm uyumluluğu daha yüksek. PG18 plain dump'ında `\restrict ...` / `\unrestrict ...` meta-komutları olur (PG18-only, eski `psql` tanımaz) → restore öncesi `grep -v '^\\restrict\|^\\unrestrict'` ile satırları çıkar. |
 | `git push` takılıyor | **`GIT_TERMINAL_PROMPT=0` / `GCM_INTERACTIVE=never` KULLANMA** — GCM'i bloklar. Sade `git push origin main`. |
 | `pg_dump: server version mismatch` | pg_dump ≥ sunucu sürümü. Yerelde `C:\pgdata\bin` (PG18). |
 | `permission denied for table alembic_version` | `ALTER TABLE alembic_version OWNER TO <app_user>` (§6.4). |
@@ -200,6 +246,7 @@ sleep 8; curl -s -o /dev/null -w "test /health -> %{http_code}\n" http://127.0.0
 | Aynı hata `docker restart` ile geçmiyor, `.env` güncel ama container görmüyor | Docker env değişkenleri **container oluşturulduğu anda donar** — `restart` yalnızca process'i yeniden başlatır, `.env`'i/image'ı yeniden okumaz. Container'ı **yeniden oluştur** (`docker rm -f` + `docker run`, §5'teki kalıp). |
 | `Connection in use: ('0.0.0.0', 5000)` — Test container Yayın'ın portuyla çakışıyor | `Dockerfile`'daki `CMD`, `gunicorn --bind 0.0.0.0:5000` **sabit**ti, `PORT` env'ini okumuyordu — `setup_test_env.sh`'nin `-e PORT=$APP_PORT` satırı hiçbir zaman etkili olmuyordu (2026-07-02'de düzeltildi: `--bind 0.0.0.0:${PORT:-5000}`). Bu fix yerelde YOKSA: `Dockerfile`'ı kontrol et, `docker build` ile rebuild + container'ı `-e PORT=5050` (Test) / `-e PORT=5080` (Demo) ile yeniden oluştur. Yayın'ın `.env`'inde `PORT` yok → davranışı değişmez (varsayılan 5000 korunur). |
 | `git pull`/tarball sonrası "yeni migration/model var ama DB'de tablo yok" | Kod güncellemesi (§5) **şemayı DEĞİŞTİRMEZ** — `flask db upgrade` ayrıca çalıştırılmalı (`FLASK_APP=run:app` ortam değişkeniyle; container içinde çalışmıyorsa aşağıdaki Python fallback'i kullan). Migration sonrası, **veri üreten** servisler (örn. kart keşfi `discover_cards()`, seed script'leri) de ayrıca elle tetiklenmeli — migration yalnızca boş tabloyu kurar. |
+| Test/Demo'da liste/panel eksik görünüyor (ör. paket sayısı yerelden az) ama kod aynı (2026-07-05) | Kök neden **kod değil, hiç çalıştırılmamış seed script'i**: `scripts/seed_l2_module_gating.py` + `scripts/seed_l2_paketler.py` yerelde bir kere elle çalıştırılmış, Test/Demo'ya kod deploy edilirken (§5, saf dosya kopyası) DB seed'i unutulmuş. **Seed script'leri git commit'i ile OTOMATİK çalışmaz** — yeni bir seed script yazıldığında/çalıştırıldığında `docs/kontrol/seed_calistirma_kaydi.md`'ye hangi ortamlarda çalıştırıldığı işlenmeli (§8 madde 4). Şüphede: ilgili script'i `--dry-run` ile ortamda çalıştır, "eksik" raporluyorsa DB'de yok demektir. Yan tuzak: eksik satırı elle eklemeden önce sequence drift kontrolü yap (`sync_pg_sequence_if_needed`) — id çakışması olur. |
 | Container içinde `flask db …` → `ImportError: cannot import name 'create_app' from partially initialized module 'app'` | Kök dizinde hem `app.py` hem `app/` paketi hem `__init__.py` bir arada olduğunda Flask CLI'nin otomatik keşfi (`app.wsgi`) yanlış modülü buluyor; `FLASK_APP=run:app` verilse bile aynı hatayı veriyor. Fallback — Alembic'i doğrudan Python'dan çalıştır: `python3 -c "from __init__ import create_app; from flask_migrate import upgrade; app=create_app();\nwith app.app_context(): upgrade()"` (çalışma dizini `/app` olmalı). |
 | scp ile büyük tarball (80MB+) transferi "başarılı" görünüyor ama `tar xzf` sonra "invalid compressed data" veriyor | scp bazen sessizce yarım kalıp exit-code 0 dönebilir (timeout/bağlantı kesintisi). **Her büyük transferden sonra `md5sum` ile bütünlük doğrula** (§5'teki komut) — boyut aynı görünse bile içerik bozuk olabilir. |
 
@@ -210,6 +257,7 @@ sleep 8; curl -s -o /dev/null -w "test /health -> %{http_code}\n" http://127.0.0
 1. `/health` → 200 (Yayın: https://www.kokpitim.com/health, Test: :5050, Demo: :5080).
 2. **Satır sayıları** deploy ÖNCESİ kontrol dosyasıyla **birebir aynı** (Yayın kırmızı çizgi). Farklıysa → veri kaybı → yedekten dön.
 3. Smoke: ana sayfalar + son değişen özellik.
+4. **Seed senkron kontrolü** — `scripts/seed_*.py` içindeki HER script bu deploy edilen ortamda (Test/Demo/Yayın) daha önce çalıştırılmış mı? `docs/kontrol/seed_calistirma_kaydi.md`'ye bak; orada olmayan/işaretlenmemiş bir seed varsa `--dry-run` ile o ortamda kontrol et — boş rapor dönerse zaten uygulanmış, veri raporluyorsa eksik demektir, kullanıcıya danışıp çalıştır ve kaydı güncelle. Bu adım atlanırsa "yerel ≠ Test/Demo/Yayın" (eksik paket/modül/kart vb.) sessizce birikir.
 
 ---
 

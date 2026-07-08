@@ -926,6 +926,20 @@ body {
     font-size: var(--text-2xl);
 }
 
+.mc-avatar-xl {
+    width: 96px;
+    height: 96px;
+    font-size: var(--text-2xl);
+}
+
+.profil-avatar-img {
+    width: 96px;
+    height: 96px;
+    border-radius: 50%;
+    object-fit: cover;
+    display: block;
+}
+
 /* ── Animations ── */
 [x-cloak] { display: none !important; }
 

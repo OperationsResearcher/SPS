@@ -1,0 +1,254 @@
+ a3_reports                        | tenant_id                  | tenants                           | NO ACTION
+ activity                          | assigned_to_id             | user                              | NO ACTION
+ activity                          | project_id                 | project                           | NO ACTION
+ activity_tracks                   | activity_id                | process_activities                | CASCADE
+ activity_tracks                   | user_id                    | users                             | NO ACTION
+ alt_strateji                      | ana_strateji_id            | ana_strateji                      | NO ACTION
+ ana_strateji                      | tenant_id                  | tenants                           | NO ACTION
+ audit_log                         | user_id                    | user                              | NO ACTION
+ audit_logs                        | user_id                    | users                             | NO ACTION
+ blue_ocean_canvases               | tenant_id                  | tenants                           | CASCADE
+ blue_ocean_errc_items             | canvas_id                  | blue_ocean_canvases               | CASCADE
+ blue_ocean_factors                | canvas_id                  | blue_ocean_canvases               | CASCADE
+ bottleneck_log                    | kpi_id                     | process_kpis                      | NO ACTION
+ bottleneck_log                    | process_id                 | processes                         | NO ACTION
+ bottleneck_log                    | tenant_id                  | tenants                           | NO ACTION
+ bsc_kpi_perspectives              | plan_year_id               | plan_years                        | CASCADE
+ bsc_kpi_perspectives              | process_kpi_id             | process_kpis                      | CASCADE
+ bsc_kpi_perspectives              | tenant_id                  | tenants                           | CASCADE
+ capacity_plan                     | project_id                 | project                           | CASCADE
+ capacity_plan                     | user_id                    | users                             | SET NULL
+ card_data_sources                 | card_id                    | system_cards                      | CASCADE
+ competitor_analyses               | plan_year_id               | plan_years                        | SET NULL
+ competitor_analyses               | tenant_id                  | tenants                           | NO ACTION
+ corporate_identity                | tenant_id                  | tenants                           | NO ACTION
+ dashboard_layout                  | user_id                    | user                              | NO ACTION
+ deger                             | tenant_id                  | tenants                           | NO ACTION
+ esg_metric_values                 | metric_id                  | esg_metrics                       | CASCADE
+ esg_metric_values                 | user_id                    | users                             | SET NULL
+ esg_metrics                       | tenant_id                  | tenants                           | CASCADE
+ etik_kural                        | tenant_id                  | tenants                           | NO ACTION
+ evm_snapshots                     | project_id                 | project                           | NO ACTION
+ evm_snapshots                     | tenant_id                  | tenants                           | NO ACTION
+ favorite_kpis                     | process_kpi_id             | process_kpis                      | CASCADE
+ favorite_kpis                     | user_id                    | users                             | CASCADE
+ feedback                          | user_id                    | user                              | NO ACTION
+ individual_activities             | source_process_activity_id | process_activities                | SET NULL
+ individual_activities             | source_process_id          | processes                         | SET NULL
+ individual_activities             | user_id                    | users                             | CASCADE
+ individual_activity_tracks        | individual_activity_id     | individual_activities             | CASCADE
+ individual_activity_tracks        | user_id                    | users                             | CASCADE
+ individual_kpi_data               | individual_pg_id           | individual_performance_indicators | CASCADE
+ individual_kpi_data               | user_id                    | users                             | NO ACTION
+ individual_kpi_data_audits        | individual_kpi_data_id     | individual_kpi_data               | CASCADE
+ individual_kpi_data_audits        | user_id                    | users                             | NO ACTION
+ individual_kpi_year_configs       | individual_performance_id  | individual_performance_indicators | CASCADE
+ individual_kpi_year_configs       | plan_year_id               | plan_years                        | CASCADE
+ individual_performance_indicators | plan_year_id               | plan_years                        | CASCADE
+ individual_performance_indicators | source_individual_kpi_id   | individual_performance_indicators | SET NULL
+ individual_performance_indicators | source_process_id          | processes                         | SET NULL
+ individual_performance_indicators | source_process_kpi_id      | process_kpis                      | SET NULL
+ individual_performance_indicators | strategy_id                | strategies                        | SET NULL
+ individual_performance_indicators | user_id                    | users                             | CASCADE
+ initiative_milestones             | initiative_id              | initiatives                       | CASCADE
+ initiatives                       | owner_user_id              | users                             | SET NULL
+ initiatives                       | strategy_id                | strategies                        | SET NULL
+ initiatives                       | sub_strategy_id            | sub_strategies                    | SET NULL
+ initiatives                       | tenant_id                  | tenants                           | CASCADE
+ integration_hook                  | project_id                 | project                           | CASCADE
+ k_radar_recommendation_actions    | tenant_id                  | tenants                           | NO ACTION
+ k_radar_recommendation_actions    | user_id                    | users                             | NO ACTION
+ k_vektor_config_snapshots         | tenant_id                  | tenants                           | CASCADE
+ k_vektor_config_snapshots         | user_id                    | users                             | SET NULL
+ k_vektor_strategy_weights         | strategy_id                | strategies                        | CASCADE
+ k_vektor_strategy_weights         | tenant_id                  | tenants                           | CASCADE
+ k_vektor_sub_strategy_weights     | sub_strategy_id            | sub_strategies                    | CASCADE
+ k_vektor_sub_strategy_weights     | tenant_id                  | tenants                           | CASCADE
+ kalite_politikasi                 | tenant_id                  | tenants                           | NO ACTION
+ kpi_data                          | deleted_by_id              | users                             | SET NULL
+ kpi_data                          | process_kpi_id             | process_kpis                      | CASCADE
+ kpi_data                          | user_id                    | users                             | NO ACTION
+ kpi_data_audits                   | kpi_data_id                | kpi_data                          | CASCADE
+ kpi_data_audits                   | user_id                    | users                             | NO ACTION
+ kpi_year_configs                  | plan_year_id               | plan_years                        | CASCADE
+ kpi_year_configs                  | process_kpi_id             | process_kpis                      | CASCADE
+ kullanici_yetki                   | atayan_user_id             | user                              | NO ACTION
+ kullanici_yetki                   | user_id                    | user                              | NO ACTION
+ kurum                             | deleted_by                 | user                              | NO ACTION
+ kurum                             | tenant_id                  | tenants                           | NO ACTION
+ llm_quota_overrides               | tenant_id                  | tenants                           | CASCADE
+ llm_usage_logs                    | tenant_id                  | tenants                           | CASCADE
+ llm_usage_logs                    | user_id                    | users                             | SET NULL
+ module_component_slugs            | module_id                  | system_modules                    | NO ACTION
+ note                              | user_id                    | user                              | NO ACTION
+ notification                      | ilgili_user_id             | user                              | NO ACTION
+ notification                      | user_id                    | user                              | NO ACTION
+ notification_preferences          | user_id                    | users                             | NO ACTION
+ notifications                     | tenant_id                  | tenants                           | NO ACTION
+ notifications                     | user_id                    | users                             | NO ACTION
+ notifications_ext                 | user_id                    | users                             | NO ACTION
+ okr_key_results                   | linked_process_kpi_id      | process_kpis                      | SET NULL
+ okr_key_results                   | objective_id               | okr_objectives                    | CASCADE
+ okr_objectives                    | linked_strategy_id         | strategies                        | SET NULL
+ okr_objectives                    | linked_sub_strategy_id     | sub_strategies                    | SET NULL
+ okr_objectives                    | plan_year_id               | plan_years                        | CASCADE
+ okr_objectives                    | tenant_id                  | tenants                           | CASCADE
+ ozel_yetki                        | kullanici_id               | user                              | NO ACTION
+ ozel_yetki                        | veren_kullanici_id         | user                              | NO ACTION
+ package_modules                   | module_id                  | system_modules                    | NO ACTION
+ package_modules                   | package_id                 | subscription_packages             | NO ACTION
+ pestel_analyses                   | plan_year_id               | plan_years                        | CASCADE
+ pestel_analyses                   | source_pestel_id           | pestel_analyses                   | SET NULL
+ pestel_analyses                   | tenant_id                  | tenants                           | CASCADE
+ plan_project_activities           | plan_year_id               | plan_years                        | CASCADE
+ plan_project_activities           | project_id                 | plan_projects                     | CASCADE
+ plan_project_tasks                | assignee_id                | users                             | SET NULL
+ plan_project_tasks                | depends_on_task_id         | plan_project_tasks                | SET NULL
+ plan_project_tasks                | plan_year_id               | plan_years                        | CASCADE
+ plan_project_tasks                | project_id                 | plan_projects                     | CASCADE
+ plan_projects                     | plan_year_id               | plan_years                        | CASCADE
+ plan_projects                     | source_project_id          | plan_projects                     | SET NULL
+ plan_projects                     | tenant_id                  | tenants                           | CASCADE
+ plan_years                        | scenario_of_id             | plan_years                        | CASCADE
+ plan_years                        | template_source_id         | plan_years                        | SET NULL
+ plan_years                        | tenant_id                  | tenants                           | CASCADE
+ porter_analyses                   | plan_year_id               | plan_years                        | CASCADE
+ porter_analyses                   | source_porter_id           | porter_analyses                   | SET NULL
+ porter_analyses                   | tenant_id                  | tenants                           | CASCADE
+ process_activities                | auto_pgv_kpi_data_id       | kpi_data                          | SET NULL
+ process_activities                | plan_year_id               | plan_years                        | CASCADE
+ process_activities                | process_id                 | processes                         | CASCADE
+ process_activities                | process_kpi_id             | process_kpis                      | SET NULL
+ process_activities                | source_activity_id         | process_activities                | SET NULL
+ process_activity_assignees        | activity_id                | process_activities                | CASCADE
+ process_activity_assignees        | assigned_by                | users                             | SET NULL
+ process_activity_assignees        | user_id                    | users                             | CASCADE
+ process_activity_reminders        | activity_id                | process_activities                | CASCADE
+ process_kpis                      | plan_year_id               | plan_years                        | CASCADE
+ process_kpis                      | process_id                 | processes                         | CASCADE
+ process_kpis                      | source_kpi_id              | process_kpis                      | SET NULL
+ process_kpis                      | sub_strategy_id            | sub_strategies                    | SET NULL
+ process_leaders                   | process_id                 | processes                         | CASCADE
+ process_leaders                   | user_id                    | users                             | CASCADE
+ process_maturity                  | assessed_by                | users                             | NO ACTION
+ process_maturity                  | process_id                 | processes                         | NO ACTION
+ process_maturity                  | tenant_id                  | tenants                           | NO ACTION
+ process_members                   | process_id                 | processes                         | CASCADE
+ process_members                   | user_id                    | users                             | CASCADE
+ process_owners_table              | process_id                 | processes                         | CASCADE
+ process_owners_table              | user_id                    | users                             | CASCADE
+ process_sub_strategy_links        | process_id                 | processes                         | CASCADE
+ process_sub_strategy_links        | sub_strategy_id            | sub_strategies                    | CASCADE
+ process_year_configs              | plan_year_id               | plan_years                        | CASCADE
+ process_year_configs              | process_id                 | processes                         | CASCADE
+ processes                         | deleted_by                 | users                             | NO ACTION
+ processes                         | parent_id                  | processes                         | SET NULL
+ processes                         | plan_year_id               | plan_years                        | CASCADE
+ processes                         | source_process_id          | processes                         | SET NULL
+ processes                         | tenant_id                  | tenants                           | NO ACTION
+ project                           | deleted_by                 | users                             | SET NULL
+ project                           | initiative_id              | initiatives                       | SET NULL
+ project                           | manager_id                 | users                             | CASCADE
+ project                           | tenant_id                  | tenants                           | CASCADE
+ project_file                      | project_id                 | project                           | NO ACTION
+ project_file                      | uploader_id                | users                             | NO ACTION
+ project_leaders                   | project_id                 | project                           | CASCADE
+ project_leaders                   | user_id                    | users                             | CASCADE
+ project_members                   | project_id                 | project                           | CASCADE
+ project_members                   | user_id                    | users                             | CASCADE
+ project_observers                 | project_id                 | project                           | CASCADE
+ project_observers                 | user_id                    | users                             | CASCADE
+ project_related_processes         | project_id                 | project                           | NO ACTION
+ project_related_processes         | surec_id                   | processes                         | NO ACTION
+ project_risk                      | project_id                 | project                           | CASCADE
+ push_subscriptions                | user_id                    | users                             | NO ACTION
+ raid_item                         | owner_id                   | users                             | SET NULL
+ raid_item                         | project_id                 | project                           | CASCADE
+ recurring_task                    | project_id                 | project                           | CASCADE
+ recurring_task                    | template_task_id           | task                              | SET NULL
+ replan_trigger_events             | acknowledged_by_user_id    | users                             | SET NULL
+ replan_trigger_events             | trigger_id                 | replan_triggers                   | CASCADE
+ replan_triggers                   | target_kpi_id              | process_kpis                      | CASCADE
+ replan_triggers                   | tenant_id                  | tenants                           | CASCADE
+ risk_heatmap_items                | owner_id                   | users                             | NO ACTION
+ risk_heatmap_items                | plan_year_id               | plan_years                        | SET NULL
+ risk_heatmap_items                | tenant_id                  | tenants                           | NO ACTION
+ rule_definition                   | project_id                 | project                           | CASCADE
+ sla                               | project_id                 | project                           | CASCADE
+ sprint                            | project_id                 | project                           | NO ACTION
+ stakeholder_maps                  | plan_year_id               | plan_years                        | SET NULL
+ stakeholder_maps                  | tenant_id                  | tenants                           | NO ACTION
+ stakeholder_surveys               | tenant_id                  | tenants                           | NO ACTION
+ strategies                        | plan_year_id               | plan_years                        | CASCADE
+ strategies                        | source_strategy_id         | strategies                        | SET NULL
+ strategies                        | tenant_id                  | tenants                           | NO ACTION
+ strategy_map_link                 | source_id                  | ana_strateji                      | NO ACTION
+ strategy_map_link                 | target_id                  | ana_strateji                      | NO ACTION
+ strategy_process_matrix           | process_id                 | processes                         | NO ACTION
+ strategy_process_matrix           | sub_strategy_id            | alt_strateji                      | NO ACTION
+ strategy_year_configs             | plan_year_id               | plan_years                        | CASCADE
+ strategy_year_configs             | strategy_id                | strategies                        | CASCADE
+ sub_strategies                    | plan_year_id               | plan_years                        | CASCADE
+ sub_strategies                    | source_sub_strategy_id     | sub_strategies                    | SET NULL
+ sub_strategies                    | strategy_id                | strategies                        | CASCADE
+ sub_strategy_year_configs         | plan_year_id               | plan_years                        | CASCADE
+ sub_strategy_year_configs         | sub_strategy_id            | sub_strategies                    | CASCADE
+ swot_analyses                     | plan_year_id               | plan_years                        | CASCADE
+ swot_analyses                     | source_swot_id             | swot_analyses                     | SET NULL
+ swot_analyses                     | tenant_id                  | tenants                           | CASCADE
+ system_cards                      | component_id               | system_components                 | SET NULL
+ task                              | assignee_id                | users                             | SET NULL
+ task                              | parent_id                  | task                              | SET NULL
+ task                              | process_kpi_id             | process_kpis                      | SET NULL
+ task                              | project_id                 | project                           | CASCADE
+ task                              | reporter_id                | users                             | CASCADE
+ task_activity                     | task_id                    | task                              | NO ACTION
+ task_activity                     | user_id                    | users                             | NO ACTION
+ task_baseline                     | task_id                    | task                              | CASCADE
+ task_comment                      | task_id                    | task                              | NO ACTION
+ task_comment                      | user_id                    | users                             | NO ACTION
+ task_dependency                   | predecessor_id             | task                              | NO ACTION
+ task_dependency                   | project_id                 | project                           | NO ACTION
+ task_dependency                   | successor_id               | task                              | NO ACTION
+ task_impact                       | task_id                    | task                              | NO ACTION
+ task_mention                      | comment_id                 | task_comment                      | NO ACTION
+ task_mention                      | mentioned_user_id          | users                             | NO ACTION
+ task_mention                      | task_id                    | task                              | NO ACTION
+ task_predecessors                 | predecessor_id             | task                              | NO ACTION
+ task_predecessors                 | task_id                    | task                              | NO ACTION
+ task_sprint                       | sprint_id                  | sprint                            | NO ACTION
+ task_sprint                       | task_id                    | task                              | NO ACTION
+ task_subtask                      | task_id                    | task                              | NO ACTION
+ tenant_email_configs              | tenant_id                  | tenants                           | NO ACTION
+ tenant_email_configs              | updated_by                 | users                             | NO ACTION
+ tenant_ethics_codes               | tenant_id                  | tenants                           | CASCADE
+ tenant_llm_configs                | tenant_id                  | tenants                           | CASCADE
+ tenant_quality_policies           | tenant_id                  | tenants                           | CASCADE
+ tenant_values                     | tenant_id                  | tenants                           | CASCADE
+ tenant_year_identities            | plan_year_id               | plan_years                        | CASCADE
+ tenant_year_identities            | tenant_id                  | tenants                           | CASCADE
+ tenants                           | package_id                 | subscription_packages             | NO ACTION
+ tenants                           | parent_tenant_id           | tenants                           | SET NULL
+ tickets                           | tenant_id                  | tenants                           | NO ACTION
+ tickets                           | user_id                    | users                             | NO ACTION
+ time_entry                        | task_id                    | task                              | NO ACTION
+ time_entry                        | user_id                    | users                             | NO ACTION
+ tows_analyses                     | plan_year_id               | plan_years                        | CASCADE
+ tows_analyses                     | source_tows_id             | tows_analyses                     | SET NULL
+ tows_analyses                     | tenant_id                  | tenants                           | CASCADE
+ user                              | deleted_by                 | user                              | NO ACTION
+ user                              | tenant_id                  | tenants                           | NO ACTION
+ user_activity_log                 | ilgili_user_id             | user                              | NO ACTION
+ user_activity_log                 | user_id                    | user                              | NO ACTION
+ user_dashboard_settings           | user_id                    | user                              | NO ACTION
+ user_tour_progress                | user_id                    | users                             | CASCADE
+ user_year_assignments             | plan_year_id               | plan_years                        | CASCADE
+ user_year_assignments             | tenant_id                  | tenants                           | CASCADE
+ user_year_assignments             | user_id                    | users                             | CASCADE
+ users                             | role_id                    | roles                             | NO ACTION
+ users                             | tenant_id                  | tenants                           | NO ACTION
+ value_chain_items                 | linked_process_id          | processes                         | NO ACTION
+ value_chain_items                 | tenant_id                  | tenants                           | NO ACTION
+ vrio_resources                    | tenant_id                  | tenants                           | CASCADE
+ working_day                       | project_id                 | project                           | CASCADE
+

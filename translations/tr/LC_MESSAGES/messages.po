@@ -9529,7 +9529,7 @@ msgstr ""
 
 #: ui/templates/platform/auth/profil.html:13
 msgid "Profil Özeti"
-msgstr "Kurum Paneli"
+msgstr "Profil Özeti"
 
 #: ui/templates/platform/auth/profil.html:31
 msgid "Fotoğraf Yükle"
