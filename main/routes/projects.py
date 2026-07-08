@@ -646,7 +646,7 @@ def muda_hunter():
         ).all()
         
         # Verimlilik skoru
-        from services.muda_analyzer import MudaAnalyzerService
+        from app.services.muda_analyzer import MudaAnalyzerService
         efficiency_score = MudaAnalyzerService.get_efficiency_score(kurum.id)
         
         return render_template('muda_hunter.html', 
@@ -667,7 +667,7 @@ def muda_analyze(surec_id):
     try:
         surec = Surec.query.filter_by(id=surec_id, kurum_id=current_user.kurum_id).first_or_404()
         
-        from services.muda_analyzer import MudaAnalyzerService
+        from app.services.muda_analyzer import MudaAnalyzerService
         findings = MudaAnalyzerService.analyze_process_inefficiency(surec_id, current_user.kurum_id)
         
         return jsonify({
@@ -686,7 +686,7 @@ def muda_analyze(surec_id):
 def muda_efficiency_score():
     """Genel verimlilik skoru API"""
     try:
-        from services.muda_analyzer import MudaAnalyzerService
+        from app.services.muda_analyzer import MudaAnalyzerService
         efficiency_score = MudaAnalyzerService.get_efficiency_score(current_user.kurum_id)
         
         return jsonify({

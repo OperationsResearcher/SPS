@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-231 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 2 borç eritme (fablerapor.md) — N+1 düzeltmeleri + api/routes.py parçalama + servis konsolidasyonu (düşük risk) + CSP bulgusu
+**Modül:** genel (micro/surec, micro/k_rapor, micro/proje, api/, services/, main/)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- **N+1 (5 nokta):**
+  - `micro/modules/surec/routes_process.py` → süreç listesinde `Strategy.sub_strategies` selectinload
+  - `micro/modules/k_rapor/routes.py` → 3 nokta: uyum/strateji-kapsama (`sub_strategies→process_sub_strategy_links→process` zinciri), faaliyet (`ProcessActivity.process` joinedload)
+  - `micro/modules/proje/display.py` → proje listesi lider/üye/izleyici id'leri: proje başına 3 sorgu → toplam 3 batch (`project_id IN`)
+  - Karne sıcak yolu incelendi: zaten optimize (guard testleri işini yapmış) — dokunulmadı
+- **api/routes.py parçalama (4548 satır → 8 modül):** `api/blueprint.py` (dairesel import çözümü), `api/helpers.py`, `routes_projects/admin/pm/ai/files/process.py`; `routes.py` 22 satırlık giriş noktası. 89 route/URL birebir korundu (870 toplam sabit), `app/__init__.py` dokunulmadı
+- **Servis konsolidasyonu (düşük risk dilimi):** kök `services/report_service.py` (canlı tüketicisi yok) ve `services/muda_analyzer.py` silindi; `main/routes/projects.py` 3 muda importu `app.services.muda_analyzer`'a yönlendirildi (iki sürüm de persist etmiyor, imzalar uyumlu — doğrulandı)
+
+### Yapılan İşlem
+Üç paralel çalışma + bir analiz: N+1 sıcak yolları sorgu-düzeyinde (model lazy= değerlerine dokunmadan) düzeltildi; dev API dosyası alan bazlı modüllere bölündü; çift servis dosyaları analiz edilip yalnızca kanıtlanmış-güvenli ikisi taşındı.
+
+### Notlar
+- **Servis çiftleri — ERTELENEN yüksek riskliler:** `score_engine_service` (kök canlı + benzersiz `recalc_on_faaliyet_change`; eş isimli fonksiyonlar davranış diff'i doğrulanmadan taşınmamalı), `notification_service` (kök 815 satır aktif bildirim motoru, app class'ı ayrı sorumluluk), `webhook_service` (istisna: KÖK canonical, app sürümü ölü), `cache_service` (uyumsuz API + çapraz bağ). Ayrıntılı karar tablosu bu task'ın analiz çıktısında.
+- **CSP bulgusu (ertelendi):** `script-src`'den `unsafe-eval` çıkarılamıyor — `cdn.tailwindcss.com` (Play CDN) ve Alpine.js çalışma anında eval gerektiriyor; `unsafe-inline` için 51 template'te inline `<script>` var. Çözüm frontend build işi (derlenmiş Tailwind + Alpine CSP build + nonce) → Faz 3/4 adayı.
+- Test: 19 failed / 399 passed — baseline ile birebir aynı; ruff temiz; route sayısı 870 sabit.
+
+---
+
 ## TASK-230 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 1 veri güvenliği (fablerapor.md) — merkezi tenant izolasyonu + sessiz except:pass seferberliği

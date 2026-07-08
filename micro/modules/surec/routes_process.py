@@ -125,7 +125,10 @@ def surec():
     users = User.query.filter_by(tenant_id=tid, is_active=True).all()
 
     _effective_py_id = _proc_fallback_py_id or (active_py.id if active_py else None)
-    strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+    # N+1 önlemi: strategies_json döngüsü s.sub_strategies'e erişiyor
+    strat_q = Strategy.query.options(
+        selectinload(Strategy.sub_strategies)
+    ).filter_by(tenant_id=tid, is_active=True)
     if _effective_py_id:
         strat_q = strat_q.filter(
             or_(Strategy.plan_year_id == _effective_py_id, Strategy.plan_year_id.is_(None))
