@@ -1,5 +1,7 @@
 """Flask application factory."""
 
+import os
+
 from datetime import datetime, timezone
 
 # .env burada, diğer tüm importlardan ÖNCE yüklenmeli — aşağıdaki
