@@ -1866,4 +1866,5 @@ from micro.modules.admin import routes_sub_tenants  # noqa: F401, E402
 from micro.modules.admin import routes_holding  # noqa: F401, E402  Sprint D
 
 from micro.modules.admin import routes_admin_tools  # noqa: F401, E402  Admin Araçları (Hata Kontrolü)
+from micro.modules.admin import routes_setup_import  # noqa: F401, E402  Kurulum İçe Aktarma (TASK-235)
 from flask_babel import gettext as _

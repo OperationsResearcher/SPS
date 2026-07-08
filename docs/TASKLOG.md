@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-235 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 3 — Kurulum verisi import sihirbazı (mutabakatlı tasarım → uygulama)
+**Modül:** admin (setup import), app/services
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/paketler/KURULUM-IMPORT-SIHIRBAZI.md` (yeni) → tasarım + mutabakat kaydı (upsert=güncelle, strateji v1'e dahil, konum=Admin)
+- `app/services/setup_import_service.py` (yeni) → parse_workbook (dry-run planı) / apply_workbook (TEK transaction) / make_setup_template_excel (3 sayfa + periyot dropdown); doğrulamalar: zorunlu alanlar, periyot/toplama/gösterge listeleri, dosya-içi tekrar, üst süreç referans + döngü kontrolü, Excel injection nötrleme
+- `micro/modules/admin/routes_setup_import.py` (yeni) → 4 route: sayfa, şablon indirme, dry-run, apply (Admin/tenant_admin; SETUP_IMPORT_APPLY audit)
+- `ui/templates/platform/admin/setup_import.html` (yeni) → 3 adımlı sihirbaz (kart standardı: admin_setup_import.* data-card-code)
+- `ui/static/platform/js/admin_setup_import.js` (yeni) → harici JS, URL'ler data-*'dan, SweetAlert2
+- `micro/modules/admin/routes.py` → yeni route dosyası kaydı
+- `tests/test_setup_import.py` (yeni) → 9 test: dry-run, hata-varsa-yazma, skip_errors, upsert güncelleme, parent bağı + döngü, strateji zinciri, plan-yılı-yoksa-atla, şablon üretimi
+
+### Yapılan İşlem
+"Excel'inizi getirin, yarım günde geçin" onboarding sihirbazı: tek .xlsx (Süreçler/PG_Tanımları/Strateji) → dry-run önizleme → tek-transaction upsert. Silme asla yapılmaz; K-Vektör ağırlıkları bilinçli kapsam dışı (UI'dan atanır).
+
+### Notlar
+- Migration yok (yeni tablo yok). Test: 412 passed / 19 failed (baseline aynı), ruff temiz.
+- Yerelde deneme: `python pybasla.py` → /micro/admin/setup-import (route değişti, restart şart).
+- Kart keşfi: sayfa ilk ziyaretinde `discover_cards` yeni data-card-code'ları system_cards'a alacak; short_id ataması admin'den yapılmalı (KURALLAR §5.1).
+
+---
+
 ## TASK-234 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 3 — KVKK uyum dosyası (docs/kvkk/) — sistem taramasına dayalı taslak paket
