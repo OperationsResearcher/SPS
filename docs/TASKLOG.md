@@ -2,6 +2,27 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-234 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 3 — KVKK uyum dosyası (docs/kvkk/) — sistem taramasına dayalı taslak paket
+**Modül:** dokümantasyon
+**Durum:** ✅ Tamamlandı (taslak; [DOLDURULACAK] alanlar veri sorumlusuna ait)
+
+### Değiştirilen Dosyalar
+- `docs/kvkk/README.md` (yeni) → indeks + hazır teknik mekanizmalar + bilinen boşluklar
+- `docs/kvkk/veri-envanteri.md` (yeni) → kod/DB taramasına dayalı kişisel veri envanteri: users alanları, bireysel performans verileri (çalışan izleme boyutu vurgulu), audit/IP logları, ticket'lar, çerezler; amaç/hukuki sebep tablosu; veri sorumlusu-veri işleyen rol ayrımı; aktarımlar (SMTP, LLM, Oracle, Google SSO); saklama/imha; teknik tedbirler
+- `docs/kvkk/aydinlatma-metni.md` (yeni) → m.10 taslak metin; platformdaki gerçek m.11/m.7 endpoint'lerine bağlantılı
+- `docs/kvkk/verbis-hazirlik.md` (yeni) → kayıt yükümlülüğü değerlendirmesi + kontrol listesi + kod tarafı yapılacaklar
+
+### Yapılan İşlem
+Mevcut KVKK teknik yüzeyi doğrulandı: m.11 export (`/auth/api/user/export-my-data`) ve m.7 anonimleştirme (`/auth/api/user/delete-my-account`) endpoint'leri + audit kaydı çalışır durumda. Belgeler bu gerçek yüzeye dayanarak yazıldı.
+
+### Notlar
+- **Tespit edilen boşluklar (kod tarafı, ayrı task):** pazarlama sitesinde gizlilik/çerez sayfası YOK (demo talep formu kişisel veri topluyor); login sayfasında aydınlatma bağlantısı yok; AI prompt'larında ad-soyad maskeleme denetimi yapılmalı; Oracle veri merkezi bölgesi teyit edilmeli (yurt dışıysa m.9).
+- Belgeler TASLAK — hukuki kontrol ve [DOLDURULACAK] alanlar olmadan yayımlanmamalı.
+
+---
+
 ## TASK-233 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 3 — Placeholder PDF export envanteri + kalan 3 gerçek eksiğin tamamlanması
