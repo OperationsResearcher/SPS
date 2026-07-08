@@ -10,6 +10,7 @@ import os
 from typing import Optional
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
 def _fernet_key() -> bytes:
@@ -55,7 +56,7 @@ def mask_key(plaintext: str) -> str:
     return plaintext[:4] + "•" * 12 + plaintext[-4:]
 
 
-class TenantLLMConfig(db.Model):
+class TenantLLMConfig(TenantScopedMixin, db.Model):
     """Tenant'a özel LLM yapılandırması (BYOK)."""
 
     __tablename__ = "tenant_llm_configs"

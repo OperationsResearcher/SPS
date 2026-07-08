@@ -2,6 +2,32 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-230 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 1 veri güvenliği (fablerapor.md) — merkezi tenant izolasyonu + sessiz except:pass seferberliği
+**Modül:** genel (app/utils, app/models, micro, main, api, services)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/utils/tenant_guard.py` (yeni) → `TenantScopedMixin` + `do_orm_execute`/`with_loader_criteria` global tenant filtresi; muafiyetler: request-dışı bağlam, anonim, platform admin, `tenant_guard_bypass` execution option; holding/dealer alt kurum id'leri erişilebilir sette; özyineleme kilidi (`g._tenant_guard_ids` sentinel)
+- `config.py` → `TENANT_GUARD_MODE` (off | enforce, varsayılan **off** — kademeli devreye alma: Yerel→Test→Yayın)
+- `app/__init__.py` → `init_tenant_guard` çağrısı
+- `app/models/*.py` (22 dosya, 41 sınıf) → `TenantScopedMixin` eklendi (User/Tenant bilinçli hariç)
+- `tests/test_tenant_guard.py` (yeni) → 6 cross-tenant regresyon testi (engelleme, kendi verisi, admin muafiyeti, bypass, off modu, context-dışı)
+- 53 sessiz `except...pass` noktasına log eklendi (üç paralel tarama):
+  - micro/ 13 nokta, app/ 22 nokta (SSO/TOTP/KVKK audit yutmaları dahil), main+api+services 18 nokta
+  - Çıplak `except:` → `except Exception` dönüşümleri dahil; dar `(TypeError, ValueError)` parse-fallback'leri (~63) meşru kabul edilip bilinçli korundu
+  - Rollback gereken nokta çıkmadı (hiçbir yutulan try kendi içinde commit barındırmıyordu)
+
+### Yapılan İşlem
+Çok-kiracılı izolasyon artık ~414 elle yazılmış filtreye ek olarak ORM katmanında merkezi güvence altında. Guard, elle filtreleri bozmaz (kriter AND'lenir); mevcut route-düzeyi `tenant_scope.py` dekoratörüyle tamamlayıcı çalışır. `declared_attr` mixin deseni SQLAlchemy'nin resmi with_loader_criteria reçetesiyle deneysel olarak doğrulandı.
+
+### Notlar
+- **TENANT_GUARD_MODE şu an off** — Yerel'de `enforce` ile manuel doğrulama sonrası kademeli açılacak. Holding drilldown ve admin ekranları enforce modda özellikle test edilmeli.
+- Test: 19 failed / 399 passed — 19 hata baseline ile aynı (önceden var olan yerel-ortam sorunu), +6 yeni guard testi geçiyor. Ruff temiz.
+
+---
+
 ## TASK-229 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 0 hızlı kapanışlar (fablerapor.md eylem planı) — güvenlik/operasyon temizliği + CI güçlendirme + 8 gizli NameError düzeltmesi

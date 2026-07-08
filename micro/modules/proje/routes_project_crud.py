@@ -343,8 +343,8 @@ def project_edit(project_id: int):
             settings["channels"] = {"in_app": True, "email": False}
         settings["channels"]["email"] = channel_email
         proj.notification_settings = json.dumps(settings, ensure_ascii=False)
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[project_edit] suppressed: {e}")
 
     # Stratejik girişim bağı güncelleme
     iid_raw = request.form.get("initiative_id")

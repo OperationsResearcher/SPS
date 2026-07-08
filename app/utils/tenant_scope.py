@@ -106,8 +106,8 @@ def verify_tenant_resource(
                         description=f"Tenant {user_tenant_id} tried to access {model.__name__} "
                                     f"belonging to tenant {resource_tenant_id}",
                     )
-                except Exception:
-                    pass
+                except Exception as e:
+                    current_app.logger.warning(f"[tenant_scope] audit log suppressed: {e}")
                 abort(403)
 
             return f(*args, **kwargs)
@@ -362,8 +362,8 @@ def block_if_holding_readonly(get_tenant_id: Optional[Callable] = None):
                             resource_id=target_tid,
                             description=f"Holding user attempted write on sub-tenant {target_tid}",
                         )
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        current_app.logger.warning(f"[holding_readonly] audit log suppressed: {e}")
                     abort(403, description="Holding görünümünde alt-tenant verisi yalnızca okunabilir.")
             return f(*args, **kwargs)
         return wrapper

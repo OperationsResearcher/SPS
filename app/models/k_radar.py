@@ -3,9 +3,10 @@
 from datetime import datetime, timezone
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class KRadarRecommendationAction(db.Model):
+class KRadarRecommendationAction(TenantScopedMixin, db.Model):
     __tablename__ = "k_radar_recommendation_actions"
 
     id = db.Column(db.Integer, primary_key=True)

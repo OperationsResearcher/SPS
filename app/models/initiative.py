@@ -7,9 +7,10 @@ hangi strateji/alt strateji ile bağlı olduğunu gösterir.
 from __future__ import annotations
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class Initiative(db.Model):
+class Initiative(TenantScopedMixin, db.Model):
     """Çok yıllık stratejik girişim (initiative)."""
 
     __tablename__ = "initiatives"

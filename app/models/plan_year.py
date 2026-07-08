@@ -10,9 +10,10 @@ EDGE CASE NOTU:
 from datetime import datetime, timezone
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class PlanYear(db.Model):
+class PlanYear(TenantScopedMixin, db.Model):
     """
     Stratejik Plan Yılı.
     Her tenant için yıl başına bir kayıt. Tüm yıllık config tabloları buraya FK verir.

@@ -9,6 +9,9 @@ from collections import defaultdict, deque
 from typing import Dict, List, Tuple
 from app.models.legacy_bridge import Task, TaskDependency, task_predecessors
 from extensions import db
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _duration_days(task: Task) -> int:
@@ -36,8 +39,8 @@ def _collect_dependencies(project_id: int):
     deps = []
     try:
         TaskDependency.__table__.create(db.engine, checkfirst=True)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"[_collect_dependencies] suppressed: {e}")
     dep_rows = TaskDependency.query.filter_by(project_id=project_id).all()
     if dep_rows:
         for d in dep_rows:

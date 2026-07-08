@@ -510,8 +510,8 @@ def raporlar_api_ai_status():
         if cfg and cfg.api_key_encrypted:
             byok = True
             provider = cfg.provider
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[raporlar_api_ai_status] suppressed: {e}")
     if byok:
         return jsonify({"success": True, "byok": True, "provider": provider or "custom",
                         "label": f"{_('Kendi API anahtarınız')} ({(provider or 'AI').capitalize()}) — {_('Sınırsız')}"})

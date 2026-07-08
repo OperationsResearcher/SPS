@@ -1,6 +1,7 @@
 """BSC (Balanced Scorecard) modeli."""
 from datetime import datetime, timezone
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 # 4 klasik BSC perspektifi
 BSC_PERSPECTIVES = [
@@ -11,7 +12,7 @@ BSC_PERSPECTIVES = [
 ]
 
 
-class BscKpiPerspective(db.Model):
+class BscKpiPerspective(TenantScopedMixin, db.Model):
     """
     ProcessKpi → BSC Perspektif ataması.
     Her KPI bir perspektife atanabilir.

@@ -4,13 +4,16 @@ import json
 from typing import Dict, Any, List
 from app.models.legacy_bridge import RuleDefinition
 from extensions import db
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def ensure_table():
     try:
         RuleDefinition.__table__.create(db.engine, checkfirst=True)
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"[ensure_table] suppressed: {e}")
 
 
 def list_rules(project_id: int | None = None) -> List[Dict[str, Any]]:

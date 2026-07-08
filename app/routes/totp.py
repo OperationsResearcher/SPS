@@ -28,8 +28,8 @@ def totp_status():
     if current_user.totp_backup_codes_json:
         try:
             backup_count = len(json.loads(current_user.totp_backup_codes_json) or [])
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[totp_status] suppressed: {e}")
     return jsonify({
         "success": True,
         "enabled": bool(current_user.totp_enabled),
@@ -99,8 +99,8 @@ def totp_verify_setup():
             resource_id=current_user.id,
             description=f"User {current_user.email} 2FA etkinleştirdi",
         )
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[totp_verify_setup] suppressed: {e}")
 
     return jsonify({
         "success": True,
@@ -130,8 +130,8 @@ def totp_disable():
             resource_id=current_user.id,
             description=f"User {current_user.email} 2FA devre dışı bıraktı",
         )
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[totp_disable] suppressed: {e}")
 
     return jsonify({"success": True, "message": _("2FA devre dışı bırakıldı.")})
 
@@ -190,8 +190,8 @@ def totp_challenge():
                 action="2FA_LOGIN_SUCCESS", resource_type="GÜVENLİK",
                 resource_id=user.id, description=f"User {user.email} 2FA doğrulamayla giriş",
             )
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[totp_challenge] suppressed: {e}")
         from app.utils.tenant_scope import default_landing_endpoint
         return redirect(url_for(default_landing_endpoint(user)))
 

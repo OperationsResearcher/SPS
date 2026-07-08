@@ -3,9 +3,10 @@
 from datetime import datetime, timezone
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class ProcessMaturity(db.Model):
+class ProcessMaturity(TenantScopedMixin, db.Model):
     __tablename__ = "process_maturity"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -27,7 +28,7 @@ class ProcessMaturity(db.Model):
         return f'<ProcessMaturity {self.id}>'
 
 
-class BottleneckLog(db.Model):
+class BottleneckLog(TenantScopedMixin, db.Model):
     __tablename__ = "bottleneck_log"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -50,7 +51,7 @@ class BottleneckLog(db.Model):
         return f'<BottleneckLog {self.id}>'
 
 
-class ValueChainItem(db.Model):
+class ValueChainItem(TenantScopedMixin, db.Model):
     __tablename__ = "value_chain_items"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -72,7 +73,7 @@ class ValueChainItem(db.Model):
         return f'<ValueChainItem {self.id} {(self.title or "")[:20]}>'
 
 
-class EvmSnapshot(db.Model):
+class EvmSnapshot(TenantScopedMixin, db.Model):
     __tablename__ = "evm_snapshots"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -96,7 +97,7 @@ class EvmSnapshot(db.Model):
         return f'<EvmSnapshot {self.id}>'
 
 
-class RiskHeatmapItem(db.Model):
+class RiskHeatmapItem(TenantScopedMixin, db.Model):
     __tablename__ = "risk_heatmap_items"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -121,7 +122,7 @@ class RiskHeatmapItem(db.Model):
         return f'<RiskHeatmapItem {self.id} {(self.title or "")[:20]}>'
 
 
-class StakeholderMap(db.Model):
+class StakeholderMap(TenantScopedMixin, db.Model):
     __tablename__ = "stakeholder_maps"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -144,7 +145,7 @@ class StakeholderMap(db.Model):
         return f'<StakeholderMap {self.id} {(self.name or "")[:20]}>'
 
 
-class StakeholderSurvey(db.Model):
+class StakeholderSurvey(TenantScopedMixin, db.Model):
     __tablename__ = "stakeholder_surveys"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -166,7 +167,7 @@ class StakeholderSurvey(db.Model):
         return f'<StakeholderSurvey {self.id}>'
 
 
-class A3Report(db.Model):
+class A3Report(TenantScopedMixin, db.Model):
     __tablename__ = "a3_reports"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
@@ -188,7 +189,7 @@ class A3Report(db.Model):
         return f"<A3Report {self.id} tenant={self.tenant_id}>"
 
 
-class CompetitorAnalysis(db.Model):
+class CompetitorAnalysis(TenantScopedMixin, db.Model):
     __tablename__ = "competitor_analyses"
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)

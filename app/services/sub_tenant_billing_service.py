@@ -91,8 +91,8 @@ def build_consolidated_usage(parent_tenant_id: int) -> dict:
             ).group_by(Initiative.tenant_id).all()
             for tid, count in rows:
                 init_by_tenant[tid] = int(count)
-        except Exception:
-            pass
+        except Exception as e:
+            _log.warning("[sub_tenant_billing] initiative count query suppressed: %s", e)
 
     # ─── Plan year sayıları ────────────────────────────────────────────────
     py_by_tenant = {}
@@ -104,8 +104,8 @@ def build_consolidated_usage(parent_tenant_id: int) -> dict:
             ).filter(PlanYear.tenant_id.in_(sub_ids)).group_by(PlanYear.tenant_id).all()
             for tid, count in rows:
                 py_by_tenant[tid] = int(count)
-        except Exception:
-            pass
+        except Exception as e:
+            _log.warning("[sub_tenant_billing] plan year count query suppressed: %s", e)
 
     # ─── Satır satır birleştir ─────────────────────────────────────────────
     rows_out = []

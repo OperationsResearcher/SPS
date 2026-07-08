@@ -1492,8 +1492,8 @@ def k_rapor_api_export_excel():
                 if d and d.status_percentage is not None:
                     try:
                         pct = round(float(d.status_percentage), 1)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        current_app.logger.warning(f"[k_rapor_api_export_excel] suppressed: {e}")
                 ws.append([
                     f"{u.first_name or ''} {u.last_name or ''}".strip() if u else "",
                     u.email if u else "",
@@ -2054,8 +2054,8 @@ def k_rapor_api_aktivite_takvim():
                         if date:
                             key = str(date)
                             daily_counts[key] = daily_counts.get(key, 0) + cnt
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[k_rapor_api_aktivite_takvim] suppressed: {e}")
 
         # Max değer (renk skalası için)
         max_val = max(daily_counts.values()) if daily_counts else 1

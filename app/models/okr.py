@@ -1,9 +1,10 @@
 """OKR (Objectives and Key Results) modeli."""
 from datetime import datetime, timezone
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class OkrObjective(db.Model):
+class OkrObjective(TenantScopedMixin, db.Model):
     """
     OKR Hedefi (Objective).
     Bir plan year + tenant kombinasyonu için birden fazla hedef olabilir.

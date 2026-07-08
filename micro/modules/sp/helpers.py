@@ -212,8 +212,8 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
             tyi = TenantYearIdentity.query.filter_by(plan_year_id=py.id, tenant_id=tenant_id).first()
             if tyi and tyi.vision:
                 vizyon_text = tyi.vision
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[build_strateji_harita_graph] suppressed: {e}")
 
     nodes.append({
         "id": "vizyon",
@@ -321,8 +321,8 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
                 edges.append({"from": f"ss_{init.sub_strategy_id}", "to": i_id, "dashes": True})
             elif init.strategy_id:
                 edges.append({"from": f"s_{init.strategy_id}", "to": i_id, "dashes": True})
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[build_strateji_harita_graph] suppressed: {e}")
 
     # ── Projeler (level 4, Girişime bağlı) ───────────────────────────────────
     if init_ids:
@@ -348,8 +348,8 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
                     "title": proj.name or f"Proje #{proj.id}",
                 })
                 edges.append({"from": f"init_{proj.initiative_id}", "to": pj_id, "dashes": True})
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[build_strateji_harita_graph] suppressed: {e}")
 
     meta = {
         "sub":        sum(1 for n in nodes if n["group"] == "sub_strategy"),

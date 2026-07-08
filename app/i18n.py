@@ -63,8 +63,8 @@ def get_locale() -> str:
         best = request.accept_languages.best_match(supported)
         if best:
             return best
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[get_locale] suppressed: {e}")
 
     # 5. Default
     return current_app.config.get("BABEL_DEFAULT_LOCALE", "tr")

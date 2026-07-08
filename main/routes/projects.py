@@ -263,15 +263,15 @@ def sistem_degisiklik_gunlugu():
             try:
                 start_dt = datetime.strptime(start_date, '%Y-%m-%d')
                 query = query.filter(PerformansGostergeVeriAudit.islem_tarihi >= start_dt)
-            except:
-                pass
+            except Exception as e:
+                current_app.logger.warning(f"[sistem_degisiklik_gunlugu] suppressed: {e}")
         if end_date:
             try:
                 end_dt = datetime.strptime(end_date, '%Y-%m-%d')
                 end_dt = end_dt.replace(hour=23, minute=59, second=59)
                 query = query.filter(PerformansGostergeVeriAudit.islem_tarihi <= end_dt)
-            except:
-                pass
+            except Exception as e:
+                current_app.logger.warning(f"[sistem_degisiklik_gunlugu] suppressed: {e}")
         
         # Sıralama (en yeni önce)
         query = query.order_by(PerformansGostergeVeriAudit.islem_tarihi.desc())
@@ -1518,8 +1518,8 @@ def update_guide_preferences():
             try:
                 import json
                 completed_walkthroughs = json.loads(current_user.completed_walkthroughs)
-            except:
-                pass
+            except Exception as e:
+                current_app.logger.warning(f"[update_guide_preferences] suppressed: {e}")
         
         if completed:
             completed_walkthroughs[page_id] = True

@@ -1,9 +1,10 @@
 """TenantYearIdentity — Misyon/Vizyon/Değerler yıllık versiyonlaması."""
 from datetime import datetime, timezone
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class TenantYearIdentity(db.Model):
+class TenantYearIdentity(TenantScopedMixin, db.Model):
     """
     Kurumun stratejik kimlik alanlarının (misyon, vizyon, değerler vb.)
     yıl bazlı kopyası. Her PlanYear için bir kayıt.

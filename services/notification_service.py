@@ -7,6 +7,9 @@ from datetime import datetime, timedelta, date
 from flask import current_app, url_for
 from app.models.legacy_bridge import db, Notification, Task, Project, User
 from utils.task_status import COMPLETED_STATUSES, normalize_task_status
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _project_leader_ids(project):
@@ -412,8 +415,8 @@ def create_task_overdue_notification(task_id):
         try:
             if isinstance(settings, dict) and settings.get('overdue_frequency') == 'off':
                 return None
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"[create_task_overdue_notification] suppressed: {e}")
 
         notify_manager = True
         notify_observers = False
@@ -421,8 +424,8 @@ def create_task_overdue_notification(task_id):
             if isinstance(settings, dict):
                 notify_manager = bool(settings.get('notify_manager', True))
                 notify_observers = bool(settings.get('notify_observers', False))
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning(f"[create_task_overdue_notification] suppressed: {e}")
 
         # Gecikmiş görev kontrolü
         normalized_status = normalize_task_status(task.status) or task.status
@@ -509,8 +512,8 @@ def create_task_overdue_notification(task_id):
                         )
                         db.session.add(notification)
                         notifications.append(notification)
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.warning(f"[create_task_overdue_notification] observer notification suppressed: {e}")
             
             if notifications:
                 db.session.commit()

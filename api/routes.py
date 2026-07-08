@@ -892,8 +892,8 @@ def api_projeler_list():
                         'notify_observers': bool(settings.get('notify_observers', False))
                     }
                     new_project.notification_settings = json.dumps(normalized, ensure_ascii=False)
-            except Exception:
-                pass
+            except Exception as e:
+                current_app.logger.warning(f"[api_projeler_list] suppressed: {e}")
             
             db.session.add(new_project)
             db.session.flush()  # ID'yi almak için
@@ -1028,8 +1028,8 @@ def api_proje_detay(project_id):
                             'notify_observers': bool(settings.get('notify_observers', False))
                         }
                         project.notification_settings = json.dumps(normalized, ensure_ascii=False)
-                except Exception:
-                    pass
+                except Exception as e:
+                    current_app.logger.warning(f"[api_proje_detay] suppressed: {e}")
             
             # İlişkili süreçleri güncelle
             if 'related_process_ids' in data:

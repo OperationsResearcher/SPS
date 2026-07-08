@@ -12,6 +12,7 @@ Politika: docs/AI-POLITIKASI.md
 """
 from __future__ import annotations
 
+import logging
 import os
 import time
 from typing import Optional
@@ -21,6 +22,8 @@ from flask import current_app
 from app.services.llm_quota_service import check_quota, log_usage, get_tenant_usage_summary
 from app.models.tenant_llm_config import TenantLLMConfig
 from flask_babel import gettext as _
+
+logger = logging.getLogger(__name__)
 
 
 # ─── Provider çağırıcılar ────────────────────────────────────────────────────
@@ -64,8 +67,8 @@ def _call_gemini(api_key: str, model: str, prompt: str, system_prompt: Optional[
                     kwargs['verify'] = False
                     return _orig_send(self, *args, **kwargs)
                 requests.Session.send = _unverified_send
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("[llm_gateway] DEV_SSL_BYPASS requests patch suppressed: %s", e)
         genai.configure(api_key=api_key, transport="rest")
         model_name = model or "gemini-2.5-flash-lite"
         m = genai.GenerativeModel(model_name)

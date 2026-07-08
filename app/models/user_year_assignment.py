@@ -9,9 +9,10 @@ Bu model o yıla ait snapshot tutar. Yoksa User.job_title/department fallback.
 from datetime import datetime, timezone
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class UserYearAssignment(db.Model):
+class UserYearAssignment(TenantScopedMixin, db.Model):
     __tablename__ = "user_year_assignments"
 
     id = db.Column(db.Integer, primary_key=True)
