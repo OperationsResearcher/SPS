@@ -1022,7 +1022,7 @@ def sp_api_bsc_auto_assign():
             if k.id in assigned_ids:
                 continue
             proc = proc_map.get(k.process_id)
-            persp, conf, _ = classify(
+            persp, conf, _kw = classify(
                 name=k.name or "", code=k.code or "",
                 description=k.description or "",
                 process_name=proc.name if proc else "",

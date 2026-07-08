@@ -1,22 +1,20 @@
+# Referans compose — gerçek deploy scripts/ops/oracle/ üzerinden yapılır (KURALLAR §8.3).
+# Eski sps-web + SQLite kalıntısı 2026-07-08'de temizlendi; config.py SQLite'ı reddeder (PostgreSQL zorunlu).
 services:
   web:
     build: .
-    container_name: sps-web
+    container_name: kokpitim-web
     ports:
-      - "8000:5000"
+      - "5000:5000"
     restart: always
+    env_file:
+      - .env  # DATABASE_URL (postgresql+psycopg://...), SECRET_KEY, ENCRYPTION_KEY, RATELIMIT_STORAGE_URL
     environment:
-      # Veritabanı: kalıcı volume'daki SQLite
-      DATABASE_URL: sqlite:////app/data/spsv2.db
       FLASK_ENV: production
-      # SECRET_KEY ortam değişkeni ile verilebilir (güvenlik için .env kullanın)
+      TRUST_PROXY: "1"
     volumes:
-      # Veritabanı ve instance klasörü kalıcı olsun (konteyner silinse bile veri kaybolmasın)
-      - sps-data:/app/data
-      - sps-instance:/app/instance
+      - kokpitim-instance:/app/instance
 
 volumes:
-  sps-data:
-    # spsv2.db bu volume'da saklanır
-  sps-instance:
-    # Flask instance klasörü (uploads, secret key vb.) bu volume'da saklanır
+  kokpitim-instance:
+    # Flask instance klasörü (uploads vb.)

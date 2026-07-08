@@ -2,6 +2,37 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-229 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 0 hızlı kapanışlar (fablerapor.md eylem planı) — güvenlik/operasyon temizliği + CI güçlendirme + 8 gizli NameError düzeltmesi
+**Modül:** genel (app/utils, api, micro, CI)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/utils/error_tracking.py` → FileHandler → RotatingFileHandler (10MB×5), error.log sınırsız büyüme kapandı
+- `app/utils/security.py` → X-Frame-Options SAMEORIGIN→DENY (Talisman ile çelişki giderildi)
+- `docker-compose.yml` → sps-web+SQLite kalıntısı → kokpitim-web+PostgreSQL referans compose
+- `.env` / `.env.production.example` → HGS_BYPASS_ENABLED artığı silindi (S2 tam kapanış)
+- `ui/templates/platform/sp/exec_dashboard.html` → ai-pivot debug console.log silindi
+- `ruff.toml` (yeni) → E9/F63/F7/F82 kuralları; legacy borç per-file-ignores ile işaretli
+- `.github/workflows/ci.yml` → ruff adımı + coverage gate %25 (ratchet; 2026-07-08 ölçüm %26)
+- `micro/modules/masaustu/routes.py`, `app/routes/core.py`, `app/routes/process.py` → eksik `current_app`/`abort` importları (çağrılınca NameError→500 üretiyordu)
+- `app/services/notification_service.py`, `app/services/webhook_service.py` → eksik `timezone` importu (aynı sınıf)
+- `app/utils/query_helpers.py` → TYPE_CHECKING import (F821)
+- `api/routes.py` → hedef dağıtma endpoint'inde kopyala-yapıştır `log_event(task.id,...)` her başarılı istekte NameError→500 üretiyordu; doğru değişkenlerle düzeltildi + fonksiyon-içi gölgeleyen `current_user` importu silindi
+- `micro/modules/sp/routes_sp_proje.py` → eksik `_try_int` helper eklendi (NameError)
+- `micro/modules/sp/routes_analysis.py`, `micro/modules/surec/routes_kpi_data.py` → tuple-unpack `_` gettext `_`'i gölgeliyordu (F823, çalışma anında NameError) → `_kw`/`_hdr`
+- `scripts/restore_vm_original_data.py` → tanımsız DB_NAME düzeltildi
+
+### Yapılan İşlem
+Fable raporu (docs/rapor/fablerapor.md) Faz 0 maddeleri uygulandı. Ruff kritik-kural taraması 87 gizli tanımsız-isim hatası buldu; 21'i (modern yüzey) düzeltildi, kalan 66'sı (60'ı app/services/process_performance_service.py, 6'sı legacy services/) ruff.toml per-file-ignores ile Faz 2 borcu olarak işaretlendi. CI artık yeni NameError/Syntax hatalarını ve coverage düşüşünü engelliyor.
+
+### Notlar
+- Test: 19 failed / 393 passed — main ile birebir aynı (stash karşılaştırması yapıldı); 19 hata önceden var olan yerel-ortam sorunu (smoke testlerde /micro/sp ve k-radar route'ları test app'inde 404 — ayrıca incelenmeli).
+- S3 (rate limit Redis) sunucu .env işlemi — operatör adımı, deploy notunda.
+
+---
+
 ## TASK-228 | 2026-07-07 | ✅ Tamamlandı (kod + demo deploy)
 
 **Görev:** Demo ortamını tek-Tomofil'den 4 kuruma genişletme (Tom1/Tom2/Tom3/Tomofil, admin-only giriş, her biri farklı paket)

@@ -11,7 +11,7 @@ import requests
 import hmac
 import hashlib
 import json
-from datetime import datetime
+from datetime import datetime, timezone
 
 class WebhookService:
     """Webhook yönetim servisi"""

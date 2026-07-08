@@ -44,7 +44,8 @@ def init_limiter(app):
 def set_security_headers(response):
     """Add security headers to response"""
     response.headers['X-Content-Type-Options'] = 'nosniff'
-    response.headers['X-Frame-Options'] = 'SAMEORIGIN'
+    # DENY — Talisman (app/__init__.py frame_options) ile aynı değer; SAMEORIGIN çelişkisi giderildi
+    response.headers['X-Frame-Options'] = 'DENY'
     response.headers['X-XSS-Protection'] = '1; mode=block'
     response.headers['Referrer-Policy'] = 'strict-origin-when-cross-origin'
     response.headers['Permissions-Policy'] = (

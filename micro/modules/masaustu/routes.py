@@ -9,7 +9,7 @@ Tüm modüllerden gelen:
 
 from datetime import date, timedelta, datetime, time
 
-from flask import render_template, jsonify, request
+from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 from flask_babel import gettext as _
 from sqlalchemy import case, or_, and_, inspect as sa_inspect

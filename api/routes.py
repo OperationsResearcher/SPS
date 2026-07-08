@@ -418,7 +418,6 @@ def api_ai_coach_analyze():
                 pass
         payload = _build_vision_score_payload_for_ai(kurum_id, as_of_date)
         from services.ai_coach_service import analyze_strategic_performance
-        from flask_login import current_user
         result = analyze_strategic_performance(
             payload,
             tenant_id=getattr(current_user, "tenant_id", kurum_id),
@@ -567,11 +566,10 @@ def api_surec_pg_hedef_dagit(surec_id: int, pg_id: int):
         
         log_event(
             current_app.logger,
-            'task_updated',
-            task_id=task.id,
-            project_id=project_id,
+            'kpi_targets_distributed',
+            surec_id=surec_id,
+            pg_id=pg_id,
             user_id=current_user.id,
-            status=task.status,
         )
         return jsonify({'success': True, 'message': 'Hedefler başarıyla dağıtıldı'})
     except Exception as e:

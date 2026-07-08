@@ -541,7 +541,6 @@
     try {
       const res = await fetch(r.dataset.pivotUrl, { method: 'POST' });
       const j = await res.json();
-      console.log('[ai-pivot debug]', j);
 
       // ── Kota uyarıları ──
       if (res.status === 429 || j.source === 'heuristic_quota') {

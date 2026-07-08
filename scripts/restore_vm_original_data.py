@@ -25,6 +25,7 @@ conn = psycopg2.connect(
     host=_p.hostname, port=_p.port or 5432,
     dbname=_p.path.lstrip("/"), user=_p.username, password=_p.password
 )
+DB_NAME = _p.path.lstrip("/")
 conn.autocommit = False
 cur  = conn.cursor()
 
