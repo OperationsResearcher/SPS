@@ -13,6 +13,9 @@
 - **Demo:** bind-mount yöntemiyle (hafızadaki standart adımlar) `git archive main` tarball → extract → 3 silinen dosya elle kaldırıldı (muda_analyzer, report_service, tailwind.config.js) → chown 197609 → restart. Smoke: health 200, landing 200, tailwind 200. DB'ye DOKUNULMADI (şema/veri değişikliği yok — baseline snapshot yenileme gerekmedi).
 - Tag: `deploy-2026-07-08` push'landı.
 
+### Ek düzeltme (aynı gün) — Demo Tom1/2/3 kayboldu
+Deploy sonrası kullanıcı bildirdi: Tom1/2/3 girişleri "demo hesabı hazır değil" veriyordu. Kök neden deploy DEĞİL: dünkü kurulumda klonlardan sonra baseline snapshot yenilenmemişti; ilk otomatik sıfırlama klonları sildi. Çözüm: demo DB'de global sequence resync (drift PK çakışması veriyordu) → 3 klon yeniden (`scripts.demo_clone_tenant`) → **baseline 4 kurumlu halden yeniden alındı** (kalıcı çözüm) → 4/4 `/demo/start` 302. Ders hafızaya işlendi.
+
 ### Notlar
 - İçerik: TASK-229…237 + daha önce main'de birikmiş i18n katmanı İLK KEZ Yayın'da.
 - Kart-gating Yayın'da şu an görünmez (7 tenant Master pakette); Demo'da Tom1/2/3 farklı paketleri temsil ettiğinden tier farkı artık kartlarda görünür.
