@@ -39,7 +39,24 @@ verisi görünür). Kart komple gizlenmez — kısmi çalışır.
 - `label`: UI'da görünen ad (opsiyonel)
 
 ## Kararlar (kullanıcı, 2026-06-20)
-1. **Yetkisiz veri → satır/alan düşer** (kart kalır). Komple gizleme YOK.
+1. ~~**Yetkisiz veri → satır/alan düşer** (kart kalır). Komple gizleme YOK.~~
+   **REVİZE (kullanıcı onayı, 2026-07-08): Kart-düzeyi KOMPLE gizleme VAR.**
+   Paket dışı kartın tamamı gizlenir. Mekanizma:
+   - Zincir: `SystemCard.component_id → SystemComponent.code (= component_slug) → paket modülleri`
+     (DB doğrulaması 2026-07-08: 699 kartın 672'sinde component_id dolu, 553'ünde zincir tam;
+     167 slug'ın tamamı SystemComponent.code ile birebir eşleşiyor — ek kolon/migration GEREKMEDİ).
+   - Merkezî uygulama: `cards-meta` API yanıtındaki `hidden` listesi + `base.html` JS
+     (`enforceHidden`) — 343+ template'e tek tek dokunmadan tüm kartlar kapsanır,
+     MutationObserver ile AJAX kartları dahil.
+   - Server-side: `{% if card_visible('kod') %}` helper'ı da mevcut (app/__init__.py) —
+     kritik kartlarda progressive sertleştirme için.
+   - Fail-open + Admin bypass deseni korunur (component_visible ile aynı):
+     zinciri olmayan kart / hiçbir modüle atanmamış component → görünür.
+   - NOT: JS gizleme derin güvenlik değildir; veri güvenliği route-düzeyi
+     `require_component`/`require_module` decorator'larının işidir (ayrı iş, değişmedi).
+   Veri-satırı düşürme (`card_data_visible`) mekanizması da geçerliliğini korur —
+   iki mekanizma birlikte çalışır (kart komple paket dışıysa gizle; kart açık ama
+   içindeki tek veri parçası üst pakete aitse satır düşer).
 2. **Yönetim DB-tabanlı + admin UI** (4 katman gör/taşı/düzenle).
 3. **Kart keşfi otomatik** — template/koddan taranır, admin'den **tekrar tetiklenebilir**
    (kullanmayı bırakıp tekrar aktif edilebilir; RouteRegistry sync felsefesi).

@@ -1318,7 +1318,11 @@ def admin_api_cards_meta():
     codes = [str(c) for c in codes][:500]
     cards = SystemCard.query.filter(SystemCard.code.in_(codes)).all() if codes else []
     meta = {c.code: {"short_id": c.short_id, "name": c.name} for c in cards}
-    return jsonify({"success": True, "meta": meta})
+    # Kart-düzeyi paket zorlaması (2026-07-08): kullanıcının paketinde olmayan
+    # kartlar "hidden" listesinde döner; base.html merkezî JS'i bunları gizler.
+    from app.utils.package_gating import allowed_component_slugs, hidden_card_codes
+    hidden = hidden_card_codes(codes, allowed_component_slugs(current_user))
+    return jsonify({"success": True, "meta": meta, "hidden": hidden})
 
 
 @app_bp.route("/admin/api/cards/<int:card_id>", methods=["POST"])

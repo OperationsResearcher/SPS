@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-232 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 3 — Kart-düzeyi paket zorlaması (komple gizleme; kullanıcı onaylı karar revizyonu)
+**Modül:** paketleme/gating (app/utils, admin, base.html)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/paketler/KART-KATMANI-TASARIM.md` → Karar 1 REVİZE (2026-06-20 "komple gizleme YOK" → 2026-07-08 kullanıcı onayıyla "kart-düzeyi komple gizleme VAR"); mekanizma + DB doğrulaması belgelendi
+- `app/utils/package_gating.py` (yeni) → `allowed_component_slugs(user)` + `hidden_card_codes(codes, slugs)`; zincir: SystemCard.component_id → SystemComponent.code (= component_slug) → paket modülleri
+- `micro/modules/admin/routes.py` → cards-meta yanıtına `hidden` listesi eklendi
+- `ui/templates/platform/base.html` → merkezî JS gizleme (`enforceHidden` + loadMeta yanıtı + place() + MutationObserver kapsamı) — 343+ template'e dokunmadan tüm kartlar kapsanır
+- `app/__init__.py` → `card_visible(card_code)` context processor helper'ı (server-side progressive sertleştirme için)
+- `tests/test_card_gating.py` (yeni) → 4 test: paket-dışı gizlenir, admin bypass, paketsiz fail-open, atanmamış component fail-open
+
+### Yapılan İşlem
+DB doğrulaması: 699 kartın 672'sinde component_id dolu; 167 slug'ın tamamı SystemComponent.code ile eşleşiyor → köprü zaten veride vardı, migration GEREKMEDİ. Simülasyon: Başlangıç paketi 443/699, Yönetim 57/699, Strateji 0/699 kart gizler — kademelenme anlamlı.
+
+### Notlar
+- JS gizleme derin güvenlik DEĞİL — veri güvenliği route-düzeyi `require_component`/`require_module` decorator'larının işi (mevcut, değişmedi). Fail-open + Admin bypass deseni korundu.
+- base.html değişti → yerelde `python pybasla.py` ile yeniden başlatma gerekir.
+- Mevcut 7 tenant Master pakette olduğundan bugünkü görünümde hiçbir şey değişmez; etki tenant'a düşük paket atanınca başlar. Demo kurumları (Tom1/2/3) farklı paketleri temsil ettiğinden demo'da tier farkı artık kartlarda da görünür olacak (deploy edilince).
+- Test: 403 passed / 19 failed (baseline aynı), ruff temiz.
+
+---
+
 ## TASK-231 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 2 borç eritme (fablerapor.md) — N+1 düzeltmeleri + api/routes.py parçalama + servis konsolidasyonu (düşük risk) + CSP bulgusu

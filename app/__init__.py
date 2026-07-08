@@ -228,8 +228,22 @@ def create_app(config_class=None):
                 return True  # eşleme/kısıt yok → göster
             return row.required_component_code in slugs
 
+        def card_visible(card_code):
+            """Kartın TAMAMI paket'e göre görünür mü? (kart-düzeyi zorlama, 2026-07-08).
+
+            SystemCard.component_id → SystemComponent.code zinciriyle çözülür;
+            zincir yoksa / component hiçbir modüle atanmamışsa fail-open."""
+            if slugs is None:
+                return True
+            try:
+                from app.utils.package_gating import hidden_card_codes
+                return card_code not in hidden_card_codes([card_code], slugs)
+            except Exception:
+                return True
+
         return {"component_visible": component_visible,
-                "card_data_visible": card_data_visible}
+                "card_data_visible": card_data_visible,
+                "card_visible": card_visible}
 
     @app.context_processor
     def _inject_sidebar_modules():
