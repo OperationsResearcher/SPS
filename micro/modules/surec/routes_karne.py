@@ -364,8 +364,8 @@ def surec_api_karne(process_id):
             try:
                 _bpa_dict = _parse_bpa(_bpa) if isinstance(_bpa, str) else _bpa
                 _basari_puani = _hesapla_basari_puani(year_rollup, _bpa_dict, _direction or "Increasing")
-            except Exception:
-                pass
+            except Exception as e:
+                current_app.logger.warning(f"[surec_api_karne] suppressed: {e}")
 
         if not _is_included:
             continue

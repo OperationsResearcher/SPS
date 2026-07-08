@@ -6,8 +6,9 @@ Kullanıcı aktivitelerini loglama
 
 from extensions import db
 from datetime import datetime, timezone
+from app.utils.tenant_guard import TenantScopedMixin
 
-class AuditLog(db.Model):
+class AuditLog(TenantScopedMixin, db.Model):
     """Audit log tablosu"""
     
     __tablename__ = 'audit_logs'

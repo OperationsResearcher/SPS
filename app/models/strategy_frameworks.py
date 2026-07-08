@@ -5,11 +5,12 @@ S60-S61: AntiGravity raporundan seçilen, mevcut SWOT/PESTLE'a tamamlayıcı mod
 from __future__ import annotations
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
 # ─── Blue Ocean Strategy ─────────────────────────────────────────────────────
 
-class BlueOceanCanvas(db.Model):
+class BlueOceanCanvas(TenantScopedMixin, db.Model):
     """Bir sektör/pazar için Strategy Canvas (Value Curve) ana kaydı."""
 
     __tablename__ = "blue_ocean_canvases"
@@ -121,7 +122,7 @@ class BlueOceanERRC(db.Model):
 
 # ─── VRIO ────────────────────────────────────────────────────────────────────
 
-class VRIOResource(db.Model):
+class VRIOResource(TenantScopedMixin, db.Model):
     """Kurumsal kaynak/yetenek + VRIO değerlendirmesi."""
 
     __tablename__ = "vrio_resources"

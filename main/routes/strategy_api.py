@@ -477,8 +477,8 @@ def strategy_project_add():
 
         try:
             new_project.notification_settings = json.dumps(notification_settings, ensure_ascii=False)
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[strategy_project_add] suppressed: {e}")
         
         db.session.add(new_project)
         db.session.commit()
@@ -572,8 +572,8 @@ def strategy_project_edit(id):
             current_settings['channels']['in_app'] = True
             current_settings['channels']['email'] = channel_email
             project.notification_settings = json.dumps(current_settings, ensure_ascii=False)
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[strategy_project_edit] suppressed: {e}")
         
         db.session.commit()
         

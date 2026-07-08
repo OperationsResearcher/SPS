@@ -12,6 +12,7 @@ from utils.task_status import normalize_task_status
 import json
 
 from app.models.core import User as CoreUser
+from app.utils.tenant_guard import TenantScopedMixin
 
 # Association Tables
 task_predecessors = db.Table('task_predecessors',
@@ -40,7 +41,7 @@ project_related_processes = db.Table('project_related_processes',
     db.Column('surec_id', db.Integer, db.ForeignKey('processes.id'), primary_key=True)
 )
 
-class Project(db.Model):
+class Project(TenantScopedMixin, db.Model):
     """
     Proje Modeli
     

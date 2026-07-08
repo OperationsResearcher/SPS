@@ -137,8 +137,8 @@ def sso_google_callback():
             resource_id=user.id,
             description=f"User {email} Google SSO ile giriş yaptı",
         )
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[sso_google_callback] suppressed: {e}")
 
     flash(_("Google ile giriş başarılı."), "success")
     return redirect(url_for("app_bp.launcher"))

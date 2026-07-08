@@ -129,6 +129,10 @@ class Config:
     RATELIMIT_DEFAULT = os.environ.get("RATELIMIT_DEFAULT", "300 per hour; 3000 per day")
     RATELIMIT_LOGIN = os.environ.get("RATELIMIT_LOGIN", "15 per minute; 100 per hour")
 
+    # Merkezi tenant izolasyonu (app/utils/tenant_guard.py) — off | enforce
+    # Kademeli devreye alma: Yerel'de enforce ile doğrula → Test → Yayın
+    TENANT_GUARD_MODE = os.environ.get("TENANT_GUARD_MODE", "off")
+
     # Dalga A: legacy HTML yönlendirme middleware (GET → platform)
     LEGACY_SUNSET_ENABLED = os.environ.get("LEGACY_SUNSET_ENABLED", "true").lower() == "true"
     # Çift /process yüzeyi — micro/surec canonical; legacy process_bp kapalı

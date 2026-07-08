@@ -6,7 +6,7 @@ Akıllı bildirim sistemi
 
 from extensions import db
 from app.models.core import User
-from datetime import datetime, timedelta
+from datetime import datetime, timedelta, timezone
 from typing import List, Dict, Optional
 import json
 

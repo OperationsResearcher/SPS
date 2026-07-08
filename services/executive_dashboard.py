@@ -8,6 +8,9 @@ from services.project_analytics import calculate_surec_saglik_skoru
 from sqlalchemy import func, and_, or_
 from datetime import datetime, date
 from flask import current_app
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_corporate_health_score(kurum_id, filters=None):
@@ -172,8 +175,8 @@ def get_corporate_health_score(kurum_id, filters=None):
             try:
                 etki_degeri = float(etken.get('etki', '0').replace('%', '').replace('-', ''))
                 etken_sayilari[etken_adi]['toplam_etki'] += etki_degeri
-            except:
-                pass
+            except Exception as e:
+                logger.warning(f"[get_corporate_health_score] suppressed: {e}")
         
         # En çok görünen ve en yüksek etkiye sahip top 2 etkeni seç
         top_etkenler_list = sorted(

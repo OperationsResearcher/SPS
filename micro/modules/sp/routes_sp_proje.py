@@ -1,6 +1,13 @@
 """Stratejik Planlama — SP proje ve görev API."""
 
 from flask_babel import gettext as _
+
+
+def _try_int(val):
+    try:
+        return int(val)
+    except (TypeError, ValueError):
+        return None
 from functools import wraps
 
 from flask import render_template, jsonify, request, current_app, session

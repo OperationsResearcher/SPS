@@ -5,7 +5,7 @@ import datetime as _dt
 from flask import render_template, jsonify, request, current_app, redirect, url_for
 from flask_login import login_required, current_user
 from sqlalchemy import func
-from sqlalchemy.orm import joinedload
+from sqlalchemy.orm import joinedload, selectinload
 
 from platform_core import app_bp
 from extensions import db
@@ -389,7 +389,7 @@ def k_rapor_api_uyum():
     year = request.args.get("year", _dt.date.today().year, type=int)
     try:
         from app.models.core import Strategy, SubStrategy
-        from app.models.process import Process, ProcessKpi
+        from app.models.process import Process, ProcessKpi, ProcessSubStrategyLink
         from app.services.score_engine_service import compute_vision_score
         from app.services.plan_year_service import get_plan_year
 
@@ -401,7 +401,12 @@ def k_rapor_api_uyum():
         ss_scores       = vision.get("sub_strategy_scores") or {}
 
         from sqlalchemy import or_
-        strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
+        # N+1 önlemi: s.sub_strategies + ss.processes (association proxy → link.process) tek seferde yüklensin
+        strat_q = Strategy.query.options(
+            selectinload(Strategy.sub_strategies)
+            .selectinload(SubStrategy.process_sub_strategy_links)
+            .joinedload(ProcessSubStrategyLink.process)
+        ).filter_by(tenant_id=tid, is_active=True)
         if py_id:
             strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
         strategies = strat_q.order_by(Strategy.code).all()
@@ -465,7 +470,8 @@ def k_rapor_api_faaliyet():
         from app.models.process import Process, ProcessActivity
         today = _dt.date.today()
         activities = (
-            ProcessActivity.query.join(Process)
+            ProcessActivity.query.options(joinedload(ProcessActivity.process))
+            .join(Process)
             .filter(
                 Process.tenant_id == tid,
                 Process.is_active.is_(True),
@@ -1492,8 +1498,8 @@ def k_rapor_api_export_excel():
                 if d and d.status_percentage is not None:
                     try:
                         pct = round(float(d.status_percentage), 1)
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        current_app.logger.warning(f"[k_rapor_api_export_excel] suppressed: {e}")
                 ws.append([
                     f"{u.first_name or ''} {u.last_name or ''}".strip() if u else "",
                     u.email if u else "",
@@ -2054,8 +2060,8 @@ def k_rapor_api_aktivite_takvim():
                         if date:
                             key = str(date)
                             daily_counts[key] = daily_counts.get(key, 0) + cnt
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[k_rapor_api_aktivite_takvim] suppressed: {e}")
 
         # Max değer (renk skalası için)
         max_val = max(daily_counts.values()) if daily_counts else 1
@@ -2186,7 +2192,7 @@ def k_rapor_api_strateji_kapsama():
     year = request.args.get("year", _dt.date.today().year, type=int)
     try:
         from app.models.core import Strategy, SubStrategy
-        from app.models.process import Process
+        from app.models.process import Process, ProcessSubStrategyLink
         from sqlalchemy import or_, text as _t
 
         # Verilen yılın plan_year_id'si
@@ -2200,7 +2206,11 @@ def k_rapor_api_strateji_kapsama():
             strat_q = strat_q.filter(or_(Strategy.plan_year_id == py_id, Strategy.plan_year_id.is_(None)))
         strategies = strat_q.order_by(Strategy.code).all()
 
-        sub_q = SubStrategy.query.join(Strategy).filter(
+        # N+1 önlemi: ss.processes (association proxy → link.process) tek seferde yüklensin
+        sub_q = SubStrategy.query.options(
+            selectinload(SubStrategy.process_sub_strategy_links)
+            .joinedload(ProcessSubStrategyLink.process)
+        ).join(Strategy).filter(
             Strategy.tenant_id == tid, Strategy.is_active.is_(True), SubStrategy.is_active.is_(True)
         )
         if py_id:

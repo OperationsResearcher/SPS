@@ -245,8 +245,8 @@ def _get_radar_weights(tenant_id: int) -> tuple[float, float, float, float]:
                 float(w.get("kpr", 3.0)),
                 float(w.get("bireysel", 2.0)),
             )
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"[_get_radar_weights] suppressed: {e}")
     return 2.0, 3.0, 3.0, 2.0
 
 

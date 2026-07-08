@@ -2,6 +2,88 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-231 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 2 borç eritme (fablerapor.md) — N+1 düzeltmeleri + api/routes.py parçalama + servis konsolidasyonu (düşük risk) + CSP bulgusu
+**Modül:** genel (micro/surec, micro/k_rapor, micro/proje, api/, services/, main/)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- **N+1 (5 nokta):**
+  - `micro/modules/surec/routes_process.py` → süreç listesinde `Strategy.sub_strategies` selectinload
+  - `micro/modules/k_rapor/routes.py` → 3 nokta: uyum/strateji-kapsama (`sub_strategies→process_sub_strategy_links→process` zinciri), faaliyet (`ProcessActivity.process` joinedload)
+  - `micro/modules/proje/display.py` → proje listesi lider/üye/izleyici id'leri: proje başına 3 sorgu → toplam 3 batch (`project_id IN`)
+  - Karne sıcak yolu incelendi: zaten optimize (guard testleri işini yapmış) — dokunulmadı
+- **api/routes.py parçalama (4548 satır → 8 modül):** `api/blueprint.py` (dairesel import çözümü), `api/helpers.py`, `routes_projects/admin/pm/ai/files/process.py`; `routes.py` 22 satırlık giriş noktası. 89 route/URL birebir korundu (870 toplam sabit), `app/__init__.py` dokunulmadı
+- **Servis konsolidasyonu (düşük risk dilimi):** kök `services/report_service.py` (canlı tüketicisi yok) ve `services/muda_analyzer.py` silindi; `main/routes/projects.py` 3 muda importu `app.services.muda_analyzer`'a yönlendirildi (iki sürüm de persist etmiyor, imzalar uyumlu — doğrulandı)
+
+### Yapılan İşlem
+Üç paralel çalışma + bir analiz: N+1 sıcak yolları sorgu-düzeyinde (model lazy= değerlerine dokunmadan) düzeltildi; dev API dosyası alan bazlı modüllere bölündü; çift servis dosyaları analiz edilip yalnızca kanıtlanmış-güvenli ikisi taşındı.
+
+### Notlar
+- **Servis çiftleri — ERTELENEN yüksek riskliler:** `score_engine_service` (kök canlı + benzersiz `recalc_on_faaliyet_change`; eş isimli fonksiyonlar davranış diff'i doğrulanmadan taşınmamalı), `notification_service` (kök 815 satır aktif bildirim motoru, app class'ı ayrı sorumluluk), `webhook_service` (istisna: KÖK canonical, app sürümü ölü), `cache_service` (uyumsuz API + çapraz bağ). Ayrıntılı karar tablosu bu task'ın analiz çıktısında.
+- **CSP bulgusu (ertelendi):** `script-src`'den `unsafe-eval` çıkarılamıyor — `cdn.tailwindcss.com` (Play CDN) ve Alpine.js çalışma anında eval gerektiriyor; `unsafe-inline` için 51 template'te inline `<script>` var. Çözüm frontend build işi (derlenmiş Tailwind + Alpine CSP build + nonce) → Faz 3/4 adayı.
+- Test: 19 failed / 399 passed — baseline ile birebir aynı; ruff temiz; route sayısı 870 sabit.
+
+---
+
+## TASK-230 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 1 veri güvenliği (fablerapor.md) — merkezi tenant izolasyonu + sessiz except:pass seferberliği
+**Modül:** genel (app/utils, app/models, micro, main, api, services)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/utils/tenant_guard.py` (yeni) → `TenantScopedMixin` + `do_orm_execute`/`with_loader_criteria` global tenant filtresi; muafiyetler: request-dışı bağlam, anonim, platform admin, `tenant_guard_bypass` execution option; holding/dealer alt kurum id'leri erişilebilir sette; özyineleme kilidi (`g._tenant_guard_ids` sentinel)
+- `config.py` → `TENANT_GUARD_MODE` (off | enforce, varsayılan **off** — kademeli devreye alma: Yerel→Test→Yayın)
+- `app/__init__.py` → `init_tenant_guard` çağrısı
+- `app/models/*.py` (22 dosya, 41 sınıf) → `TenantScopedMixin` eklendi (User/Tenant bilinçli hariç)
+- `tests/test_tenant_guard.py` (yeni) → 6 cross-tenant regresyon testi (engelleme, kendi verisi, admin muafiyeti, bypass, off modu, context-dışı)
+- 53 sessiz `except...pass` noktasına log eklendi (üç paralel tarama):
+  - micro/ 13 nokta, app/ 22 nokta (SSO/TOTP/KVKK audit yutmaları dahil), main+api+services 18 nokta
+  - Çıplak `except:` → `except Exception` dönüşümleri dahil; dar `(TypeError, ValueError)` parse-fallback'leri (~63) meşru kabul edilip bilinçli korundu
+  - Rollback gereken nokta çıkmadı (hiçbir yutulan try kendi içinde commit barındırmıyordu)
+
+### Yapılan İşlem
+Çok-kiracılı izolasyon artık ~414 elle yazılmış filtreye ek olarak ORM katmanında merkezi güvence altında. Guard, elle filtreleri bozmaz (kriter AND'lenir); mevcut route-düzeyi `tenant_scope.py` dekoratörüyle tamamlayıcı çalışır. `declared_attr` mixin deseni SQLAlchemy'nin resmi with_loader_criteria reçetesiyle deneysel olarak doğrulandı.
+
+### Notlar
+- **TENANT_GUARD_MODE şu an off** — Yerel'de `enforce` ile manuel doğrulama sonrası kademeli açılacak. Holding drilldown ve admin ekranları enforce modda özellikle test edilmeli.
+- Test: 19 failed / 399 passed — 19 hata baseline ile aynı (önceden var olan yerel-ortam sorunu), +6 yeni guard testi geçiyor. Ruff temiz.
+
+---
+
+## TASK-229 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 0 hızlı kapanışlar (fablerapor.md eylem planı) — güvenlik/operasyon temizliği + CI güçlendirme + 8 gizli NameError düzeltmesi
+**Modül:** genel (app/utils, api, micro, CI)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/utils/error_tracking.py` → FileHandler → RotatingFileHandler (10MB×5), error.log sınırsız büyüme kapandı
+- `app/utils/security.py` → X-Frame-Options SAMEORIGIN→DENY (Talisman ile çelişki giderildi)
+- `docker-compose.yml` → sps-web+SQLite kalıntısı → kokpitim-web+PostgreSQL referans compose
+- `.env` / `.env.production.example` → HGS_BYPASS_ENABLED artığı silindi (S2 tam kapanış)
+- `ui/templates/platform/sp/exec_dashboard.html` → ai-pivot debug console.log silindi
+- `ruff.toml` (yeni) → E9/F63/F7/F82 kuralları; legacy borç per-file-ignores ile işaretli
+- `.github/workflows/ci.yml` → ruff adımı + coverage gate %25 (ratchet; 2026-07-08 ölçüm %26)
+- `micro/modules/masaustu/routes.py`, `app/routes/core.py`, `app/routes/process.py` → eksik `current_app`/`abort` importları (çağrılınca NameError→500 üretiyordu)
+- `app/services/notification_service.py`, `app/services/webhook_service.py` → eksik `timezone` importu (aynı sınıf)
+- `app/utils/query_helpers.py` → TYPE_CHECKING import (F821)
+- `api/routes.py` → hedef dağıtma endpoint'inde kopyala-yapıştır `log_event(task.id,...)` her başarılı istekte NameError→500 üretiyordu; doğru değişkenlerle düzeltildi + fonksiyon-içi gölgeleyen `current_user` importu silindi
+- `micro/modules/sp/routes_sp_proje.py` → eksik `_try_int` helper eklendi (NameError)
+- `micro/modules/sp/routes_analysis.py`, `micro/modules/surec/routes_kpi_data.py` → tuple-unpack `_` gettext `_`'i gölgeliyordu (F823, çalışma anında NameError) → `_kw`/`_hdr`
+- `scripts/restore_vm_original_data.py` → tanımsız DB_NAME düzeltildi
+
+### Yapılan İşlem
+Fable raporu (docs/rapor/fablerapor.md) Faz 0 maddeleri uygulandı. Ruff kritik-kural taraması 87 gizli tanımsız-isim hatası buldu; 21'i (modern yüzey) düzeltildi, kalan 66'sı (60'ı app/services/process_performance_service.py, 6'sı legacy services/) ruff.toml per-file-ignores ile Faz 2 borcu olarak işaretlendi. CI artık yeni NameError/Syntax hatalarını ve coverage düşüşünü engelliyor.
+
+### Notlar
+- Test: 19 failed / 393 passed — main ile birebir aynı (stash karşılaştırması yapıldı); 19 hata önceden var olan yerel-ortam sorunu (smoke testlerde /micro/sp ve k-radar route'ları test app'inde 404 — ayrıca incelenmeli).
+- S3 (rate limit Redis) sunucu .env işlemi — operatör adımı, deploy notunda.
+
+---
+
 ## TASK-228 | 2026-07-07 | ✅ Tamamlandı (kod + demo deploy)
 
 **Görev:** Demo ortamını tek-Tomofil'den 4 kuruma genişletme (Tom1/Tom2/Tom3/Tomofil, admin-only giriş, her biri farklı paket)

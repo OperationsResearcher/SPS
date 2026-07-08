@@ -7,9 +7,10 @@ strateji ayarlama önerisi tetiklenir.
 from __future__ import annotations
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class ReplanTrigger(db.Model):
+class ReplanTrigger(TenantScopedMixin, db.Model):
     """Stratejik yeniden planlama tetikleyicisi."""
 
     __tablename__ = "replan_triggers"
@@ -73,7 +74,7 @@ class ReplanTrigger(db.Model):
         }
 
 
-class ReplanTriggerEvent(db.Model):
+class ReplanTriggerEvent(TenantScopedMixin, db.Model):
     """Bir trigger'ın tetiklendiği olayın günlüğü."""
 
     __tablename__ = "replan_trigger_events"

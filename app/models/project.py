@@ -1,9 +1,10 @@
 """SP Proje modulleri — plan year bazlı (yeni sistem)."""
 from datetime import datetime, timezone
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class PlanProject(db.Model):
+class PlanProject(TenantScopedMixin, db.Model):
     """SP Proje. Her PlanYear kapsaminda olusturulur/klonlanir."""
     __tablename__ = "plan_projects"
 

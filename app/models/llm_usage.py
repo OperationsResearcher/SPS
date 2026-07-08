@@ -5,9 +5,10 @@ Maliyet/abuse koruması için her LLM çağrısı log'lanır.
 from __future__ import annotations
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class LLMUsageLog(db.Model):
+class LLMUsageLog(TenantScopedMixin, db.Model):
     """Her LLM çağrısının ham kaydı."""
 
     __tablename__ = "llm_usage_logs"
@@ -61,7 +62,7 @@ class LLMUsageLog(db.Model):
         return f"<LLMUsageLog {self.id} tenant={self.tenant_id}>"
 
 
-class LLMQuotaOverride(db.Model):
+class LLMQuotaOverride(TenantScopedMixin, db.Model):
     """Tenant'a özel kota overide (varsayılan paket limitlerini ezer)."""
 
     __tablename__ = "llm_quota_overrides"

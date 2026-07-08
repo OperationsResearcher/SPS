@@ -1,9 +1,10 @@
 """Stratejik analiz modelleri — plan year bazlı (SWOT, TOWS, PESTEL, Porter)."""
 from datetime import datetime, timezone
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class SwotAnalysis(db.Model):
+class SwotAnalysis(TenantScopedMixin, db.Model):
     """
     SWOT Analizi. Her PlanYear / Tenant kombinasyonu için bir kayıt.
     Güçlü/Zayıf yönler, Fırsatlar ve Tehditler JSON dizisi olarak saklanır.
@@ -57,7 +58,7 @@ class SwotAnalysis(db.Model):
         return f"<SwotAnalysis plan_year={self.plan_year_id} tenant={self.tenant_id}>"
 
 
-class TowsAnalysis(db.Model):
+class TowsAnalysis(TenantScopedMixin, db.Model):
     """
     TOWS Matrisi. Her PlanYear / Tenant için SWOT'tan türetilen stratejiler.
     SO, ST, WO, WT strateji grupları JSON dizisi olarak saklanır.
@@ -111,7 +112,7 @@ class TowsAnalysis(db.Model):
         return f"<TowsAnalysis plan_year={self.plan_year_id} tenant={self.tenant_id}>"
 
 
-class PestelAnalysis(db.Model):
+class PestelAnalysis(TenantScopedMixin, db.Model):
     """
     PESTEL Analizi. Her PlanYear / Tenant için bir kayıt.
     Her kategori JSON dizisi: [{"id":1,"text":"...","impact":"positive","order":1}, ...]
@@ -166,7 +167,7 @@ class PestelAnalysis(db.Model):
         return f"<PestelAnalysis plan_year={self.plan_year_id} tenant={self.tenant_id}>"
 
 
-class PorterFiveForcesAnalysis(db.Model):
+class PorterFiveForcesAnalysis(TenantScopedMixin, db.Model):
     """
     Porter's Five Forces Analizi.
     Her kuvvet: {"score": 1-5, "items": [{"id":1,"text":"...","order":1}, ...]}

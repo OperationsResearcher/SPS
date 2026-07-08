@@ -74,10 +74,10 @@ def api_scheduled_reports_save():
                         merged["day"] = vv.lower()[:3]
                     elif kk == "hour":
                         try: merged["hour"] = max(0, min(23, int(vv)))
-                        except Exception: pass
+                        except Exception as e: current_app.logger.warning(f"[api_scheduled_reports_save] suppressed: {e}")
                     elif kk == "day_of_month":
                         try: merged["day_of_month"] = max(1, min(28, int(vv)))
-                        except Exception: pass
+                        except Exception as e: current_app.logger.warning(f"[api_scheduled_reports_save] suppressed: {e}")
                     elif kk == "frequency" and vv in ("daily", "weekly"):
                         merged["frequency"] = vv
                 subs[k] = merged

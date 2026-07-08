@@ -260,8 +260,8 @@ def kvkk_user_data_export():
                 resource_id=current_user.id,
                 description="Kullanıcı kendi verisini export etti",
             )
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[kvkk_export] suppressed: {e}")
 
         return jsonify(data)
     except Exception as e:
@@ -315,8 +315,8 @@ def kvkk_user_delete():
                 resource_id=current_user.id,
                 description=f"User self-delete: {original_email}",
             )
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[kvkk_user_delete] suppressed: {e}")
 
         # Anonymize (PII clear, id korunur)
         h = hashlib.sha256(str(current_user.id).encode()).hexdigest()[:8]

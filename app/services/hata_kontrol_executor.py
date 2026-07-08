@@ -15,11 +15,14 @@ from __future__ import annotations
 
 import datetime
 import json
+import logging
 import os
 import threading
 import time
 
 from app.services.tenant_clone_service import SYNTH_ADMIN_EMAIL, SYNTH_ADMIN_PW
+
+logger = logging.getLogger(__name__)
 
 DEFAULT_BASE_URL = "http://127.0.0.1:5001"
 _MAX_RUNS = 20   # bellekte tutulacak en son koşu sayısı (sınırsız büyümeyi önler)
@@ -117,8 +120,8 @@ def list_saved_runs(app, limit: int = 30) -> list[dict]:
                 })
             except Exception:
                 continue
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("[hata_kontrol] list_saved_runs suppressed: %s", e)
     return out
 
 
@@ -432,12 +435,12 @@ def _compute_links(app, harvested: dict[str, str], disc_items: list[dict], full:
             try:
                 ep, _ = adapter.match(path)
                 reached_eps.add(ep)
-            except Exception:
-                pass
+            except Exception as e:
+                logger.warning("[hata_kontrol] url match suppressed for %s: %s", path, e)
         except NotFound:
             dead.append({"path": path, "source": src})
-        except Exception:
-            pass
+        except Exception as e:
+            logger.warning("[hata_kontrol] url match suppressed for %s: %s", path, e)
 
     # Yetim: keşfedilen (taranabilir) sayfa, hiçbir sayfadan link almıyor
     # (yalnız TAM taramada anlamlı — limitli koşuda baskılanır)

@@ -5,6 +5,7 @@ from datetime import datetime, timezone
 from flask_login import UserMixin
 
 from app.models import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
 class Tenant(db.Model):
@@ -171,7 +172,7 @@ class User(UserMixin, db.Model):
         return aliases.get(r, r.lower().replace(" ", "_"))
 
 
-class Ticket(db.Model):
+class Ticket(TenantScopedMixin, db.Model):
     """Kule İletişim (Ticket) Modeli."""
 
     __tablename__ = "tickets"
@@ -195,7 +196,7 @@ class Ticket(db.Model):
         return f"<Ticket {self.id} - {self.subject} - {self.status}>"
 
 
-class Strategy(db.Model):
+class Strategy(TenantScopedMixin, db.Model):
     """
     Main Strategy Model (Ana Strateji).
     Defines the top-level strategic goals of the institution.
@@ -263,7 +264,7 @@ class SubStrategy(db.Model):
         return f"<SubStrategy {self.code or ''} - {self.title}>"
 
 
-class Notification(db.Model):
+class Notification(TenantScopedMixin, db.Model):
     """Sistem Bildirimleri (PG sapma, görev vb.)."""
 
     __tablename__ = "notifications"

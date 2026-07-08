@@ -1041,8 +1041,8 @@ def admin_tenants_edit(tenant_id):
                         resource_id=t.id,
                         description=f"Tenant {t.name}: tip {t.tenant_type} → {new_type}",
                     )
-                except Exception:
-                    pass
+                except Exception as e:
+                    current_app.logger.warning(f"[admin_tenants_edit] suppressed: {e}")
                 t.tenant_type = new_type
 
         if "sub_tenant_limit" in data and _is_admin():

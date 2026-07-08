@@ -642,8 +642,8 @@ def surec_api_kpi_score_detail(kpi_id: int):
         try:
             bpa_parsed = _parse_bpa(bpa_raw) if isinstance(bpa_raw, str) else bpa_raw
             score = _hesapla(rollup, bpa_parsed, kpi.direction or "Increasing")
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[surec_api_kpi_score_detail] suppressed: {e}")
 
     return jsonify({
         "success": True,
@@ -714,7 +714,7 @@ def surec_api_kpi_bulk_template():
     headers = ["kpi_id", "Süreç Kodu", "KPI Kodu", "KPI Adı", "Birim", "Hedef",
                "Gerçekleşen Değer (*)", "Veri Tarihi (*) (YYYY-AA-GG)", "Dönem Tipi", "Açıklama"]
     ws.append(headers)
-    for col_idx, _ in enumerate(headers, 1):
+    for col_idx, _hdr in enumerate(headers, 1):
         cell = ws.cell(row=1, column=col_idx)
         cell.fill = header_fill
         cell.font = header_font

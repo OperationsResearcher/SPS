@@ -1,0 +1,27 @@
+# Kokpitim ruff yapılandırması — CI'da yalnızca "çalışırsa çöker" sınıfı kurallar.
+# Amaç: yeni NameError/SyntaxError sınıfı hataların main'e girmesini engellemek.
+# Stil kuralları bilinçli olarak KAPALI (legacy yüzeyde gürültü üretir).
+
+exclude = [
+    ".venv",
+    "venv",
+    "migrations",
+    "scripts/_arsiv",
+    "static",
+    "backups",
+]
+
+[lint]
+# E9: syntax/io hataları, F63: geçersiz karşılaştırma, F7: yanlış yapı, F82: tanımsız isim
+select = ["E9", "F63", "F7", "F82"]
+
+[lint.per-file-ignores]
+# Bilinen legacy borç (fablerapor.md Faz 2) — dosyalar düzeltilince bu istisnalar silinecek.
+# 2026-07-08 envanteri: 66 tanımsız-isim hatası; çağrılan kod yolları legacy/ölü.
+"app/services/process_performance_service.py" = ["F821"]
+"services/ai_advisor_service.py" = ["F821"]
+"services/ai_service.py" = ["F821"]
+"services/k_radar_service.py" = ["F821"]
+"services/notification_service.py" = ["F823"]
+"services/project_cloning.py" = ["F823"]
+"services/score_engine_service.py" = ["F821"]

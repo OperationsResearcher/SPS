@@ -3,9 +3,10 @@
 from datetime import datetime, timezone
 
 from app.models import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class KVektorStrategyWeight(db.Model):
+class KVektorStrategyWeight(TenantScopedMixin, db.Model):
     """Ana strateji ham ağırlığı (K-Vektör kota bölüşümü)."""
 
     __tablename__ = "k_vektor_strategy_weights"
@@ -24,7 +25,7 @@ class KVektorStrategyWeight(db.Model):
         return f"<KVektorStrategyWeight {self.id} tenant={self.tenant_id}>"
 
 
-class KVektorSubStrategyWeight(db.Model):
+class KVektorSubStrategyWeight(TenantScopedMixin, db.Model):
     """Alt strateji ham ağırlığı (ebeveyn ana strateji kotası içinde)."""
 
     __tablename__ = "k_vektor_sub_strategy_weights"
@@ -43,7 +44,7 @@ class KVektorSubStrategyWeight(db.Model):
         return f"<KVektorSubStrategyWeight {self.id} tenant={self.tenant_id}>"
 
 
-class KVektorConfigSnapshot(db.Model):
+class KVektorConfigSnapshot(TenantScopedMixin, db.Model):
     """Yapılandırma / ağırlık değişikliği anı (denetim)."""
 
     __tablename__ = "k_vektor_config_snapshots"

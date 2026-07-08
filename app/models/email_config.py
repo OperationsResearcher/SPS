@@ -6,9 +6,10 @@ from sqlalchemy.ext.hybrid import hybrid_property
 
 from app.utils.encryption import decrypt, encrypt
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class TenantEmailConfig(db.Model):
+class TenantEmailConfig(TenantScopedMixin, db.Model):
     """
     Tenant başına özel SMTP ayarları.
     Boş bırakılırsa sistem varsayılan SMTP'si (kokpitim.com) kullanılır.

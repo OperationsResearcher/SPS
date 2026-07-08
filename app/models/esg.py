@@ -17,9 +17,10 @@ from __future__ import annotations
 from datetime import datetime, timezone
 
 from extensions import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class EsgMetric(db.Model):
+class EsgMetric(TenantScopedMixin, db.Model):
     """ESG metric tanımı (tenant başına)."""
 
     __tablename__ = "esg_metrics"

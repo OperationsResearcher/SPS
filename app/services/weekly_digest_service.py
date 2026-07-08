@@ -9,6 +9,7 @@ from __future__ import annotations
 
 import datetime as _dt
 import io
+import logging
 import os
 
 from flask import render_template_string, current_app
@@ -18,6 +19,8 @@ from sqlalchemy import text
 
 from extensions import db
 from app.services.exec_dashboard_service import build_exec_snapshot
+
+logger = logging.getLogger(__name__)
 
 
 def _ini_status_label(code: str) -> str:
@@ -48,8 +51,8 @@ def _fetch_digest_extras(tenant_id: int) -> dict:
             LIMIT 5
         """), {"t": tenant_id}).fetchall()
         out["top_initiatives"] = [{"name": r.name, "status": r.status, "progress_pct": float(r.p or 0)} for r in rows]
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("[weekly_digest] top_initiatives query suppressed: %s", e)
 
     # Top 5 gecikmiş faaliyet
     try:
@@ -70,8 +73,8 @@ def _fetch_digest_extras(tenant_id: int) -> dict:
              "end_date": r.end_date, "days_overdue": r.days_overdue}
             for r in rows
         ]
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("[weekly_digest] overdue_activities query suppressed: %s", e)
 
     # Strateji bazlı PG performansı (aktif plan yıl)
     # Performans notu: önceki sürümde her PG için 2 korelasyonlu alt-sorgu vardı (N+1).
@@ -120,8 +123,8 @@ def _fetch_digest_extras(tenant_id: int) -> dict:
                 "total": int(r.total), "with_data": int(r.with_data),
                 "on_target_pct": on_target_pct,
             })
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("[weekly_digest] strategy_perf query suppressed: %s", e)
 
     return out
 
@@ -233,8 +236,8 @@ def _ensure_tr_font():
                                    italic="Arial-Italic", boldItalic="Arial-Bold")
                 _FONT_REGISTERED = True
                 return ("Arial", "Arial-Bold", "Arial-Italic")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("[weekly_digest] font registration suppressed, falling back to Helvetica: %s", e)
     return ("Helvetica", "Helvetica-Bold", "Helvetica-Oblique")
 
 
@@ -701,8 +704,8 @@ def render_digest_pdf(tenant_id: int, tenant_name: str = None, tenant=None) -> t
         pdf = HTML(string=html).write_pdf()
         if pdf:
             return pdf, "application/pdf"
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning("[weekly_digest] weasyprint PDF fallback suppressed: %s", e)
 
     # Fallback: HTML
     return render_digest_html(tenant_id, tenant_name).encode("utf-8"), "text/html"

@@ -8,7 +8,11 @@ Kullanım:
 """
 from __future__ import annotations
 
-from typing import Optional
+from typing import Optional, TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from app.models.core import User
+    from app.models.process import Process
 
 
 def get_tenant_user(user_id: int, tenant_id: int) -> Optional["User"]:

@@ -7,6 +7,9 @@ from flask_babel import gettext as _
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData, ProcessActivity
 from app.models.portfolio_project import Project, Task
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_morning_summary(tenant_id: int, user_id: int) -> dict:
@@ -82,7 +85,7 @@ def get_morning_summary(tenant_id: int, user_id: int) -> dict:
                 except (TypeError, ValueError):
                     continue
     except Exception as e:
-        pass
+        logger.warning(f"[get_morning_summary] kpis_below_target suppressed: {e}")
 
     # ── Geciken faaliyetler ───────────────────────────────────────────────────
     overdue_activities: list[dict] = []
@@ -109,8 +112,8 @@ def get_morning_summary(tenant_id: int, user_id: int) -> dict:
                 "end_date": a.end_date.isoformat() if a.end_date else None,
                 "days_overdue": (today - a.end_date).days if a.end_date else 0,
             })
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"[get_morning_summary] overdue_activities suppressed: {e}")
 
     # ── Bu haftaki faaliyetler ────────────────────────────────────────────────
     upcoming_activities: list[dict] = []
@@ -137,8 +140,8 @@ def get_morning_summary(tenant_id: int, user_id: int) -> dict:
                 "process_id": a.process_id,
                 "end_date": a.end_date.isoformat() if a.end_date else None,
             })
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"[get_morning_summary] upcoming_activities suppressed: {e}")
 
     # ── Geciken projeler ──────────────────────────────────────────────────────
     overdue_projects: list[dict] = []
@@ -162,8 +165,8 @@ def get_morning_summary(tenant_id: int, user_id: int) -> dict:
                 "end_date": p.end_date.isoformat() if p.end_date else None,
                 "days_overdue": (today - p.end_date).days if p.end_date else 0,
             })
-    except Exception:
-        pass
+    except Exception as e:
+        logger.warning(f"[get_morning_summary] overdue_projects suppressed: {e}")
 
     # ── Özet metin ────────────────────────────────────────────────────────────
     parts = []

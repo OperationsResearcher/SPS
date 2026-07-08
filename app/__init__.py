@@ -74,6 +74,10 @@ def create_app(config_class=None):
     from app.utils.security import init_limiter, set_security_headers
     init_limiter(app)
 
+    # Merkezi tenant izolasyonu (TENANT_GUARD_MODE=enforce ise aktif)
+    from app.utils.tenant_guard import init_tenant_guard
+    init_tenant_guard(app, db)
+
     _flask_env = (os.environ.get("FLASK_ENV") or "").lower()
     _csp_enabled = app.config.get(
         "CSP_ENABLED", os.environ.get("CSP_ENABLED", str(_flask_env == "production")).lower() == "true"

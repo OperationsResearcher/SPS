@@ -97,8 +97,8 @@ def _get_user_project_role_for_page(project: Project):
             ).first() is not None
             if is_leader:
                 return 'manager'
-    except Exception:
-        pass
+    except Exception as e:
+        current_app.logger.warning(f"[_get_user_project_role_for_page] suppressed: {e}")
 
     return None
 

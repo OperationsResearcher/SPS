@@ -4,6 +4,7 @@ Error tracking and logging utilities
 """
 import logging
 import traceback
+from logging.handlers import RotatingFileHandler
 from datetime import datetime
 from flask import request, has_request_context
 from functools import wraps
@@ -16,8 +17,10 @@ def setup_logging(app):
     console_handler = logging.StreamHandler()
     console_handler.setLevel(logging.INFO)
     
-    # File handler for errors
-    error_handler = logging.FileHandler('error.log')
+    # File handler for errors (rotated: 10MB x 5 — unbounded growth guard)
+    error_handler = RotatingFileHandler(
+        'error.log', maxBytes=10 * 1024 * 1024, backupCount=5, encoding='utf-8'
+    )
     error_handler.setLevel(logging.ERROR)
     
     # Formatter

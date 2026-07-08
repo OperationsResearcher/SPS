@@ -3,9 +3,10 @@
 from datetime import datetime, timezone
 
 from app.models import db
+from app.utils.tenant_guard import TenantScopedMixin
 
 
-class SwotAnalysis(db.Model):
+class SwotAnalysis(TenantScopedMixin, db.Model):
     """SWOT analysis item per tenant."""
 
     __tablename__ = "swot_analyses"

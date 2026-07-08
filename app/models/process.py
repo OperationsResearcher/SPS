@@ -11,6 +11,7 @@ from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import synonym
 from extensions import db
 from app.models.core import SubStrategy
+from app.utils.tenant_guard import TenantScopedMixin
 
 # Association Tables (Many-to-Many Relationships)
 
@@ -48,7 +49,7 @@ process_owners_table = db.Table('process_owners_table',
     db.Column('user_id', db.Integer, db.ForeignKey('users.id', ondelete='CASCADE'), primary_key=True)
 )
 
-class Process(db.Model):
+class Process(TenantScopedMixin, db.Model):
     """
     Process Model (Süreç)
     

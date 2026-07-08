@@ -3,8 +3,14 @@
 
 from __future__ import annotations
 
+from extensions import db
 from app.models.core import User as CoreUser
-from app.models.portfolio_project import Project
+from app.models.portfolio_project import (
+    Project,
+    project_leaders,
+    project_members,
+    project_observers,
+)
 
 
 def _label_from_core(u: CoreUser) -> str:
@@ -26,9 +32,37 @@ def collect_project_user_ids(project: Project) -> set[int]:
 
 
 def collect_projects_user_ids(projects: list) -> set[int]:
+    """Liste görünümü için toplu ID toplama — proje başına 3 sorgu yerine toplam 3 sorgu (N+1 önlemi).
+
+    Davranış `collect_project_user_ids` ile birebir: lider tablosu boşsa manager_id eklenir.
+    """
+    pids = [p.id for p in projects]
+    if not pids:
+        return set()
+
+    leaders_by_pid: dict[int, list[int]] = {}
+    for pid, uid in (
+        db.session.query(project_leaders.c.project_id, project_leaders.c.user_id)
+        .filter(project_leaders.c.project_id.in_(pids))
+        .all()
+    ):
+        leaders_by_pid.setdefault(pid, []).append(uid)
+
     ids: set[int] = set()
+    for table in (project_members, project_observers):
+        ids.update(
+            r[0]
+            for r in db.session.query(table.c.user_id)
+            .filter(table.c.project_id.in_(pids))
+            .all()
+        )
+
     for p in projects:
-        ids |= collect_project_user_ids(p)
+        lids = leaders_by_pid.get(p.id)
+        if lids:
+            ids.update(lids)
+        elif p.manager_id:
+            ids.add(p.manager_id)
     return ids
 
 

@@ -142,8 +142,8 @@ def api_global_search():
                     "subtitle": "Proje",
                     "url": f"/project/{p.id}",
                 })
-        except Exception:
-            pass
+        except Exception as e:
+            current_app.logger.warning(f"[api_global_search] suppressed: {e}")
 
         # Kullanıcılar (yalnız kendi kurum)
         users = (
