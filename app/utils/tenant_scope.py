@@ -235,15 +235,10 @@ def can_manage_sub_tenants(user=None) -> bool:
 def default_landing_endpoint(user=None) -> str:
     """Login sonrası yönlendirilecek varsayılan endpoint.
 
-    - Holding admin       → app_bp.holding_dashboard_page
-    - Bayi admin          → app_bp.admin_sub_tenants_page
-    - Diğerleri (Platform Admin / normal kullanıcı) → app_bp.launcher
+    TASK-237 (kullanıcı kararı, 2026-07-08): TÜM girişler /desktop-launcher'a
+    iner — rol bazlı iniş (holding→holding dashboard, bayi→alt kurumlar)
+    kaldırıldı; bu sayfalara launcher/sidebar'dan gidilir.
     """
-    u = user or current_user
-    if is_holding_admin(u):
-        return "app_bp.holding_dashboard_page"
-    if is_dealer_admin(u):
-        return "app_bp.admin_sub_tenants_page"
     return "app_bp.launcher"
 
 

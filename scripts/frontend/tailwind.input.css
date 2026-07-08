@@ -1,0 +1,4 @@
+/* Tailwind giriş dosyası — Play CDN varsayılanıyla eş (preflight + tüm katmanlar) */
+@tailwind base;
+@tailwind components;
+@tailwind utilities;

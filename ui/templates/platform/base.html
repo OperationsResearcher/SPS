@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="{{ get_locale() }}" x-data="microApp()" :class="darkMode ? 'dark' : ''">
+<html lang="{{ get_locale() }}">
 
 <head>
     <meta charset="UTF-8">
@@ -13,11 +13,9 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
 
     <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="{{ url_for('app_bp.static', filename='platform/js/tailwind.config.js') }}"></script>
-
-    <!-- Alpine.js -->
-    <script defer src="https://cdn.jsdelivr.net/npm/alpinejs@3.x.x/dist/cdn.min.js"></script>
+    {# Tailwind: derlenmiş CSS (TASK-236 — Play CDN + Alpine kaldırıldı; CSP unsafe-eval kapatıldı).
+       Yeniden derleme: scripts/frontend/build_css.ps1 (template'lerde yeni utility class kullanınca) #}
+    <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/tailwind.css') }}?v={{ config['VERSION'] }}">
 
     <!-- SweetAlert2 -->
     <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
@@ -104,13 +102,15 @@
             }
             document.documentElement.setAttribute("data-theme", t);
             if (document.body) document.body.setAttribute("data-theme", t);
+            // Tailwind dark: varyantları class tabanlı — erken uygula (FOUC önlemi, TASK-236)
+            document.documentElement.classList.toggle("dark", t === "dark");
         } catch(e) {}
     })();
     </script>
 </head>
 
 <body class="{% if not request.endpoint or request.endpoint != 'app_bp.login' %}micro-layout{% endif %} {% if session.get('demo_session_active') %}demo-mode{% endif %}"
-    :class="darkMode ? 'dark' : ''">
+    >
 
     {# ═════════ Demo banner (KOKPITIM_DEMO_MODE + aktif session) ═════════ #}
     {% if session.get('demo_session_active') %}
@@ -315,7 +315,7 @@
 
         <!-- Footer: kullanıcı -->
         <div class="sidebar-footer">
-            <div class="sidebar-user" x-data="{ open: false }" @click="open = !open" style="position:relative">
+            <div class="sidebar-user" data-kk-dropdown data-kk-dd-self style="position:relative">
                 <div class="sidebar-avatar">
                     {% if current_user.profile_picture %}
                     <img src="{{ current_user.profile_picture }}"
@@ -333,20 +333,19 @@
                 <i class="fas fa-ellipsis-v" style="color:rgba(255,255,255,0.3); font-size:12px;"></i>
 
                 <!-- Popup menu -->
-                <div x-show="open" @click.outside="open=false" x-transition
-                    style="position:absolute; bottom:48px; left:0; right:0; background:#2d2a5e; border-radius:10px; border:1px solid rgba(255,255,255,0.1); padding:4px; z-index:200;">
+                <div data-kk-dd-panel style="display:none; position:absolute; bottom:48px; left:0; right:0; background:#2d2a5e; border-radius:10px; border:1px solid rgba(255,255,255,0.1); padding:4px; z-index:200;">
                     <a href="{{ url_for('app_bp.profil') }}"
                         style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:rgba(255,255,255,0.8); font-size:13px; text-decoration:none; transition:background 0.15s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.08)'"
                         onmouseout="this.style.background=''">
                         <i class="fas fa-user-circle" style="width:14px;"></i> {{ _("Profilim") }}
                     </a>
-                    <button @click="toggleDark()"
+                    <button type="button" data-kk-toggle-dark
                         style="display:flex; align-items:center; gap:8px; padding:8px 10px; border-radius:7px; color:rgba(255,255,255,0.8); font-size:13px; background:none; border:none; cursor:pointer; width:100%; transition:background 0.15s;"
                         onmouseover="this.style.background='rgba(255,255,255,0.08)'"
                         onmouseout="this.style.background=''">
                         <i class="fas fa-moon" style="width:14px;"></i>
-                        <span x-text="darkMode ? '{{ _('Aydınlık Mod') }}' : '{{ _('Karanlık Mod') }}'"></span>
+                        <span data-kk-dark-label data-label-light="{{ _('Aydınlık Mod') }}" data-label-dark="{{ _('Karanlık Mod') }}"></span>
                     </button>
                     <hr style="border:none; border-top:1px solid rgba(255,255,255,0.08); margin:4px 0;">
                     <a href="{{ url_for('public_logout') }}"
@@ -395,15 +394,14 @@
 
             <div class="topbar-actions">
                 <!-- Dil seçici (i18n) -->
-                <div x-data="{ langOpen: false }" style="position:relative;">
-                    <button @click="langOpen = !langOpen" class="topbar-icon-btn"
+                <div data-kk-dropdown style="position:relative;">
+                    <button data-kk-dd-toggle class="topbar-icon-btn"
                         style="width:auto; padding:0 8px; gap:4px; display:flex; align-items:center; font-weight:600; font-size:12px;"
                         title="Dil / Language">
                         <i class="fas fa-globe"></i>
                         <span>{{ get_locale()|upper }}</span>
                     </button>
-                    <div x-show="langOpen" @click.outside="langOpen = false" x-cloak
-                        style="position:absolute; right:0; top:calc(100% + 6px); background:var(--color-surface,#fff); border:1px solid var(--color-border,#e2e8f0); border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,.12); min-width:140px; z-index:1000; overflow:hidden;">
+                    <div data-kk-dd-panel style="display:none; position:absolute; right:0; top:calc(100% + 6px); background:var(--color-surface,#fff); border:1px solid var(--color-border,#e2e8f0); border-radius:8px; box-shadow:0 4px 16px rgba(0,0,0,.12); min-width:140px; z-index:1000; overflow:hidden;">
                         <a href="{{ url_for('set_language', lang='tr') }}" class="mc-dropdown-item" style="display:flex; align-items:center; gap:8px; padding:9px 14px; text-decoration:none; color:inherit; font-size:13px; {% if get_locale() == 'tr' %}font-weight:700;{% endif %}">🇹🇷 Türkçe {% if get_locale() == 'tr' %}<i class="fas fa-check" style="margin-left:auto; color:var(--color-primary,#4338ca);"></i>{% endif %}</a>
                         <a href="{{ url_for('set_language', lang='en') }}" class="mc-dropdown-item" style="display:flex; align-items:center; gap:8px; padding:9px 14px; text-decoration:none; color:inherit; font-size:13px; {% if get_locale() == 'en' %}font-weight:700;{% endif %}">🇬🇧 English {% if get_locale() == 'en' %}<i class="fas fa-check" style="margin-left:auto; color:var(--color-primary,#4338ca);"></i>{% endif %}</a>
                     </div>
@@ -417,8 +415,8 @@
                 </a>
 
                 <!-- Kullanıcı dropdown -->
-                <div x-data="{ open: false }" style="position:relative;">
-                    <button @click="open = !open" class="topbar-icon-btn"
+                <div data-kk-dropdown style="position:relative;">
+                    <button data-kk-dd-toggle class="topbar-icon-btn"
                         style="width:auto; padding:0 8px; gap:6px; display:flex; align-items:center;">
                         <div class="mc-avatar mc-avatar-sm">
                             {% if current_user.profile_picture %}
@@ -436,8 +434,7 @@
                         </span>
                         <i class="fas fa-chevron-down" style="font-size:10px; color:#94a3b8;"></i>
                     </button>
-                    <div x-show="open" @click.outside="open=false" x-transition x-cloak
-                        style="position:absolute; right:0; top:calc(100% + 6px); width:200px; background:white; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); border:1px solid #e2e8f0; padding:6px; z-index:200;">
+                    <div data-kk-dd-panel style="display:none; position:absolute; right:0; top:calc(100% + 6px); width:200px; background:white; border-radius:12px; box-shadow:0 8px 30px rgba(0,0,0,0.12); border:1px solid #e2e8f0; padding:6px; z-index:200;">
                         <a href="{{ url_for('app_bp.profil') }}"
                             style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; text-decoration:none; transition:background 0.15s;"
                             onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
@@ -448,11 +445,11 @@
                             onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
                             <i class="fas fa-cog" style="color:#94a3b8; width:14px;"></i> Ayarlar
                         </a>
-                        <button @click="toggleDark(); open=false"
+                        <button type="button" data-kk-toggle-dark data-kk-dd-close
                             style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; background:none; border:none; cursor:pointer; width:100%; transition:background 0.15s;"
                             onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
                             <i class="fas fa-moon" style="color:#94a3b8; width:14px;"></i>
-                            <span x-text="darkMode ? '{{ _('Aydınlık Mod') }}' : '{{ _('Karanlık Mod') }}'"></span>
+                            <span data-kk-dark-label data-label-light="{{ _('Aydınlık Mod') }}" data-label-dark="{{ _('Karanlık Mod') }}"></span>
                         </button>
                         <hr style="border:none; border-top:1px solid #f1f5f9; margin:4px 0;">
                         <a href="{{ url_for('public_logout') }}"

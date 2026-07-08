@@ -1,43 +1,88 @@
 /* ═══════════════════════════════════════════════════════
-   Micro Platform — Alpine.js global + Sidebar + MicroUI
+   Micro Platform — Tema + Dropdown + Sidebar + MicroUI
+   (Alpine.js kaldırıldı — TASK-236, CSP unsafe-eval)
    ═══════════════════════════════════════════════════════ */
 
-/* ── Alpine.js global data ── */
-function microApp() {
-    return {
-        // Tek tema kaynağı: hem System A (micro_dark/class="dark") hem System B
-        // (kk_theme/data-theme) anahtarlarını oku ki eski kullanıcılar da senkron olsun.
-        darkMode: (localStorage.getItem('micro_dark') === 'true') || (localStorage.getItem('kk_theme') === 'dark'),
-        sidebarOpen: false,
+/* ── Tema (dark mode) — eski microApp() davranışı birebir ── */
+(function () {
+    'use strict';
+    // Tek tema kaynağı: hem System A (micro_dark/class="dark") hem System B
+    // (kk_theme/data-theme) anahtarlarını oku ki eski kullanıcılar da senkron olsun.
+    var darkMode = (localStorage.getItem('micro_dark') === 'true') || (localStorage.getItem('kk_theme') === 'dark');
 
-        toggleDark() {
-            this.darkMode = !this.darkMode;
-            localStorage.setItem('micro_dark', this.darkMode);
-            // System B (data-theme/kk_theme + sunucu senkron) ile birlikte uygula —
-            // aksi halde [data-theme="dark"] kuralları (breadcrumb, mobil dark katmanı,
-            // ayar kutucukları) hiç aktive olmuyordu (kk_theme hiç yazılmıyordu).
-            try {
-                if (window.KKTheme) {
-                    window.KKTheme.apply(this.darkMode ? 'dark' : 'light');
-                } else {
-                    const t = this.darkMode ? 'dark' : 'light';
-                    localStorage.setItem('kk_theme', t);
-                    document.documentElement.setAttribute('data-theme', t);
-                    document.body.setAttribute('data-theme', t);
+    function applyDarkClass() {
+        document.documentElement.classList.toggle('dark', darkMode);
+        if (document.body) document.body.classList.toggle('dark', darkMode);
+        document.querySelectorAll('[data-kk-dark-label]').forEach(function (el) {
+            el.textContent = darkMode ? el.dataset.labelLight : el.dataset.labelDark;
+        });
+    }
+
+    function toggleDark() {
+        darkMode = !darkMode;
+        localStorage.setItem('micro_dark', darkMode);
+        // System B (data-theme/kk_theme + sunucu senkron) ile birlikte uygula —
+        // aksi halde [data-theme="dark"] kuralları hiç aktive olmuyordu.
+        try {
+            if (window.KKTheme) {
+                window.KKTheme.apply(darkMode ? 'dark' : 'light');
+            } else {
+                var t = darkMode ? 'dark' : 'light';
+                localStorage.setItem('kk_theme', t);
+                document.documentElement.setAttribute('data-theme', t);
+                document.body.setAttribute('data-theme', t);
+            }
+        } catch (e) { /* ignore */ }
+        try {
+            document.dispatchEvent(new CustomEvent('micro-theme-changed', { detail: { dark: darkMode } }));
+        } catch (e) { /* ignore */ }
+        applyDarkClass();
+    }
+
+    document.addEventListener('DOMContentLoaded', function () {
+        applyDarkClass();
+        document.querySelectorAll('[data-kk-toggle-dark]').forEach(function (btn) {
+            btn.addEventListener('click', function () {
+                toggleDark();
+                if (btn.hasAttribute('data-kk-dd-close')) {
+                    var panel = btn.closest('[data-kk-dd-panel]');
+                    if (panel) panel.style.display = 'none';
                 }
-            } catch (e) { /* ignore */ }
-            try {
-                document.dispatchEvent(new CustomEvent('micro-theme-changed', { detail: { dark: this.darkMode } }));
-            } catch (e) { /* ignore */ }
-        },
+            });
+        });
+    });
+})();
 
-        openSidebar()  { this.sidebarOpen = true;  document.body.style.overflow = 'hidden'; },
-        closeSidebar() { this.sidebarOpen = false; document.body.style.overflow = ''; },
-        toggleSidebar() {
-            this.sidebarOpen ? this.closeSidebar() : this.openSidebar();
+/* ── Dropdown'lar (Alpine x-data/{open} yerine) ──
+   data-kk-dropdown konteyner; data-kk-dd-toggle buton (veya data-kk-dd-self:
+   konteynerin kendisi toggle'dır); data-kk-dd-panel panel. Dışarı tıklama kapatır. */
+(function () {
+    'use strict';
+    document.addEventListener('DOMContentLoaded', function () {
+        function closeAll(except) {
+            document.querySelectorAll('[data-kk-dropdown] > [data-kk-dd-panel], [data-kk-dropdown] [data-kk-dd-panel]').forEach(function (p) {
+                if (p !== except) p.style.display = 'none';
+            });
         }
-    };
-}
+        document.querySelectorAll('[data-kk-dropdown]').forEach(function (dd) {
+            var panel = dd.querySelector('[data-kk-dd-panel]');
+            if (!panel) return;
+            var toggler = dd.hasAttribute('data-kk-dd-self') ? dd : dd.querySelector('[data-kk-dd-toggle]');
+            if (!toggler) return;
+            toggler.addEventListener('click', function (e) {
+                // panel içi tıklamalar (linkler, dark toggle) toggle sayılmaz
+                if (panel.contains(e.target)) return;
+                var isOpen = panel.style.display !== 'none';
+                closeAll(null);
+                panel.style.display = isOpen ? 'none' : '';
+                e.stopPropagation();
+            });
+        });
+        document.addEventListener('click', function (e) {
+            if (!e.target.closest('[data-kk-dropdown]')) closeAll(null);
+        });
+    });
+})();
 
 /* ── Flash mesajları otomatik kapat ── */
 document.addEventListener('DOMContentLoaded', function () {
