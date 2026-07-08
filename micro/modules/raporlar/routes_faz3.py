@@ -660,17 +660,74 @@ def raporlar_api_esg_rapor_generate():
 
     elems.append(h["PageBreak"]())
 
-    # TCFD — İklim Risk Açıklaması
+    # TCFD — İklim Risk Açıklaması (TASK-233: statik metin yerine kurum verisi)
     elems.append(P(_("TCFD — İklim Risk Açıklaması"), h1))
     elems.append(P(_("Yönetişim, Strateji, Risk Yönetimi, Metrik ve Hedefler dört "
                    "boyutta iklim ile ilgili açıklamalar:"), body))
-    elems.append(P(_("<b>1. Yönetişim:</b> İklim risklerinin yönetim kurulu seviyesinde "
-                   "değerlendirilmesi."), body))
-    elems.append(P(_("<b>2. Strateji:</b> İklim ile ilgili kısa/orta/uzun vadeli stratejik "
-                   "etki analizi."), body))
-    elems.append(P(_("<b>3. Risk yönetimi:</b> Risk register'a iklim risklerinin entegrasyonu."), body))
-    elems.append(P(_("<b>4. Metrik ve hedefler:</b> Scope 1/2/3 emisyon ölçümü ve Net Zero "
-                   "hedefi (varsa)."), body))
+
+    # 1. Yönetişim — G kategorisi metrik varlığı
+    if g_metrics:
+        elems.append(P(_("<b>1. Yönetişim:</b> Kurumda %(n)s yönetişim (G) metriği tanımlı "
+                       "ve izlenmektedir; iklim riskleri bu çerçevede yönetim seviyesinde "
+                       "değerlendirilmektedir.") % {"n": len(g_metrics)}, body))
+    else:
+        elems.append(P(_("<b>1. Yönetişim:</b> Henüz yönetişim (G) metriği tanımlanmamıştır; "
+                       "iklim risklerinin yönetim kurulu seviyesinde izlenmesi için metrik "
+                       "tanımlanması önerilir."), body))
+
+    # 2. Strateji — hedef/baz değeri atanmış çevre metrikleri
+    e_targeted = [m for m in (e_metrics or [])
+                  if m.target_value is not None or m.baseline_value is not None]
+    if e_targeted:
+        elems.append(P(_("<b>2. Strateji:</b> %(n)s çevre metriği hedef/baz yılı ile "
+                       "izlenmektedir:") % {"n": len(e_targeted)}, body))
+        for m in e_targeted[:8]:
+            parts = []
+            if m.baseline_value is not None and m.baseline_year:
+                parts.append(_("baz %(y)s: %(v)s") % {"y": m.baseline_year, "v": m.baseline_value})
+            if m.target_value is not None:
+                parts.append(_("hedef: %(v)s %(u)s") % {"v": m.target_value, "u": m.unit or ""})
+            elems.append(P(f"  • {m.name} ({', '.join(parts)})", body))
+    else:
+        elems.append(P(_("<b>2. Strateji:</b> Çevre metriklerine henüz hedef/baz değer "
+                       "atanmamıştır; kısa/orta/uzun vadeli stratejik etki analizi için "
+                       "hedef tanımlanması önerilir."), body))
+
+    # 3. Risk yönetimi — risk envanterindeki iklim/çevre başlıklı kayıtlar
+    try:
+        from app.models.k_radar_domain import RiskHeatmapItem
+        _all_risks = RiskHeatmapItem.query.filter_by(tenant_id=tid, is_active=True).all()
+        _kw = ("iklim", "çevre", "karbon", "enerji", "emisyon", "su ", "atık")
+        climate_risks = [r for r in _all_risks
+                         if any(k in (r.title or "").lower() for k in _kw)]
+    except Exception:
+        _all_risks, climate_risks = [], []
+    if climate_risks:
+        elems.append(P(_("<b>3. Risk yönetimi:</b> Risk envanterinde %(c)s iklim/çevre "
+                       "ilişkili kayıt izlenmektedir (toplam %(t)s aktif risk):")
+                       % {"c": len(climate_risks), "t": len(_all_risks)}, body))
+        for r in sorted(climate_risks,
+                        key=lambda x: -(x.rpn or x.probability * x.impact))[:5]:
+            elems.append(P(f"  • {r.title} (RPN: {r.rpn or r.probability * r.impact})", body))
+    else:
+        elems.append(P(_("<b>3. Risk yönetimi:</b> Risk envanterinde iklim/çevre etiketli "
+                       "kayıt bulunmamaktadır (toplam %(t)s aktif risk). İklim risklerinin "
+                       "risk register'a entegrasyonu önerilir.") % {"t": len(_all_risks)}, body))
+
+    # 4. Metrik ve hedefler — Scope 1/2/3 son yıl değerleri (E bölümündeki hesapla aynı)
+    _scope_line = ""
+    try:
+        _scope_vals = by_year_scope.get(latest, {})
+        _scope_line = " · ".join(
+            f"{s.upper()}: {v:,.2f} tCO₂e" for s, v in _scope_vals.items() if v > 0)
+    except NameError:
+        pass  # e_metrics boşsa by_year_scope tanımsız — veri yok mesajına düşer
+    if _scope_line:
+        elems.append(P(_("<b>4. Metrik ve hedefler:</b> Son ölçüm yılı emisyonları — ")
+                       + _scope_line, body))
+    else:
+        elems.append(P(_("<b>4. Metrik ve hedefler:</b> Scope 1/2/3 emisyon ölçümü henüz "
+                       "kayıtlı değildir; ölçüm ve Net Zero hedefi tanımlanması önerilir."), body))
 
     # Kapanış
     elems.append(h["Spacer"](1, 1*h["cm"]))

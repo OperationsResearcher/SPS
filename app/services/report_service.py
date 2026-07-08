@@ -144,11 +144,32 @@ class ReportService:
     
     @staticmethod
     def _export_to_pdf(report_data: Dict) -> bytes:
-        """
-        PDF export (placeholder - gerçek implementasyon için reportlab gerekli)
-        """
-        # TODO: reportlab ile PDF oluşturma
-        return b'PDF export not implemented yet'
+        """PDF export — app/utils/pdf_export.make_pdf ile (TASK-233)."""
+        from app.utils.pdf_export import make_pdf
+
+        summary = report_data.get('summary') or {}
+        sections = [{
+            "heading": _("Özet"),
+            "table": [[str(k), str(v)] for k, v in summary.items()] or None,
+        }]
+        kpi_details = report_data.get('kpi_details') or []
+        if kpi_details:
+            headers = [_("PG"), _("Hedef"), _("Gerçekleşen"), _("Performans %"), _("Trend")]
+            rows = [[
+                str(k.get('name', '')), str(k.get('latest_target', '—')),
+                str(k.get('latest_actual', '—')), str(k.get('latest_performance', '—')),
+                str(k.get('trend', '—')),
+            ] for k in kpi_details]
+            sections.append({"heading": _("PG Detayları"), "table": [headers] + rows})
+        recommendations = report_data.get('recommendations') or []
+        if recommendations:
+            sections.append({"heading": _("Öneriler"),
+                             "body": "\n".join(f"• {r}" for r in recommendations)})
+        return make_pdf(
+            title=report_data.get('title') or _("Performans Raporu"),
+            sections=sections,
+            tenant_name=report_data.get('tenant_name'),
+        )
     
     @staticmethod
     def generate_dashboard_report(

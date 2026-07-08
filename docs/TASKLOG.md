@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-233 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 3 — Placeholder PDF export envanteri + kalan 3 gerçek eksiğin tamamlanması
+**Modül:** raporlar, app/services
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/report_service.py` → `_export_to_pdf` placeholder'ı (`b'PDF export not implemented yet'`) gerçek reportlab PDF'e bağlandı (`app/utils/pdf_export.make_pdf`); birim doğrulama: `%PDF` header'lı 2.3KB gerçek çıktı
+- `micro/modules/raporlar/routes_faz3.py` → ESG PDF'in TCFD bölümü statik/jenerik metinden kurum verisine bağlandı: G metrik varlığı, hedef/baz değerli E metrikleri, risk envanterindeki iklim/çevre kayıtları (RPN sıralı ilk 5), Scope 1/2/3 son yıl emisyonları; veri yoksa öneri cümlesi
+- `app/services/automated_reporting_service.py` → email dağıtım placeholder'ı gerçek gönderime bağlandı (`email_digest_service._send_via_smtp`, tenant SMTP; `notification_preferences.{tip}_digest === False` ise gönderilmez)
+- `docs/Kokpitim_Yetenekler.md` → bayat "PDF placeholder" ifadeleri düzeltildi
+
+### Yapılan İşlem
+Envanter sonucu beklenenden İYİ çıktı: butonlu 9 PDF/PPTX export'un TAMAMI zaten gerçek üretim yapıyor (AI sunum, stratejik yıllık, yatırımcı sunumu, ESG, audit paketi, bireysel karne batch ZIP, k-rapor, bireysel karne, sp digest). "Placeholder" iddiasının kaynağı yalnız eski ReportService._export_to_pdf idi. Üç gerçek eksik kapatıldı.
+
+### Notlar
+- `generate_report(format='pdf')` çağıran canlı kod yok — düzeltme yine de yapıldı (API tüketicileri için doğru davranış).
+- Kalan küçük iş (bilinçli ertelendi): `schedule_and_send_reports`'un zamanlanmış tetikleyiciye (scheduler/Celery) bağlanması — `weekly_digest_monday` örnek alınabilir.
+- Test: 403 passed / 19 failed (baseline aynı), ruff temiz.
+
+---
+
 ## TASK-232 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 3 — Kart-düzeyi paket zorlaması (komple gizleme; kullanıcı onaylı karar revizyonu)

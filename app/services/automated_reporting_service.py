@@ -180,13 +180,37 @@ class AutomatedReportingService:
                 is_active=True
             ).all()
             
-            # Email gönder (placeholder - gerçek email servisi gerekli)
-            sent_count = 0
+            # Email gönder — tenant SMTP yapılandırması üzerinden (TASK-233)
+            # Tercih: notification_preferences JSON'ında ilgili digest anahtarı
+            # açıkça False ise gönderilmez (tanımsız = gönderilir).
+            import json as _json
+            from app.services.email_digest_service import _send_via_smtp
+
+            recipients = []
             for user in users:
-                # Kullanıcı tercihlerini kontrol et
-                # if user.notification_preferences.get(f'{report_type}_digest'):
-                #     send_email(user.email, result['report'])
-                sent_count += 1
+                try:
+                    prefs = _json.loads(user.notification_preferences or "{}")
+                except (TypeError, ValueError):
+                    prefs = {}
+                if prefs.get(f"{report_type}_digest") is False:
+                    continue
+                if user.email:
+                    recipients.append(user.email)
+
+            report = result.get('report') or {}
+            subject = f"Kokpitim — {report_type} raporu"
+            if isinstance(report, dict):
+                rows = "".join(
+                    f"<tr><td style='padding:4px 12px 4px 0'><b>{k}</b></td>"
+                    f"<td>{v}</td></tr>" for k, v in report.items()
+                )
+                html = f"<html><body><table>{rows}</table></body></html>"
+            else:
+                html = f"<html><body><pre>{report}</pre></body></html>"
+
+            sent_count = 0
+            if recipients:
+                sent_count = _send_via_smtp(tenant_id, recipients, subject, html)
             
             logger.info(f"{report_type.capitalize()} report sent to {sent_count} users")
             

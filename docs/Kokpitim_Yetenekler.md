@@ -96,11 +96,11 @@ Kokpitim, cok kiracili (tenant tabanli) bir kurumsal performans yonetim platform
 ### 5.2 Cikti formatlari
 - JSON: API/ekran entegrasyonu icin
 - Excel: disa aktarim (pandas + openpyxl)
-- PDF: su an placeholder durumunda
+- PDF/PPTX: URETIMDE — reportlab/python-pptx tabanli ~9 gercek export (AI sunum, stratejik yillik, yatirimci sunumu, ESG, audit paketi, bireysel karne batch, k-rapor, sp digest). (2026-07-08 envanteriyle guncellendi)
 
 ### 5.3 Otomatik raporlama
 - Gunluk, haftalik, aylik rapor uretimi senaryolari var.
-- Servis katmaninda rapor govdesi uretimi tamam; bazi email dagitim adimlari "placeholder" notuyla gelistirilebilir.
+- Servis katmaninda rapor govdesi uretimi tamam; otomatik rapor email dagitimi tenant SMTP uzerinden calisir durumda (TASK-233).
 
 ## 6) Kurum Analiz Merkezi Icin Hazir Yetenekler
 
@@ -117,7 +117,7 @@ Kurum Analiz Merkezi insasinda dogrudan kullanilabilir guclu parcalar:
 Yeni analiz merkezi tasariminda asagidaki noktalar netlestirilmeli:
 - "Tek dogru analiz hatti" standardi: paralel/legacy analiz akislarinin sade lestirilmesi
 - PDF export gercek implementasyonu
-- Otomatik rapor dagitiminda (mail) placeholder kisimlarin tam urunlestirilmesi
+- Otomatik rapor dagitiminin zamanlanmis (Celery/scheduler) tetiklemeye baglanmasi
 - API/servis imza tutarliligi (tarih parametresi tipleri, method imzalari)
 - Gozlemlenebilirlik: kritik analiz endpointleri icin standart metrik/log paneli
 
