@@ -1,0 +1,71 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ _("Kurulum İçe Aktarma — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Kurulum İçe Aktarma") }}{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': _('Kurulum İçe Aktarma'), 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:900px;margin:0 auto;"
+     id="setup-import-root"
+     data-template-url="{{ url_for('app_bp.admin_setup_import_template') }}"
+     data-dryrun-url="{{ url_for('app_bp.admin_setup_import_dry_run') }}"
+     data-apply-url="{{ url_for('app_bp.admin_setup_import_apply') }}">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-file-import" style="color:#0ea5e9;"></i> {{ _("Kurulum İçe Aktarma") }}
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        {{ _("Süreç, PG tanımı ve strateji ağacını tek Excel dosyasından içeri alın. Mevcut kodlar güncellenir, silme yapılmaz.") }}
+      </p>
+    </div>
+  </div>
+
+  {# Adım 1: Şablon + Yükle #}
+  <div class="mc-card" data-card-code="admin_setup_import.yukleme" style="padding:18px;margin-bottom:14px;">
+    <div class="mc-card-title" style="font-size:15px;font-weight:700;margin-bottom:10px;">
+      1. {{ _("Şablonu indir, doldur, yükle") }}
+    </div>
+    <a href="{{ url_for('app_bp.admin_setup_import_template') }}" class="mc-btn mc-btn-secondary" style="margin-bottom:12px;display:inline-block;">
+      <i class="fas fa-download"></i> {{ _("Şablonu İndir (.xlsx)") }}
+    </a>
+    <div style="margin-top:8px;">
+      <input type="file" id="si-file" accept=".xlsx" />
+      <button type="button" id="si-dryrun-btn" class="mc-btn mc-btn-primary" disabled>
+        <i class="fas fa-search"></i> {{ _("Önizle (hiçbir şey yazılmaz)") }}
+      </button>
+    </div>
+  </div>
+
+  {# Adım 2: Önizleme #}
+  <div class="mc-card" data-card-code="admin_setup_import.onizleme" id="si-preview-card" style="padding:18px;margin-bottom:14px;display:none;">
+    <div class="mc-card-title" style="font-size:15px;font-weight:700;margin-bottom:10px;">
+      2. {{ _("Önizleme ve doğrulama") }}
+    </div>
+    <div id="si-summary" style="font-size:14px;margin-bottom:10px;"></div>
+    <div id="si-errors" style="max-height:260px;overflow-y:auto;"></div>
+    <label style="display:flex;align-items:center;gap:8px;margin-top:12px;font-size:13px;">
+      <input type="checkbox" id="si-skip-errors" />
+      {{ _("Hatalı satırları atla ve geçerli satırlarla devam et") }}
+    </label>
+    <button type="button" id="si-apply-btn" class="mc-btn mc-btn-primary" style="margin-top:12px;" disabled>
+      <i class="fas fa-check"></i> {{ _("Uygula") }}
+    </button>
+  </div>
+
+  {# Adım 3: Sonuç #}
+  <div class="mc-card" data-card-code="admin_setup_import.sonuc" id="si-result-card" style="padding:18px;display:none;">
+    <div class="mc-card-title" style="font-size:15px;font-weight:700;margin-bottom:10px;">
+      3. {{ _("Sonuç") }}
+    </div>
+    <div id="si-result" style="font-size:14px;"></div>
+  </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('static', filename='platform/js/admin_setup_import.js') }}"></script>
+{% endblock %}

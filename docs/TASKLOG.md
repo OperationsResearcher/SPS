@@ -2,6 +2,74 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-235 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 3 — Kurulum verisi import sihirbazı (mutabakatlı tasarım → uygulama)
+**Modül:** admin (setup import), app/services
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/paketler/KURULUM-IMPORT-SIHIRBAZI.md` (yeni) → tasarım + mutabakat kaydı (upsert=güncelle, strateji v1'e dahil, konum=Admin)
+- `app/services/setup_import_service.py` (yeni) → parse_workbook (dry-run planı) / apply_workbook (TEK transaction) / make_setup_template_excel (3 sayfa + periyot dropdown); doğrulamalar: zorunlu alanlar, periyot/toplama/gösterge listeleri, dosya-içi tekrar, üst süreç referans + döngü kontrolü, Excel injection nötrleme
+- `micro/modules/admin/routes_setup_import.py` (yeni) → 4 route: sayfa, şablon indirme, dry-run, apply (Admin/tenant_admin; SETUP_IMPORT_APPLY audit)
+- `ui/templates/platform/admin/setup_import.html` (yeni) → 3 adımlı sihirbaz (kart standardı: admin_setup_import.* data-card-code)
+- `ui/static/platform/js/admin_setup_import.js` (yeni) → harici JS, URL'ler data-*'dan, SweetAlert2
+- `micro/modules/admin/routes.py` → yeni route dosyası kaydı
+- `tests/test_setup_import.py` (yeni) → 9 test: dry-run, hata-varsa-yazma, skip_errors, upsert güncelleme, parent bağı + döngü, strateji zinciri, plan-yılı-yoksa-atla, şablon üretimi
+
+### Yapılan İşlem
+"Excel'inizi getirin, yarım günde geçin" onboarding sihirbazı: tek .xlsx (Süreçler/PG_Tanımları/Strateji) → dry-run önizleme → tek-transaction upsert. Silme asla yapılmaz; K-Vektör ağırlıkları bilinçli kapsam dışı (UI'dan atanır).
+
+### Notlar
+- Migration yok (yeni tablo yok). Test: 412 passed / 19 failed (baseline aynı), ruff temiz.
+- Yerelde deneme: `python pybasla.py` → /micro/admin/setup-import (route değişti, restart şart).
+- Kart keşfi: sayfa ilk ziyaretinde `discover_cards` yeni data-card-code'ları system_cards'a alacak; short_id ataması admin'den yapılmalı (KURALLAR §5.1).
+
+---
+
+## TASK-234 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 3 — KVKK uyum dosyası (docs/kvkk/) — sistem taramasına dayalı taslak paket
+**Modül:** dokümantasyon
+**Durum:** ✅ Tamamlandı (taslak; [DOLDURULACAK] alanlar veri sorumlusuna ait)
+
+### Değiştirilen Dosyalar
+- `docs/kvkk/README.md` (yeni) → indeks + hazır teknik mekanizmalar + bilinen boşluklar
+- `docs/kvkk/veri-envanteri.md` (yeni) → kod/DB taramasına dayalı kişisel veri envanteri: users alanları, bireysel performans verileri (çalışan izleme boyutu vurgulu), audit/IP logları, ticket'lar, çerezler; amaç/hukuki sebep tablosu; veri sorumlusu-veri işleyen rol ayrımı; aktarımlar (SMTP, LLM, Oracle, Google SSO); saklama/imha; teknik tedbirler
+- `docs/kvkk/aydinlatma-metni.md` (yeni) → m.10 taslak metin; platformdaki gerçek m.11/m.7 endpoint'lerine bağlantılı
+- `docs/kvkk/verbis-hazirlik.md` (yeni) → kayıt yükümlülüğü değerlendirmesi + kontrol listesi + kod tarafı yapılacaklar
+
+### Yapılan İşlem
+Mevcut KVKK teknik yüzeyi doğrulandı: m.11 export (`/auth/api/user/export-my-data`) ve m.7 anonimleştirme (`/auth/api/user/delete-my-account`) endpoint'leri + audit kaydı çalışır durumda. Belgeler bu gerçek yüzeye dayanarak yazıldı.
+
+### Notlar
+- **Tespit edilen boşluklar (kod tarafı, ayrı task):** pazarlama sitesinde gizlilik/çerez sayfası YOK (demo talep formu kişisel veri topluyor); login sayfasında aydınlatma bağlantısı yok; AI prompt'larında ad-soyad maskeleme denetimi yapılmalı; Oracle veri merkezi bölgesi teyit edilmeli (yurt dışıysa m.9).
+- Belgeler TASLAK — hukuki kontrol ve [DOLDURULACAK] alanlar olmadan yayımlanmamalı.
+
+---
+
+## TASK-233 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Faz 3 — Placeholder PDF export envanteri + kalan 3 gerçek eksiğin tamamlanması
+**Modül:** raporlar, app/services
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/report_service.py` → `_export_to_pdf` placeholder'ı (`b'PDF export not implemented yet'`) gerçek reportlab PDF'e bağlandı (`app/utils/pdf_export.make_pdf`); birim doğrulama: `%PDF` header'lı 2.3KB gerçek çıktı
+- `micro/modules/raporlar/routes_faz3.py` → ESG PDF'in TCFD bölümü statik/jenerik metinden kurum verisine bağlandı: G metrik varlığı, hedef/baz değerli E metrikleri, risk envanterindeki iklim/çevre kayıtları (RPN sıralı ilk 5), Scope 1/2/3 son yıl emisyonları; veri yoksa öneri cümlesi
+- `app/services/automated_reporting_service.py` → email dağıtım placeholder'ı gerçek gönderime bağlandı (`email_digest_service._send_via_smtp`, tenant SMTP; `notification_preferences.{tip}_digest === False` ise gönderilmez)
+- `docs/Kokpitim_Yetenekler.md` → bayat "PDF placeholder" ifadeleri düzeltildi
+
+### Yapılan İşlem
+Envanter sonucu beklenenden İYİ çıktı: butonlu 9 PDF/PPTX export'un TAMAMI zaten gerçek üretim yapıyor (AI sunum, stratejik yıllık, yatırımcı sunumu, ESG, audit paketi, bireysel karne batch ZIP, k-rapor, bireysel karne, sp digest). "Placeholder" iddiasının kaynağı yalnız eski ReportService._export_to_pdf idi. Üç gerçek eksik kapatıldı.
+
+### Notlar
+- `generate_report(format='pdf')` çağıran canlı kod yok — düzeltme yine de yapıldı (API tüketicileri için doğru davranış).
+- Kalan küçük iş (bilinçli ertelendi): `schedule_and_send_reports`'un zamanlanmış tetikleyiciye (scheduler/Celery) bağlanması — `weekly_digest_monday` örnek alınabilir.
+- Test: 403 passed / 19 failed (baseline aynı), ruff temiz.
+
+---
+
 ## TASK-232 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 3 — Kart-düzeyi paket zorlaması (komple gizleme; kullanıcı onaylı karar revizyonu)
