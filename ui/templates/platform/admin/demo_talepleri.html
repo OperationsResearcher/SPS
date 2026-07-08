@@ -1,0 +1,79 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ _("Demo Talepleri — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Demo Talepleri") }}{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': _('Admin Araçları'), 'url': url_for('app_bp.admin_tools_home')}, {'label': _('Demo Talepleri'), 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div style="max-width:1200px;margin:0 auto;">
+
+  <div class="mc-page-header" style="margin-bottom:16px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-inbox" style="color:#b45309;"></i> {{ _("Demo Talepleri") }}
+      </h2>
+      <p style="font-size:13px;color:#64748b;margin:0;">
+        {{ _("Marketing sitesi /demo-talep formundan gelen kayıtlar. E-posta gönderimi başarısız olsa bile talepler burada saklanır.") }}
+        <span style="color:#94a3b8;"><i class="fas fa-clock"></i> {{ _("Saatler tarayıcınızın saat dilimine göre gösterilir.") }}</span>
+      </p>
+    </div>
+  </div>
+
+  {% if not talepler %}
+  <div class="mc-card" style="padding:16px;">
+    <span style="font-size:13px;color:#64748b;">{{ _("Henüz demo talebi yok.") }}</span>
+  </div>
+  {% else %}
+  <div class="mc-card" style="padding:0;overflow:hidden;" data-card-code="admin_araclar.demo_talepleri_liste">
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <thead>
+          <tr style="background:#f8fafc;text-align:left;">
+            <th style="padding:10px 12px;white-space:nowrap;">{{ _("Tarih") }}</th>
+            <th style="padding:10px 12px;">{{ _("Ad Soyad") }}</th>
+            <th style="padding:10px 12px;">{{ _("Kurum") }}</th>
+            <th style="padding:10px 12px;">{{ _("Görev") }}</th>
+            <th style="padding:10px 12px;">{{ _("E-posta") }}</th>
+            <th style="padding:10px 12px;">{{ _("Telefon") }}</th>
+            <th style="padding:10px 12px;">{{ _("Modüller") }}</th>
+            <th style="padding:10px 12px;">{{ _("Mesaj") }}</th>
+            <th style="padding:10px 12px;text-align:center;">{{ _("E-posta") }}</th>
+            <th style="padding:10px 12px;text-align:center;">{{ _("Durum") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for t in talepler %}
+          <tr style="border-top:1px solid #eef2f7;{% if not t.is_read %}background:#fffbeb;{% endif %}">
+            <td style="padding:10px 12px;white-space:nowrap;color:#64748b;"><span data-utc="{{ t.created_at.isoformat() }}">{{ t.created_at.strftime('%d.%m.%Y %H:%M') }}</span></td>
+            <td style="padding:10px 12px;font-weight:600;color:#334155;">{{ t.ad_soyad }}</td>
+            <td style="padding:10px 12px;">{{ t.kurum }}</td>
+            <td style="padding:10px 12px;color:#64748b;">{{ t.gorev or "—" }}</td>
+            <td style="padding:10px 12px;"><a href="mailto:{{ t.email }}" style="color:#0284c7;">{{ t.email }}</a></td>
+            <td style="padding:10px 12px;color:#64748b;">{{ t.telefon or "—" }}</td>
+            <td style="padding:10px 12px;color:#64748b;">{{ t.moduller or "—" }}</td>
+            <td style="padding:10px 12px;color:#64748b;max-width:220px;">{{ t.mesaj or "—" }}</td>
+            <td style="padding:10px 12px;text-align:center;">
+              {% if t.email_gonderildi %}
+              <i class="fas fa-check-circle" style="color:#16a34a;" title="{{ _('E-posta gönderildi') }}"></i>
+              {% else %}
+              <i class="fas fa-circle-exclamation" style="color:#dc2626;" title="{{ _('E-posta gönderilemedi') }}"></i>
+              {% endif %}
+            </td>
+            <td style="padding:10px 12px;text-align:center;">
+              {% if t.is_read %}
+              <span style="color:#94a3b8;font-size:11.5px;">{{ _("Okundu") }}</span>
+              {% else %}
+              <span style="color:#b45309;font-weight:600;font-size:11.5px;">{{ _("Yeni") }}</span>
+              {% endif %}
+            </td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+  </div>
+  {% endif %}
+</div>
+{% endblock %}

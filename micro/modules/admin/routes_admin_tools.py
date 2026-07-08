@@ -94,6 +94,32 @@ def admin_tools_loglar_kurum(tenant_id):
     return render_template("platform/admin/loglar_kurum.html", detail=detail)
 
 
+# ─── Demo Talepleri ──────────────────────────────────────────────────────────
+
+@app_bp.route("/admin/araclar/demo-talepleri")
+@login_required
+def admin_tools_demo_talepleri():
+    """Marketing sitesi /demo-talep formundan gelen kayıtlar (salt-okuma)."""
+    if not _is_admin():
+        return render_template("errors/403.html"), 403
+    from app.models.marketing import DemoRequest
+    talepler = DemoRequest.query.order_by(DemoRequest.created_at.desc()).all()
+    return render_template("platform/admin/demo_talepleri.html", talepler=talepler)
+
+
+@app_bp.route("/admin/araclar/demo-talepleri/okundu/<int:talep_id>", methods=["POST"])
+@login_required
+def admin_tools_demo_talep_okundu(talep_id):
+    if not _is_admin():
+        return jsonify({"success": False}), 403
+    from extensions import db
+    from app.models.marketing import DemoRequest
+    talep = DemoRequest.query.get_or_404(talep_id)
+    talep.is_read = True
+    db.session.commit()
+    return jsonify({"success": True})
+
+
 # ─── Yedekleme ───────────────────────────────────────────────────────────────
 
 _RESTORE_CONFIRM = "KOKPITIM-DB-GERIYUKLE"
