@@ -198,10 +198,10 @@ def demo_talep():
                 )
 
             # E-posta gönder
+            email_gonderildi = False
             try:
-                from micro.services.email_service import send_email
-                body = f"""
-Yeni Demo Talebi
+                from micro.services.email_service import send_notification_email
+                text_body = f"""Yeni Demo Talebi
 
 Ad Soyad:    {ad_soyad}
 Kurum:       {kurum}
@@ -214,13 +214,38 @@ Modüller:    {', '.join(moduller) if moduller else '—'}
 Mesaj:       {mesaj or '—'}
 Tarih:       {datetime.now().strftime('%d.%m.%Y %H:%M')}
 """
-                send_email(
-                    to="info@kokpitim.com",
+                html_body = "<pre>" + text_body + "</pre>"
+                email_gonderildi, mail_err = send_notification_email(
+                    to_email="info@kokpitim.com",
                     subject=f"Demo Talebi — {kurum} / {ad_soyad}",
-                    body=body,
+                    html_body=html_body,
+                    text_body=text_body,
                 )
+                if not email_gonderildi:
+                    current_app.logger.warning(f"[marketing] demo e-posta gönderilemedi: {mail_err}")
             except Exception as mail_err:
                 current_app.logger.warning(f"[marketing] demo e-posta gönderilemedi: {mail_err}")
+
+            # DB'ye kaydet (e-posta gönderimi başarısız olsa bile talep kaybolmasın)
+            try:
+                from extensions import db
+                from app.models.marketing import DemoRequest
+                db.session.add(DemoRequest(
+                    ad_soyad=ad_soyad,
+                    kurum=kurum,
+                    gorev=gorev,
+                    sektor=sektor,
+                    calisan=calisan,
+                    email=email,
+                    telefon=telefon,
+                    moduller=", ".join(moduller) if moduller else None,
+                    mesaj=mesaj,
+                    email_gonderildi=email_gonderildi,
+                ))
+                db.session.commit()
+            except Exception as db_err:
+                db.session.rollback()
+                current_app.logger.error(f"[marketing] demo talebi DB kaydı başarısız: {db_err}", exc_info=True)
 
             return render_template(
                 "demo_talep.html",

@@ -69,6 +69,16 @@
       </p>
     </a>
 
+    <a href="{{ url_for('app_bp.admin_tools_demo_talepleri') }}" class="mc-card" data-card-code="admin_araclar.demo_talepleri" style="padding:18px;text-decoration:none;display:block;border-top:3px solid #f59e0b;">
+      <div style="display:flex;align-items:center;gap:10px;margin-bottom:8px;">
+        <span style="width:38px;height:38px;border-radius:10px;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center;font-size:18px;"><i class="fas fa-inbox"></i></span>
+        <span class="mc-card-title" style="font-size:15px;font-weight:700;color:var(--text-default);">{{ _("Demo Talepleri") }}</span>
+      </div>
+      <p style="font-size:12.5px;color:#64748b;margin:0;line-height:1.5;">
+        {{ _("Marketing sitesinden gelen demo talep formu kayıtları (e-posta gitmese bile burada saklanır).") }}
+      </p>
+    </a>
+
     {# İleride yeni araçlar bu ızgaraya eklenecek #}
     <div class="mc-card" data-card-code="admin_araclar.yeni_arac_yer_tutucu" style="padding:18px;border:1px dashed #cbd5e1;background:transparent;display:flex;align-items:center;justify-content:center;color:#94a3b8;font-size:13px;min-height:120px;">
       <span class="mc-card-title"><i class="fas fa-plus"></i> {{ _("Yeni araçlar buraya eklenecek") }}</span>

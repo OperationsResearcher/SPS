@@ -2,7 +2,25 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
-## TASK-239 | 2026-07-08 | ✅ Tamamlandı (sunucu bakım + kod düzeltmesi)
+## TASK-240 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Demo talep formu kayıtları admin panelinde + mail gönderim hatası düzeltmesi
+**Modül:** marketing, admin
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/models/marketing.py` → yeni `DemoRequest` modeli
+- `migrations/versions/f6a7b8c9d0e1_demo_requests.py` → `demo_requests` tablosu
+- `micro/modules/marketing/routes.py` → form artık DB'ye de kaydediyor; mail fonksiyonu düzeltildi
+- `micro/modules/admin/routes_admin_tools.py` → `/admin/araclar/demo-talepleri` liste route'u
+- `ui/templates/platform/admin/demo_talepleri.html` → yeni liste sayfası
+- `ui/templates/platform/admin/araclar.html` → Admin Araçları ana sayfasına kart eklendi
+
+### Yapılan İşlem
+Kullanıcı "demo talep formunda mail gitmiyor" dedi. Kök neden: `micro/modules/marketing/routes.py` `micro.services.email_service.send_email` diye var olmayan bir fonksiyonu import ediyordu — `except Exception` bunu sessizce yutuyordu, mail baştan beri hiç gönderilmemişti. Doğru fonksiyon `send_notification_email` olarak düzeltildi ve yerelde gerçek SMTP ile gönderim doğrulandı (`accepted by mt-valve.guzelhosting.com`). Ayrıca mail'in tek başarı yolu olması riskini azaltmak için form artık `demo_requests` tablosuna da kayıt düşüyor (mail başarısız olsa bile talep kaybolmuyor), admin panelinde "Demo Talepleri" aracı ile görüntülenebiliyor.
+
+### Notlar
+Sadece yerelde uygulandı + test edildi (Flask test client ile GET/POST, admin sayfası render). Migration Test/Yayın/Demo'ya henüz uygulanmadı — kullanıcı deploy isteyince yapılacak (KURALLAR-MASTER §8).
 
 **Görev:** VM disk temizliği (+65G) + demo otomatik yedekleyici kapatma
 **Modül:** operasyon + app/__init__
