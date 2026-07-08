@@ -2,6 +2,23 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-237 | 2026-07-08 | ✅ Tamamlandı
+
+**Görev:** Giriş sonrası tek tip iniş — tüm kullanıcılar /desktop-launcher'a
+**Modül:** auth/yönlendirme
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/utils/tenant_scope.py` → `default_landing_endpoint()` rol bazlı dallanma kaldırıldı (holding admin→holding dashboard, bayi admin→alt kurumlar); artık herkes `app_bp.launcher` (/desktop-launcher)
+
+### Yapılan İşlem
+Tüm giriş yolları tek fonksiyondan geçiyor (normal login, next-fallback, TOTP; SSO zaten launcher'a gidiyordu) — tek nokta değişiklik yeterli oldu. Holding/bayi sayfalarına erişim değişmedi; yalnız otomatik iniş kaldırıldı (launcher/sidebar'dan ulaşılır).
+
+### Notlar
+İlgili testler geçti (74 passed; 19 fail baseline yerel-ortam sorunu). ?next= parametresi davranışı korunur — açık next varsa oraya gider.
+
+---
+
 ## TASK-236 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Faz 4 — CSP frontend build: `unsafe-eval` kaldırıldı (Tailwind derlenmiş CSS + Alpine kaldırma)
