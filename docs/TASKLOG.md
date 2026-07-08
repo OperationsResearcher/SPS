@@ -20,6 +20,9 @@
 ### Yapılan İşlem
 XSS'e karşı asıl kalkan deliği kapandı: Tailwind Play CDN (runtime eval ile class üretiyordu) derlenmiş statik CSS'e geçirildi; Alpine.js'in tek gerçek kullanıcısı kurum panelindeki akordiyonlardı — vanilya JS'e çevrilip kütüphane tamamen kaldırıldı. Sayfa yükü de hafifledi (2 CDN script eksildi).
 
+### Ek düzeltme (aynı gün)
+Kullanıcı testi base.html'deki Alpine bağımlılıklarını yakaladı (ilk taramada gözden kaçtı): sağ üst kullanıcı menüsü, sol alt kullanıcı popup'ı, dil dropdown'ı ve dark-mode toggle (`microApp()`) Alpine'a bağlıydı — menüler açılmıyordu. Tamamı vanilya `data-kk-dropdown` desenine çevrildi (app.js: tema modülü + dropdown modülü); dark class FOUC önlemi erken-yükleme scriptine eklendi.
+
 ### Notlar
 - **`unsafe-inline` bilinçli KALDI:** ~76 inline `<script>` + 55 inline handler (21 dosya) nonce/dönüşüm gerektiriyor — ayrı faz (v2). CSP yorumunda işaretli.
 - **Yeni utility class kullanınca:** `scripts/frontend/build_css.ps1` koşulmalı; derlenmemiş class sessizce stilsiz kalır (Play CDN'deki "her class çalışır" davranışı bitti). Şüphede: build + hard refresh.
