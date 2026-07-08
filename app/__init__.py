@@ -593,7 +593,17 @@ def _init_weekly_digest_scheduler(app) -> None:
 
 
 def _init_yedekleme_scheduler(app) -> None:
-    """Otomatik yedek (tam DB + kod fark) her gece 02:00'de çalışır."""
+    """Otomatik yedek (tam DB + kod fark) her gece 02:00'de çalışır.
+
+    Demo'da KAPALI (TASK-239): kod git'te, veri baseline'dan üretilebilir;
+    gece başına 580MB kod arşivi diski dolduruyordu (2026-07-08 tespiti).
+    YEDEKLEME_SCHEDULER_ENABLED=false ile herhangi bir ortamda da kapatılabilir."""
+    if app.config.get("KOKPITIM_DEMO_MODE"):
+        app.logger.info("[yedekleme] Demo modu — otomatik yedek zamanlayıcı atlandı")
+        return
+    if (os.environ.get("YEDEKLEME_SCHEDULER_ENABLED", "true").lower()) == "false":
+        app.logger.info("[yedekleme] YEDEKLEME_SCHEDULER_ENABLED=false — atlandı")
+        return
     try:
         from apscheduler.schedulers.background import BackgroundScheduler
         from apscheduler.triggers.cron import CronTrigger

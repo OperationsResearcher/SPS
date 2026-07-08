@@ -2,6 +2,26 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-239 | 2026-07-08 | ✅ Tamamlandı (sunucu bakım + kod düzeltmesi)
+
+**Görev:** VM disk temizliği (+65G) + demo otomatik yedekleyici kapatma
+**Modül:** operasyon + app/__init__
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem (sunucu)
+- Docker build cache prune 19.6G + imaj prune 0.7G + /tmp 0.5G
+- certifiga-app container logu 36G'a şişmişti (rotasyon yok) → truncate + `/etc/docker/daemon.json` global limit (50m×3) + certifiga compose force-recreate ile limit uygulandı. Kokpitim container'ları bir sonraki deploy'da limiti otomatik alır (deploy scripti yeniden yaratıyor).
+- Demo `instance/yedekler` 5.2G kod tarball'ı silindi (kod git'te).
+- Sonuç: boş alan 31G → 88G (%85 → %55). Üç ortam health 200.
+
+### Değiştirilen Dosyalar
+- `app/__init__.py` → `_init_yedekleme_scheduler`: KOKPITIM_DEMO_MODE'da atlanır (gece başına 580MB kod arşivi üretiyordu); `YEDEKLEME_SCHEDULER_ENABLED=false` bayrağı da eklendi
+
+### Notlar
+Yayın'daki otomatik yedekleyici AYNEN çalışmaya devam ediyor (kırmızı çizgi). Demo'ya bu düzeltme deploy edildi.
+
+---
+
 ## TASK-238 | 2026-07-08 | ✅ Tamamlandı (Yayın + Demo deploy)
 
 **Görev:** Yayın'a çıkış (964dd55 → 6de91a06) + Demo kod güncellemesi
