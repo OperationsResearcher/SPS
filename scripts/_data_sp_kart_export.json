@@ -1,0 +1,74 @@
+[
+  {
+    "code": "sp.ana_strateji",
+    "short_id": "SP01",
+    "description": "Aktif plan döneminde tanımlanmış ana strateji sayısını ve bunların altındaki alt strateji toplamını gösterir.\n\nYetkin örgütlerde tipik aralık: 4–8 ana strateji ve her ana strateji altında 2–4 alt strateji. Çok az olması yön belirsizliği, çok fazlası odak dağılımı işaretidir.",
+    "name": "sp.ana_strateji"
+  },
+  {
+    "code": "sp.akis_olgunlugu",
+    "short_id": "SP02",
+    "description": "Stratejik planlama akışının dört temel adımının (Misyon · Vizyon · Değerler · Strateji listesi) tamamlanma yüzdesidir.\n\n• %75 ve üstü: planlama omurgası hazır\n• %50–%74: bazı temel kararlar eksik\n• %50 altı: temel tanımları öncelikle tamamlayın",
+    "name": "sp.akis_olgunlugu"
+  },
+  {
+    "code": "sp.k_vektor_vizyon",
+    "short_id": "SP03",
+    "description": "K-Vektör, ağırlıklandırılmış strateji + alt strateji + PG performansından üretilen 0–100 ölçekli bütüncül skordur. Vizyonun ne kadarına yaklaştığınızı tek sayıyla özetler.\n\nHesap; ana strateji ağırlığı × alt strateji ağırlığı × PG performansı çarpımının toplamına dayanır. Yüksek puan stratejik hizalama ve gerçekleşme uyumunu gösterir.",
+    "name": "sp.k_vektor_vizyon"
+  },
+  {
+    "code": "sp.plan_donemi",
+    "short_id": "SP04",
+    "description": "Şu an aktif olan stratejik plan yılı. Stratejiler, KPI hedefleri ve süreç bağları bu yıla göre filtrelenir.\n\nYıl değiştirmek için masaüstü veya SP menüsü üzerindeki yıl seçicisini kullanın. Yıl değiştiğinde tüm SP modülleri (X-Matrix, Strateji Haritası, Karne vb.) otomatik olarak hizalanır.",
+    "name": "sp.plan_donemi"
+  },
+  {
+    "code": "sp.etiketsiz_strateji",
+    "short_id": "SP05",
+    "description": "plan_year_id alanı boş olan stratejilerin sayısı. Bunlar hiçbir plan yılına bağlı olmayan eski/legacy kayıtlardır.\n\nSıfır olması iyidir. Sıfırdan büyükse strateji düzenleme modalı ile her birine bir plan yılı atayın; aksi halde yıl bazlı raporlarda atlanırlar.",
+    "name": "sp.etiketsiz_strateji"
+  },
+  {
+    "code": "sp.kimlik",
+    "short_id": "SP06",
+    "description": "Misyon · Vizyon · Değerler üçlüsünün tanımlanma durumunu özetler. Her kalem için ✓ dolu, ○ boş anlamına gelir.\n\nÜçü de tanımlı olduğunda strateji çıkarımı (X-Matrix, OKR, Strateji Haritası gibi) çok daha tutarlı çalışır.",
+    "name": "sp.kimlik"
+  },
+  {
+    "code": "sp.misyon",
+    "short_id": "SP07",
+    "description": "Bu adımda kurumun neden var olduğu ve temel görevi netleştirilir. Misyon; paydaşlara “biz kimiz, hangi ihtiyaca cevap veriyoruz?” sorusunun kısa ve tutarlı yanıtıdır.\n\nBurada yazılanlar; vizyon, strateji ve süreç kararlarının üstünde duran referans noktasıdır.",
+    "name": "sp.misyon"
+  },
+  {
+    "code": "sp.vizyon",
+    "short_id": "SP08",
+    "description": "Vizyon; kurumun orta-uzun vadede ulaşmak istediği istenen durumu ifade eder. Misyonun “ne iş yapıyoruz?” sorusuna karşılık, vizyon “nereye evrilmek istiyoruz?” sorusuna yanıt verir.\n\nİyi bir vizyon, ekiplere yön verir ve önceliklendirme yapmayı kolaylaştırır.",
+    "name": "sp.vizyon"
+  },
+  {
+    "code": "sp.degerler_ve_etik_kurallar",
+    "short_id": "SP09",
+    "description": "Bu kartta kurumun davranış ilkeleri (temel değerler) ve etik çerçeve tanımlanır. Değerler “nasıl çalışırız?”; etik kurallar ise “hangi sınırlar içinde hareket ederiz?” sorusuna cevap verir.\n\nBunlar; karar alma, iletişim ve performans değerlendirmede ortak dil oluşturur.",
+    "name": "sp.degerler_ve_etik_kurallar"
+  },
+  {
+    "code": "sp.strateji_listesi_ana_stratejiler_alt_stratejiler",
+    "short_id": "SP11",
+    "description": "Burada ana stratejiler detaylandırılır ve her ana strateji altında alt stratejiler tanımlanır. Böylece stratejik plan, yönetilebilir parçalara ayrılır.\n\n• Ana strateji: geniş başlık ve yön\n• Alt strateji: somut aksiyon ve ölçülebilir adımlar için temel",
+    "name": "sp.strateji_listesi_ana_stratejiler_alt_stratejiler"
+  },
+  {
+    "code": "sp.surec_iyilestirme_faaliyetleri",
+    "short_id": "SP12",
+    "description": "Bu kart; stratejilerin sahada hayata geçmesi için süreç bazlı iyileştirme ve operasyonel faaliyetleri temsil eder. Amaç; tanımlı süreçler üzerinden verimlilik, kalite ve süreklilik sağlamaktır.\n\nStrateji ile günlük iş akışı arasında bağ kurar.",
+    "name": "sp.surec_iyilestirme_faaliyetleri"
+  },
+  {
+    "code": "sp.bireysel_hedefler",
+    "short_id": "SP13",
+    "description": "Kurumsal hedeflerin bireysel düzeyde karşılığı burada izlenir. Çalışanların rolüne uygun hedefler; performans görüşmeleri ve gelişim planlarıyla ilişkilendirilebilir.\n\nAmaç; kurum stratejisi ile kişisel katkıyı hizalamaktır.",
+    "name": "sp.bireysel_hedefler"
+  }
+]

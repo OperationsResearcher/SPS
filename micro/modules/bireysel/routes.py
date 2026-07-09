@@ -21,6 +21,11 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.utils.process_utils import last_day_of_period, data_date_to_period_keys
+from app.utils.karne_hesaplamalar import (
+    parse_basari_puani_araliklari,
+    hesapla_basari_puani,
+    hesapla_agirlikli_basari_puani,
+)
 from app.services.plan_year_service import get_active_plan_year_for_user
 from app.services.date_sovereign import (
     resolve_plan_year_for_date,
@@ -499,6 +504,17 @@ def bireysel_api_karne():
             for key in data_date_to_period_keys(e.data_date, year):
                 entries_by_period[key] = e.actual_value
 
+        last_val = None
+        for m in range(12, 0, -1):
+            v = entries_by_period.get(f"aylik_{m}")
+            if v not in (None, ""):
+                last_val = v
+                break
+
+        araliklar = parse_basari_puani_araliklari(pg.basari_puani_araliklari)
+        basari_puani = hesapla_basari_puani(last_val, araliklar, pg.direction or "Increasing")
+        agirlikli_puan = hesapla_agirlikli_basari_puani(basari_puani, pg.weight)
+
         pg_list.append({
             "id": pg.id,
             "name": pg.name,
@@ -512,6 +528,9 @@ def bireysel_api_karne():
             "strategy_id": pg.strategy_id,
             "strategy_baslik": pg.strategy.title if pg.strategy else None,
             "entries": entries_by_period,
+            "last_value": last_val,
+            "basari_puani": basari_puani,
+            "agirlikli_basari_puani": agirlikli_puan,
         })
 
     # Faaliyet track'leri tek IN-sorguda topla (N+1 önlemi)
@@ -591,12 +610,31 @@ def bireysel_api_karne():
     timeline_events.sort(key=lambda x: x["ts"], reverse=True)
     timeline_events = timeline_events[:40]
 
+    def _norm_weight(w):
+        try:
+            w = float(w or 0)
+        except (TypeError, ValueError):
+            return 0.0
+        return w / 100.0 if w > 1 else w
+
+    _scored = [p for p in pg_list if p["basari_puani"] is not None]
+    _norm_weights = [_norm_weight(p["weight"]) for p in _scored]
+    _toplam_agirlik = sum(_norm_weights)
+    if _scored and _toplam_agirlik > 0:
+        genel_skor = sum(p["basari_puani"] * w for p, w in zip(_scored, _norm_weights)) / _toplam_agirlik
+        genel_skor = round(genel_skor, 2)
+    elif _scored:
+        genel_skor = round(sum(p["basari_puani"] for p in _scored) / len(_scored), 2)
+    else:
+        genel_skor = None
+
     return jsonify({
         "success": True,
         "year": year,
         "pgs": pg_list,
         "activities": act_list,
         "timeline": timeline_events,
+        "genel_basari_skoru": genel_skor,
     })
 
 

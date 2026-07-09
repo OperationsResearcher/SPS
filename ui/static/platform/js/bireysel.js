@@ -68,6 +68,12 @@
   const timelineList = document.getElementById("karne-timeline-list");
   const timelineEmpty = document.getElementById("karne-timeline-empty");
   const insightsStrip = document.getElementById("karne-insights-strip");
+  const compareList = document.getElementById("karne-compare-list");
+  const compareEmpty = document.getElementById("karne-compare-empty");
+  const actHeatList = document.getElementById("karne-act-heat-list");
+  const actHeatEmpty = document.getElementById("karne-act-heat-empty");
+
+  const SCORE_COLORS = { 1: "#ef4444", 2: "#f97316", 3: "#f59e0b", 4: "#84cc16", 5: "#10b981" };
 
   let lastPgs = [];
   let lastYear = null;
@@ -306,10 +312,13 @@
       if (!data.success) throw new Error(data.message || t("Veri alınamadı."));
       lastPgs = data.pgs || [];
       updateStats(data.pgs, data.activities);
+      updateScoreGauge(data.genel_basari_skoru);
       renderInsights(data.pgs, year);
       renderTimeline(data.timeline || []);
       renderPgTable(data.pgs, year);
+      renderCompareList(data.pgs);
       renderFaaliyetTable(data.activities, year);
+      renderActHeatMap(data.activities, year);
     } catch (err) {
       showError(t("Karne verileri yüklenirken hata:") + " " + err.message);
     } finally {
@@ -337,33 +346,139 @@
     if (el("stat-done-pct")) el("stat-done-pct").textContent = pct + "%";
   }
 
+  function updateScoreGauge(score) {
+    const fg = document.getElementById("karne-ring-score-fg");
+    const tx = document.getElementById("karne-ring-score-text");
+    if (!fg || !tx) return;
+    const CIRC = 2 * Math.PI * 37; // 232.48
+    if (score == null) {
+      fg.setAttribute("stroke-dashoffset", String(CIRC));
+      tx.textContent = "—";
+      return;
+    }
+    const pct = Math.max(0, Math.min(100, (score / 5) * 100));
+    fg.setAttribute("stroke-dashoffset", String(CIRC * (1 - pct / 100)));
+    fg.setAttribute("stroke", SCORE_COLORS[Math.max(1, Math.min(5, Math.round(score)))] || "#6366f1");
+    tx.textContent = score.toFixed(1);
+  }
+
+  function buildRowSparkHtml(monthly) {
+    const vals = [];
+    for (let m = 1; m <= 12; m++) vals.push(parseNum(monthly[`aylik_${m}`]));
+    const finite = vals.filter((v) => v != null);
+    if (!finite.length) return "";
+    const max = Math.max(...finite.map(Math.abs)) || 1;
+    const bars = vals
+      .map((v) => {
+        if (v == null) return `<div class="karne-row-spark-bar" style="height:3px;opacity:0.25;"></div>`;
+        const h = Math.max(3, Math.round((Math.abs(v) / max) * 24));
+        return `<div class="karne-row-spark-bar" style="height:${h}px;" title="${escHtml(String(v))}"></div>`;
+      })
+      .join("");
+    return `<div class="karne-row-spark" aria-hidden="true">${bars}</div>`;
+  }
+
+  function renderCompareList(pgs) {
+    if (!compareList || !compareEmpty) return;
+    compareList.innerHTML = "";
+    const rows = [];
+    (pgs || []).forEach((pg) => {
+      const tgt = parseNum(pg.target_value);
+      const val = parseNum(pg.last_value);
+      if (tgt == null || val == null || tgt === 0) return;
+      const inc = (pg.direction || "Increasing") === "Increasing";
+      const rawPct = (val / tgt) * 100;
+      const pct = Math.max(0, Math.min(140, rawPct));
+      const good = inc ? val >= tgt : val <= tgt;
+      const color = pg.basari_puani ? (SCORE_COLORS[pg.basari_puani] || "#6366f1") : (good ? "#10b981" : "#f59e0b");
+      rows.push({ pg, pct, rawPct, color });
+    });
+    if (!rows.length) {
+      compareEmpty.style.display = "";
+      return;
+    }
+    compareEmpty.style.display = "none";
+    rows
+      .sort((a, b) => a.rawPct - b.rawPct)
+      .forEach(({ pg, pct, rawPct, color }) => {
+        const tickPos = Math.min(100, (100 / 140) * 100);
+        const div = document.createElement("div");
+        div.className = "karne-compare-row";
+        div.innerHTML = `
+          <span class="karne-compare-name" title="${escHtml(pg.name)}">${escHtml(pg.name)}</span>
+          <span class="karne-compare-track">
+            <span class="karne-compare-fill" style="width:${(pct / 140) * 100}%;background:${color};"></span>
+            <span class="karne-compare-target-tick" style="left:${tickPos}%;" title="${t("Hedef")}"></span>
+          </span>
+          <span class="karne-compare-pct">%${Math.round(rawPct)}</span>`;
+        compareList.appendChild(div);
+      });
+  }
+
+  function renderActHeatMap(activities, year) {
+    if (!actHeatList || !actHeatEmpty) return;
+    actHeatList.innerHTML = "";
+    if (!activities || !activities.length) {
+      actHeatEmpty.style.display = "";
+      return;
+    }
+    actHeatEmpty.style.display = "none";
+    actHeatList.innerHTML = activities
+      .map((a) => {
+        const cells = Array.from({ length: 12 }, (_, idx) => {
+          const m = idx + 1;
+          const done = a.monthly_tracks && a.monthly_tracks[m] === true;
+          const future = !monthNeedsHeatGrid(year, m) && !done;
+          const cls = done ? "karne-act-heat-cell--done" : future ? "karne-act-heat-cell--future" : "";
+          const aylar = ["", "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"];
+          return `<div class="karne-act-heat-cell ${cls}" title="${aylar[m]}${done ? " — " + t("tamamlandı") : ""}"></div>`;
+        }).join("");
+        return `<div class="karne-act-heat-row">
+          <span class="karne-act-heat-name" title="${escHtml(a.name)}">${escHtml(a.name)}</span>
+          <div class="karne-act-heat-cells">${cells}</div>
+        </div>`;
+      })
+      .join("");
+  }
+
   function renderPgTable(pgs, year) {
     if (!pgs || !pgs.length) {
-      pgTbody.innerHTML = `<tr><td colspan="17" class="text-center py-8 text-gray-400">${t("Henüz PG eklenmemiş.")}</td></tr>`;
+      pgTbody.innerHTML = `<tr><td colspan="18" class="text-center py-8 text-gray-400">${t("Henüz PG eklenmemiş.")}</td></tr>`;
       return;
     }
     pgTbody.innerHTML = pgs
       .map((pg, i) => {
+        const score = pg.basari_puani;
+        const scoreColor = score ? SCORE_COLORS[score] : null;
+        let lastFilledMonth = null;
+        for (let m = 12; m >= 1; m--) {
+          if (pg.entries[`aylik_${m}`]) { lastFilledMonth = m; break; }
+        }
         const monthCells = Array.from({ length: 12 }, (_, idx) => {
           const m = idx + 1;
           const key = `aylik_${m}`;
           const val = pg.entries[key];
           const has = !!val;
-          const heat = monthHeatClass(year, m, has);
+          const heat = has && score && m === lastFilledMonth
+            ? `karne-cell-score-${score}`
+            : monthHeatClass(year, m, has);
           return `<td class="px-2 py-2 text-center ${heat}">
           <button type="button" class="btn-veri-gir hover:underline"
                   data-pg-id="${pg.id}" data-month="${m}" data-year="${year}">${val || "—"}</button>
         </td>`;
         }).join("");
+        const spark = buildRowSparkHtml(pg.entries || {});
         return `<tr class="karne-pg-row" data-pg-id="${pg.id}">
         <td class="px-3 py-2 text-gray-400">${i + 1}</td>
         <td class="px-3 py-2 font-medium text-gray-800 dark:text-gray-100">${escHtml(pg.name)}
           ${pg.code ? `<span class="process-code-badge">${escHtml(pg.code)}</span>` : ""}
           ${pg.katman === "Stratejik" ? `<span class="inline-flex items-center gap-1 ml-1 px-1.5 py-0.5 rounded text-[10px] font-semibold bg-violet-100 text-violet-700 dark:bg-violet-900/40 dark:text-violet-300" title="${pg.strategy_baslik ? escHtml(pg.strategy_baslik) : t("Stratejik hedef")}"><i class="fas fa-bullseye text-[9px]"></i>${t("Stratejik")}</span>` : ""}
+          ${score ? `<span class="karne-pg-badge-score" style="background:${scoreColor};" title="${t("Başarı puanı")}">${score}</span>` : ""}
         </td>
         <td class="px-3 py-2 text-center">${escHtml(pg.target_value || "—")}</td>
         <td class="px-3 py-2 text-center text-gray-500">${escHtml(pg.unit || "—")}</td>
         ${monthCells}
+        <td class="px-3 py-2 text-center">${spark}</td>
         <td class="px-3 py-2 text-center">
           <button type="button" class="btn-pg-delete text-red-400 hover:text-red-600" data-pg-id="${pg.id}">
             <i class="fas fa-trash"></i>

@@ -69,6 +69,20 @@
         <h2 class="mc-page-title" style="margin:0;">{{ _("Bireysel Performans Karnem") }}</h2>
         <p class="mc-page-subtitle">{{ _("Kişisel PG ve faaliyet takibi") }}</p>
       </div>
+      <div class="karne-score-gauge-wrap" data-card-code="bireysel_karne.genel_skor">
+        <svg id="karne-ring-score" width="86" height="86" viewBox="0 0 86 86">
+          <circle cx="43" cy="43" r="37" fill="none" stroke="#e2e8f0" stroke-width="8"/>
+          <circle id="karne-ring-score-fg" cx="43" cy="43" r="37" fill="none" stroke="#6366f1" stroke-width="8"
+                  stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="232.5"
+                  transform="rotate(-90 43 43)" style="transition: stroke-dashoffset 0.6s ease, stroke 0.6s ease;"/>
+          <text id="karne-ring-score-text" x="43" y="48" text-anchor="middle" dominant-baseline="middle"
+                font-size="18" font-weight="800" fill="#0f172a">—</text>
+        </svg>
+        <div>
+          <div class="karne-score-gauge-label">{{ _("Genel Başarı Skoru") }}</div>
+          <div class="karne-score-gauge-sub">{{ _("Ağırlıklı ortalama (1-5)") }}</div>
+        </div>
+      </div>
       <div style="display:flex; align-items:center; gap:8px;">
         <label class="mc-label" style="margin:0; white-space:nowrap;">{{ _("Yıl") }}:</label>
         <select id="year-select" class="mc-select" style="width:auto;">
@@ -178,6 +192,19 @@
     </div>
   </div>
 
+  <!-- Hedef vs Gerçekleşen karşılaştırma -->
+  <div class="mc-card" id="karne-compare-card" data-card-code="bireysel_karne.hedef_karsilastirma" style="margin-bottom:20px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-chart-simple" style="color:#6366f1; margin-right:8px;"></i>{{ _("Hedef vs Gerçekleşen") }}
+      </span>
+    </div>
+    <div class="mc-card-body" style="padding-top:8px;">
+      <div id="karne-compare-list" class="karne-compare-list"></div>
+      <p id="karne-compare-empty" class="mc-page-subtitle" style="margin:8px 0 0; display:none;">{{ _("Karşılaştırma için hedef ve gerçekleşen değeri olan gösterge yok.") }}</p>
+    </div>
+  </div>
+
   <!-- Yıl özeti / hedef–gerçekleşen (JS doldurur) -->
   <div class="mc-card" id="karne-insights-card" data-card-code="bireysel_karne.yil_ozeti" style="margin-bottom:20px;">
     <div class="mc-card-header">
@@ -243,15 +270,29 @@
               {{ [_('Oca'),_('Şub'),_('Mar'),_('Nis'),_('May'),_('Haz'),_('Tem'),_('Ağu'),_('Eyl'),_('Eki'),_('Kas'),_('Ara')][m-1] }}
             </th>
             {% endfor %}
+            <th style="text-align:center; min-width:70px;">{{ _("Trend") }}</th>
             <th style="text-align:center;">{{ _("İşlem") }}</th>
           </tr>
         </thead>
         <tbody id="pg-tbody">
           <tr>
-            <td colspan="17" style="text-align:center; padding:32px; color:#94a3b8;">{{ _("Yükleniyor…") }}</td>
+            <td colspan="18" style="text-align:center; padding:32px; color:#94a3b8;">{{ _("Yükleniyor…") }}</td>
           </tr>
         </tbody>
       </table>
+    </div>
+  </div>
+
+  <!-- Faaliyet Tamamlama Isı Haritası -->
+  <div class="mc-card" id="karne-act-heat-card" data-card-code="bireysel_karne.faaliyet_isi_haritasi" style="margin-bottom:20px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title">
+        <i class="fas fa-fire" style="color:#f97316; margin-right:8px;"></i>{{ _("Faaliyet Tamamlama Takvimi") }}
+      </span>
+    </div>
+    <div class="mc-card-body" style="padding-top:8px;">
+      <div id="karne-act-heat-list"></div>
+      <p id="karne-act-heat-empty" class="mc-page-subtitle" style="margin:8px 0 0; display:none;">{{ _("Henüz faaliyet eklenmemiş.") }}</p>
     </div>
   </div>
 
