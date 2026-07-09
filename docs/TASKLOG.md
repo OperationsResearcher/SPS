@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-241 | 2026-07-09 | ✅ Tamamlandı
+
+**Görev:** Bireysel karne görsel yükseltmesi + Yayın'da boş kalan SP kart açıklamaları tespiti/düzeltme scripti
+**Modül:** bireysel, admin (system_cards)
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy kullanıcı onayı bekliyor
+
+### Değiştirilen Dosyalar
+- `micro/modules/bireysel/routes.py` → `/individual/api/scorecard` yanıtına `genel_basari_skoru` + PG bazında `last_value`/`basari_puani`/`agirlikli_basari_puani` eklendi (mevcut `app/utils/karne_hesaplamalar.py` kullanıldı)
+- `ui/templates/platform/bireysel/karne.html` → genel skor gauge, hedef-vs-gerçekleşen kartı, faaliyet ısı haritası kartı, PG tablosuna Trend sütunu eklendi
+- `ui/static/platform/js/bireysel.js` → gauge güncelleme, renk kodlu ay hücreleri, satır sparkline, karşılaştırma barı ve ısı haritası render fonksiyonları
+- `ui/static/platform/css/bireysel-karne.css` → yeni görsel bileşenlerin stilleri
+- `scripts/seed_sp_kart_aciklamalari.py` (yeni) → SP01-SP13 kart short_id+description senkron scripti (idempotent, dry-run destekli)
+- `scripts/_data_sp_kart_export.json` (yeni) → Yerel'den export edilen 12 kart kaydı (kaynak veri)
+
+### Yapılan İşlem
+Kullanıcı isteği üzerine bireysel karne sayfası 4 yönde görsel güçlendirildi: genel başarı skoru gauge'u, hedef/gerçekleşen bar karşılaştırması, PG satırlarında mini sparkline + skor rozeti, faaliyet tamamlama ısı haritası. Ayrıca önceden bahsedilen "Yayın'da kart açıklamaları boş geliyor" sorunu araştırıldı: SSH ile Yayın DB'sine salt-okunur sorgu atıldı, SP modülü kartlarının (SP01-SP13) Yerel'de dolu olan short_id+description alanlarının Yayın'a hiç seed edilmediği doğrulandı (system_cards verisi kodla gelmez, KURALLAR §5.1). Yerel'den export edilip idempotent bir seed scripti yazıldı; yerelde dry-run ile "0 değişecek, 12 zaten doğru" teyit edildi.
+
+### Notlar
+Değişiklikler `claude/bireysel-karne-gorsel-ve-sp-kart-fix` dalında, henüz main'e merge edilmedi. Test/Yayın deploy + SP kart seed scriptinin Yayın'da çalıştırılması kullanıcı onayı gerektiriyor.
+
+---
+
 ## TASK-240 | 2026-07-08 | ✅ Tamamlandı
 
 **Görev:** Demo talep formu kayıtları admin panelinde + mail gönderim hatası düzeltmesi
