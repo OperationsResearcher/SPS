@@ -2,6 +2,32 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-243 | 2026-07-11 | ✅ Tamamlandı (Tur 2a)
+
+**Görev:** Rol bazlı görünüm katmanı Faz 1 / Tur 2a — K-Radar çekirdek scope: lider yalnız kendi süreç/projesinin skorunu görür, privileged kurum geneli
+**Modül:** k_radar (service + routes)
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı)
+
+### Değiştirilen Dosyalar
+- `services/k_radar_service.py` → `scoped_process_ids`/`scoped_project_ids` yardımcıları (privileged→None=kurum geneli); `_process_component`/`_project_component`'e opsiyonel `id.in_` filtresi; `get_hub_summary`/`get_kp_data`/`get_kpr_data`'ya `scope_*_ids` tuple parametresi (memoize anahtarına doğal girer → cache ayrışır)
+- `micro/modules/k_radar/routes_common.py` → `_scope_tuples()` yardımcısı; hub-summary + recommendations + triggers çağrılarına scope geçir
+- `micro/modules/k_radar/routes_kp.py` → `/api/kp` scope_process_ids geçir
+- `micro/modules/k_radar/routes_kpr.py` → `/api/kpr` scope_project_ids geçir
+
+### Yapılan İşlem
+Belge `ROL-GORUNUM-KATMANI.md` §5 uyarınca K-Radar'ın bölünebilir çekirdek bileşenleri (KP=süreç, KPR=proje, hub özeti) kullanıcının lider/üye olduğu süreç/projelere daraltıldı. Mevcut `accessible_processes_filter`/`accessible_projects_query` yeniden kullanıldı. Kurum-tekil bileşenler (KS/SWOT/PESTEL, bireysel) kasıtlı olarak kurum geneli bırakıldı. Scope id listeleri route'ta hesaplanıp memoize fonksiyonuna tuple geçirilerek `user` objesinin cache sınırını geçmesi önlendi ve cache doğal ayrıştı.
+
+### Doğrulama
+Canlı HTTP (127.0.0.1:5001, gerçek login), tenant 27 (veri dolu): LİDER `/api/kp` → kpi_count=3 (kendi süreci); PRIVILEGED → kpi_count=210 (kurum geneli). hub-summary'de kp bileşeni aynı ayrım. Probe: ard arda çağrıda cache karışması YOK (lider 3, priv 210 tutarlı) — tuple memoize anahtarı ayrışıyor.
+
+### Notlar
+- **Kapsam sınırı:** Yalnız çekirdek (hub+kp+kpr). Ağır `get_kp_extended_data`/`get_kpr_extended_data` (Maturity/Bottleneck/EVM/Risk) ve `get_cross_*` HENÜZ scope'lanmadı → Tur 2b.
+- **"Kurum geneli" rozeti Faz 2b'ye ertelendi:** skor kartlarını taşıyan `k_radar/index.html` hiçbir route'tan render edilmiyor (ölü template); rozetin canlı hedefi extended/cross ile netleşince eklenecek.
+- Doğrulama için tenant 27'de geçici test lideri + şifreler kullanıldı, sonra geri alındı (liderlik silindi, şifreler `123456`).
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
 ## TASK-242 | 2026-07-11 | ✅ Tamamlandı (Tur 1)
 
 **Görev:** Rol bazlı menü görünürlük katmanı (Faz 1 / Tur 1) — sidebar+launcher, kullanıcının rolü + süreç/proje liderlik-üyeliğine göre süzülür

@@ -36,6 +36,32 @@ from app.models.k_radar import KRadarRecommendationAction
 logger = logging.getLogger(__name__)
 
 
+# ── Scope (belge: docs/paketler/ROL-GORUNUM-KATMANI.md §5) ──────────────────
+# Privileged kullanıcı → None (filtre yok = kurum geneli).
+# Ayrıcalıksız lider → yönetici/üye olduğu süreç/proje id listesi.
+# Not: bölünebilir bileşenler bu id listesiyle daraltılır; kurum-tekil
+# bileşenler (SWOT/PESTEL/strateji) daraltılmaz.
+
+def scoped_process_ids(user, tenant_id: int) -> list[int] | None:
+    """Kullanıcının K-Radar'da görebileceği süreç id'leri.
+    Privileged → None (kurum geneli). Aksi halde üye/lider/sahip süreçleri."""
+    from micro.modules.surec.permissions import is_privileged, accessible_processes_filter
+    if is_privileged(user):
+        return None
+    q = accessible_processes_filter(db.session.query(Process.id), user, tenant_id)
+    return [row[0] for row in q.all()]
+
+
+def scoped_project_ids(user, tenant_id: int) -> list[int] | None:
+    """Kullanıcının K-Radar'da görebileceği proje id'leri.
+    Privileged → None (kurum geneli). Aksi halde yönetici/üye/gözlemci projeleri."""
+    from micro.modules.proje.permissions import is_privileged, accessible_projects_query
+    if is_privileged(user):
+        return None
+    q = accessible_projects_query(db.session.query(Project.id), user, tenant_id)
+    return [row[0] for row in q.all()]
+
+
 def _to_float(value: Any) -> float | None:
     if value is None:
         return None
@@ -70,16 +96,18 @@ def _weighted_score(raw_values: list[tuple[float, float]]) -> float:
     return round(weighted_sum / total_weight, 2)
 
 
-def _process_component(tenant_id: int) -> dict[str, Any]:
-    kpis = (
+def _process_component(tenant_id: int, process_ids: list[int] | None = None) -> dict[str, Any]:
+    q = (
         ProcessKpi.query.join(Process, Process.id == ProcessKpi.process_id)
         .filter(
             Process.tenant_id == tenant_id,
             Process.is_active.is_(True),
             ProcessKpi.is_active.is_(True),
         )
-        .all()
     )
+    if process_ids is not None:
+        q = q.filter(Process.id.in_(process_ids))
+    kpis = q.all()
     # Her KPI'nın son verisini batch'le çek (N+1 önlemi)
     from collections import defaultdict as _dd
     _kpi_ids = [k.id for k in kpis]
@@ -119,10 +147,11 @@ def _process_component(tenant_id: int) -> dict[str, Any]:
     }
 
 
-def _project_component(tenant_id: int) -> dict[str, Any]:
-    active_projects = (
-        Project.query.filter_by(tenant_id=tenant_id, is_archived=False).all()
-    )
+def _project_component(tenant_id: int, project_ids: list[int] | None = None) -> dict[str, Any]:
+    _pq = Project.query.filter_by(tenant_id=tenant_id, is_archived=False)
+    if project_ids is not None:
+        _pq = _pq.filter(Project.id.in_(project_ids))
+    active_projects = _pq.all()
     if not active_projects:
         return {"score": 0.0, "band": "red", "critical_count": 0, "project_count": 0}
     # Tüm projelerin geciken görev sayısını batch'le (N+1 önlemi)
@@ -251,10 +280,16 @@ def _get_radar_weights(tenant_id: int) -> tuple[float, float, float, float]:
 
 
 @cache.memoize(timeout=300)
-def get_hub_summary(tenant_id: int) -> dict[str, Any]:
+def get_hub_summary(
+    tenant_id: int,
+    scope_process_ids: tuple[int, ...] | None = None,
+    scope_project_ids: tuple[int, ...] | None = None,
+) -> dict[str, Any]:
+    # scope_* None → kurum geneli (privileged). Tuple → lider kapsamı (belge §5).
+    # ks/ind kurum-tekil kalır; yalnız kp/kpr daraltılır.
     ks = _ks_component(tenant_id)
-    kp = _process_component(tenant_id)
-    kpr = _project_component(tenant_id)
+    kp = _process_component(tenant_id, list(scope_process_ids) if scope_process_ids is not None else None)
+    kpr = _project_component(tenant_id, list(scope_project_ids) if scope_project_ids is not None else None)
     ind = _individual_component(tenant_id)
     w_ks, w_kp, w_kpr, w_ind = _get_radar_weights(tenant_id)
 
@@ -354,8 +389,8 @@ def get_ks_extended_data(tenant_id: int) -> dict[str, Any]:
 
 
 @cache.memoize(timeout=300)
-def get_kp_data(tenant_id: int) -> dict[str, Any]:
-    return _process_component(tenant_id)
+def get_kp_data(tenant_id: int, scope_process_ids: tuple[int, ...] | None = None) -> dict[str, Any]:
+    return _process_component(tenant_id, list(scope_process_ids) if scope_process_ids is not None else None)
 
 
 @cache.memoize(timeout=300)
@@ -559,8 +594,8 @@ def get_kp_extended_data(tenant_id: int) -> dict[str, Any]:
 
 
 @cache.memoize(timeout=300)
-def get_kpr_data(tenant_id: int) -> dict[str, Any]:
-    return _project_component(tenant_id)
+def get_kpr_data(tenant_id: int, scope_project_ids: tuple[int, ...] | None = None) -> dict[str, Any]:
+    return _project_component(tenant_id, list(scope_project_ids) if scope_project_ids is not None else None)
 
 
 @cache.memoize(timeout=300)

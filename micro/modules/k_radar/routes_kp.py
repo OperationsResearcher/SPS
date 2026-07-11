@@ -10,7 +10,7 @@ from app.models.process import Process
 from app.models.k_radar_domain import ProcessMaturity
 from flask_babel import gettext as _
 from micro.modules.k_radar.routes_common import (
-    _can_manage_k_radar, _required_tenant_id, _safe_json, _forbidden_json,
+    _can_manage_k_radar, _required_tenant_id, _safe_json, _forbidden_json, _scope_tuples,
 )
 
 
@@ -122,7 +122,8 @@ def k_radar_kp_olgunluk_ekle():
 @login_required
 def k_radar_api_kp():
     from services.k_radar_service import get_kp_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_data(_required_tenant_id())}))
+    _sp, _ = _scope_tuples()
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_data(_required_tenant_id(), _sp)}))
 
 
 @app_bp.route("/k-radar/api/kp/radar")
