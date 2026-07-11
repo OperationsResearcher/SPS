@@ -9,7 +9,7 @@ from app.models import db
 from app.models.k_radar_domain import StakeholderMap
 from flask_babel import gettext as _
 from micro.modules.k_radar.routes_common import (
-    _can_manage_k_radar, _required_tenant_id, _safe_json, _forbidden_json,
+    _can_manage_k_radar, _required_tenant_id, _safe_json, _forbidden_json, _scope_tuples,
 )
 
 
@@ -87,8 +87,9 @@ def k_radar_cross_paydas_ekle():
 @login_required
 def k_radar_api_cross_risk_heatmap():
     from services.k_radar_service import get_cross_heatmap_data
+    _sp, _spr = _scope_tuples()
     return _safe_json(
-        lambda: jsonify({"success": True, "data": get_cross_heatmap_data(_required_tenant_id())})
+        lambda: jsonify({"success": True, "data": get_cross_heatmap_data(_required_tenant_id(), _sp, _spr)})
     )
 
 

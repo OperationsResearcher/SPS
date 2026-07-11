@@ -2,6 +2,35 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-244 | 2026-07-11 | ✅ Tamamlandı (Tur 2b)
+
+**Görev:** Rol bazlı görünüm katmanı Faz 1 / Tur 2b — K-Radar extended + cross scope + kapsam bilgi şeridi
+**Modül:** k_radar (service + routes + template + i18n)
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı)
+
+### Değiştirilen Dosyalar
+- `services/k_radar_service.py` → `get_kp_extended_data`/`get_kpr_extended_data`/`get_cross_heatmap_data`'ya scope parametresi; KP tarafı KPI+ProcessMaturity+BottleneckLog+ValueChainItem `Process.id.in_`; KPR tarafı project_ids+EvmSnapshot+Task; `get_cross_extended_data` kurum-tekil bırakıldı (rakip/A3/anket)
+- `micro/modules/k_radar/routes_kp.py` → 7 extended endpoint'e `_scope_tuples()[0]`
+- `micro/modules/k_radar/routes_kpr.py` → 4 extended endpoint'e `_scope_tuples()[1]`
+- `micro/modules/k_radar/routes_cross.py` → cross-heatmap'e scope; `_scope_tuples` import
+- `ui/templates/platform/k_radar/_scope_notice.html` (yeni) → kapsam bilgi şeridi (yalnız ayrıcalıksız lider)
+- `ui/templates/platform/k_radar/{hub,kp,kpr,ks}.html` → şerit include
+- `translations/{tr,en}/LC_MESSAGES/messages.po` + `.mo` → şerit metni i18n
+
+### Yapılan İşlem
+Tur 2a çekirdeğin ardından K-Radar'ın ağır extended + cross fonksiyonları da scope'landı (belge §5). Gevşek-bağlı tablo kararı (kullanıcı onayı): opsiyonel process_id'li kayıtlar (Darboğaz, Değer Zinciri) yalnız kendi sürecine bağlıysa lidere görünür, bağsız olanlar düşer. RiskHeatmapItem project_id taşımadığından ve rakip/A3/anket kuruma ait olduğundan bunlar kurum geneli kaldı. Kart-kart rozet yerine tek merkezi "kapsam şeridi" (yalnız lider) tercih edildi.
+
+### Doğrulama
+Canlı HTTP (tenant 27, gerçek login): LİDER `/api/kp/pareto` kpi_count=3, PRIV=211; kapsam şeridi kp.html'de LİDER=var PRIV=yok; EN i18n render doğrulandı. Servis düzeyi: kp_extended olgunluk process_count 68→1 (scope), cross kp.score 97.67→87.37 (scope, rpn bandı aynı kaldı = beklenen).
+
+### Notlar
+- **Faz 1 TAMAM.** Menü görünürlüğü (Tur 1) + K-Radar tam scope (Tur 2a+2b) + kapsam şeridi bitti.
+- Kapsam dışı (gelecekte): kart/bileşen düzeyi rol süzme, route seviyesi sertleştirme (menüde gizli sayfa elle URL ile hâlâ açılıyor), üst yönetim özet dashboard'u.
+- Doğrulama için tenant 27 geçici lider + şifreler kullanıldı, geri alındı.
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
 ## TASK-243 | 2026-07-11 | ✅ Tamamlandı (Tur 2a)
 
 **Görev:** Rol bazlı görünüm katmanı Faz 1 / Tur 2a — K-Radar çekirdek scope: lider yalnız kendi süreç/projesinin skorunu görür, privileged kurum geneli

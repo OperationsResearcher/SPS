@@ -394,34 +394,52 @@ def get_kp_data(tenant_id: int, scope_process_ids: tuple[int, ...] | None = None
 
 
 @cache.memoize(timeout=300)
-def get_kp_extended_data(tenant_id: int) -> dict[str, Any]:
-    base = _process_component(tenant_id)
-    process_count = Process.query.filter_by(tenant_id=tenant_id, is_active=True).count()
-    kpi_count = (
+def get_kp_extended_data(tenant_id: int, scope_process_ids: tuple[int, ...] | None = None) -> dict[str, Any]:
+    # scope None → kurum geneli. Tuple → yalnız o süreçlere bağlı veriler
+    # (opsiyonel-bağlı tablolarda bağsız kayıtlar düşer; belge §5, TASK-244 kararı).
+    _spids = list(scope_process_ids) if scope_process_ids is not None else None
+
+    def _scope_proc(q):
+        """Process.id üzerinden filtreli sorguya scope uygula."""
+        return q.filter(Process.id.in_(_spids)) if _spids is not None else q
+
+    base = _process_component(tenant_id, _spids)
+    _pcq = Process.query.filter_by(tenant_id=tenant_id, is_active=True)
+    if _spids is not None:
+        _pcq = _pcq.filter(Process.id.in_(_spids))
+    process_count = _pcq.count()
+    kpi_count = _scope_proc(
         ProcessKpi.query.join(Process, Process.id == ProcessKpi.process_id)
         .filter(Process.tenant_id == tenant_id, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
-        .count()
-    )
-    kpi_rows = (
+    ).count()
+    kpi_rows = _scope_proc(
         KpiData.query.join(ProcessKpi, ProcessKpi.id == KpiData.process_kpi_id)
         .join(Process, Process.id == ProcessKpi.process_id)
         .filter(Process.tenant_id == tenant_id, Process.is_active.is_(True), KpiData.is_active.is_(True))
-        .count()
-    )
+    ).count()
     critical = int(base.get("critical_count") or 0)
     score = float(base.get("score") or 0.0)
 
-    maturity_rows = ProcessMaturity.query.filter_by(tenant_id=tenant_id, is_active=True).all()
+    _mq = ProcessMaturity.query.filter_by(tenant_id=tenant_id, is_active=True)
+    if _spids is not None:
+        _mq = _mq.filter(ProcessMaturity.process_id.in_(_spids))
+    maturity_rows = _mq.all()
     maturity_levels = [int(r.maturity_level or 0) for r in maturity_rows if r.maturity_level is not None]
     maturity_avg = round(sum(maturity_levels) / len(maturity_levels), 2) if maturity_levels else 0.0
 
-    bottlenecks = BottleneckLog.query.filter_by(tenant_id=tenant_id, is_active=True).all()
+    _bq = BottleneckLog.query.filter_by(tenant_id=tenant_id, is_active=True)
+    if _spids is not None:
+        _bq = _bq.filter(BottleneckLog.process_id.in_(_spids))
+    bottlenecks = _bq.all()
     open_bottlenecks = [b for b in bottlenecks if b.resolved_at is None]
     severity_weight = {"low": 1, "medium": 2, "high": 3, "critical": 4}
     severity_points = sum(severity_weight.get(str((b.severity or "")).strip().lower(), 2) for b in open_bottlenecks)
     severity_index = min(100, severity_points * 8) if open_bottlenecks else min(100, critical * 20)
 
-    value_items = ValueChainItem.query.filter_by(tenant_id=tenant_id, is_active=True).all()
+    _vq = ValueChainItem.query.filter_by(tenant_id=tenant_id, is_active=True)
+    if _spids is not None:
+        _vq = _vq.filter(ValueChainItem.linked_process_id.in_(_spids))
+    value_items = _vq.all()
     mapped_process_ids = {int(v.linked_process_id) for v in value_items if v.linked_process_id}
     mapped_process_count = len(mapped_process_ids)
     waste_items = [v for v in value_items if (v.muda_type or "").strip()]
@@ -438,12 +456,11 @@ def get_kp_extended_data(tenant_id: int) -> dict[str, Any]:
     top3 = sorted(process_open_counts.values(), reverse=True)[:3]
     top_share = (sum(top3) / open_total * 100.0) if open_total else min(100.0, 20.0 + critical * 10.0)
 
-    kpi_rows_all = (
+    kpi_rows_all = _scope_proc(
         KpiData.query.join(ProcessKpi, ProcessKpi.id == KpiData.process_kpi_id)
         .join(Process, Process.id == ProcessKpi.process_id)
         .filter(Process.tenant_id == tenant_id, Process.is_active.is_(True), KpiData.is_active.is_(True))
-        .all()
-    )
+    ).all()
     breach_count = 0
     ratio_pool: list[float] = []
     for row in kpi_rows_all:
@@ -458,7 +475,7 @@ def get_kp_extended_data(tenant_id: int) -> dict[str, Any]:
     observed_rows = len(ratio_pool)
     breach_risk = round((breach_count / observed_rows) * 100.0, 2) if observed_rows else min(100.0, critical * 15.0)
 
-    kpi_row_counts = (
+    kpi_row_counts = _scope_proc(
         db.session.query(ProcessKpi.id, func.count(KpiData.id))
         .join(Process, Process.id == ProcessKpi.process_id)
         .join(KpiData, KpiData.process_kpi_id == ProcessKpi.id, isouter=True)
@@ -469,8 +486,7 @@ def get_kp_extended_data(tenant_id: int) -> dict[str, Any]:
             or_(KpiData.id.is_(None), KpiData.is_active.is_(True)),
         )
         .group_by(ProcessKpi.id)
-        .all()
-    )
+    ).all()
     populated_series = sum(1 for _, cnt in kpi_row_counts if int(cnt or 0) >= 3)
     comparability_score = round((populated_series / max(1, int(kpi_count or 0))) * 100.0, 2) if kpi_count else 0.0
     period_row_count = observed_rows
@@ -497,9 +513,11 @@ def get_kp_extended_data(tenant_id: int) -> dict[str, Any]:
         waste_pressure = round(100.0 - flow_efficiency, 2)
 
     active_process_with_kpi = (
-        db.session.query(Process.id)
-        .join(ProcessKpi, ProcessKpi.process_id == Process.id)
-        .filter(Process.tenant_id == tenant_id, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
+        _scope_proc(
+            db.session.query(Process.id)
+            .join(ProcessKpi, ProcessKpi.process_id == Process.id)
+            .filter(Process.tenant_id == tenant_id, Process.is_active.is_(True), ProcessKpi.is_active.is_(True))
+        )
         .distinct()
         .count()
     )
@@ -599,9 +617,15 @@ def get_kpr_data(tenant_id: int, scope_project_ids: tuple[int, ...] | None = Non
 
 
 @cache.memoize(timeout=300)
-def get_kpr_extended_data(tenant_id: int) -> dict[str, Any]:
-    base = _project_component(tenant_id)
-    projects = Project.query.filter_by(tenant_id=tenant_id, is_archived=False).all()
+def get_kpr_extended_data(tenant_id: int, scope_project_ids: tuple[int, ...] | None = None) -> dict[str, Any]:
+    # scope None → kurum geneli. Tuple → yalnız o projeler.
+    # RiskHeatmapItem project_id taşımadığından kurum geneli kalır (teknik kısıt, belge §5).
+    _sprids = list(scope_project_ids) if scope_project_ids is not None else None
+    base = _project_component(tenant_id, _sprids)
+    _projq = Project.query.filter_by(tenant_id=tenant_id, is_archived=False)
+    if _sprids is not None:
+        _projq = _projq.filter(Project.id.in_(_sprids))
+    projects = _projq.all()
     project_ids = [p.id for p in projects]
     if not project_ids:
         return {
@@ -611,12 +635,16 @@ def get_kpr_extended_data(tenant_id: int) -> dict[str, Any]:
             "gantt": {"timeline_task_count": 0, "on_time_ratio": 0.0},
         }
 
-    evm_rows = EvmSnapshot.query.filter(EvmSnapshot.tenant_id == tenant_id, EvmSnapshot.is_active.is_(True)).all()
+    _evmq = EvmSnapshot.query.filter(EvmSnapshot.tenant_id == tenant_id, EvmSnapshot.is_active.is_(True))
+    if _sprids is not None:
+        _evmq = _evmq.filter(EvmSnapshot.project_id.in_(_sprids))
+    evm_rows = _evmq.all()
     spi_vals = [float(r.spi) for r in evm_rows if r.spi is not None]
     cpi_vals = [float(r.cpi) for r in evm_rows if r.cpi is not None]
     avg_spi = round(sum(spi_vals) / len(spi_vals), 2) if spi_vals else 0.0
     avg_cpi = round(sum(cpi_vals) / len(cpi_vals), 2) if cpi_vals else 0.0
 
+    # RiskHeatmapItem project_id taşımaz → scope'lanamaz, kurum geneli kalır (belge §5).
     risk_rows = RiskHeatmapItem.query.filter_by(tenant_id=tenant_id, is_active=True).all()
     open_risks = [r for r in risk_rows if (r.status or "").lower() not in {"closed", "done", "resolved"}]
     risk_points = [int(r.rpn or (int(r.probability or 0) * int(r.impact or 0))) for r in open_risks]
@@ -652,8 +680,12 @@ def get_kpr_extended_data(tenant_id: int) -> dict[str, Any]:
 
 
 @cache.memoize(timeout=300)
-def get_cross_heatmap_data(tenant_id: int) -> dict[str, Any]:
-    hub = get_hub_summary(tenant_id)
+def get_cross_heatmap_data(
+    tenant_id: int,
+    scope_process_ids: tuple[int, ...] | None = None,
+    scope_project_ids: tuple[int, ...] | None = None,
+) -> dict[str, Any]:
+    hub = get_hub_summary(tenant_id, scope_process_ids, scope_project_ids)
     recommendations = get_recommendations_from_summary(hub)
     points = [
         {

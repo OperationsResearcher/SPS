@@ -323,14 +323,14 @@ def k_radar_api_kp_olgunluk_delete(row_id: int):
 @login_required
 def k_radar_api_kp_darbogaz():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("darbogaz", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("darbogaz", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/value-chain")
 @login_required
 def k_radar_api_kp_deger_zinciri():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("deger_zinciri", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("deger_zinciri", {})}))
 
 
 # ── Değer Zinciri öğe CRUD (L3 eksik tamamlama) ───────────────────────────────
@@ -471,39 +471,39 @@ def _vc_proc(raw, tid):
 @login_required
 def k_radar_api_kp_pareto():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("pareto", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("pareto", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/sla")
 @login_required
 def k_radar_api_kp_sla():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("sla", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("sla", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/benchmark")
 @login_required
 def k_radar_api_kp_benchmark():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("benchmark", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("benchmark", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/oee")
 @login_required
 def k_radar_api_kp_oee():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("oee", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("oee", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/vsm")
 @login_required
 def k_radar_api_kp_vsm():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("vsm", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("vsm", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/capacity")
 @login_required
 def k_radar_api_kp_kapasite():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id()).get("kapasite", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("kapasite", {})}))

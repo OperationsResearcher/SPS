@@ -6,6 +6,7 @@
 {% endblock %}
 
 {% block content %}
+{% include "platform/k_radar/_scope_notice.html" %}
 <div id="k-radar-kpr-root" data-url="{{ url_for('app_bp.k_radar_api_kpr') }}" style="max-width:900px; margin:0 auto;">
   <div class="mc-card" data-card-code="k_radar_kpr.proje_radari">
     <div class="mc-card-body">
