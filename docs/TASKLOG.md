@@ -2,6 +2,31 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-242 | 2026-07-11 | ✅ Tamamlandı (Tur 1)
+
+**Görev:** Rol bazlı menü görünürlük katmanı (Faz 1 / Tur 1) — sidebar+launcher, kullanıcının rolü + süreç/proje liderlik-üyeliğine göre süzülür
+**Modül:** core (module_registry), surec, proje, app/constants
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı; iş yerelde birikir)
+
+### Değiştirilen Dosyalar
+- `app/constants/module_visibility.py` (yeni) → merkez `can_see_module(user, module_id)`; statik rol eşlemesi (belge §4) + bağlamsal liderlik dalı; request-scope `flask.g` cache
+- `micro/modules/surec/permissions.py` → `user_has_any_process` (üye/lider/sahip EXISTS) + `user_leads_any_process` (yalnız lider/sahip); `db` import eklendi
+- `micro/modules/proje/permissions.py` → `user_has_any_project` + `user_leads_any_project` (EXISTS), `_user_kurum_id` yardımcı
+- `micro/core/module_registry.py` → `get_accessible_modules` döngüsüne `can_see_module` AND koşulu (Admin erken-return sonrası, paket kapısı ile AND); `_ROLE_RESTRICTED` çift-emniyet olarak korundu
+
+### Yapılan İşlem
+Tasarım belgesi `docs/paketler/ROL-GORUNUM-KATMANI.md` (bu oturumda mutabık kalınıp yazıldı) uyarınca menü görünürlüğü tek merkeze toplandı. İki eksen: paket (tenant, dokunulmadı) + rol/liderlik (kullanıcı, yeni) → AND. Sidebar (`base.html`) ve launcher zaten `get_accessible_modules`/`sidebar_module_ids` okuduğundan template değişikliği gerekmedi. Bağlamsal sinyaller sidebar her sayfada render olduğundan tek `EXISTS` sorgusu + `g` cache ile hafif tutuldu. K-Radar kuralı: yalnız lider görür, üye görmez (belge §5).
+
+### Doğrulama
+Gerçek çalışan uygulamada (127.0.0.1:5001, gerçek `/login` akışı) 4 senaryo PASS: ilişkisiz personel=sade taban; süreç üyesi=+Süreç (K-Radar YOK); süreç lideri=+Süreç+K-Radar; tenant_admin=hepsi. Probe: menüde gizli route'lar elle URL ile hâlâ 200 döndürüyor — bilinçli Faz 1 kararı (UI gizleme; route sertleştirme Faz 2).
+
+### Notlar
+- Tur 2 (K-Radar scope refactor — lider kendi süreç/projesinin verisini görür, Alt-Faz E) henüz YAPILMADI.
+- Doğrulama için 4 yerel test kullanıcısına (id 12/10/11/13) geçici şifre atandı, sonra seed varsayılanı `123456`'ya normalize edildi (orijinal hash kaydedilmemişti — birebir restore değil).
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
 ## TASK-241 | 2026-07-09 | ✅ Tamamlandı
 
 **Görev:** Bireysel karne görsel yükseltmesi + Yayın'da boş kalan SP kart açıklamaları tespiti/düzeltme scripti

@@ -5,6 +5,7 @@ from __future__ import annotations
 
 from sqlalchemy import or_
 
+from extensions import db
 from app.models.core import User
 from app.models.process import Process
 
@@ -99,3 +100,46 @@ def accessible_processes_filter(query, user, tenant_id: int):
             Process.owners.any(User.id == uid),
         )
     )
+
+
+def user_has_any_process(user) -> bool:
+    """Sidebar görünürlük sinyali: kullanıcı herhangi bir aktif sürece
+    lider/üye/sahip olarak bağlı mı? Privileged roller kısa-devre True.
+    Tek EXISTS sorgusu — liste çekmez (sidebar her sayfada render olur)."""
+    if is_privileged(user):
+        return True
+    if not user or not getattr(user, "id", None):
+        return False
+    uid = user.id
+    return db.session.query(
+        Process.query.filter(
+            Process.tenant_id == user.tenant_id,
+            Process.is_active.is_(True),
+            or_(
+                Process.leaders.any(User.id == uid),
+                Process.members.any(User.id == uid),
+                Process.owners.any(User.id == uid),
+            ),
+        ).exists()
+    ).scalar()
+
+
+def user_leads_any_process(user) -> bool:
+    """Sidebar görünürlük sinyali: kullanıcı herhangi bir aktif süreçte
+    lider veya sahip mi? (yalnızca üye olmak yeterli DEĞİL — K-Radar eşiği,
+    docs/paketler/ROL-GORUNUM-KATMANI.md §5). Privileged kısa-devre True."""
+    if is_privileged(user):
+        return True
+    if not user or not getattr(user, "id", None):
+        return False
+    uid = user.id
+    return db.session.query(
+        Process.query.filter(
+            Process.tenant_id == user.tenant_id,
+            Process.is_active.is_(True),
+            or_(
+                Process.leaders.any(User.id == uid),
+                Process.owners.any(User.id == uid),
+            ),
+        ).exists()
+    ).scalar()
