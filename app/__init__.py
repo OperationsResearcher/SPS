@@ -233,10 +233,24 @@ def create_app(config_class=None):
             return row.required_component_code in slugs
 
         def card_visible(card_code):
-            """Kartın TAMAMI paket'e göre görünür mü? (kart-düzeyi zorlama, 2026-07-08).
+            """Kartın TAMAMI görünür mü? Paket VE rol ekseninde (belge §3, §6).
 
-            SystemCard.component_id → SystemComponent.code zinciriyle çözülür;
-            zincir yoksa / component hiçbir modüle atanmamışsa fail-open."""
+            Paket: SystemCard.component_id → SystemComponent.code zinciriyle
+            çözülür; zincir yoksa / atanmamışsa fail-open.
+            Rol: ROLE_VISIBLE_CARD_CODES haritasındaki kartlar yalnız izinli
+            rollerde görünür (Admin bypass). Harita boşsa rol ekseni etkisiz."""
+            # Rol kapısı (paketten bağımsız — Admin dahil herkese uygulanır,
+            # ama card_hidden_for_role Admin'i zaten bypass eder).
+            try:
+                from app.constants.roles import card_hidden_for_role
+                from flask_login import current_user as _cu
+                _role = _cu.role.name if (_cu.is_authenticated and _cu.role) else None
+                if card_hidden_for_role(card_code, _role):
+                    return False
+            except Exception:
+                pass  # rol çözülemezse rol ekseninde engelleme (fail-open)
+
+            # Paket kapısı (mevcut davranış)
             if slugs is None:
                 return True
             try:

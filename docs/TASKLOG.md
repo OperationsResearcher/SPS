@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-246 | 2026-07-12 | ✅ Tamamlandı (Faz 3 — altyapı)
+
+**Görev:** Rol bazlı görünüm katmanı Faz 3 — kart düzeyi rol süzme altyapısı (mekanizma; süzülecek kart listesi boş başlar)
+**Modül:** app/constants (roles), app/__init__ (card_visible)
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `app/constants/roles.py` → `ROLE_VISIBLE_CARD_CODES` (boş harita, tek-kaynak) + `card_hidden_for_role(card_code, role_name)` yardımcısı (Admin bypass, haritada yoksa açık)
+- `app/__init__.py` → `card_visible` context helper'ına rol kapısı: paket VE rol (rol ekseni haritadan; fail-open korundu)
+
+### Yapılan İşlem
+Keşif gösterdi ki kartların çoğu zaten modül kapısıyla (Faz 1 `can_see_module`) süzülüyor — personel görmediği modülün kartlarını hiç render etmiyor. Faz 3 yalnız "sayfa açık ama şu kart yalnız yönetime" senaryosu için gerekli ve şu an DB'de böyle tanımlı ihtiyaç yok (system_cards'ta rol kolonu yok). Kullanıcı kararı: altyapıyı kur, mekanizma hazır olsun. Bir kartı gizlemek artık `roles.py`'de tek satır (`"sayfa.kart": PRIVILEGED_ROLES`). 699 kart ellenmedi, DB migration gerekmedi, rol kararı tek merkezde.
+
+### Doğrulama
+Birim test: harita boşken hiçbir kart gizlenmiyor (regresyon yok); örnek kart eklenince standard_user→gizli, executive_manager→görür, Admin→bypass, haritada olmayan→açık. card_visible context'te sorunsuz çözülüyor.
+
+### Notlar
+- Görsel etki YOK (harita boş) — bilinçli; gerçek gizleme ihtiyacı doğunca kart eklenecek.
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
 ## TASK-245 | 2026-07-12 | ✅ Tamamlandı (Faz 2)
 
 **Görev:** Rol bazlı görünüm katmanı Faz 2 — route seviyesi yetki sertleştirme (menüde gizli sayfa URL ile açılmasın)
