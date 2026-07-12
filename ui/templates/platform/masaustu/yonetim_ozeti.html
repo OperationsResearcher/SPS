@@ -1,0 +1,182 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ _("Yönetim Özeti") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Yönetim Özeti") }}{% endblock %}
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': _('Yönetim Özeti'), 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+<div id="yo-root" data-api="{{ url_for('app_bp.yonetim_ozeti_api') }}" style="max-width:1180px; margin:0 auto;">
+
+  <div class="mc-page-header" style="margin-bottom:18px;">
+    <div>
+      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+        <i class="fas fa-gauge-high" style="color:#6366f1;"></i> {{ _("Kurumunuz nasıl gidiyor?") }}
+      </h2>
+      <p style="font-size:13px;color:var(--text-muted);margin:0;">
+        {{ _("Kurum genelinde tek bakışta durum — skor, geciken işler ve dikkat gereken noktalar.") }}
+      </p>
+    </div>
+  </div>
+
+  {# ── Kurum skoru + band ── #}
+  <div class="mc-card" data-card-code="yonetim_ozeti.kurum_skoru" style="margin-bottom:16px;">
+    <div class="mc-card-header">
+      <span class="mc-card-title"><i class="fas fa-heart-pulse" style="color:#6366f1;"></i> {{ _("Kurum Skoru") }}</span>
+      <span class="mc-badge" id="yo-total-band">—</span>
+    </div>
+    <div class="mc-card-body">
+      <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
+        <div style="text-align:center; min-width:120px;">
+          <div id="yo-total-score" style="font-size:44px; font-weight:800; line-height:1; color:var(--text-default);">—</div>
+          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-top:4px;">{{ _("Toplam") }}</div>
+        </div>
+        <div class="mc-grid-4" style="flex:1; min-width:280px; gap:10px;">
+          <div class="mc-stat-card mc-stat-blue" data-card-code="yonetim_ozeti.ks_skoru">
+            <div class="mc-stat-label">{{ _("Strateji") }}</div>
+            <div class="mc-stat-value" id="yo-ks">—</div>
+            <div class="mc-stat-sub" id="yo-ks-band">—</div>
+          </div>
+          <div class="mc-stat-card mc-stat-emerald" data-card-code="yonetim_ozeti.kp_skoru">
+            <div class="mc-stat-label">{{ _("Süreç") }}</div>
+            <div class="mc-stat-value" id="yo-kp">—</div>
+            <div class="mc-stat-sub" id="yo-kp-band">—</div>
+          </div>
+          <div class="mc-stat-card mc-stat-amber" data-card-code="yonetim_ozeti.kpr_skoru">
+            <div class="mc-stat-label">{{ _("Proje") }}</div>
+            <div class="mc-stat-value" id="yo-kpr">—</div>
+            <div class="mc-stat-sub" id="yo-kpr-band">—</div>
+          </div>
+          <div class="mc-stat-card mc-stat-indigo" data-card-code="yonetim_ozeti.bireysel_skoru">
+            <div class="mc-stat-label">{{ _("Bireysel") }}</div>
+            <div class="mc-stat-value" id="yo-ind">—</div>
+            <div class="mc-stat-sub" id="yo-ind-band">—</div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px;">
+
+    {# ── Geciken işler ── #}
+    <div class="mc-card" data-card-code="yonetim_ozeti.geciken_isler">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> {{ _("Dikkat Gereken") }}</span>
+      </div>
+      <div class="mc-card-body">
+        <ul class="yo-metric-list" id="yo-geciken" style="list-style:none; margin:0; padding:0;">
+          <li style="color:var(--text-muted);">{{ _("Yükleniyor…") }}</li>
+        </ul>
+      </div>
+    </div>
+
+    {# ── KPI özeti ── #}
+    <div class="mc-card" data-card-code="yonetim_ozeti.kpi_ozet">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-bullseye" style="color:#0ea5e9;"></i> {{ _("KPI Özeti") }}</span>
+      </div>
+      <div class="mc-card-body">
+        <ul class="yo-metric-list" id="yo-kpi" style="list-style:none; margin:0; padding:0;">
+          <li style="color:var(--text-muted);">{{ _("Yükleniyor…") }}</li>
+        </ul>
+      </div>
+    </div>
+
+    {# ── En düşük 5 strateji ── #}
+    <div class="mc-card" data-card-code="yonetim_ozeti.en_dusuk_5" style="grid-column:1/-1;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-arrow-trend-down" style="color:#f59e0b;"></i> {{ _("En Düşük Performanslı Stratejiler") }}</span>
+      </div>
+      <div class="mc-card-body">
+        <div id="yo-bottom5" style="display:flex; flex-direction:column; gap:8px;">
+          <div style="color:var(--text-muted);">{{ _("Yükleniyor…") }}</div>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</div>
+
+<script>
+(function(){
+  const root = document.getElementById("yo-root");
+  const BAND = { green:"#10b981", yellow:"#f59e0b", red:"#ef4444" };
+  const BANDLBL = { green: t("Sağlıklı"), yellow: t("İzlenmeli"), red: t("Kritik") };
+  function band(b){ return BANDLBL[b] || (b||"—"); }
+  function col(b){ return BAND[b] || "#94a3b8"; }
+  function num(v){ return (v==null) ? "—" : v; }
+
+  function setScore(id, comp){
+    const el = document.getElementById(id);
+    const bl = document.getElementById(id+"-band");
+    if (!comp) { el.textContent="—"; return; }
+    el.textContent = comp.score != null ? Math.round(comp.score) : "—";
+    if (bl){ bl.textContent = band(comp.band); bl.style.color = col(comp.band); }
+  }
+
+  fetch(root.dataset.api).then(r=>r.json()).then(j=>{
+    if(!j.success){ return; }
+    const d = j.data;
+
+    // Kurum skoru
+    const ks = d.kurum_skoru || {};
+    document.getElementById("yo-total-score").textContent = ks.total_score != null ? Math.round(ks.total_score) : "—";
+    const tb = document.getElementById("yo-total-band");
+    tb.textContent = band(ks.total_band); tb.style.color = col(ks.total_band);
+    setScore("yo-ks", ks.ks); setScore("yo-kp", ks.kp);
+    setScore("yo-kpr", ks.kpr); setScore("yo-ind", ks.individual);
+
+    // Geciken
+    const g = d.geciken || {};
+    const gmap = [
+      [t("Geciken görev"), g.overdue_tasks],
+      [t("Geciken faaliyet"), g.overdue_activities],
+      [t("Süresi geçen proje"), g.projects_overdue_end],
+      [t("Düşük sağlıklı proje"), g.low_health_projects],
+      [t("Açık RAID maddesi"), g.open_raid_items],
+      [t("7 gün içinde biten görev"), g.tasks_due_next_7_days],
+    ];
+    document.getElementById("yo-geciken").innerHTML = gmap.map(([k,v])=>
+      `<li style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border-subtle);">
+        <span style="font-size:13px;color:var(--text-default);">${k}</span>
+        <b style="font-variant-numeric:tabular-nums;color:${(v>0)?'#ef4444':'var(--text-muted)'};">${num(v)}</b>
+      </li>`).join("");
+
+    // KPI özeti
+    const k = d.kpi_ozet || {};
+    const kmap = [
+      [t("Toplam KPI"), k.kpi_total],
+      [t("Veri girilmiş"), k.kpi_with_data],
+      [t("Hedef üstü %"), k.on_target_pct!=null ? k.on_target_pct+"%" : "—"],
+      [t("Açık risk"), k.risk_count],
+      [t("Geciken aktivite"), k.activity_overdue],
+    ];
+    document.getElementById("yo-kpi").innerHTML = kmap.map(([kk,v])=>
+      `<li style="display:flex;justify-content:space-between;padding:7px 0;border-bottom:1px solid var(--border-subtle);">
+        <span style="font-size:13px;color:var(--text-default);">${kk}</span>
+        <b style="font-variant-numeric:tabular-nums;color:var(--text-default);">${num(v)}</b>
+      </li>`).join("");
+
+    // Bottom-5
+    const b5 = d.en_dusuk_5 || [];
+    const wrap = document.getElementById("yo-bottom5");
+    if (!b5.length){ wrap.innerHTML = `<div style="color:var(--text-muted);">${t("Karşılaştırılabilir veri yok.")}</div>`; }
+    else {
+      wrap.innerHTML = b5.map(s=>{
+        const pct = s.on_target_pct;
+        const c = pct>=70 ? "#10b981" : pct>=50 ? "#f59e0b" : "#ef4444";
+        return `<div style="display:flex;align-items:center;gap:12px;">
+          <span style="min-width:44px;font-size:12px;font-weight:700;color:var(--text-muted);">${s.code||""}</span>
+          <span style="flex:1;font-size:13px;color:var(--text-default);">${s.title||""}</span>
+          <div style="width:140px;height:8px;background:var(--surface-2, #eef1f5);border-radius:4px;overflow:hidden;">
+            <div style="width:${Math.max(2,pct)}%;height:100%;background:${c};"></div>
+          </div>
+          <b style="min-width:52px;text-align:right;font-variant-numeric:tabular-nums;color:${c};">${pct}%</b>
+        </div>`;
+      }).join("");
+    }
+  }).catch(()=>{});
+})();
+</script>
+{% endblock %}

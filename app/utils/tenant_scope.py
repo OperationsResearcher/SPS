@@ -235,10 +235,20 @@ def can_manage_sub_tenants(user=None) -> bool:
 def default_landing_endpoint(user=None) -> str:
     """Login sonrası yönlendirilecek varsayılan endpoint.
 
-    TASK-237 (kullanıcı kararı, 2026-07-08): TÜM girişler /desktop-launcher'a
-    iner — rol bazlı iniş (holding→holding dashboard, bayi→alt kurumlar)
-    kaldırıldı; bu sayfalara launcher/sidebar'dan gidilir.
+    TASK-237 (2026-07-08): tüm girişler launcher'a iniyordu.
+    Faz 4 (TASK-247, 2026-07-12): üst yönetim + kurum yöneticisi (privileged
+    kurum rolleri, platform Admin HARİÇ) login olunca doğrudan Yönetim Özeti'ne
+    iner — '5 saniyede durum'. Diğerleri launcher'a. Holding→holding vb. iniş
+    hâlâ kaldırılmış; oralara launcher/sidebar'dan gidilir.
     """
+    u = user or current_user
+    try:
+        role_name = u.role.name if (u and getattr(u, "role", None)) else None
+        # Kurum üst yönetimi ve kurum yöneticisi (platform Admin değil).
+        if role_name in ("executive_manager", "tenant_admin"):
+            return "app_bp.yonetim_ozeti"
+    except Exception:
+        pass
     return "app_bp.launcher"
 
 

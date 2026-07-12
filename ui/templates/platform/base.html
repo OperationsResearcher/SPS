@@ -152,6 +152,14 @@
                 <span class="sidebar-item-text">{{ _("Masaüstüm") }}</span>
             </a>
 
+            {% if role_name in ['tenant_admin', 'executive_manager'] %}
+            <a href="{{ url_for('app_bp.yonetim_ozeti') }}"
+                class="sidebar-item {% if 'yonetim_ozeti' in ep %}active{% endif %}">
+                <span class="sidebar-item-icon"><i class="fas fa-gauge-high"></i></span>
+                <span class="sidebar-item-text">{{ _("Yönetim Özeti") }}</span>
+            </a>
+            {% endif %}
+
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
             {% set sp_active = ('sp' in ep or 'ceyreklik' in ep or 'quarterly' in ep or 'scenarios' in ep or 'initiatives' in ep or 'replan' in ep or 'exec_dashboard' in ep or 'xmatrix' in ep or 'blue_ocean' in ep or 'vrio' in ep or 'ai_settings' in ep) and 'admin' not in ep %}
             {% if sidebar_module_ids is none or 'sp' in sidebar_module_ids %}
