@@ -2,6 +2,86 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-244 | 2026-07-11 | ✅ Tamamlandı (Tur 2b)
+
+**Görev:** Rol bazlı görünüm katmanı Faz 1 / Tur 2b — K-Radar extended + cross scope + kapsam bilgi şeridi
+**Modül:** k_radar (service + routes + template + i18n)
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı)
+
+### Değiştirilen Dosyalar
+- `services/k_radar_service.py` → `get_kp_extended_data`/`get_kpr_extended_data`/`get_cross_heatmap_data`'ya scope parametresi; KP tarafı KPI+ProcessMaturity+BottleneckLog+ValueChainItem `Process.id.in_`; KPR tarafı project_ids+EvmSnapshot+Task; `get_cross_extended_data` kurum-tekil bırakıldı (rakip/A3/anket)
+- `micro/modules/k_radar/routes_kp.py` → 7 extended endpoint'e `_scope_tuples()[0]`
+- `micro/modules/k_radar/routes_kpr.py` → 4 extended endpoint'e `_scope_tuples()[1]`
+- `micro/modules/k_radar/routes_cross.py` → cross-heatmap'e scope; `_scope_tuples` import
+- `ui/templates/platform/k_radar/_scope_notice.html` (yeni) → kapsam bilgi şeridi (yalnız ayrıcalıksız lider)
+- `ui/templates/platform/k_radar/{hub,kp,kpr,ks}.html` → şerit include
+- `translations/{tr,en}/LC_MESSAGES/messages.po` + `.mo` → şerit metni i18n
+
+### Yapılan İşlem
+Tur 2a çekirdeğin ardından K-Radar'ın ağır extended + cross fonksiyonları da scope'landı (belge §5). Gevşek-bağlı tablo kararı (kullanıcı onayı): opsiyonel process_id'li kayıtlar (Darboğaz, Değer Zinciri) yalnız kendi sürecine bağlıysa lidere görünür, bağsız olanlar düşer. RiskHeatmapItem project_id taşımadığından ve rakip/A3/anket kuruma ait olduğundan bunlar kurum geneli kaldı. Kart-kart rozet yerine tek merkezi "kapsam şeridi" (yalnız lider) tercih edildi.
+
+### Doğrulama
+Canlı HTTP (tenant 27, gerçek login): LİDER `/api/kp/pareto` kpi_count=3, PRIV=211; kapsam şeridi kp.html'de LİDER=var PRIV=yok; EN i18n render doğrulandı. Servis düzeyi: kp_extended olgunluk process_count 68→1 (scope), cross kp.score 97.67→87.37 (scope, rpn bandı aynı kaldı = beklenen).
+
+### Notlar
+- **Faz 1 TAMAM.** Menü görünürlüğü (Tur 1) + K-Radar tam scope (Tur 2a+2b) + kapsam şeridi bitti.
+- Kapsam dışı (gelecekte): kart/bileşen düzeyi rol süzme, route seviyesi sertleştirme (menüde gizli sayfa elle URL ile hâlâ açılıyor), üst yönetim özet dashboard'u.
+- Doğrulama için tenant 27 geçici lider + şifreler kullanıldı, geri alındı.
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
+## TASK-243 | 2026-07-11 | ✅ Tamamlandı (Tur 2a)
+
+**Görev:** Rol bazlı görünüm katmanı Faz 1 / Tur 2a — K-Radar çekirdek scope: lider yalnız kendi süreç/projesinin skorunu görür, privileged kurum geneli
+**Modül:** k_radar (service + routes)
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı)
+
+### Değiştirilen Dosyalar
+- `services/k_radar_service.py` → `scoped_process_ids`/`scoped_project_ids` yardımcıları (privileged→None=kurum geneli); `_process_component`/`_project_component`'e opsiyonel `id.in_` filtresi; `get_hub_summary`/`get_kp_data`/`get_kpr_data`'ya `scope_*_ids` tuple parametresi (memoize anahtarına doğal girer → cache ayrışır)
+- `micro/modules/k_radar/routes_common.py` → `_scope_tuples()` yardımcısı; hub-summary + recommendations + triggers çağrılarına scope geçir
+- `micro/modules/k_radar/routes_kp.py` → `/api/kp` scope_process_ids geçir
+- `micro/modules/k_radar/routes_kpr.py` → `/api/kpr` scope_project_ids geçir
+
+### Yapılan İşlem
+Belge `ROL-GORUNUM-KATMANI.md` §5 uyarınca K-Radar'ın bölünebilir çekirdek bileşenleri (KP=süreç, KPR=proje, hub özeti) kullanıcının lider/üye olduğu süreç/projelere daraltıldı. Mevcut `accessible_processes_filter`/`accessible_projects_query` yeniden kullanıldı. Kurum-tekil bileşenler (KS/SWOT/PESTEL, bireysel) kasıtlı olarak kurum geneli bırakıldı. Scope id listeleri route'ta hesaplanıp memoize fonksiyonuna tuple geçirilerek `user` objesinin cache sınırını geçmesi önlendi ve cache doğal ayrıştı.
+
+### Doğrulama
+Canlı HTTP (127.0.0.1:5001, gerçek login), tenant 27 (veri dolu): LİDER `/api/kp` → kpi_count=3 (kendi süreci); PRIVILEGED → kpi_count=210 (kurum geneli). hub-summary'de kp bileşeni aynı ayrım. Probe: ard arda çağrıda cache karışması YOK (lider 3, priv 210 tutarlı) — tuple memoize anahtarı ayrışıyor.
+
+### Notlar
+- **Kapsam sınırı:** Yalnız çekirdek (hub+kp+kpr). Ağır `get_kp_extended_data`/`get_kpr_extended_data` (Maturity/Bottleneck/EVM/Risk) ve `get_cross_*` HENÜZ scope'lanmadı → Tur 2b.
+- **"Kurum geneli" rozeti Faz 2b'ye ertelendi:** skor kartlarını taşıyan `k_radar/index.html` hiçbir route'tan render edilmiyor (ölü template); rozetin canlı hedefi extended/cross ile netleşince eklenecek.
+- Doğrulama için tenant 27'de geçici test lideri + şifreler kullanıldı, sonra geri alındı (liderlik silindi, şifreler `123456`).
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
+## TASK-242 | 2026-07-11 | ✅ Tamamlandı (Tur 1)
+
+**Görev:** Rol bazlı menü görünürlük katmanı (Faz 1 / Tur 1) — sidebar+launcher, kullanıcının rolü + süreç/proje liderlik-üyeliğine göre süzülür
+**Modül:** core (module_registry), surec, proje, app/constants
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı; iş yerelde birikir)
+
+### Değiştirilen Dosyalar
+- `app/constants/module_visibility.py` (yeni) → merkez `can_see_module(user, module_id)`; statik rol eşlemesi (belge §4) + bağlamsal liderlik dalı; request-scope `flask.g` cache
+- `micro/modules/surec/permissions.py` → `user_has_any_process` (üye/lider/sahip EXISTS) + `user_leads_any_process` (yalnız lider/sahip); `db` import eklendi
+- `micro/modules/proje/permissions.py` → `user_has_any_project` + `user_leads_any_project` (EXISTS), `_user_kurum_id` yardımcı
+- `micro/core/module_registry.py` → `get_accessible_modules` döngüsüne `can_see_module` AND koşulu (Admin erken-return sonrası, paket kapısı ile AND); `_ROLE_RESTRICTED` çift-emniyet olarak korundu
+
+### Yapılan İşlem
+Tasarım belgesi `docs/paketler/ROL-GORUNUM-KATMANI.md` (bu oturumda mutabık kalınıp yazıldı) uyarınca menü görünürlüğü tek merkeze toplandı. İki eksen: paket (tenant, dokunulmadı) + rol/liderlik (kullanıcı, yeni) → AND. Sidebar (`base.html`) ve launcher zaten `get_accessible_modules`/`sidebar_module_ids` okuduğundan template değişikliği gerekmedi. Bağlamsal sinyaller sidebar her sayfada render olduğundan tek `EXISTS` sorgusu + `g` cache ile hafif tutuldu. K-Radar kuralı: yalnız lider görür, üye görmez (belge §5).
+
+### Doğrulama
+Gerçek çalışan uygulamada (127.0.0.1:5001, gerçek `/login` akışı) 4 senaryo PASS: ilişkisiz personel=sade taban; süreç üyesi=+Süreç (K-Radar YOK); süreç lideri=+Süreç+K-Radar; tenant_admin=hepsi. Probe: menüde gizli route'lar elle URL ile hâlâ 200 döndürüyor — bilinçli Faz 1 kararı (UI gizleme; route sertleştirme Faz 2).
+
+### Notlar
+- Tur 2 (K-Radar scope refactor — lider kendi süreç/projesinin verisini görür, Alt-Faz E) henüz YAPILMADI.
+- Doğrulama için 4 yerel test kullanıcısına (id 12/10/11/13) geçici şifre atandı, sonra seed varsayılanı `123456`'ya normalize edildi (orijinal hash kaydedilmemişti — birebir restore değil).
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
 ## TASK-241 | 2026-07-09 | ✅ Tamamlandı
 
 **Görev:** Bireysel karne görsel yükseltmesi + Yayın'da boş kalan SP kart açıklamaları tespiti/düzeltme scripti

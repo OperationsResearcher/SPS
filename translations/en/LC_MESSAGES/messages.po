@@ -27127,3 +27127,6 @@ msgstr "Individual PI Detail List — k-report analysis card."
 #~ msgid "Strateji × Proje"
 #~ msgstr "Strategy × Project"
 
+
+msgid "Süreç ve proje kartları yalnızca sizin sorumlu olduğunuz süreç/projeleri gösterir. Strateji, rekabet ve risk kartları kurum genelidir."
+msgstr "Process and project cards show only the processes/projects you are responsible for. Strategy, competition and risk cards are organization-wide."

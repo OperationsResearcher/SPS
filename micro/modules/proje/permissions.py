@@ -167,3 +167,63 @@ def accessible_projects_query(base_query, user, kurum_id: int):
             ),
         )
     )
+
+
+def _user_kurum_id(user):
+    return getattr(user, "kurum_id", None) or getattr(user, "tenant_id", None)
+
+
+def user_has_any_project(user) -> bool:
+    """Sidebar görünürlük sinyali: kullanıcı herhangi bir aktif projeye
+    yönetici/üye/gözlemci olarak bağlı mı? Privileged kısa-devre True.
+    Tek EXISTS sorgusu — liste çekmez."""
+    if is_privileged(user):
+        return True
+    uid = _uid(user)
+    if not uid:
+        return False
+    kurum_id = _user_kurum_id(user)
+    return db.session.query(
+        Project.query.filter(
+            Project.kurum_id == kurum_id,
+            Project.is_archived.is_(False),
+            Project.is_active.is_(True),
+            or_(
+                Project.manager_id == uid,
+                Project.id.in_(
+                    db.session.query(project_leaders.c.project_id).filter(project_leaders.c.user_id == uid)
+                ),
+                Project.id.in_(
+                    db.session.query(project_members.c.project_id).filter(project_members.c.user_id == uid)
+                ),
+                Project.id.in_(
+                    db.session.query(project_observers.c.project_id).filter(project_observers.c.user_id == uid)
+                ),
+            ),
+        ).exists()
+    ).scalar()
+
+
+def user_leads_any_project(user) -> bool:
+    """Sidebar görünürlük sinyali: kullanıcı herhangi bir aktif projede
+    yönetici/lider mi? (üye/gözlemci yeterli DEĞİL — K-Radar eşiği,
+    docs/paketler/ROL-GORUNUM-KATMANI.md §5). Privileged kısa-devre True."""
+    if is_privileged(user):
+        return True
+    uid = _uid(user)
+    if not uid:
+        return False
+    kurum_id = _user_kurum_id(user)
+    return db.session.query(
+        Project.query.filter(
+            Project.kurum_id == kurum_id,
+            Project.is_archived.is_(False),
+            Project.is_active.is_(True),
+            or_(
+                Project.manager_id == uid,
+                Project.id.in_(
+                    db.session.query(project_leaders.c.project_id).filter(project_leaders.c.user_id == uid)
+                ),
+            ),
+        ).exists()
+    ).scalar()

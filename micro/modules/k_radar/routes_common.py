@@ -29,6 +29,20 @@ def _required_tenant_id() -> int:
     return int(tid)
 
 
+def _scope_tuples():
+    """K-Radar bölünebilir bileşenler için (process_ids, project_ids) tuple'ları.
+    Privileged → (None, None) = kurum geneli. Lider → kapsam tuple'ları.
+    docs/paketler/ROL-GORUNUM-KATMANI.md §5."""
+    from services.k_radar_service import scoped_process_ids, scoped_project_ids
+    tid = _required_tenant_id()
+    pids = scoped_process_ids(current_user, tid)
+    prids = scoped_project_ids(current_user, tid)
+    return (
+        tuple(pids) if pids is not None else None,
+        tuple(prids) if prids is not None else None,
+    )
+
+
 def _safe_json(callable_fn):
     try:
         return callable_fn()
@@ -68,7 +82,8 @@ def k_radar_schedule_save():
 @login_required
 def k_radar_api_hub_summary():
     from services.k_radar_service import get_hub_summary
-    return _safe_json(lambda: jsonify({"success": True, "data": get_hub_summary(_required_tenant_id())}))
+    _sp, _spr = _scope_tuples()
+    return _safe_json(lambda: jsonify({"success": True, "data": get_hub_summary(_required_tenant_id(), _sp, _spr)}))
 
 
 @app_bp.route("/k-radar/api/recommendations")
@@ -79,7 +94,8 @@ def k_radar_api_recommendations():
         get_recommendation_states, recommendation_key, get_recommendation_triggers,
     )
     def _build():
-        summary = get_hub_summary(_required_tenant_id())
+        _sp, _spr = _scope_tuples()
+        summary = get_hub_summary(_required_tenant_id(), _sp, _spr)
         recs = get_recommendations_from_summary(summary)
         states = get_recommendation_states(_required_tenant_id(), current_user.id, recs)
         items = [{"key": recommendation_key(r), "text": r, "state": states.get(recommendation_key(r), "pending")} for r in recs]
@@ -91,8 +107,9 @@ def k_radar_api_recommendations():
 @login_required
 def k_radar_api_recommendation_triggers():
     from services.k_radar_service import get_hub_summary, get_recommendation_triggers
+    _sp, _spr = _scope_tuples()
     return _safe_json(
-        lambda: jsonify({"success": True, "data": {"items": get_recommendation_triggers(get_hub_summary(_required_tenant_id()))}})
+        lambda: jsonify({"success": True, "data": {"items": get_recommendation_triggers(get_hub_summary(_required_tenant_id(), _sp, _spr))}})
     )
 
 

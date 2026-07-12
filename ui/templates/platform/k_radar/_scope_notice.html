@@ -1,0 +1,12 @@
+{# K-Radar kapsam bilgi şeridi — yalnız lider (ayrıcalıksız) kullanıcıya.
+   docs/paketler/ROL-GORUNUM-KATMANI.md §5: süreç/proje kartları kişiye özel,
+   strateji/risk kartları kurum geneli. Privileged kullanıcı her şeyi kurum
+   geneli gördüğünden bu şerit ona gösterilmez. #}
+{% if current_user.is_authenticated and current_user.role
+      and current_user.role.name not in ['Admin', 'tenant_admin', 'executive_manager'] %}
+<div class="mc-alert mc-alert-info" role="note"
+     style="display:flex; gap:8px; align-items:flex-start; margin-bottom:14px; font-size:13px;">
+  <i class="fas fa-circle-info" style="margin-top:2px;"></i>
+  <span>{{ _("Süreç ve proje kartları yalnızca sizin sorumlu olduğunuz süreç/projeleri gösterir. Strateji, rekabet ve risk kartları kurum genelidir.") }}</span>
+</div>
+{% endif %}

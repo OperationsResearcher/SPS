@@ -5,6 +5,8 @@ URL'ler Micro kökündedir (önceden /micro öneki vardı).
 
 from flask_babel import lazy_gettext as _
 
+from app.constants.module_visibility import can_see_module
+
 # Her modül: id, ad, url, ikon, açıklama
 MODULES = [
     {
@@ -236,9 +238,14 @@ def get_accessible_modules(user):
             if mid not in allowed_module_ids and mid not in _MINIMUM_MODULE_IDS:
                 continue
 
-        # Rol kısıtlaması
+        # Rol kısıtlaması (legacy — can_see_module ile çift-emniyet, geçiş dönemi)
         restricted_roles = _ROLE_RESTRICTED.get(mid)
         if restricted_roles and role_name not in restricted_roles:
+            continue
+
+        # Rol + bağlamsal liderlik kapısı (merkez: module_visibility)
+        # docs/paketler/ROL-GORUNUM-KATMANI.md §3, §8 — paket kapısı ile AND'lenir.
+        if not can_see_module(user, mid):
             continue
 
         result.append(mod)

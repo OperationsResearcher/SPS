@@ -6,7 +6,7 @@ from flask_login import current_user, login_required
 from platform_core import app_bp
 from app.models.portfolio_project import Project, Task, TaskDependency
 from micro.modules.k_radar.routes_common import (
-    _can_manage_k_radar, _required_tenant_id, _safe_json,
+    _can_manage_k_radar, _required_tenant_id, _safe_json, _scope_tuples,
 )
 
 
@@ -76,7 +76,8 @@ def k_radar_kpr_gantt():
 @login_required
 def k_radar_api_kpr():
     from services.k_radar_service import get_kpr_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_data(_required_tenant_id())}))
+    _, _spr = _scope_tuples()
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_data(_required_tenant_id(), _spr)}))
 
 
 @app_bp.route("/k-radar/api/kpr/cpm")
@@ -114,25 +115,25 @@ def k_radar_api_kpr_cpm():
 @login_required
 def k_radar_api_kpr_evm():
     from services.k_radar_service import get_kpr_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id()).get("evm", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id(), _scope_tuples()[1]).get("evm", {})}))
 
 
 @app_bp.route("/k-radar/api/kpr/risk")
 @login_required
 def k_radar_api_kpr_risk():
     from services.k_radar_service import get_kpr_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id()).get("risk", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id(), _scope_tuples()[1]).get("risk", {})}))
 
 
 @app_bp.route("/k-radar/api/kpr/resource-capacity")
 @login_required
 def k_radar_api_kpr_kaynak_kapasite():
     from services.k_radar_service import get_kpr_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id()).get("kaynak_kapasite", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id(), _scope_tuples()[1]).get("kaynak_kapasite", {})}))
 
 
 @app_bp.route("/k-radar/api/kpr/gantt")
 @login_required
 def k_radar_api_kpr_gantt():
     from services.k_radar_service import get_kpr_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id()).get("gantt", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kpr_extended_data(_required_tenant_id(), _scope_tuples()[1]).get("gantt", {})}))

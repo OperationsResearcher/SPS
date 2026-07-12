@@ -11,6 +11,7 @@
 {% endblock %}
 
 {% block content %}
+{% include "platform/k_radar/_scope_notice.html" %}
 <div class="mc-page-content-wide"
      id="ks-hub-root"
      data-api-ks="{{ url_for('app_bp.k_radar_api_ks') }}"

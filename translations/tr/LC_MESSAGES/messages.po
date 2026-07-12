@@ -25796,3 +25796,6 @@ msgstr ""
 #~ "sürdürün."
 #~ msgstr ""
 
+
+msgid "Süreç ve proje kartları yalnızca sizin sorumlu olduğunuz süreç/projeleri gösterir. Strateji, rekabet ve risk kartları kurum genelidir."
+msgstr ""
