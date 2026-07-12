@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-245 | 2026-07-12 | ✅ Tamamlandı (Faz 2)
+
+**Görev:** Rol bazlı görünüm katmanı Faz 2 — route seviyesi yetki sertleştirme (menüde gizli sayfa URL ile açılmasın)
+**Modül:** platform_core, app/constants
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı)
+
+### Değiştirilen Dosyalar
+- `platform_core/__init__.py` → mevcut `_enforce_package_module_gating` before_request hook'una rol/liderlik kapısı eklendi: `_ROLE_GATED_PREFIX_MODULE` (/k-radar, /k-analiz, /analysis, /sp) → `can_see_module`. Sayfa → /desktop redirect; API/AJAX → JSON 403. Admin bypass + fail-open korundu.
+- `app/constants/module_visibility.py` → `require_module_access(module_id, api=)` decorator (tek-route guard için yardımcı; hook yeterli olduğundan şu an hook kullanılıyor, decorator ileri kullanım için hazır)
+
+### Yapılan İşlem
+Faz 1 menüyü gizliyordu ama route'lar açıktı (personel gizli sayfaya URL ile ulaşabiliyordu). Zaten var olan prefix-bazlı paket-gating hook'u genişletildi: aynı hook artık hem paket hem rol/liderlik ekseninde kapı tutuyor (tek kaynak = `can_see_module`, menüyle asla çelişmez). 222 route'a tek tek decorator eklemek yerine merkezi hook tercih edildi (yeni route otomatik korunur).
+
+### Doğrulama
+Canlı HTTP: ilişkisiz personel /k-radar → /desktop redirect, /k-radar/api/kp → 403, /k-radar/ks → redirect. Lider (t27) ve k_radar-paketli exec → tüm K-Radar 200. Probe: Faz 1 veri scope'u KORUNDU (lider kpi_count=3, exec=210 route guard sonrası da). paket AND rol birlikte çalışıyor (paketsiz exec k-radar'a paket kapısından redirect — doğru).
+
+### Notlar
+- Sayfa=redirect, API=403 ayrımı kullanıcı kararı.
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
 ## TASK-244 | 2026-07-11 | ✅ Tamamlandı (Tur 2b)
 
 **Görev:** Rol bazlı görünüm katmanı Faz 1 / Tur 2b — K-Radar extended + cross scope + kapsam bilgi şeridi

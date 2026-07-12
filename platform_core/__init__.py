@@ -51,45 +51,78 @@ _GATED_PREFIX_MODULE = [
 ]
 
 
+# Rol/liderlik kapısı uygulanacak prefix'ler (Faz 2 — route sertleştirme).
+# Faz 1'de sidebar'da gizlenen modüllerin route'ları da rol/liderliğe göre
+# kilitlenir. Sayfa → /desktop redirect; API → JSON 403.
+# docs/paketler/ROL-GORUNUM-KATMANI.md §6.
+_ROLE_GATED_PREFIX_MODULE = [
+    ("/k-radar", "k_radar"),
+    ("/k-analiz", "k_radar"),
+    ("/analysis", "analiz"),
+    ("/sp", "sp"),
+]
+
+
+def _match_prefix(path, table):
+    for prefix, mid in table:
+        if path == prefix or path.startswith(prefix + "/"):
+            return mid
+    return None
+
+
 @app_bp.before_request
 def _enforce_package_module_gating():
-    """Paket kapsamı dışındaki modül sayfalarını engelle (sayfa düzeyinde).
+    """Paket + rol/liderlik kapsamı dışındaki modül sayfalarını engelle.
 
+    İki eksen (belge §3): paket (tenant) VE rol/liderlik (kullanıcı).
     Güvenli: yalnız bilinen prefix'ler; Admin bypass; çözülemezse fail-open.
-    API/statik/AJAX'a dokunmaz (onlar kendi yetki kontrolünü yapar).
+    Sayfa (GET, HTML) → /desktop redirect; API/AJAX → JSON 403.
     """
-    from flask import request, redirect, url_for, flash
+    from flask import request, redirect, url_for, flash, jsonify
     from flask_login import current_user
 
     path = request.path or ""
-    # Hangi modüle ait? (bilinen prefix değilse dokunma)
-    module_id = None
-    for prefix, mid in _GATED_PREFIX_MODULE:
-        if path == prefix or path.startswith(prefix + "/"):
-            module_id = mid
-            break
-    if module_id is None:
+    pkg_mid = _match_prefix(path, _GATED_PREFIX_MODULE)
+    role_mid = _match_prefix(path, _ROLE_GATED_PREFIX_MODULE)
+    if pkg_mid is None and role_mid is None:
         return None  # gate edilmeyen yol
-
-    # Statik/AJAX/API isteklerine dokunma (yalnız sayfa GET)
-    if request.method != "GET" or request.headers.get("X-Requested-With") == "XMLHttpRequest":
-        return None
-    if "/api/" in path:
-        return None
 
     if not current_user.is_authenticated:
         return None  # login akışı kendi halleder
     if current_user.role and current_user.role.name == "Admin":
         return None  # platform admin bypass
 
-    try:
-        from app_platform.core.module_registry import get_accessible_modules
-        allowed = {m["id"] for m in get_accessible_modules(current_user)}
-    except Exception:
-        return None  # gating çözülemezse engelleme (fail-open)
+    # İstek tipi: API/AJAX mı sayfa mı?
+    is_api = ("/api/" in path) or \
+        (request.headers.get("X-Requested-With") == "XMLHttpRequest")
 
-    if module_id not in allowed:
-        flash("Bu bölüm mevcut paketinizde yer almıyor.", "warning")
+    def _deny(msg):
+        if is_api:
+            from flask_babel import gettext as _
+            return jsonify({"success": False, "message": _(msg)}), 403
+        from flask_babel import gettext as _
+        flash(_(msg), "warning")
         return redirect(url_for("app_bp.masaustu"))
+
+    # ── Paket kapısı (yalnız SAYFA istekleri — mevcut davranış korunur) ──
+    if pkg_mid is not None and not is_api and request.method == "GET":
+        try:
+            from app_platform.core.module_registry import get_accessible_modules
+            allowed = {m["id"] for m in get_accessible_modules(current_user)}
+        except Exception:
+            allowed = None  # çözülemezse engelleme (fail-open)
+        if allowed is not None and pkg_mid not in allowed:
+            return _deny("Bu bölüm mevcut paketinizde yer almıyor.")
+
+    # ── Rol/liderlik kapısı (sayfa + API) ──
+    if role_mid is not None:
+        try:
+            from app.constants.module_visibility import can_see_module
+            ok = can_see_module(current_user, role_mid)
+        except Exception:
+            ok = True  # çözülemezse engelleme (fail-open)
+        if not ok:
+            return _deny("Bu sayfaya erişim yetkiniz yok.")
+
     return None
 
