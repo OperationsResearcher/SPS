@@ -70,7 +70,6 @@ PAGES = [
     ("sp/degerler.html", [{"l": "Stratejik Planlama", "u": "url_for('app_bp.sp_menu')"}, {"l": "Değerler", "u": None}]),
     # K-Analiz / K-Radar
     ("k_radar/ks.html", [{"l": "K-Analiz", "u": None}]),
-    ("k_radar/index.html", [{"l": "K-Analiz", "u": None}]),
     ("k_radar/kp.html", [{"l": "K-Analiz", "u": "url_for('app_bp.k_radar_ks')"}, {"l": "KP", "u": None}]),
     ("k_radar/kpr.html", [{"l": "K-Analiz", "u": "url_for('app_bp.k_radar_ks')"}, {"l": "KPR", "u": None}]),
     ("k_radar/cross.html", [{"l": "K-Analiz", "u": "url_for('app_bp.k_radar_ks')"}, {"l": "Çapraz", "u": None}]),
