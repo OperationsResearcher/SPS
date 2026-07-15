@@ -2,6 +2,45 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-254 | 2026-07-15 | ✅ Tamamlandı (Faz 1.3 — Redis: cache + rate limit)
+
+**Görev:** Redis altyapısı + cache/rate-limit'i ortak depoya bağlama (kullanıcı onayı: "ekleyebiliriz")
+**Modül:** app/utils/redis_health.py (yeni), app/utils/security.py, app/__init__.py, config.py, docker-compose.yml, scripts/ops/oracle/
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Ölçüm önce: sorun gerçek mi?
+**Evet.** Cache canlı yolda kullanılıyor: **15 `@cache.memoize`** — `k_radar_service.py`'de `get_hub_summary`, `get_ks_data`, `get_kp_data` (K-Radar'ın ana veri fonksiyonları) + `routes_exec_advisor.py` `cache.get/set`. Dockerfile `GUNICORN_WORKERS:-8` → **8 worker = 8 ayrı SimpleCache** → aynı K-Radar verisi worker'a göre farklı görünebiliyor.
+
+### Yol boyunca 3 gerçek tuzak bulundu
+1. 🔴 **`CACHE_REDIS_URL` varsayılanı doluydu** (`redis://localhost:6379/0`) → `REDIS_URL` env'i TANIMSIZ olsa bile `security.py:27`'deki `startswith("redis")` kontrolü **her zaman `True`** dönüyordu → Redis'siz Yayın'da limiter var olmayan sunucuya bağlanmaya çalışırdı. `config.py:125`'teki *"Redis yoksa limiter her istekte kilitlenir"* uyarısı **kendi kodunun** yarattığı riski tarif ediyormuş.
+2. 🔴 **`.env.production.example` ile config uyumsuz:** örnek `CACHE_REDIS_URL=` yazıyor, config yalnız `REDIS_URL` okuyordu → **örneği birebir uygulayan operatörün ayarı sessizce etkisiz kalıyordu**.
+3. 🟠 **`RedisCache` seçili + Redis yok = uygulama ölür** (her cache çağrısı 500). Fallback yoktu.
+
+### Değiştirilen Dosyalar
+- `app/utils/redis_health.py` (yeni) → `redis_erisilebilir()`: URL'in **şekline değil PING cevabına** bakar. Başlangıçta bir kez (her istekte ping gecikme ekler).
+- `app/utils/security.py` → `init_limiter` artık ping kanıtına dayanıyor; Redis yoksa `memory://` + **error** log (izolasyon kırık uyarısı)
+- `app/__init__.py` → `RedisCache` istendi ama erişilemiyorsa **SimpleCache'e düş** (uygulama ölmez) + error log
+- `config.py` → `CACHE_REDIS_URL` artık **iki env ismini de** kabul ediyor (tuzak 2)
+- `docker-compose.yml` → `redis:7-alpine` servisi (healthcheck, AOF, LRU) + web'e `CACHE_TYPE`/`REDIS_URL`/`RATELIMIT_STORAGE_URL`. **Ayrı DB numaraları** (cache=0, limit=1) — cache flush'ı rate-limit sayaçlarını silmesin.
+- `scripts/ops/oracle/redis_kur.sh` (yeni) → **tek seferlik** host kurulumu. Gerçek deploy `docker run --network host` kullanıyor → Redis compose'dan değil host'tan gelir (PostgreSQL ile aynı desen). Güvenlik: yalnız `127.0.0.1` dinlemeli — script bunu **doğruluyor**, `0.0.0.0` görürse hata verip çıkıyor.
+- `scripts/ops/oracle/oracle_safe_deploy.sh` → 6 adım → **7**: Redis kontrolü. Redis ayakta mı, `.env` doğru mu, **uygulama gerçekten bağlandı mı** (log kanıtı `RedisCache kullaniliyor`) — üçü de kontrol ediliyor, sessiz düşüş yakalanıyor.
+- `tests/test_redis_fallback.py` (yeni, 12 test)
+
+### Doğrulama
+- **Tam paket: 542 passed, 0 failed** (öncesi 530).
+- **Fallback kanıtlandı:** ping kontrolü geçici kaldırıldı → **4 test kırıldı**; geri konunca geçti.
+- `RedisCache` + erişilemez Redis → `create_app` ayakta, `CACHE_TYPE` otomatik `SimpleCache` (test).
+- Her iki env ismi (`CACHE_REDIS_URL` / `REDIS_URL`) okunuyor (test).
+- Bash script'leri `bash -n` ile sözdizimi doğrulandı.
+
+### Notlar
+- **Yerelde Redis ile CANLI test YAPILAMADI** — Docker Desktop çalışmıyordu, `redis-server` Windows'ta yok. Kod Redis'siz yolu (fallback) tam test ediyor; **Redis'li yol Yayın'da `redis_kur.sh` sonrası doğrulanmalı**. Deploy script'i bunu kontrol ediyor.
+- `CacheService` (`app/services/cache_service.py`) hâlâ **ölü** — yalnız kendi içinde çağrılıyor. Bağlanmadı: canlı cache zaten `@cache.memoize` üzerinden çalışıyor; ölü katmanı diriltmek ayrı karar (kapsam kontrolü).
+- **Sıradaki adım (operatör):** `sudo bash scripts/ops/oracle/redis_kur.sh` → `.env`'e 3 satır → container **yeniden run** (restart env'i yeniden okumaz — memory: ENCRYPTION_KEY dersi).
+- Dal: `claude/faz1-redis`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## TASK-253 | 2026-07-15 | ✅ Tamamlandı (Faz 1.2 — period_type + orphan onarımı)
 
 **Görev:** `period_type` normalizasyonu — ama tek kök nedenli 3 semptom çıktı, hepsi birlikte çözüldü

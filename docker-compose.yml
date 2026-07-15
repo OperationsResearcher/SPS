@@ -12,9 +12,41 @@ services:
     environment:
       FLASK_ENV: production
       TRUST_PROXY: "1"
+      # TASK-254: cache + rate limit ortak depo. Bunlar tanımlı DEĞİLSE uygulama
+      # SimpleCache + memory:// ile çalışır — çok worker'lı kurulumda her worker
+      # kendi cache'ini/sayacını tutar (tutarsız değer + gevşek limit).
+      CACHE_TYPE: RedisCache
+      REDIS_URL: redis://redis:6379/0
+      RATELIMIT_STORAGE_URL: redis://redis:6379/1   # ayrı DB: cache flush limitleri silmesin
+    depends_on:
+      redis:
+        condition: service_healthy
     volumes:
       - kokpitim-instance:/app/instance
+
+  # TASK-254: Cache + rate limit için ortak depo.
+  # NOT: Gerçek Yayın deploy'u `docker run --network host` kullanıyor
+  # (scripts/ops/oracle/oracle_safe_deploy.sh) — orada Redis compose'dan DEĞİL,
+  # host'a kurulu servisten gelir (PostgreSQL de böyle çalışıyor).
+  # Bu compose yerel/referans kurulum içindir.
+  redis:
+    image: redis:7-alpine
+    container_name: kokpitim-redis
+    restart: always
+    # appendonly: yeniden başlatmada cache/limit sayaçları tamamen sıfırlanmasın.
+    # Cache kaybı zararsız (yeniden hesaplanır) ama rate-limit sayacının sıfırlanması
+    # kısa bir pencerede limit bypass'ına izin verir.
+    command: ["redis-server", "--appendonly", "yes", "--maxmemory-policy", "allkeys-lru"]
+    volumes:
+      - kokpitim-redis:/data
+    healthcheck:
+      test: ["CMD", "redis-cli", "ping"]
+      interval: 10s
+      timeout: 3s
+      retries: 5
 
 volumes:
   kokpitim-instance:
     # Flask instance klasörü (uploads vb.)
+  kokpitim-redis:
+    # Redis AOF — rate-limit sayaçları restart'ta korunsun

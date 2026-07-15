@@ -22,14 +22,25 @@ def init_limiter(app):
     limit_list = [s.strip() for s in str(limits).split(";") if s.strip()]
     storage_uri = app.config.get("RATELIMIT_STORAGE_URL", "memory://")
     is_prod = (app.config.get("FLASK_ENV") or "").lower() == "production"
+
+    # TASK-254: Eskiden yalnız "url redis ile mi başlıyor" diye bakılıyordu.
+    # Bu kontrol HER ZAMAN geçiyordu: CACHE_REDIS_URL varsayılanı
+    # 'redis://localhost:6379/0' — REDIS_URL tanımsızken bile dolu görünür.
+    # Sonuç: Redis olmayan bir Yayın'da limiter var olmayan sunucuya bağlanmaya
+    # çalışıyordu (config.py'deki "her istekte kilitlenir" uyarısının sebebi).
+    # Artık URL'in şekline değil, Redis'in PING cevabına bakılır.
     if storage_uri == "memory://" and is_prod:
+        from app.utils.redis_health import redis_erisilebilir
         redis_url = app.config.get("CACHE_REDIS_URL") or app.config.get("REDIS_URL")
-        if redis_url and str(redis_url).startswith("redis"):
+        if redis_erisilebilir(redis_url, app.logger):
             storage_uri = redis_url
+            app.logger.info(f"[rate-limit] Redis kullaniliyor: {redis_url}")
         else:
             app.logger.error(
-                "[rate-limit] RATELIMIT_STORAGE_URL=memory:// kullanılıyor (REDIS_URL tanımsız). "
-                "Çoklu worker'da limit izolasyonu KIRIK — Yayın ortamında RATELIMIT_STORAGE_URL=redis://... tanımlanmalı."
+                "[rate-limit] RATELIMIT_STORAGE_URL=memory:// (Redis erisilemiyor). "
+                "Coklu worker'da limit izolasyonu KIRIK — her worker kendi sayacini "
+                "tutar, limit fiilen worker sayisi kadar gevser. Yayin'da "
+                "RATELIMIT_STORAGE_URL=redis://... tanimlanmali."
             )
     limiter = Limiter(
         app=app,
