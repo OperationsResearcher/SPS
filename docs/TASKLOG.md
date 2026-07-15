@@ -2,6 +2,40 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-249 | 2026-07-15 | ✅ Tamamlandı (yıkıcı servis testleri + bağımlılık temizliği)
+
+**Görev:** %0 kapsamlı yıkıcı servislere guard testleri; eventlet ölü pin kaldırma; sürüm alt sınırları
+**Modül:** tests (3 yeni dosya), requirements, Dockerfile
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `tests/test_yedekleme_service.py` (yeni, 12 test) → rotasyon (yedek SİLEN kod): en yeni N korunur, eşik altında silme yok, desen izolasyonu (DB rotasyonu kod arşivine dokunmaz); arşiv kapsamı (.git/node_modules dışlanır, `instance/yedekler` yedek-içinde-yedek almaz, `instance/uploads` YEDEKLENİR); `_db_conn` PG-olmayan URI'yi reddeder + parola PGPASSWORD'e gider; `dump_db` hatayı yutmaz; DB patlasa da kod yedeği alınır
+- `tests/test_demo_reset_service.py` (yeni, 10 test) → DEMİR GUARD: `KOKPITIM_DEMO_MODE` kapalıyken 5 yıkıcı yol (snapshot/restore/fk_safe_load/mark_activity/sweep) DB motoruna ERİŞMEDEN reddeder; `alembic_version`+`demo_runtime` truncate kapsamı dışında
+- `tests/test_tenant_clone_service.py` (yeni, 10 test) → Yayın kilidi (klon+wipe); **kendini klonlama tuzağı**: `'%tomofil%'` LIKE `tomofiltest`'i de eşler → kaynak olarak ASLA seçilmemeli; CLONE_ORDER sıra tutarlılığı (49 tablo, `_map_X` atıfları X'ten sonra), SKIP/CLONE çakışmaz
+- `requirements.txt` → **eventlet==0.33.3 KALDIRILDI** (kodda hiç import edilmiyor; `async_mode="threading"` + gunicorn sync worker; 0.33.3 Python 3.12+'da import edilemiyor = kurulumu kıran ölü pin). 19 pinsiz paket → yerelde doğrulanmış `>=` alt sınırlar + tekrarlanabilirlik uyarısı
+- `Dockerfile` → yanlış yorum düzeltildi ("Python 3.9" yazıyordu, gerçek 3.11) + ortam paritesi uyarısı (Docker 3.11 / CI 3.11 / yerel 3.13)
+
+### Yapılan İşlem
+Üç servis %0 kapsamdaydı ve hepsi veri siliyor/kopyalıyor. Mock'la sahte kapsam üretmek yerine gerçek risk test edildi: **guard'lar**. `demo_reset` için "demo modu kapalıyken DB motoruna erişilirse testi patlat" fixture'ı yazıldı — KURALLAR §8.4'ün ("demo işlemleri yalnız *-demo hedeflerine dokunur") koda bağlanmış hali.
+
+eventlet gerçekten ölüydü: `python -c "import eventlet"` yerelde patlıyor (AttributeError/distutils), kodda tek import yok, SocketIO threading modunda. Kaldırıldıktan sonra `pip install --dry-run -r requirements.txt` temiz çözümlendi ve SocketIO import'u sorunsuz.
+
+### Doğrulama
+- **Tam paket: 472 passed, 0 failed** (öncesi 440) — bağımlılık değişikliği regresyon yaratmadı.
+- **Guard testleri kanıtlandı:** `_assert_demo` geçici delindi → 6 test "GUARD DELİNDİ: demo modu kapalıyken DB motoruna erişildi!" ile KIRILDI; geri konunca geçti.
+- **Sıra testi kanıtlandı:** CLONE_ORDER'da `sub_strategies` `strategies`'ten öne alındı → test KIRILDI; geri alındı.
+- Kapsam: `yedekleme_service` %0→**%72**, `demo_reset_service` %0→**%24**, `tenant_clone_service` %0→**%25**.
+- `create_app` OK (879 route), SocketIO eventlet'siz import ediliyor.
+
+### Notlar
+- **Kapsam yüzdeleri bilinçli olarak mütevazı:** kalan satırlar gerçek PG truncate/pg_restore/klon yürütmesi. Mock'layıp %90 göstermek sahte güven olurdu; test edilen şey guard'lar — asıl risk orada.
+- **KEŞİF — `app/api/auth.py` ölü ve içinde çalışmayan güvenlik kodu var:** `api_key_required` dekoratörü API key'in yalnız VARLIĞINI kontrol edip TODO bırakmış (satır 102-105) — herhangi bir değer geçer. Ancak modül hiçbir yerde import EDİLMİYOR (`APIAuth`/`jwt_required`/`rate_limit_by_key` kullanımı sıfır; JWT yalnız burada). Yani canlı açık DEĞİL, ölü kod. Silme kararı kullanıcıya bırakıldı — bu yüzden `PyJWT` pini de ellenmedi.
+- **Yapılmadı (bilinçli, gerekçeli):** `defer` ekleme (121 script tag; inline script'ler harici yükleme sırasına bel bağlıyorsa sayfa kırılır — önce inline'ların taşınması gerekir); `raporlar/` faz→alan taşıması (93 route'un URL'i değişmemeli); Docker 3.11→3.13 (Yayın'ı etkiler, Test'te doğrulama ister); `marshmallow`/`PyJWT` sürüm atlaması (davranış değişebilir).
+- **KEŞİF — `base.html` KURALLAR §3 ihlali:** 6 inline `<script>` bloğu (271 satır) + 2 inline `<style>` (42 satır). Kural "harici dosyaya taşı" diyor. Ayrı task — CSP'yi de etkiler.
+- Dal: `claude/kalan-isler` (TASK-248 üzerine). Merge/push/deploy YAPILMADI.
+
+---
+
 ## TASK-248 | 2026-07-15 | ✅ Tamamlandı (iyileştirme paketi — 6 iş)
 
 **Görev:** Denetim bulgularının uygulanması: cross-tenant açık, index, N+1 testi, ölü kod, envanter, CI köprüsü
