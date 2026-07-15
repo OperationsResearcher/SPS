@@ -62,7 +62,9 @@
 
 ---
 
-## FAZ 4 — VAR OLANI ANLAT (kod ~0, en ucuz kazanç)
+## FAZ 4 — VAR OLANI ANLAT (kod ~0, en ucuz kazanç) ✅ TAMAMLANDI
+
+> **Çıktı:** [`KONUMLANDIRMA-2026-07.md`](KONUMLANDIRMA-2026-07.md) — değer haritası (her farklılaştırıcı canlı veriyle doğrulandı: K-Vektör 108 ağırlık/6 snapshot, KOE 340 kayıt, LLM 279 çağrı), Microsoft'un shelf-ware itirafı, **kullanılmaması gereken çürütülmüş istatistikler**, persona demo sırası, fiyat modeli uyarısı, ⚠️ Türkçe hendek DEĞİL (Spider Impact zaten destekliyor).
 > **Bulgu:** "Kimsede yok" listesinin **yarısı zaten çalışıyor ama anlatılmıyor.** Bu bir geliştirme değil, konumlandırma boşluğu. "Müşteri yok" cevabı bunu **öne** çekiyor.
 
 | # | TASK | İş | Kabul kriteri |
@@ -81,7 +83,7 @@
 |---|---|---|---|
 | 5.1 | TASK-270 | 🔴 **Fiyat modeli.** **Bulgu:** per-seat fiyatlama shelf-ware'i **kendisi üretiyor** — okuyucu koltuğu $8-16/ay ise alıcı koltukları *rapor verenlerle* sınırlar, *işi yapanlarla* değil → araç yönetici raporlama katmanına düşer = tam da çözmeye çalıştığımız hastalık. Bunu kabul eden iki ürün: **ESM ($1.000/ay sınırsız)**, **Perdoo (€1,50 izleyici koltuğu)**. | Fiyat modeli kararı verildi + gerekçesi yazılı |
 | 5.2 | TASK-271 | **Tier/paket kararları.** Paketleme belgesindeki açıklar: tenant→tier dağılımı (7/7 hâlâ Master/full), progressive unlock mekaniği (en büyük boşluk), özellik-düzeyi gating. **Girdi: TASK-263 kullanım haritası.** | Kararlar kapatıldı |
-| 5.3 | TASK-272 | **MCP server.** ⚠️ Rakipler 15 ayda ekledi: WorkBoard (**yazma yetkili, ~60 tool**), Perdoo (GA), Betterworks (beta), Planview. **Table stakes oluyor, bizde yok.** | MCP server çalışıyor |
+| 5.3 | TASK-272 | ⏸️ **MCP server — YENİ BİLEŞEN, karar bekliyor.** Rakipler 15 ayda ekledi: WorkBoard (**yazma yetkili, ~60 tool**), Perdoo (GA), Betterworks (beta), Planview → table stakes oluyor, bizde yok. **Ölçüm (2026-07-15):** MCP SDK kurulu değil, `requirements.txt`'te yok → yeni bağımlılık + **ayrı süreç** + yeni auth yüzeyi. Sarmalanacak API **hazır**: 15 REST endpoint (`app/api/routes.py`) + `data_connector`'ın token-auth deseni. Kapsamı "kalan işleri yap" talimatının ötesinde — ayrı karar. | MCP server çalışıyor |
 
 ---
 

@@ -2,6 +2,27 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-266…269 ✅ (Faz 4) · TASK-270…272 ⏸️ (Faz 5) | 2026-07-15
+
+### TASK-266…269 — Faz 4 "Var olanı anlat" ✅ Tamamlandı
+**Çıktı:** [`docs/oneri/KONUMLANDIRMA-2026-07.md`](oneri/KONUMLANDIRMA-2026-07.md) (kod ~0, satış/konumlandırma malzemesi)
+- **Değer haritası** — her farklılaştırıcı **canlı veriyle doğrulandı**: K-Vektör (108 ağırlık + 6 snapshot), KOE (340 olgunluk kaydı), LLM (279 çağrı), Hedef Radarı (TASK-262), KVKK yerel LLM (TASK-265). Otonom kılavuz/hata kontrolü.
+- **Açılış argümanı:** Microsoft'un kendi itirafı (Viva Goals 31.12.2025 kapandı, *"adoption and usage… hasn't grown"*, 66M kullanıcılı paketin içinde) + Sull (%28 yönetici üç önceliği sayabiliyor; kırık olan **yatay** koordinasyon, dikey kaskad değil).
+- ⛔ **KULLANILMAMASI gereken istatistikler** listesi (%90 başarısızlık, %82/%23 hizalama — Cândido & Santos çürüttü). Bilgili alıcı bunları yıkar.
+- **Persona demo sırası** — TASK-263 kullanım verisine dayalı (PG Veri Girişi ürünün gerçek kalbi: 270 işlem/90 gün).
+- ⚠️ **Türkçe hendek DEĞİL** — Spider Impact zaten destekliyor (FAQ'den teyitli). Gerçek hendek: mevzuat (5018/5393) + veri yerleşikliği.
+
+### TASK-270 + TASK-271 — Faz 5 ticari kararlar ⏸️ KULLANICI KARARI
+**Kod işi değil.** Kanıt hazır, karar sizin:
+- **Fiyat modeli:** per-seat shelf-ware'i **kendisi üretiyor** (okuyucu koltuğu $8-16/ay → alıcı koltukları *rapor verenlerle* sınırlar). **Kendi verimiz doğruluyor:** 27 kullanıcı giriş yapıyor, yalnız **7'si** veri giriyor (%74 sadece bakıyor). Bunu kabul eden iki ürün: ESM ($1.000/ay sınırsız), Perdoo (€1,50 izleyici koltuğu).
+- **Tier/paket:** girdi hazır (TASK-263 modül kullanım haritası). Paketleme belgesindeki açıklar: tenant→tier dağılımı (7/7 hâlâ Master/full), progressive unlock mekaniği, özellik-düzeyi gating.
+
+### TASK-272 — MCP server ⏸️ YENİ BİLEŞEN, karar bekliyor
+**Ölçüm:** MCP SDK **kurulu değil**, `requirements.txt`'te yok → yeni bağımlılık + **ayrı süreç** + yeni auth yüzeyi. Sarmalanacak API **hazır**: 15 REST endpoint (`app/api/routes.py`) + `data_connector` token-auth deseni.
+**Neden yapılmadı:** kapsamı "kalan işleri yap" talimatının ötesinde — yeni çalışan bileşen, deploy/bakım yükü getirir. Rakip baskısı gerçek (15 ayda 4 vendor ekledi; WorkBoard yazma-yetkili ~60 tool) ama bu bir mimari karar.
+
+---
+
 ## TASK-264 + TASK-265 | 2026-07-15 | ✅ Tamamlandı (benchmark dürüstlüğü + KVKK yerel LLM)
 
 **Görev:** Hardcoded benchmark uyarısını düzelt (264) · Yerel LLM / veri ikametgâhı yolunu belgele+koru (265)
