@@ -31,7 +31,9 @@ marshmallow-sqlalchemy==0.29.0
 # (app/extensions.py → SocketIO async_mode="threading", gunicorn sync worker).
 # eventlet 0.33.3 Python 3.12+ ile import edilemiyor (distutils kaldırıldı) —
 # yani kurulumu kırıyor ama hiçbir işe yaramıyordu.
-PyJWT==2.8.0
+# PyJWT KALDIRILDI (2026-07-15): tek kullanıcısı app/api/auth.py idi, o da
+# hiçbir yerden import edilmeyen ölü koddu → silindi. pywebpush/py-vapid
+# JWT'ye bağlı değil (cryptography kullanıyor) — zincir doğrulandı.
 flask-swagger-ui>=5.21.0
 gunicorn>=23.0.0
 flask-talisman>=1.1.0

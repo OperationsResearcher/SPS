@@ -2,6 +2,41 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-250 | 2026-07-15 | ✅ Tamamlandı (ölü auth modülü + base.html inline temizliği)
+
+**Görev:** `app/api/auth.py` silme (kullanıcı onayı) + base.html KURALLAR §3 inline ihlali temizliği
+**Modül:** app/api (silme), ui/templates/platform/base.html, ui/static (2 CSS + 1 JS yeni), command_palette.js
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `app/api/auth.py` → **SİLİNDİ** (221 satır). Kullanıcı onayıyla. Hiçbir yerden import edilmiyordu; içindeki `api_key_required` API key'i DOĞRULAMIYORDU (varlık kontrolü + TODO). Ölü olduğu için canlı açık değildi.
+- `requirements.txt` → `PyJWT==2.8.0` kaldırıldı (tek kullanıcısı silinen modüldü; `pywebpush`→`py-vapid` zinciri JWT'ye bağlı DEĞİL — `cryptography` kullanıyor, doğrulandı)
+- `tests/test_silinen_olu_kod.py` (yeni, 3 test) → silinen ölü kod geri gelmesin (tek yerde liste: `app/routes/process.py`, `app/api/auth.py`) + JWT tekrar import edilirse yakala
+- `ui/static/platform/js/chart_defaults.js` (yeni) → base.html'deki 22 satırlık Chart.js global ayarları (saf JS, Jinja yoktu)
+- `ui/static/platform/css/card_layer.css` (yeni) → kart kısa-ID rozeti + (i) modal CSS'i (37 satır inline `<style>`)
+- `ui/static/platform/css/topbar_search.css` (yeni) → Ctrl+K arama butonu; inline `<style>` + `style=""` attribute birleştirildi, `!important`'lar kaldırıldı (inline'ı ezmek için vardılar)
+- `ui/templates/platform/base.html` → 2 inline `<style>` **0'a**, `onclick=""` **0'a**; 3 harici varlık `<link>`/`<script>` ile bağlandı
+- `ui/static/platform/js/command_palette.js` → topbar arama butonu artık `addEventListener` ile doğrudan `open()` çağırıyor (inline `onclick` sahte `KeyboardEvent` gönderiyordu)
+- `tests/test_base_html_inline_kurali.py` (yeni, 8 test) → inline `<style>`/`onclick` sıfır kalmalı; inline script sayısı artmamalı; kalanlar gerçekten Jinja içermeli; taşınan 3 varlık sayfada yüklenmeli
+
+### Yapılan İşlem
+base.html'de 6 inline `<script>` (271 satır) + 2 `<style>` (42 satır) vardı. Hepsini taşımak mümkün değildi — 3 blok Jinja veri enjeksiyonu içeriyor (`js_i18n_map()`, `url_for`, kart sistemi `kk_is_admin`), 1 blok FOUC önleyici tema (harici dosya geç yüklenir → titreme). Saf JS/CSS olanlar taşındı, kalanlar test ile "artmasın" diye sabitlendi. Kule bloğu `{# #}` yorumunda (E1 ertelendi) → test yorumları hariç tutuyor.
+
+### Doğrulama
+- **Tam paket: 483 passed, 0 failed** (öncesi 472).
+- **GERÇEK TARAYICI DOĞRULAMASI** (Playwright, yerel 5001): arama butonuna tıklandı → komut paleti `display: none` → `flex` oldu, JS hatası yok. Ekran görüntüsü incelendi: palet açık, buton doğru render, sayfa bütün.
+- **CSS kuralları ölçüldü** (`!important` kaldırma güvenli miydi): light `rgb(241,245,249)` ✓, hover `rgb(238,242,255)` ✓, dark `rgb(30,41,59)` ✓, dark+hover `rgb(49,46,129)` ✓ — hepsi beklenen değerler.
+- `chart_defaults.js` çalışıyor: `Chart.defaults.font.family='Inter…'`, `KOKPITIM_CHART_COLORS` dizi ✓.
+- Silme koruması kanıtlandı: `app/api/auth.py` geçici geri konuldu → test KIRILDI; silinince geçti.
+
+### Notlar
+- **Kalan:** base.html'de 49 `style=""` attribute (ayrı iş) + 5 Jinja'lı inline script (data-* refactor'ü — kart sistemi 202 satır, riskli).
+- `defer` ekleme hâlâ yapılmadı: inline script'ler harici yükleme sırasına bel bağlıyor; önce yukarıdaki data-* refactor'ü gerekir.
+- Yerel sunucu kapatılırken memory'deki "stale süreç tuzağı" bizzat görüldü: reloader 2 süreç açtı (3056+5812), biri öldürülünce port hâlâ 200 döndü. İkisi de öldürülerek temizlendi.
+- Dal: `claude/kalan-isler`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## TASK-249 | 2026-07-15 | ✅ Tamamlandı (yıkıcı servis testleri + bağımlılık temizliği)
 
 **Görev:** %0 kapsamlı yıkıcı servislere guard testleri; eventlet ölü pin kaldırma; sürüm alt sınırları

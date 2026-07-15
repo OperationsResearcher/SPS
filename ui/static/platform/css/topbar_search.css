@@ -1,0 +1,59 @@
+/**
+ * Topbar küresel arama butonu (Ctrl+K paletini açar).
+ *
+ * 2026-07-15: base.html'de inline <style> + style="" attribute karışımı
+ * olarak duruyordu (KURALLAR §3). Görsel davranış birebir korunarak taşındı;
+ * :hover ve dark kuralları zaten burada olduğu için !important'lar artık
+ * gereksiz — inline attribute'u ezmek için konmuşlardı, kaldırıldı.
+ */
+
+.topbar-search-btn {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  background: #f1f5f9;
+  border: 1px solid #e2e8f0;
+  border-radius: 8px;
+  padding: 6px 12px;
+  cursor: pointer;
+  font-size: 12.5px;
+  color: #64748b;
+  margin-left: auto;
+  margin-right: 14px;
+  min-width: 220px;
+  max-width: 340px;
+  flex: 1;
+  transition: background .15s, border-color .15s;
+}
+
+.topbar-search-btn:hover {
+  background: #eef2ff;
+  border-color: #c7d2fe;
+}
+
+.topbar-search-btn .topbar-search-icon { color: #94a3b8; }
+
+.topbar-search-btn .topbar-search-kbd {
+  margin-left: auto;
+  font-size: 10px;
+  background: #fff;
+  border: 1px solid #cbd5e1;
+  padding: 1px 6px;
+  border-radius: 3px;
+  color: #475569;
+}
+
+[data-theme="dark"] .topbar-search-btn {
+  background: #1e293b;
+  border-color: #334155;
+  color: #cbd5e1;
+}
+
+[data-theme="dark"] .topbar-search-btn:hover {
+  background: #312e81;
+  border-color: #4338ca;
+}
+
+@media (max-width: 720px) {
+  .topbar-search-btn { display: none; }
+}
