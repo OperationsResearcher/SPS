@@ -329,8 +329,21 @@ def raporlar_sektor_benchmark():
     return render_template("platform/raporlar/sektor_benchmark.html")
 
 
-# ─── Mock sektör ortalamaları ───────────────────────────────────────────────
-
+# ─── Sabit sektör referans değerleri (canlı veri DEĞİL) ─────────────────────
+#
+# ⚠️ Bu tablo ELLE YAZILMIŞ referans değerlerdir — Kokpitim'deki kurumların
+# gerçek verisinden hesaplanmaz. Ekranda da böyle etiketlenir (TASK-264):
+# "sektör raporlarından derlenmiş sabit örnek değerler".
+#
+# GERÇEK benchmark neden yok: k-anonimlik için sektör başına min. ~5 gerçek
+# kurum gerekir. 2026-07-15 ölçümü: 10 tenant'ın çoğu test/klon (tom1, tom2,
+# tom3, tomofiltest), gerçek ~4 ve `Tenant.sector` çoğunda boş. Yani canlı
+# benchmark bugün açılamaz — müşteri sayısı arttıkça açılır.
+#
+# Veri yapısı hazır: aynı KPI adları 5 ayrı kurumda geçiyor ("Ar-Ge Etkinlik
+# Skoru", "Aylık Satış Adedi"…), `Tenant.sector` + `employee_count`
+# segmentasyon için var. Mimari: TenantScopedMixin bilinçli bypass +
+# k-anonim eşik + opt-in onayı. Bkz. docs/oneri/OZELLIK-ONERILERI-2026-07.md §3.2
 _SEKTOR_BENCHMARKS = {
     "otomotiv": {
         "OEE": 65, "PPM Defect": 80, "OTIF": 88, "NPS": 45, "EBITDA": 12,

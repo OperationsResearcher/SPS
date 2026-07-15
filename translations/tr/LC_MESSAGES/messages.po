@@ -25912,3 +25912,7 @@ msgstr "Birden fazla kez revize edilen göstergeler:"
 #: ui/templates/platform/masaustu/yonetim_ozeti.html
 msgid "revize"
 msgstr "revize"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html
+msgid "<b>Bu değerler referans niteliğindedir.</b> Sektör raporlarından derlenmiş <b>sabit örnek değerlerdir</b> — Kokpitim'deki diğer kurumların canlı verisinden hesaplanmamıştır. Kendi ölçümünüzle karşılaştırmak için OEE, OTIF, NPS gibi metrikleri PG olarak sisteme ekleyip veri girmeniz gerekir."
+msgstr "<b>Bu değerler referans niteliğindedir.</b> Sektör raporlarından derlenmiş <b>sabit örnek değerlerdir</b> — Kokpitim'deki diğer kurumların canlı verisinden hesaplanmamıştır. Kendi ölçümünüzle karşılaştırmak için OEE, OTIF, NPS gibi metrikleri PG olarak sisteme ekleyip veri girmeniz gerekir."

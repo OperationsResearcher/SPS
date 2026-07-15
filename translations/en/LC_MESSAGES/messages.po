@@ -27243,3 +27243,7 @@ msgstr "Indicators revised more than once:"
 #: ui/templates/platform/masaustu/yonetim_ozeti.html
 msgid "revize"
 msgstr "revisions"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html
+msgid "<b>Bu değerler referans niteliğindedir.</b> Sektör raporlarından derlenmiş <b>sabit örnek değerlerdir</b> — Kokpitim'deki diğer kurumların canlı verisinden hesaplanmamıştır. Kendi ölçümünüzle karşılaştırmak için OEE, OTIF, NPS gibi metrikleri PG olarak sisteme ekleyip veri girmeniz gerekir."
+msgstr "<b>These are reference values.</b> They are <b>fixed sample figures</b> compiled from industry reports — not calculated from other organizations' live data in Kokpitim. To compare against your own measurements, add metrics such as OEE, OTIF and NPS as indicators and enter data."

@@ -2,6 +2,36 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-264 + TASK-265 | 2026-07-15 | ✅ Tamamlandı (benchmark dürüstlüğü + KVKK yerel LLM)
+
+**Görev:** Hardcoded benchmark uyarısını düzelt (264) · Yerel LLM / veri ikametgâhı yolunu belgele+koru (265)
+**Modül:** ui/templates/platform/raporlar/sektor_benchmark.html, micro/modules/raporlar/routes_faz4.py, docs/AI-POLITIKASI.md, tests
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### TASK-264 — benchmark uyarısı yanlış şeyi söylüyordu
+Sayfada uyarı **vardı** ama: *"kurumunuzun bu metriklerdeki gerçek değerleri değildir"* — yani "sizin değeriniz değil". **Söylemediği:** bu rakamlar canlı veriden değil, `routes_faz4.py:334` `_SEKTOR_BENCHMARKS` sabit tablosundan geliyor (`{"otomotiv": {"OEE": 65…}}`). Müşteri gerçek sektör verisi sanabilirdi → güven kaybı riski.
+- Uyarı metni verinin **kaynağını** söylüyor: *"sektör raporlarından derlenmiş sabit örnek değerlerdir — Kokpitim'deki diğer kurumların canlı verisinden hesaplanmamıştır"*
+- Servis yorumu genişletildi: gerçek benchmark neden yok (k-anonimlik için sektör başına ~5 gerçek kurum gerekir; 10 tenant'ın çoğu test/klon, `sector` çoğunda boş), veri yapısı neden hazır (aynı KPI adları 5 kurumda geçiyor)
+- **Ekran doğrulandı:** yeni uyarı VAR, eski yanıltıcı metin GİTTİ (HTTP 200)
+
+### TASK-265 — yerel LLM ZATEN ÇALIŞIYOR, belgesizdi
+Öneri belgesi *"altyapı %90 hazır"* demişti. **Ölçüm: %100 hazır.** Zincir tam:
+`tenant_llm_config.base_url` (yorumu bile *"OpenRouter, self-hosted için"*) → `_resolve_provider` → `_call_openai(base_url=...)` → **UI'da bile alan var** (`ai_settings.html`). Ollama/vLLM OpenAI-uyumlu API sunduğu için `provider=openai` + `base_url=http://10.0.0.5:11434/v1` bugün çalışıyor.
+**Sorun kod değil, görünürlüktü:** `AI-POLITIKASI.md` bundan hiç bahsetmiyordu — kurumsal/kamu satışının en güçlü argümanı görünmez duruyordu.
+- `docs/AI-POLITIKASI.md` → "🔒 Veri ikametgâhı — kendi sunucunuzdaki LLM (KVKK)" bölümü: çalışan örnek yapılandırma, KVKK gerekçesi (hiçbir ülkeye yeterlilik kararı yok → her yurt dışı çağrı "uygun güvence + 5 gün bildirim" yükü), rakip karşılaştırması (Spider Impact metadata-only ama TR'de barındırma yok), sınırlar
+- `tests/test_yerel_llm_yolu.py` (yeni, 6 test) → **`base_url` zincirde düşerse veri yurt dışına gider ve kimse fark etmez**; test bunu engeller. Ayrıca: BYOK sistem kotasına yazılmaz, key şifreli, PII maskeleme yerel LLM'de de açık.
+
+### Doğrulama
+- **Tam paket: 588 passed, 0 failed** (öncesi 582) · yerel LLM **6/6**, benchmark ekran doğrulandı
+- `_resolve_provider` gerçek config ile test edildi: `base_url` korunuyor, pasif config kullanılmıyor, `base_url=None` davranışı değişmiyor (geriye dönük uyum)
+
+### Notlar
+- `pybabel update` kullanılmadı (TASK-263 dersi) — çeviri elle eklendi, fuzzy 0.
+- **Gerçek k-anonim benchmark** hâlâ açılamaz (müşteri sayısı) — mimarisi öneri belgesinde, açılış müşteriye bağlı.
+- Dal: `claude/faz3-benchmark-uyari`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## TASK-261 + TASK-262 | 2026-07-15 | ✅ Tamamlandı (🏆 HEDEF MANİPÜLASYONU RADARI)
 
 **Görev:** Hedef değişiklik izi (261) → Hedef Manipülasyonu Radarı (262) — ürünün en büyük farklılaştırıcısı
