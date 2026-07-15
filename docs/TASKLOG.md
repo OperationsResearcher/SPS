@@ -2,6 +2,33 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-257 ⏸️ ERTELENDİ · TASK-258 🔍 KARAR BEKLİYOR | 2026-07-15
+
+> **Kod değişikliği YOK** — ikisi de ölçüm sonucu durduruldu. Bulgular kaybolmasın diye kayıt.
+> Tam plan: [`docs/oneri/IS-PLANI-2026-H2.md`](oneri/IS-PLANI-2026-H2.md) §Faz 2
+
+### TASK-257 (mevsimsellik) — ERTELENDİ, veri yok
+Kullanıcı kararı: "atla". Gerekçe ölçüldü:
+- Mevsimsellik aynı ayın **2+ yıl** tekrarını gerektirir. **1395 KPI'ın HİÇBİRİNDE** 6 ay 2+ yıl tekrar etmiyor — **sıfır**. İki bağımsız yoldan doğrulandı (`period_month` ve `data_date`).
+- 40 KPI'da 2+ yıllık aylık veri var, 12'sinde 3+; ama yıl başına 4-8 ay → aynı ay çakışmıyor.
+- **Ayrıca mevcut `detect_seasonality` istatistiksel olarak hatalı:** "son 12 ay verisi" alıp `groupby('month').mean()` yapıyor — 12 ay = her aydan **1 gözlem**, tek gözlemin "ortalaması" mevsimsellik değil. `variance > 100` eşiği de gerekçesiz (endeks yüzde ölçeğinde, neden 100?).
+- **Sonuç:** kimsenin kullanamayacağı özellik yazmak israf olurdu. Veri birikince yeniden değerlendir.
+
+### TASK-258 (mock_* ayıklama) — KARAR BEKLİYOR, kapsam plandan büyük
+Ölçüm:
+- **29 `mock_*` tablonun 29'u da BOŞ** (tek satır veri yok).
+- Kaynak: [`models/__init__.py:148-168`](../models/__init__.py#L148) — `type(ad, (db.Model,), {...})` ile üretilen **sahte modeller**; yalnız `id` kolonu. Kendi yorumu: *"Eksik olan Faz 2/3 modellerini mock olarak ekle (import hatalarını önlemek için)"*.
+- Zincir kısır: `models/__init__` üretir → `legacy_extras` import eder → `legacy_bridge` export eder → **hiçbir modern kod kullanmaz**.
+- 🔴 **ANCAK:** `main/routes/projects.py`'deki **29 legacy route** bunları kullanıyor (`/gemba`, `/mtbp`, `/competencies`, `/risks`…) ve **ZATEN KIRIK**. Kanıt: `ObjectiveComment(objective_id=..., comment_text=...)` → `TypeError: 'objective_id' is an invalid keyword argument` — **eski kodda da patlıyor** (mock'ta yalnız `id` var). Yani mock'lar route'ları çalıştırmıyor, sadece *import hatasını* gizliyor.
+- Template'lerde bu route'lara **hiç link yok** → kullanıcı ulaşamıyor.
+- **Sadece mock silmek MÜMKÜN DEĞİL:** `ImportError` → `create_app` patlar. Route'larla birlikte ele alınmalı.
+- **Kapsam:** `projects.py` 59 route'un **29'u kırık**, 30'u sağlam; dosya 1843 satır. Silinirse 169→140 tablo (%17), dosya ~900 satır.
+- Denendi ve **geri alındı** — uygulama açılmaz hâlde bırakılmadı; çalışma ağacı temiz, `create_app` OK (879 route).
+
+**Sıradaki oturumda:** kullanıcı "mock + kırık route'ları sil" derse ~5 dk'lık iş (bulgular hazır).
+
+---
+
 ## TASK-256 | 2026-07-15 | ✅ Tamamlandı (Faz 2.1 — analiz tahmini KIRIKTI, onarıldı)
 
 **Görev:** Plan "iki tahmin motorunu tekleştir + UI'a bağla" diyordu — ölçüm bambaşka bir gerçek gösterdi
