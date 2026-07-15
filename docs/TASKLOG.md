@@ -2,6 +2,37 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## 📋 PLANLANAN — TASK-252…272 | 2026 H2 iş planı
+
+> Tam plan: **[`docs/oneri/IS-PLANI-2026-H2.md`](oneri/IS-PLANI-2026-H2.md)** · Dayanak: [`docs/oneri/OZELLIK-ONERILERI-2026-07.md`](oneri/OZELLIK-ONERILERI-2026-07.md)
+> Kullanıcı kararı (2026-07-15): **tüm öneriler sırayla yapılacak** · Yayın'da **henüz müşteri yok** (pilot) · **Redis eklenebilir**
+
+| Faz | TASK | İş | Bağımlılık |
+|---|---|---|---|
+| **1 — Zemin** | 252 | `actual_value`/`target_value` → sayısal kolon (366k satır metin olarak duruyor) | — |
+| | 253 | `period_type` normalize (`'Aylık'` 202 → `'aylik'` 365.925) | — |
+| | 254 | Redis + cache + rate limit (deploy `--network host` → host'ta redis-server) | onay ✅ |
+| | 255 | CI'ı aç (Haziran'dan beri kapalı) | hesap müdahalesi |
+| **2 — Veriden değer** | 256 | Tahmin motorunu tekleştir + karneye bağla | **252** |
+| | 257 | Mevsimsellik (`detect_seasonality` yazılı, kullanılmıyor) | 256 |
+| | 258 | `mock_*` ayıklaması (169 tablonun 29'u) | karar |
+| | 259 | EVM projeksiyonu — ⚠️ `evm_snapshots` **boş**, önce snapshot | snapshot job |
+| | 260 | Kule'yi yeniden aç (E1) | UI stabil |
+| **3 — Farklılaşma** | 261 | Audit kapsamı denetimi (297 kayıt / 366k veri) | **252** |
+| | **262** | 🏆 **HEDEF MANİPÜLASYONU RADARI** — kritik yol | **261** + 1 dönem |
+| | 263 | `audit_logs` analitiği — amaç churn değil, **kullanılmayan ekran** | — |
+| | 264 | Benchmark **mimarisi** (açılış müşteriye bağlı) + hardcoded uyarı metni | 252 |
+| | 265 | KVKK-güvenli AI / yerel LLM (altyapı %90 hazır) | — |
+| **4 — Anlat** | 266-269 | Var olanı anlat (K-Vektör, KOE, otonom kılavuz/hata kontrol) · konumlandırma · persona demo · ⚠️ Türkçe hendek DEĞİL | **kod ~0, paralel** |
+| **5 — Ticari** | 270 | 🔴 Fiyat modeli — per-seat shelf-ware'i **kendisi üretiyor** | — |
+| | 271 | Tier/paket kararları | 263 |
+| | 272 | MCP server — rakiplerde table stakes oluyor, **bizde yok** | — |
+
+**Kritik yol:** `252 → 261 → 262` (Hedef Radarı — en büyük farklılaştırıcı).
+**Deploy YOK** — L paketleri kuralı; iş yerelde birikir.
+
+---
+
 ## TASK-251 | 2026-07-15 | ✅ Tamamlandı (raporlar haritası) · ⛔ Cache işi BLOKE
 
 **Görev:** `raporlar/` faz isimleri belgelendi (kullanıcı kararı); Cache+Redis işi altyapı eksiği nedeniyle durduruldu
