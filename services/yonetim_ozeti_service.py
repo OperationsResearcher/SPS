@@ -27,8 +27,30 @@ def build_yonetim_ozeti(user, tenant_id: int) -> dict[str, Any]:
         "geciken": _geciken(user, tenant_id),
         "kpi_ozet": _kpi_ozet(tenant_id),
         "en_dusuk_5": _en_dusuk_5(tenant_id),
+        "hedef_radar": _hedef_radar(tenant_id),
     }
     return out
+
+
+def _hedef_radar(tenant_id: int) -> dict[str, Any]:
+    """Hedef Manipülasyonu Radarı özeti (TASK-262).
+
+    Neden burada: Bu ekran üst yönetimin "5 saniyede durum" ekranı. Diğer
+    bloklar "hedefe ulaştık mı" der; bu blok "hedefin kendisi dürüst mü"
+    sorusunu sorar — kurumun kendi kendini denetlemesi.
+    """
+    try:
+        from app.services.hedef_radar_service import radar_ozeti
+        o = radar_ozeti(tenant_id, gun=365)
+        return {
+            "toplam_degisim": o["toplam_degisim"],
+            "asagi": o["asagi"],
+            "gec_ve_asagi": o["gec_ve_asagi"],          # en kritik sinyal
+            "ortalama_asagi_sapma": o["ortalama_asagi_sapma"],
+            "cok_revize_edilen": o["cok_revize_edilen"][:3],
+        }
+    except Exception:
+        return {}
 
 
 def _kurum_skoru(tenant_id: int) -> dict[str, Any]:

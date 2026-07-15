@@ -473,10 +473,24 @@ class KpiDataAudit(db.Model):
     kpi_data_id = db.Column(db.Integer, db.ForeignKey('kpi_data.id', ondelete='CASCADE'), nullable=False, index=True)
     
     action_type = db.Column(db.String(20), nullable=False) # CREATE, UPDATE, DELETE
+
+    # old_value/new_value = GERÇEKLEŞME (actual_value) izi. Tarihsel isim;
+    # geriye dönük uyumluluk için değiştirilmedi.
     old_value = db.Column(db.Text, nullable=True)
     new_value = db.Column(db.Text, nullable=True)
+
+    # HEDEF (target_value) izi — TASK-261.
+    # Eskiden hedef değişikliği yalnız `action_detail`e "hedef" etiketi olarak
+    # düşüyordu; NE'den NE'ye değiştiği KAYBOLUYORDU (routes_kpi_data.py
+    # old_target/new_target'ı hesaplıyor ama audit'e yazmıyordu).
+    # "Hedef dönem kapanışına yakın aşağı mı çekildi?" sorusu — Hedef
+    # Manipülasyonu Radarı'nın (TASK-262) tüm dayanağı — bu iki değeri
+    # gerektiriyor. NULL = bu kayıtta hedef değişmedi.
+    old_target = db.Column(db.Text, nullable=True)
+    new_target = db.Column(db.Text, nullable=True)
+
     action_detail = db.Column(db.Text, nullable=True)
-    
+
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     

@@ -416,11 +416,19 @@ def surec_api_kpi_data_update(data_id):
         for attempt in (1, 2):
             try:
                 if changed_labels:
+                    _hedef_degisti = "hedef" in changed_labels
                     db.session.add(KpiDataAudit(
                         kpi_data_id=entry.id,
                         action_type="UPDATE",
                         old_value=old_actual,
                         new_value=new_actual,
+                        # TASK-261: hedef değişikliğinin NE'den NE'ye olduğu
+                        # eskiden kayboluyordu — yalnız action_detail'e "hedef"
+                        # etiketi düşüyordu. Hedef Radarı (TASK-262) bu iki
+                        # değere dayanıyor. Hedef değişmediyse NULL bırakılır
+                        # (her satıra kopyalamak "değişti" sanısı yaratırdı).
+                        old_target=old_target if _hedef_degisti else None,
+                        new_target=new_target if _hedef_degisti else None,
                         action_detail="Micro platform PGV güncelleme: " + ", ".join(changed_labels),
                         user_id=current_user.id,
                     ))

@@ -2,6 +2,49 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-261 + TASK-262 | 2026-07-15 | ✅ Tamamlandı (🏆 HEDEF MANİPÜLASYONU RADARI)
+
+**Görev:** Hedef değişiklik izi (261) → Hedef Manipülasyonu Radarı (262) — ürünün en büyük farklılaştırıcısı
+**Modül:** app/models/process.py, micro/modules/surec/routes_kpi_data.py, app/services/hedef_radar_service.py (yeni), services/yonetim_ozeti_service.py, ui/templates/platform/masaustu/yonetim_ozeti.html
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Neden bu iş: kategorinin en büyük açığı
+Rakipler *"hedefe ulaştın mı?"* sorar. Bu radar *"hedefin kendisi dürüst mü?"* sorar. Pazar kanıtı: Microsoft, 66M kullanıcılı Viva paketinin **içinde** OKR ürününü tutturamadı ve yazılı olarak itiraf etti (*"adoption and usage… hasn't grown"*, 31.12.2025 kapandı). Bir dashboard "hedefe ulaştın mı" sorduğu sürece tiyatroya hizmet eder. **Ek kanıt:** AI OKR *kalite skorlama* 16 üründe de yok — herkes hedef yazdırıyor, kimse not vermiyor.
+
+### TASK-261 — hedef izi (radarın dayanağı yoktu)
+**Ölçüm:** `kpi_data_audits` 297 kayıt ama yalnız **5 UPDATE**. Daha kötüsü: `old_value/new_value` **yalnız GERÇEKLEŞME'yi** (`actual_value`) tutuyordu. Hedef değişince `action_detail`'e sadece `"hedef"` etiketi düşüyor, **NE'den NE'ye değiştiği kayboluyordu** — oysa `routes_kpi_data.py:405` `old_target`/`new_target`'ı **zaten hesaplıyordu**, sadece audit'e yazmıyordu.
+- `KpiDataAudit.old_target` + `new_target` kolonları (migration `c927a97a2fef`)
+- Partial index: `WHERE new_target IS NOT NULL` (kayıtların çoğunda hedef değişmez)
+- Yazma yolu bağlandı; hedef değişmediyse **NULL** (her satıra kopyalamak "değişti" sanısı yaratırdı)
+
+### TASK-262 — radar
+- `app/services/hedef_radar_service.py` (yeni): yön tespiti (aşağı/yukarı/sabit/**belirsiz**), sapma %, **dönem kapanışına kala gün**, `gec_ve_asagi` (en kritik sinyal), çok revize edilen KPI'lar, tenant kapsamlı
+- `services/yonetim_ozeti_service.py` → üst yönetimin "5 saniyede durum" ekranına bağlandı
+- `ui/templates/.../yonetim_ozeti.html` → radar kartı + **dürüstlük notu**
+- `tests/test_hedef_radar.py` (yeni, **22 test**)
+
+### Bilinçli tasarım kararları
+- **Radar NİYET OKUMAZ.** "Hedef aşağı çekildi" bir OLGU; sebebi meşru olabilir. Çıktı suçlama değil **soru** üretir — bu ekrana da yazıldı.
+- **`belirsiz` yönü var:** aralık hedefi (`'90-100'`) ve `'-'` sayıya indirgenemez → atılmaz, "belirsiz" sayılır.
+- **%1 eşiği:** ölçüm gürültüsünü (yuvarlama) manipülasyondan ayırır.
+- **7 gün:** aylık dönemde son hafta — gerçekleşme bellidir, hedef sonuca uydurulabilir konumdadır.
+
+### Doğrulama
+- **Tam paket: 582 passed, 0 failed** (öncesi 560) · radar testleri **22/22**
+- 🎯 **UÇTAN UCA, GERÇEK API + GERÇEK DB:** hedef `280 → 210` düşürüldü → radar **"aşağı -25.0% | Deniz Tunç"** olarak yakaladı. Veri geri alındı.
+- 🎯 **EKRAN:** hedef `82 → 65.6` → `/yonetim-ozeti/api/ozet` → `toplam=1 aşağı=1 ort_sapma=-20.0%`; sayfa HTTP 200, kart + dürüstlük notu render. Veri geri alındı.
+- Gerçek veride radar **0** gösteriyor — **doğru**: iz bugün açıldı, geçmiş revizyonlar kayıtlı değil (üretilemez).
+
+### 🔴 Yol boyunca yakaladığım kendi hatam (TASK-256'nın tekrarı)
+İlk 20 testim audit kaydını **elle üretiyordu**. Hedef izini kapattım → **20/20 hâlâ geçti**. Yani testler gerçek yazma yolunu korumuyordu. `test_gercek_api_hedef_izini_yaziyor` eklendi (gerçek API çağırır); kapatınca *"Gerçek API'den yapılan hedef değişikliği radara DÜŞMEDİ"* ile **kırıldı**. **Ders (ikinci kez): test yazmak yetmez — testin doğru şeyi yakaladığı kanıtlanmalı.**
+
+### Notlar
+- `pybabel update` **kullanılmadı** (TASK-263 dersi: katalogu bozuyor). 9 metin elle eklendi → fuzzy 0, derleme hatasız.
+- **Radar bugün boş görünür** — normal. İz yeni açıldı; 1 dönem veri birikince anlam kazanır.
+- Dal: `claude/faz3-audit-kapsam`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## TASK-263 | 2026-07-15 | ✅ Tamamlandı (Faz 3.3 — audit_logs'tan modül kullanım özeti)
 
 **Görev:** `audit_logs` 5 aydır yazılıyor ama okunmuyordu → paketleme kararına kanıt üret
