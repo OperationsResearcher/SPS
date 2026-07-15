@@ -25847,3 +25847,72 @@ msgstr ""
 
 msgid "Geciken aktivite"
 msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:52
+msgid "Modül Kullanımı"
+msgstr "Modül Kullanımı"
+
+#: ui/templates/platform/admin/loglar.html:55
+#, python-format
+msgid "son %(g)s gün"
+msgstr "son %(g)s gün"
+
+#: ui/templates/platform/admin/loglar.html:63
+msgid "giriş yapan"
+msgstr "giriş yapan"
+
+#: ui/templates/platform/admin/loglar.html:67
+msgid "veri giren"
+msgstr "veri giren"
+
+#: ui/templates/platform/admin/loglar.html:76
+msgid "Modül"
+msgstr "Modül"
+
+#: ui/templates/platform/admin/loglar.html:95
+msgid "Bu dönemde modül hareketi yok."
+msgstr "Bu dönemde modül hareketi yok."
+
+#: ui/templates/platform/admin/loglar.html:101
+msgid "Yalnız veri değişikliği (ekleme/güncelleme/silme) ve giriş sayılır; sayfa görüntüleme izlenmez. Bu liste hangi modülde iş yapıldığını gösterir, hangi ekranın ziyaret edildiğini değil."
+msgstr "Yalnız veri değişikliği (ekleme/güncelleme/silme) ve giriş sayılır; sayfa görüntüleme izlenmez. Bu liste hangi modülde iş yapıldığını gösterir, hangi ekranın ziyaret edildiğini değil."
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "Hedef Değişiklik Radarı"
+msgstr "Hedef Değişiklik Radarı"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "Hedef değişikliği bir olgudur, suçlama değil — pazar koşulu veya kapsam değişimi meşru sebep olabilir. Bu kart soru sorar, yanıt vermez."
+msgstr "Hedef değişikliği bir olgudur, suçlama değil — pazar koşulu veya kapsam değişimi meşru sebep olabilir. Bu kart soru sorar, yanıt vermez."
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "Son 1 yılda kayıtlı hedef değişikliği yok."
+msgstr "Son 1 yılda kayıtlı hedef değişikliği yok."
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "hedef değişikliği"
+msgstr "hedef değişikliği"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "aşağı çekilmiş"
+msgstr "aşağı çekilmiş"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "dönem kapanışına yakın + aşağı"
+msgstr "dönem kapanışına yakın + aşağı"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "ortalama düşüş"
+msgstr "ortalama düşüş"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "Birden fazla kez revize edilen göstergeler:"
+msgstr "Birden fazla kez revize edilen göstergeler:"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "revize"
+msgstr "revize"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html
+msgid "<b>Bu değerler referans niteliğindedir.</b> Sektör raporlarından derlenmiş <b>sabit örnek değerlerdir</b> — Kokpitim'deki diğer kurumların canlı verisinden hesaplanmamıştır. Kendi ölçümünüzle karşılaştırmak için OEE, OTIF, NPS gibi metrikleri PG olarak sisteme ekleyip veri girmeniz gerekir."
+msgstr "<b>Bu değerler referans niteliğindedir.</b> Sektör raporlarından derlenmiş <b>sabit örnek değerlerdir</b> — Kokpitim'deki diğer kurumların canlı verisinden hesaplanmamıştır. Kendi ölçümünüzle karşılaştırmak için OEE, OTIF, NPS gibi metrikleri PG olarak sisteme ekleyip veri girmeniz gerekir."

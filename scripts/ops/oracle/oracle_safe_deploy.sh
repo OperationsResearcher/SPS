@@ -15,11 +15,11 @@ TS="$( date +%Y%m%d_%H%M%S )"
 
 mkdir -p "$BACKUP_DIR"
 
-echo "==> 1/6 PostgreSQL tam yedek (gzip)"
+echo "==> 1/7 PostgreSQL tam yedek (gzip)"
 sudo -u postgres pg_dump "$PG_DB" | gzip -c > "$BACKUP_DIR/pg_${PG_DB}_full_${TS}.sql.gz"
 ls -la "$BACKUP_DIR/pg_${PG_DB}_full_${TS}.sql.gz"
 
-echo "==> 2/6 Temel tablo satir sayilari (once)"
+echo "==> 2/7 Temel tablo satir sayilari (once)"
 COUNT_BEFORE="$BACKUP_DIR/rowcounts_before_${TS}.txt"
 sudo -u postgres psql -d "$PG_DB" -At -c "
 SELECT 'tenants|'||count(*) FROM tenants
@@ -33,11 +33,11 @@ UNION ALL SELECT 'task|'||count(*) FROM task;
 " | sort > "$COUNT_BEFORE"
 cat "$COUNT_BEFORE"
 
-echo "==> 3/6 Git pull"
+echo "==> 3/7 Git pull"
 cd "$APP_DIR"
 git pull origin main
 
-echo "==> 4/6 Docker image + container (host network)"
+echo "==> 4/7 Docker image + container (host network)"
 if [ ! -f "$ENV_FILE" ]; then
   echo "HATA: $ENV_FILE yok."
   exit 1
@@ -60,11 +60,11 @@ docker run -d --name "$CONTAINER" --restart unless-stopped \
   -e TRUST_PROXY=1 \
   "$IMAGE"
 
-echo "==> 5/6 Alembic upgrade"
+echo "==> 5/7 Alembic upgrade"
 sleep 5
 docker exec "$CONTAINER" bash -lc 'cd /app && python3 scripts/run_db_upgrade.py'
 
-echo "==> 6/6 Satir sayilari (sonra)"
+echo "==> 6/7 Satir sayilari (sonra)"
 COUNT_AFTER="$BACKUP_DIR/rowcounts_after_${TS}.txt"
 sudo -u postgres psql -d "$PG_DB" -At -c "
 SELECT 'tenants|'||count(*) FROM tenants
@@ -89,3 +89,31 @@ echo "==> Health"
 curl -sS http://127.0.0.1/health || curl -sS http://127.0.0.1:5000/health || true
 echo ""
 echo "Tamam. Yedek: $BACKUP_DIR/pg_${PG_DB}_full_${TS}.sql.gz"
+
+echo "==> 7/7 Redis kontrolu (cache + rate limit)"
+# TASK-254: Redis yoksa uygulama SESSIZCE SimpleCache + memory:// ile calisir.
+# Bu hata degil ama coklu worker'da: her worker AYRI cache tutar (ayni deger
+# worker'a gore farkli gorunur) ve rate limit worker sayisi kadar gevser.
+# Deploy'un bunu FARK ETMESI gerekir; sessiz gecmemeli.
+if command -v redis-cli >/dev/null 2>&1 && redis-cli ping 2>/dev/null | grep -q PONG; then
+  echo "OK: Redis ayakta."
+  if grep -q '^CACHE_TYPE=RedisCache' "$ENV_FILE" 2>/dev/null; then
+    echo "OK: .env CACHE_TYPE=RedisCache."
+  else
+    echo "UYARI: Redis ayakta ama .env icinde CACHE_TYPE=RedisCache YOK -> SimpleCache kullanilacak."
+    echo "       Ekle: CACHE_TYPE=RedisCache / REDIS_URL=redis://127.0.0.1:6379/0"
+    echo "             RATELIMIT_STORAGE_URL=redis://127.0.0.1:6379/1"
+  fi
+  # Uygulama gercekten Redis'e baglandi mi? Log kaniti ara.
+  sleep 2
+  if docker logs "$CONTAINER" 2>&1 | tail -80 | grep -qi 'RedisCache kullaniliyor'; then
+    echo "OK: Uygulama RedisCache'e baglandi."
+  else
+    echo "UYARI: Uygulama loglarinda 'RedisCache kullaniliyor' yok -> SimpleCache'e dusmus olabilir."
+    echo "       Kontrol: docker logs $CONTAINER 2>&1 | grep -i 'redis\|cache'"
+  fi
+else
+  echo "UYARI: Redis YOK/yanit vermiyor -> SimpleCache + memory:// kullanilacak."
+  echo "       Coklu worker'da cache tutarsiz, rate limit gevsek olur."
+  echo "       Kurmak icin: sudo bash scripts/ops/oracle/redis_kur.sh"
+fi

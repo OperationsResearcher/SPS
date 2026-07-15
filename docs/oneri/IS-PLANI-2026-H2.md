@@ -42,8 +42,8 @@
 | # | TASK | İş | Bağımlılık | Kabul kriteri |
 |---|---|---|---|---|
 | 2.1 | TASK-256 | **Tahmin motorunu tekleştir + ürüne bağla.** `forecast_service` (k_rapor'dan çağrılıyor) + `ml_service` (api/ai.py'den) → tek motor. Karne/dashboard'a "yıl sonu tahmini + güven aralığı + hedef tutturma olasılığı". `calculate_achievement_probability` zaten yazılı. | **1.1** | Karnede tahmin bandı görünüyor; iki motor tek; gerçek tarayıcıda doğrulandı |
-| 2.2 | TASK-257 | **Mevsimsellik.** `detect_seasonality` (yazılı, kullanılmıyor) → "Kasım'da her yıl düşersiniz, bu normal" vs "bu sefer anormal". Yanlış alarmı azaltır. | 2.1 | Anomali uyarısı mevsimselliği hesaba katıyor |
-| 2.3 | TASK-258 | **`mock_*` ayıklaması.** 169 public tablonun **29'u** `mock_*` (DAO oylama, kıyamet senaryosu, oyun...). Paketleme belgesindeki "kaldır mı gizle mi" kararı kapatılır. | Kullanıcı kararı | Karar verildi + uygulandı; şema yüzeyi %17 azaldı (kaldırılırsa) |
+| 2.2 | TASK-257 | ⏸️ **ERTELENDİ — veri yok** (2026-07-15 ölçümü, kullanıcı kararı). Mevsimsellik aynı ayın **2+ yıl** tekrarını gerektirir; **1395 KPI'ın HİÇBİRİNDE** 6 ay 2+ yıl tekrar etmiyor (hem `period_month` hem `data_date` ile doğrulandı — sıfır). Ayrıca mevcut `detect_seasonality` istatistiksel olarak hatalı: "son 12 ay" alıp aylık ortalama hesaplıyor ama 12 ay = her aydan **1 gözlem** → tek gözlemin "ortalaması" mevsimsellik değil; `variance > 100` eşiği de gerekçesiz. **Veri birikince yeniden değerlendir.** | 2+ yıllık aylık veri | — |
+| 2.3 | TASK-258 | 🔍 **KAPSAM BÜYÜDÜ — kullanıcı kararı bekliyor** (2026-07-15). Ölçüm: 29 `mock_*` tablonun **29'u da BOŞ**. Kaynak: `models/__init__.py`'de `type()` ile üretilen **sahte modeller** (yalnız `id` kolonu, "import hatalarını önlemek için"). Zincir: `models/__init__` üretir → `legacy_extras` import eder → `legacy_bridge` export eder → **kimse kullanmaz**. **ANCAK** `main/routes/projects.py`'deki **29 legacy route** bunları kullanıyor ve **ZATEN KIRIK** — kanıtlandı: `ObjectiveComment(objective_id=...)` → `TypeError` (mock'ta yalnız `id` var), eski kodda da patlıyor. Template'lerde bu route'lara **hiç link yok**. Yani mock'lar route'ları çalıştırmıyor, sadece *import hatasını* gizliyor. Sadece mock silmek → `ImportError` → uygulama açılmaz; route'larla **birlikte** ele alınmalı. | **Kullanıcı kararı** | 169→140 tablo; `projects.py` 1843→~900 satır (59 route'un 29'u kırık, 30'u sağlam) |
 | 2.4 | TASK-259 | **EVM projeksiyonu (EAC/ETC).** ⚠️ `evm_snapshots` **boş (0 kayıt)** → önce snapshot üretimi çalışmalı. Bu "veri var kullanılmıyor" değil, **"veri toplanmıyor"**. | Snapshot job | Snapshot üretiliyor; EAC/ETC hesaplanıyor |
 | 2.5 | TASK-260 | **Kule'yi yeniden aç (E1).** Altyapı hazır (DB, 5 API, 17 tur YAML, Driver.js); `base.html`'de yorumda. UI stabilleşti → yeniden değerlendir. | UI stabil | Kule görünüyor; turlar çalışıyor |
 
@@ -62,7 +62,9 @@
 
 ---
 
-## FAZ 4 — VAR OLANI ANLAT (kod ~0, en ucuz kazanç)
+## FAZ 4 — VAR OLANI ANLAT (kod ~0, en ucuz kazanç) ✅ TAMAMLANDI
+
+> **Çıktı:** [`KONUMLANDIRMA-2026-07.md`](KONUMLANDIRMA-2026-07.md) — değer haritası (her farklılaştırıcı canlı veriyle doğrulandı: K-Vektör 108 ağırlık/6 snapshot, KOE 340 kayıt, LLM 279 çağrı), Microsoft'un shelf-ware itirafı, **kullanılmaması gereken çürütülmüş istatistikler**, persona demo sırası, fiyat modeli uyarısı, ⚠️ Türkçe hendek DEĞİL (Spider Impact zaten destekliyor).
 > **Bulgu:** "Kimsede yok" listesinin **yarısı zaten çalışıyor ama anlatılmıyor.** Bu bir geliştirme değil, konumlandırma boşluğu. "Müşteri yok" cevabı bunu **öne** çekiyor.
 
 | # | TASK | İş | Kabul kriteri |
@@ -81,7 +83,7 @@
 |---|---|---|---|
 | 5.1 | TASK-270 | 🔴 **Fiyat modeli.** **Bulgu:** per-seat fiyatlama shelf-ware'i **kendisi üretiyor** — okuyucu koltuğu $8-16/ay ise alıcı koltukları *rapor verenlerle* sınırlar, *işi yapanlarla* değil → araç yönetici raporlama katmanına düşer = tam da çözmeye çalıştığımız hastalık. Bunu kabul eden iki ürün: **ESM ($1.000/ay sınırsız)**, **Perdoo (€1,50 izleyici koltuğu)**. | Fiyat modeli kararı verildi + gerekçesi yazılı |
 | 5.2 | TASK-271 | **Tier/paket kararları.** Paketleme belgesindeki açıklar: tenant→tier dağılımı (7/7 hâlâ Master/full), progressive unlock mekaniği (en büyük boşluk), özellik-düzeyi gating. **Girdi: TASK-263 kullanım haritası.** | Kararlar kapatıldı |
-| 5.3 | TASK-272 | **MCP server.** ⚠️ Rakipler 15 ayda ekledi: WorkBoard (**yazma yetkili, ~60 tool**), Perdoo (GA), Betterworks (beta), Planview. **Table stakes oluyor, bizde yok.** | MCP server çalışıyor |
+| 5.3 | TASK-272 | ⏸️ **MCP server — YENİ BİLEŞEN, karar bekliyor.** Rakipler 15 ayda ekledi: WorkBoard (**yazma yetkili, ~60 tool**), Perdoo (GA), Betterworks (beta), Planview → table stakes oluyor, bizde yok. **Ölçüm (2026-07-15):** MCP SDK kurulu değil, `requirements.txt`'te yok → yeni bağımlılık + **ayrı süreç** + yeni auth yüzeyi. Sarmalanacak API **hazır**: 15 REST endpoint (`app/api/routes.py`) + `data_connector`'ın token-auth deseni. Kapsamı "kalan işleri yap" talimatının ötesinde — ayrı karar. | MCP server çalışıyor |
 
 ---
 

@@ -64,6 +64,37 @@ result = call_llm(
 
 Tenant tek bir provider seçer (UI'dan), key + model adı + opsiyonel endpoint URL girer.
 
+### 🔒 Veri ikametgâhı — kendi sunucunuzdaki LLM (KVKK)
+
+> **Bu zaten çalışıyor** (2026-07-15'te doğrulandı) ama belgede yoktu.
+> Kurumsal/kamu satışında en güçlü argümanlardan biri; görünür olmalı.
+
+`provider = openai` + `base_url = <kendi sunucunuz>` verildiğinde çağrı
+OpenAI'a değil, **belirtilen adrese** gider. Ollama ve vLLM OpenAI-uyumlu API
+sunduğu için kurumun kendi sunucusundaki model doğrudan kullanılabilir:
+
+```
+provider : openai
+base_url : http://10.0.0.5:11434/v1     # Ollama
+model    : llama3.1:70b
+api_key  : ollama                        # Ollama key istemez, boş geçilemez
+```
+
+**Neden önemli:** KVKK'nın **hiçbir ülkeye yeterlilik kararı yok**
+([kvkk.gov.tr](https://www.kvkk.gov.tr/Icerik/2053/Yurtdisina-Aktarim) —
+*"Bu konuda Kurul tarafından henüz bir belirleme yapılmamıştır"*). Bu, her
+yurt dışı LLM çağrısını "uygun güvence" (standart sözleşme + 5 iş günü içinde
+Kurum'a bildirim) yüküne sokar. Yerel LLM'de veri kurumun ağından **hiç
+çıkmaz** → bu yük ortadan kalkar.
+
+Global rakipler bunu yapısal olarak veremez (iş modelleri merkezi buluta
+bağlı). En yakın örnek Spider Impact 5.8'in "metadata-only" mimarisi — ham
+veri müşteri ortamından çıkmıyor, ama **Türkiye'de barındırma yok**.
+
+**Sınır:** Yerel modelin kalitesi kurumun donanımına bağlıdır; heuristik
+fallback (§Felsefe) yine devrededir. `pii_mask_enabled` yerel LLM'de de
+uygulanır — savunma derinliği.
+
 ---
 
 ## 4. Kota Politikası

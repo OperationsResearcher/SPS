@@ -70,6 +70,23 @@ def create_app(config_class=None):
     register_maintenance_middleware(app)
 
     # Initialize cache
+    # TASK-254: RedisCache seçiliyse Redis'in GERÇEKTEN cevap verdiği doğrulanır.
+    # Doğrulanmazsa SimpleCache'e düşülür — aksi halde her cache çağrısı
+    # (score_engine_service canlı yolda kullanıyor) 500 üretirdi.
+    # SimpleCache uyarısı bilinçli: çok worker'lı Yayın'da her worker kendi
+    # cache'ini tutar → aynı vizyon skoru worker'a göre farklı görünebilir.
+    if str(app.config.get("CACHE_TYPE", "")).lower() == "rediscache":
+        from app.utils.redis_health import redis_erisilebilir
+        _redis_url = app.config.get("CACHE_REDIS_URL")
+        if redis_erisilebilir(_redis_url, app.logger):
+            app.logger.info(f"[cache] RedisCache kullaniliyor: {_redis_url}")
+        else:
+            app.config["CACHE_TYPE"] = "SimpleCache"
+            app.logger.error(
+                "[cache] CACHE_TYPE=RedisCache istendi ama Redis erisilemiyor "
+                "-> SimpleCache'e dusuldu. Coklu worker'da her worker AYRI cache "
+                "tutar; ayni deger worker'a gore farkli gorunebilir."
+            )
     cache.init_app(app)
 
     # Initialize security utilities

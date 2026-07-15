@@ -110,11 +110,16 @@ def analiz_api_forecast(process_id):
     try:
         from app.services.analytics_service import AnalyticsService
         periods = request.args.get("periods", 3, type=int)
+        periods = max(1, min(periods, 12))  # k_rapor ile aynı sınır
         method  = request.args.get("method", "linear")
         result  = AnalyticsService.get_forecast(process_id, periods=periods, method=method)
         return jsonify({"success": True, "data": result})
     except Exception as e:
-        current_app.logger.error(f"[analiz_api_forecast] {e}")
+        # exc_info=True: eskiden yalnız mesaj loglanıyordu ve tahmin motoru
+        # gerçek veriyle TypeError atıyordu (pandas string kolonda .mean());
+        # kullanıcı "Tahmin verisi alınamadı" görüyor, sebebi log'a bile
+        # düşmüyordu. Kardeş route (analiz_api_health) zaten exc_info kullanıyor.
+        current_app.logger.error(f"[analiz_api_forecast] {e}", exc_info=True)
         return jsonify({"success": False, "message": _("Tahmin verisi alınamadı.")}), 500
 
 

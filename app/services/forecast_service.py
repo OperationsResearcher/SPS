@@ -98,15 +98,19 @@ def forecast_kpi(
     )
     rows = list(reversed(rows))  # eski → yeni
 
-    # Sayısal değerleri çıkar
+    # Sayısal değerleri çıkar.
+    # TASK-256: eskiden `float(r.actual_value)` idi — ham metni parse ediyor,
+    # virgüllü ('12,5') değerleri SESSİZCE atlıyordu. Artık TASK-252'nin
+    # sayısal aynası kullanılıyor: actual_numeric zaten safe_float türevi
+    # (virgül→nokta dahil), aralık hedefi/'-'/para birimi gibi indirgenemez
+    # değerlerde NULL — yani atlanması DOĞRU olanlar zaten NULL.
     history: list[ForecastPoint] = []
     xs: list[float] = []
     ys: list[float] = []
     for i, r in enumerate(rows):
-        try:
-            val = float(r.actual_value)
-        except (ValueError, TypeError):
+        if r.actual_numeric is None:
             continue
+        val = float(r.actual_numeric)
         label = (
             f"{r.year} {r.period_type or ''} {r.period_no or ''}".strip()
             if r.year else (r.data_date.isoformat() if r.data_date else f"#{i}")

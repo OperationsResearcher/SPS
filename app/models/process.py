@@ -7,6 +7,7 @@ SOFT DELETE STANDARDI:
   deleted_at mevcut tablolarda geriye dönük uyumluluk için korunur.
 """
 from datetime import datetime, timezone
+from sqlalchemy import event
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import synonym
 from extensions import db
@@ -391,14 +392,36 @@ class KpiData(db.Model):
     period_no = db.Column(db.Integer, nullable=True)
     period_month = db.Column(db.Integer, nullable=True)
     
+    # Kullanıcının girdiği HAM metin — tek yazma kaynağı, asla kaybolmaz.
+    # Serbest format bilinçli: '-' (girilmedi), '%100', '90-100' (aralık hedefi,
+    # DH/HKY yöntemleri), '₺100.070.853' gibi değerler iş kuralı gereği geçerli.
     target_value = db.Column(db.String(100), nullable=True)
     actual_value = db.Column(db.String(100), nullable=True)
+
+    # Analitik için sayısal ayna (TASK-252). safe_float ile TÜRETİLİR — elle
+    # yazılmaz. Parse edilemeyen ham değerlerde NULL kalır (aralık hedefi,
+    # '-', para birimi vb. → bunlar hata değil, sayıya indirgenemez veri).
+    # Amaç: DB tarafında AVG/percentile/trend; 366k satırı Python'a çekmeden.
+    # Doğru kaynak hangisi? Gösterim/giriş → *_value · Hesap/analitik → *_numeric
+    #
+    # Ölçek (20,6): yereldeki en büyük değer 381.806.691 (9 tam basamak),
+    # ondalık ihtiyacı en fazla 1 satırda 16 basamak. 6 ondalık o satırda
+    # 4.4e-7 fark bırakır (KPI ölçümünde anlamsız); (20,4) ise 0.4444'e
+    # yuvarlayıp safe_float'tan SAPIYORDU — ölçüldü, bu yüzden 6.
+    target_numeric = db.Column(db.Numeric(20, 6), nullable=True)
+    actual_numeric = db.Column(db.Numeric(20, 6), nullable=True)
+
     status = db.Column(db.String(50), nullable=True)
     status_percentage = db.Column(db.Float, nullable=True)
     description = db.Column(db.Text, nullable=True)
-    
+
     # Auditing
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Veriyi giren
+    # user_id: veriyi giren. nullable + SET NULL (TASK-253) — kullanıcı silinince
+    # ÖLÇÜM KAYBOLMAMALI, yalnız "kim girdi" bilgisi düşer. Eskiden NOT NULL idi
+    # ama FK doğrulanmadan eklendiği için veri zaten ihlal ediyordu (202 orphan
+    # satır). Okuyan kod None'a hazır: _user_display_name(None) → "—".
+    # deleted_by_id ile aynı desen.
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)  # Soft delete: is_active=False
@@ -450,10 +473,24 @@ class KpiDataAudit(db.Model):
     kpi_data_id = db.Column(db.Integer, db.ForeignKey('kpi_data.id', ondelete='CASCADE'), nullable=False, index=True)
     
     action_type = db.Column(db.String(20), nullable=False) # CREATE, UPDATE, DELETE
+
+    # old_value/new_value = GERÇEKLEŞME (actual_value) izi. Tarihsel isim;
+    # geriye dönük uyumluluk için değiştirilmedi.
     old_value = db.Column(db.Text, nullable=True)
     new_value = db.Column(db.Text, nullable=True)
+
+    # HEDEF (target_value) izi — TASK-261.
+    # Eskiden hedef değişikliği yalnız `action_detail`e "hedef" etiketi olarak
+    # düşüyordu; NE'den NE'ye değiştiği KAYBOLUYORDU (routes_kpi_data.py
+    # old_target/new_target'ı hesaplıyor ama audit'e yazmıyordu).
+    # "Hedef dönem kapanışına yakın aşağı mı çekildi?" sorusu — Hedef
+    # Manipülasyonu Radarı'nın (TASK-262) tüm dayanağı — bu iki değeri
+    # gerektiriyor. NULL = bu kayıtta hedef değişmedi.
+    old_target = db.Column(db.Text, nullable=True)
+    new_target = db.Column(db.Text, nullable=True)
+
     action_detail = db.Column(db.Text, nullable=True)
-    
+
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     
@@ -729,3 +766,45 @@ class FavoriteKpi(db.Model):
     # Legacy aliases
     surec_pg_id = synonym("process_kpi_id")
 
+
+# ─── Sayısal ayna senkronizasyonu (TASK-252) ─────────────────────────────────
+# KpiData.actual_value / target_value ham METİN (serbest format, iş kuralı:
+# '-' girilmedi, '90-100' aralık hedefi (DH/HKY), '%100', '₺100.070.853').
+# *_numeric bunların safe_float türevidir; sayıya indirgenemeyende NULL kalır.
+#
+# İkisinin sapmaması ZORUNLU — sapan ayna sessizce yanlış karne üretir.
+#
+# Neden ORM event? 59 dosya bu kolonlara yazıyor. Her birine "numeric'i de
+# güncelle" satırı eklemek 59 yerde + her yeni yazma noktasında unutma riski
+# demekti. Listener ile senkron ORM katmanında garanti; çağıran kod değişmiyor.
+#
+# SINIR: raw SQL UPDATE (ORM'siz) bu listener'ı ATLAR. Toplu SQL güncellemesi
+# yapılırsa *_numeric elle set edilmeli ya da backfill yeniden koşturulmalı.
+
+def _numeric_aynasi(hedef_kolon: str):
+    """`<x>_value` set edildiginde `<x>_numeric`'i safe_float ile turetir."""
+    def _dinleyici(target, value, oldvalue, initiator):
+        from app.utils.numeric import safe_float
+        setattr(target, hedef_kolon, safe_float(value))
+        return value
+    return _dinleyici
+
+
+event.listen(KpiData.actual_value, "set", _numeric_aynasi("actual_numeric"), retval=True)
+event.listen(KpiData.target_value, "set", _numeric_aynasi("target_numeric"), retval=True)
+
+
+# ─── period_type normalizasyonu (TASK-253) ───────────────────────────────────
+# İki ayrı sözlük kullanılıyordu: 'aylik' (365.925) vs 'Aylık' (202, bulk
+# import default'u) → GROUP BY aynı dönemi iki kovaya bölüyordu. Kanonik
+# biçim ASCII küçük harf; yazma anında normalize edilir.
+# CHECK constraint konmadı: kod 6 farklı değer üretiyor (JS 'halfyear' dahil)
+# ve tanınmayan değeri sessizce reddetmek çalışan girişi kırardı.
+
+def _period_type_normalize(target, value, oldvalue, initiator):
+    from app.constants.periods import normalize_period_type
+    return normalize_period_type(value)
+
+
+event.listen(KpiData.period_type, "set", _period_type_normalize, retval=True)
+event.listen(IndividualKpiData.period_type, "set", _period_type_normalize, retval=True)

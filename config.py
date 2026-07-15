@@ -109,9 +109,18 @@ class Config:
     WTF_CSRF_TIME_LIMIT = None  # Oturum boyunca geçerli
 
     # Cache Configuration
+    # TASK-254: CACHE_TYPE=RedisCache verilse bile Redis'e PING atılır; cevap
+    # yoksa app/__init__.py SimpleCache'e düşer (uygulama ölmez, uyarı basar).
     CACHE_TYPE = os.environ.get("CACHE_TYPE", "SimpleCache")  # SimpleCache, RedisCache, FileSystemCache
     CACHE_DEFAULT_TIMEOUT = 300  # 5 minutes
-    CACHE_REDIS_URL = os.environ.get("REDIS_URL", "redis://localhost:6379/0")
+    # İKİ İSİM de kabul edilir: .env.production.example `CACHE_REDIS_URL` yazıyordu
+    # ama burası yalnız `REDIS_URL` okuyordu → örneği birebir uygulayan operatörün
+    # ayarı SESSİZCE etkisiz kalıyordu (TASK-254'te fark edildi).
+    CACHE_REDIS_URL = (
+        os.environ.get("CACHE_REDIS_URL")
+        or os.environ.get("REDIS_URL")
+        or "redis://localhost:6379/0"
+    )
     CACHE_KEY_PREFIX = "kokpitim_"
 
     # PostgreSQL: kopuk bağlantı / sonsuz bekleme riskini azaltır (Cloudflare 524)

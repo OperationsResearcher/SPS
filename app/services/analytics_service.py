@@ -349,80 +349,115 @@ class AnalyticsService:
     
     @staticmethod
     def get_forecast(
-        kpi_id: int,
+        process_id: int,
         periods: int = 3,
         method: str = 'moving_average'
     ) -> Dict:
+        """SÜREÇ tahmini — kanonik motor `forecast_service`'e devreder (TASK-256).
+
+        ⚠️ İMZA DEĞİŞTİ: eskiden `kpi_id` bekliyordu ama çağıran route
+        (`analiz_api_forecast`) `process_id` geçiriyordu — analiz ekranında
+        kullanıcı SÜREÇ seçiyor. Sonuç: 380 süreçten 366'sında hiç veri
+        bulunamıyordu ("Yeterli veri yok"), ID'si çakışan 14'ünde ise BAŞKA
+        bir KPI'ın tahmini gösteriliyordu. Kardeş servis
+        `get_process_health_score(process_id)` ile de tutarsızdı.
+        Artık süreç ID'si alınır ve sürecin KPI'ları üzerinden hesaplanır.
+
+        2026-07-15 öncesi bu fonksiyonun kendi implementasyonu vardı ve
+        GERÇEK VERİYLE PATLIYORDU:
+          - `'value': d.actual_value` ham METİN veriyordu; pandas `.mean()`
+            string kolonda `'81.79'+'70.29'+'87.83'` → `'81.7970.2987.83'`
+            birleştirip TypeError fırlatıyordu (gerçek KPI ile doğrulandı).
+          - `linear_trend` dalı da aynı sebeple kırıktı (string çıkarma).
+          - Çağıran route hatayı `except` ile yutuyordu → kullanıcı yalnız
+            "Tahmin verisi alınamadı" görüyor, sebebi hiç anlaşılmıyordu.
+
+        Artık tek kanonik motor var: `forecast_service.forecast_kpi`
+        (linear regression + %95 güven aralığı + R², saf Python, testli).
+        Bu sarmalayıcı yalnız çıktı biçimini koruyor — `analiz.js` mevcut
+        alan adlarını (`forecast[].date/forecast_value/confidence`) bekliyor.
+
+        `method` parametresi artık YÖNTEM SEÇMİYOR (tek motor var); geriye
+        dönük uyumluluk için imzada kalıyor ve çıktıda raporlanıyor.
         """
-        Basit tahminleme (moving average)
-        
-        Args:
-            kpi_id: KPI ID
-            periods: Tahmin periyodu
-            method: Tahmin yöntemi (moving_average, linear_trend)
-        
-        Returns:
-            Tahmin verisi
-        """
-        # Son 12 aylık veriyi al
-        start_date = datetime.now() - timedelta(days=365)
-        
-        kpi_data = KpiData.query.filter(
-            KpiData.process_kpi_id == kpi_id,
-            KpiData.data_date >= start_date,
-            KpiData.is_active.is_(True)
-        ).order_by(KpiData.data_date).all()
-        
-        if len(kpi_data) < 3:
+        from sqlalchemy import func
+        from app.services.forecast_service import forecast_kpi
+
+        # Sürecin EN ÇOK VERİYE sahip KPI'ı seçilir.
+        # Neden tek KPI? Süreç birden çok KPI taşır ve bunlar farklı birimlerde
+        # olabilir (adet, %, TL) — toplayıp ortalamak anlamsız sayı üretir.
+        # En çok ölçümü olan KPI hem en güvenilir trendi verir hem de kullanıcı
+        # için sürecin "ana göstergesi" olma ihtimali en yüksek olandır.
+        # Çıktıda hangi KPI kullanıldığı raporlanır (kpi_id/kpi_name) — kullanıcı
+        # neye baktığını bilmeli.
+        kpi_satiri = (
+            db.session.query(ProcessKpi.id, ProcessKpi.name, func.count(KpiData.id).label('n'))
+            .outerjoin(KpiData, (KpiData.process_kpi_id == ProcessKpi.id) & (KpiData.is_active.is_(True)))
+            .filter(ProcessKpi.process_id == process_id)
+            .group_by(ProcessKpi.id, ProcessKpi.name)
+            .order_by(func.count(KpiData.id).desc())
+            .first()
+        )
+
+        if not kpi_satiri or not kpi_satiri.n:
             return {
                 'forecast': [],
-                'message': 'Yeterli veri yok (minimum 3 veri noktası gerekli)'
+                'method': method,
+                'historical_data': [],
+                'message': 'Bu süreçte tahmin için veri girilmiş gösterge yok',
             }
-        
-        df = _pd().DataFrame([{
-            'date': d.data_date,
-            'value': d.actual_value
-        } for d in kpi_data])
-        
-        if method == 'moving_average':
-            # 3 aylık hareketli ortalama
-            window = min(3, len(df))
-            forecast_value = df['value'].tail(window).mean()
-            
-            forecast = []
-            last_date = df['date'].max()
-            
-            for i in range(1, periods + 1):
-                next_date = last_date + timedelta(days=30 * i)
-                forecast.append({
-                    'date': next_date.strftime('%Y-%m-%d'),
-                    'forecast_value': round(forecast_value, 2),
-                    'confidence': 'medium'
-                })
-        
-        elif method == 'linear_trend':
-            # Basit lineer trend
-            df['x'] = range(len(df))
-            slope = (df['value'].iloc[-1] - df['value'].iloc[0]) / len(df)
-            
-            forecast = []
-            last_date = df['date'].max()
-            last_value = df['value'].iloc[-1]
-            
-            for i in range(1, periods + 1):
-                next_date = last_date + timedelta(days=30 * i)
-                forecast_value = last_value + (slope * i)
-                forecast.append({
-                    'date': next_date.strftime('%Y-%m-%d'),
-                    'forecast_value': round(forecast_value, 2),
-                    'confidence': 'low'
-                })
-        
-        else:
-            forecast = []
-        
+
+        kpi_id = kpi_satiri.id
+        sonuc = forecast_kpi(kpi_id, periods_ahead=periods)
+
+        if not sonuc.get('success'):
+            return {
+                'forecast': [],
+                'method': method,
+                'kpi_id': kpi_id,
+                'kpi_name': kpi_satiri.name,
+                'historical_data': [],
+                'message': sonuc.get('message', 'Yeterli veri yok (minimum 3 veri noktası gerekli)'),
+            }
+
+        # Son gerçek veri tarihi — tahmin tarihleri buradan ileri sayılır.
+        # forecast_service dönem etiketi ("T+1") üretir, takvim tarihi değil;
+        # analiz ekranı tarih beklediği için burada türetilir (~30 gün/dönem).
+        son_veri = (
+            KpiData.query
+            .filter(KpiData.process_kpi_id == kpi_id, KpiData.is_active.is_(True))
+            .order_by(KpiData.data_date.desc())
+            .first()
+        )
+        son_tarih = son_veri.data_date if son_veri else datetime.now().date()
+
+        # R² → güven etiketi. Eski kod sabit 'medium'/'low' yazıyordu (veriye
+        # bakmadan); artık modelin gerçek uyumunu yansıtıyor.
+        r2 = sonuc.get('r_squared') or 0
+        guven = 'high' if r2 >= 0.7 else 'medium' if r2 >= 0.4 else 'low'
+
+        forecast = []
+        for i, p in enumerate(sonuc.get('forecast', []), start=1):
+            forecast.append({
+                'date': (son_tarih + timedelta(days=30 * i)).strftime('%Y-%m-%d'),
+                'forecast_value': p['value'],
+                'confidence': guven,
+                'confidence_low': p.get('confidence_low'),
+                'confidence_high': p.get('confidence_high'),
+            })
+
         return {
             'forecast': forecast,
             'method': method,
-            'historical_data': df.tail(6).to_dict('records')
+            # Hangi göstergeye bakıldığı görünür olmalı — süreçte birden çok
+            # KPI varsa kullanıcı hangisinin tahmin edildiğini bilmeli.
+            'kpi_id': kpi_id,
+            'kpi_name': kpi_satiri.name,
+            'r_squared': sonuc.get('r_squared'),
+            'trend_direction': sonuc.get('trend_direction'),
+            'samples': sonuc.get('samples'),
+            'historical_data': [
+                {'date': h['label'], 'value': h['value']}
+                for h in sonuc.get('history', [])[-6:]
+            ]
         }

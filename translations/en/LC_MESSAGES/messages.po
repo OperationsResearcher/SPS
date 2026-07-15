@@ -27178,3 +27178,72 @@ msgstr "Open risks"
 
 msgid "Geciken aktivite"
 msgstr "Overdue activity"
+
+#: ui/templates/platform/admin/loglar.html:52
+msgid "Modül Kullanımı"
+msgstr "Module Usage"
+
+#: ui/templates/platform/admin/loglar.html:55
+#, python-format
+msgid "son %(g)s gün"
+msgstr "last %(g)s days"
+
+#: ui/templates/platform/admin/loglar.html:63
+msgid "giriş yapan"
+msgstr "signed in"
+
+#: ui/templates/platform/admin/loglar.html:67
+msgid "veri giren"
+msgstr "entered data"
+
+#: ui/templates/platform/admin/loglar.html:76
+msgid "Modül"
+msgstr "Module"
+
+#: ui/templates/platform/admin/loglar.html:95
+msgid "Bu dönemde modül hareketi yok."
+msgstr "No module activity in this period."
+
+#: ui/templates/platform/admin/loglar.html:101
+msgid "Yalnız veri değişikliği (ekleme/güncelleme/silme) ve giriş sayılır; sayfa görüntüleme izlenmez. Bu liste hangi modülde iş yapıldığını gösterir, hangi ekranın ziyaret edildiğini değil."
+msgstr "Only data changes (create/update/delete) and sign-ins are counted; page views are not tracked. This list shows which module work happens in, not which screen is visited."
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "Hedef Değişiklik Radarı"
+msgstr "Target Change Radar"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "Hedef değişikliği bir olgudur, suçlama değil — pazar koşulu veya kapsam değişimi meşru sebep olabilir. Bu kart soru sorar, yanıt vermez."
+msgstr "A target change is a fact, not an accusation — market conditions or scope changes can be legitimate reasons. This card asks a question; it does not answer it."
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "Son 1 yılda kayıtlı hedef değişikliği yok."
+msgstr "No recorded target changes in the last year."
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "hedef değişikliği"
+msgstr "target changes"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "aşağı çekilmiş"
+msgstr "lowered"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "dönem kapanışına yakın + aşağı"
+msgstr "lowered near period close"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "ortalama düşüş"
+msgstr "average decrease"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "Birden fazla kez revize edilen göstergeler:"
+msgstr "Indicators revised more than once:"
+
+#: ui/templates/platform/masaustu/yonetim_ozeti.html
+msgid "revize"
+msgstr "revisions"
+
+#: ui/templates/platform/raporlar/sektor_benchmark.html
+msgid "<b>Bu değerler referans niteliğindedir.</b> Sektör raporlarından derlenmiş <b>sabit örnek değerlerdir</b> — Kokpitim'deki diğer kurumların canlı verisinden hesaplanmamıştır. Kendi ölçümünüzle karşılaştırmak için OEE, OTIF, NPS gibi metrikleri PG olarak sisteme ekleyip veri girmeniz gerekir."
+msgstr "<b>These are reference values.</b> They are <b>fixed sample figures</b> compiled from industry reports — not calculated from other organizations' live data in Kokpitim. To compare against your own measurements, add metrics such as OEE, OTIF and NPS as indicators and enter data."

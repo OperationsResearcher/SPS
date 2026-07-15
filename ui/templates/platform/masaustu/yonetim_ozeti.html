@@ -95,6 +95,22 @@
       </div>
     </div>
 
+    {# ── Hedef Radarı (TASK-262): "hedefe ulaştık mı" değil, "hedef dürüst mü" ── #}
+    <div class="mc-card" data-card-code="yonetim_ozeti.hedef_radar" style="grid-column:1/-1;">
+      <div class="mc-card-header">
+        <span class="mc-card-title"><i class="fas fa-crosshairs" style="color:#dc2626;"></i> {{ _("Hedef Değişiklik Radarı") }}</span>
+      </div>
+      <div class="mc-card-body">
+        <div id="yo-radar">
+          <div style="color:var(--text-muted);">{{ _("Yükleniyor…") }}</div>
+        </div>
+        <div style="font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5;">
+          <i class="fas fa-circle-info"></i>
+          {{ _("Hedef değişikliği bir olgudur, suçlama değil — pazar koşulu veya kapsam değişimi meşru sebep olabilir. Bu kart soru sorar, yanıt vermez.") }}
+        </div>
+      </div>
+    </div>
+
   </div>
 </div>
 
@@ -176,7 +192,49 @@
         </div>`;
       }).join("");
     }
+    // ── Hedef Radarı (TASK-262) ──────────────────────────────────────────
+    const rd = j.data?.hedef_radar || {};
+    const rw = document.getElementById("yo-radar");
+    if (rw) {
+      if (!rd.toplam_degisim) {
+        // Sıfır = iyi haber DEĞİL mutlaka: iz 2026-07-15'te açıldı, öncesi yok.
+        rw.innerHTML = `<div style="color:var(--text-muted);font-size:13px;">${
+          t("Son 1 yılda kayıtlı hedef değişikliği yok.")}</div>`;
+      } else {
+        const gec = rd.gec_ve_asagi || 0;
+        const gecRenk = gec > 0 ? "#dc2626" : "#64748b";
+        const sapma = rd.ortalama_asagi_sapma;
+        let html = `<div style="display:flex;gap:22px;flex-wrap:wrap;margin-bottom:10px;">
+          <div><b style="font-size:20px;color:var(--text-default);">${rd.toplam_degisim}</b>
+            <span style="font-size:11.5px;color:var(--text-muted);"> ${t("hedef değişikliği")}</span></div>
+          <div><b style="font-size:20px;color:#f59e0b;">${rd.asagi || 0}</b>
+            <span style="font-size:11.5px;color:var(--text-muted);"> ${t("aşağı çekilmiş")}</span></div>
+          <div><b style="font-size:20px;color:${gecRenk};">${gec}</b>
+            <span style="font-size:11.5px;color:var(--text-muted);"> ${t("dönem kapanışına yakın + aşağı")}</span></div>`;
+        if (sapma !== null && sapma !== undefined) {
+          html += `<div><b style="font-size:20px;color:#f59e0b;">${sapma}%</b>
+            <span style="font-size:11.5px;color:var(--text-muted);"> ${t("ortalama düşüş")}</span></div>`;
+        }
+        html += `</div>`;
+        const cr = rd.cok_revize_edilen || [];
+        if (cr.length) {
+          html += `<div style="font-size:12px;color:var(--text-muted);margin-bottom:4px;">${
+            t("Birden fazla kez revize edilen göstergeler:")}</div>`;
+          html += cr.map(k => `<div style="display:flex;gap:10px;align-items:center;font-size:12.5px;padding:3px 0;">
+            <span style="flex:1;color:var(--text-default);">${escHtml(k.kpi_adi||"")}</span>
+            <span style="color:var(--text-muted);">${escHtml(k.surec_adi||"")}</span>
+            <b style="min-width:60px;text-align:right;color:${k.asagi>1?"#dc2626":"#64748b"};">${k.kez}× ${t("revize")}</b>
+          </div>`).join("");
+        }
+        rw.innerHTML = html;
+      }
+    }
   }).catch(()=>{});
+
+  function escHtml(s){
+    return String(s==null?"":s).replace(/&/g,"&amp;").replace(/</g,"&lt;")
+      .replace(/>/g,"&gt;").replace(/"/g,"&quot;");
+  }
 })();
 </script>
 {% endblock %}

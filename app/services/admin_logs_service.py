@@ -383,3 +383,105 @@ def collect_tenant_logs(tenant_id: int, per_cat: int = 15) -> dict | None:
         "tenant": {"id": t.id, "name": t.name},
         "categories": categories,
     }
+
+
+# ─── Modül kullanım özeti (TASK-263) ─────────────────────────────────────────
+
+def modul_kullanim_ozeti(gun: int = 90) -> dict:
+    """Hangi modül gerçekten kullanılıyor? — paketleme kararı için kanıt.
+
+    NEDEN VAR: `docs/paketler/PAKETLEME-STRATEJISI.md` §7-8'de "tenant→tier
+    dağılımı" ve "hangi modül hangi pakete" kararları açık. Bugün bu kararlar
+    sezgiyle veriliyor; `audit_logs` 5 aydır kimin neyi değiştirdiğini zaten
+    tutuyor ama **hiç okunmuyordu** (tek okuyan: kullanıcının kendi giriş
+    geçmişi).
+
+    ⚠️ SINIR — bu "hangi ekran açılmıyor" sorusunu CEVAPLAMAZ:
+    `AuditLogger` yalnız CRUD + login kaydediyor (`log_create/update/delete/
+    login`); sayfa görüntüleme (GET) izlenmiyor. Ölçüldü: 1135 kaydın 721'i
+    POST, 68'i GET (o da logout). Yani buradaki veri "hangi modülde İŞ
+    YAPILIYOR" der — "hangi ekran ziyaret ediliyor" demez. Ziyaret analitiği
+    istenirse önce sayfa-görüntüleme izlemesi eklenmeli (ayrı iş).
+
+    Args:
+        gun: geriye dönük pencere (varsayılan 90)
+
+    Returns:
+        {
+          "pencere_gun": 90,
+          "moduller": [{"ad": "PG Veri Girişi", "islem": 311, "kullanici": 12}, ...],
+          "aktif_kullanici": 28,       # bu pencerede oturum açan
+          "yazan_kullanici": 14,       # bu pencerede CRUD yapan
+          "hic_kullanilmayan_uyari": "...",
+        }
+    """
+    from datetime import timedelta
+
+    esik = datetime.now(timezone.utc) - timedelta(days=gun)
+
+    excl_tids = [
+        t.id for t in Tenant.query.filter(
+            func.lower(Tenant.name) == _TOMOFILTEST_NAME
+        ).all()
+    ]
+
+    def _excl():
+        if not excl_tids:
+            return AuditLog.id.isnot(None)
+        return or_(AuditLog.tenant_id.is_(None), AuditLog.tenant_id.notin_(excl_tids))
+
+    # Modül bazında iş hacmi. resource_type "GÜVENLİK" login/logout demek —
+    # modül kullanımı değil, ayrı sayılır.
+    satirlar = (
+        db.session.query(
+            AuditLog.resource_type,
+            func.count(AuditLog.id),
+            func.count(func.distinct(AuditLog.user_id)),
+        )
+        .filter(
+            AuditLog.created_at >= esik,
+            AuditLog.resource_type.isnot(None),
+            AuditLog.resource_type != _SECURITY_RESOURCE,
+            _excl(),
+        )
+        .group_by(AuditLog.resource_type)
+        .order_by(func.count(AuditLog.id).desc())
+        .all()
+    )
+
+    moduller = [
+        {"ad": r[0], "islem": int(r[1]), "kullanici": int(r[2])}
+        for r in satirlar
+    ]
+
+    aktif = (
+        db.session.query(func.count(func.distinct(AuditLog.user_id)))
+        .filter(
+            AuditLog.created_at >= esik,
+            AuditLog.action.in_(_LOGIN_ACTIONS),
+            _excl(),
+        )
+        .scalar()
+    ) or 0
+
+    yazan = (
+        db.session.query(func.count(func.distinct(AuditLog.user_id)))
+        .filter(
+            AuditLog.created_at >= esik,
+            AuditLog.action.in_(("CREATE", "UPDATE", "DELETE")),
+            _excl(),
+        )
+        .scalar()
+    ) or 0
+
+    return {
+        "pencere_gun": gun,
+        "moduller": moduller,
+        "aktif_kullanici": int(aktif),
+        "yazan_kullanici": int(yazan),
+        "kapsam_notu": (
+            "Yalnız CRUD + login izlenir; sayfa görüntüleme (GET) kaydedilmez. "
+            "Bu liste 'hangi modülde iş yapılıyor' der, 'hangi ekran ziyaret "
+            "ediliyor' demez."
+        ),
+    }

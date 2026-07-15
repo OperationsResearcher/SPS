@@ -55,6 +55,62 @@
     </div>
   </div>
 
+  {# ── Modül kullanımı (TASK-263): audit_logs'tan paketleme kanıtı ── #}
+  {% if kullanim %}
+  <div class="mc-card" style="padding:16px;margin-bottom:18px;" data-card-code="admin_loglar.modul_kullanimi">
+    <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;">
+      <i class="fas fa-chart-simple" style="color:#4f46e5;"></i>
+      {{ _("Modül Kullanımı") }}
+      <span style="font-size:11.5px;font-weight:400;color:#94a3b8;">
+        ({{ _("son %(g)s gün", g=kullanim.pencere_gun) }})
+      </span>
+    </div>
+
+    {# Asıl bulgu: giriş yapan ≠ iş yapan. Paketleme kararının kalbi. #}
+    <div style="display:flex;gap:20px;margin:10px 0 14px;flex-wrap:wrap;">
+      <div>
+        <span style="font-size:20px;font-weight:800;color:var(--text-default);">{{ kullanim.aktif_kullanici }}</span>
+        <span style="font-size:11.5px;color:#64748b;"> {{ _("giriş yapan") }}</span>
+      </div>
+      <div>
+        <span style="font-size:20px;font-weight:800;color:#16a34a;">{{ kullanim.yazan_kullanici }}</span>
+        <span style="font-size:11.5px;color:#64748b;"> {{ _("veri giren") }}</span>
+      </div>
+    </div>
+
+    {% if kullanim.moduller %}
+    <div style="overflow-x:auto;">
+      <table style="width:100%;border-collapse:collapse;font-size:12.5px;">
+        <thead>
+          <tr style="text-align:left;color:#64748b;border-bottom:1px solid #e2e8f0;">
+            <th style="padding:6px 8px;font-weight:600;">{{ _("Modül") }}</th>
+            <th style="padding:6px 8px;font-weight:600;text-align:right;">{{ _("İşlem") }}</th>
+            <th style="padding:6px 8px;font-weight:600;text-align:right;">{{ _("Kullanıcı") }}</th>
+          </tr>
+        </thead>
+        <tbody>
+          {% for m in kullanim.moduller %}
+          <tr style="border-bottom:1px solid #f1f5f9;">
+            <td style="padding:6px 8px;color:#334155;">{{ m.ad }}</td>
+            <td style="padding:6px 8px;text-align:right;font-weight:700;color:var(--text-default);">{{ m.islem }}</td>
+            <td style="padding:6px 8px;text-align:right;color:#64748b;">{{ m.kullanici }}</td>
+          </tr>
+          {% endfor %}
+        </tbody>
+      </table>
+    </div>
+    {% else %}
+    <div style="font-size:13px;color:#94a3b8;padding:8px 0;">{{ _("Bu dönemde modül hareketi yok.") }}</div>
+    {% endif %}
+
+    {# Sınırı açıkça söyle — "ekran ziyareti" sanılmasın #}
+    <div style="font-size:11px;color:#94a3b8;margin-top:10px;line-height:1.5;">
+      <i class="fas fa-circle-info"></i>
+      {{ _("Yalnız veri değişikliği (ekleme/güncelleme/silme) ve giriş sayılır; sayfa görüntüleme izlenmez. Bu liste hangi modülde iş yapıldığını gösterir, hangi ekranın ziyaret edildiğini değil.") }}
+    </div>
+  </div>
+  {% endif %}
+
   {# ── Kurum bazlı tablo ── #}
   <div class="mc-card" style="padding:0;overflow:hidden;margin-bottom:18px;" data-card-code="admin_loglar.kurum_bazinda">
     <div style="padding:14px 16px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:8px;">

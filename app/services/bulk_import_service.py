@@ -18,6 +18,7 @@ from typing import Optional
 from openpyxl import load_workbook
 
 from extensions import db
+from app.constants.periods import normalize_period_type
 from app.models.process import Process, ProcessKpi, KpiData
 
 
@@ -120,7 +121,12 @@ def import_kpi_data_from_excel(
                 "process_kpi_id": kpi_map[kpi_code],
                 "year": year_int,
                 "data_date": data_date,
-                "period_type": period_type,
+                # DB'ye kanonik biçim yazılır (TASK-253). Excel'de kullanıcı
+                # Türkçe yazar ("Aylık") — doğrulama (satır ~105) ve ay hesabı
+                # (~115) o biçimde kalır; sapma yalnız DB sınırında düzelir.
+                # NOT: bu servis `bulk_insert_mappings` kullanıyor → ORM `set`
+                # event'leri ÇALIŞMAZ, bu yüzden normalize burada elle yapılır.
+                "period_type": normalize_period_type(period_type),
                 "period_no": period_no_int,
                 "period_month": month,
                 "target_value": float(str(target).replace(",", ".")) if target not in (None, "") else None,

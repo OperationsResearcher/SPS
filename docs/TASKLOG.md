@@ -2,6 +2,338 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-266…269 ✅ (Faz 4) · TASK-270…272 ⏸️ (Faz 5) | 2026-07-15
+
+### TASK-266…269 — Faz 4 "Var olanı anlat" ✅ Tamamlandı
+**Çıktı:** [`docs/oneri/KONUMLANDIRMA-2026-07.md`](oneri/KONUMLANDIRMA-2026-07.md) (kod ~0, satış/konumlandırma malzemesi)
+- **Değer haritası** — her farklılaştırıcı **canlı veriyle doğrulandı**: K-Vektör (108 ağırlık + 6 snapshot), KOE (340 olgunluk kaydı), LLM (279 çağrı), Hedef Radarı (TASK-262), KVKK yerel LLM (TASK-265). Otonom kılavuz/hata kontrolü.
+- **Açılış argümanı:** Microsoft'un kendi itirafı (Viva Goals 31.12.2025 kapandı, *"adoption and usage… hasn't grown"*, 66M kullanıcılı paketin içinde) + Sull (%28 yönetici üç önceliği sayabiliyor; kırık olan **yatay** koordinasyon, dikey kaskad değil).
+- ⛔ **KULLANILMAMASI gereken istatistikler** listesi (%90 başarısızlık, %82/%23 hizalama — Cândido & Santos çürüttü). Bilgili alıcı bunları yıkar.
+- **Persona demo sırası** — TASK-263 kullanım verisine dayalı (PG Veri Girişi ürünün gerçek kalbi: 270 işlem/90 gün).
+- ⚠️ **Türkçe hendek DEĞİL** — Spider Impact zaten destekliyor (FAQ'den teyitli). Gerçek hendek: mevzuat (5018/5393) + veri yerleşikliği.
+
+### TASK-270 + TASK-271 — Faz 5 ticari kararlar ⏸️ KULLANICI KARARI
+**Kod işi değil.** Kanıt hazır, karar sizin:
+- **Fiyat modeli:** per-seat shelf-ware'i **kendisi üretiyor** (okuyucu koltuğu $8-16/ay → alıcı koltukları *rapor verenlerle* sınırlar). **Kendi verimiz doğruluyor:** 27 kullanıcı giriş yapıyor, yalnız **7'si** veri giriyor (%74 sadece bakıyor). Bunu kabul eden iki ürün: ESM ($1.000/ay sınırsız), Perdoo (€1,50 izleyici koltuğu).
+- **Tier/paket:** girdi hazır (TASK-263 modül kullanım haritası). Paketleme belgesindeki açıklar: tenant→tier dağılımı (7/7 hâlâ Master/full), progressive unlock mekaniği, özellik-düzeyi gating.
+
+### TASK-272 — MCP server ⏸️ YENİ BİLEŞEN, karar bekliyor
+**Ölçüm:** MCP SDK **kurulu değil**, `requirements.txt`'te yok → yeni bağımlılık + **ayrı süreç** + yeni auth yüzeyi. Sarmalanacak API **hazır**: 15 REST endpoint (`app/api/routes.py`) + `data_connector` token-auth deseni.
+**Neden yapılmadı:** kapsamı "kalan işleri yap" talimatının ötesinde — yeni çalışan bileşen, deploy/bakım yükü getirir. Rakip baskısı gerçek (15 ayda 4 vendor ekledi; WorkBoard yazma-yetkili ~60 tool) ama bu bir mimari karar.
+
+---
+
+## TASK-264 + TASK-265 | 2026-07-15 | ✅ Tamamlandı (benchmark dürüstlüğü + KVKK yerel LLM)
+
+**Görev:** Hardcoded benchmark uyarısını düzelt (264) · Yerel LLM / veri ikametgâhı yolunu belgele+koru (265)
+**Modül:** ui/templates/platform/raporlar/sektor_benchmark.html, micro/modules/raporlar/routes_faz4.py, docs/AI-POLITIKASI.md, tests
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### TASK-264 — benchmark uyarısı yanlış şeyi söylüyordu
+Sayfada uyarı **vardı** ama: *"kurumunuzun bu metriklerdeki gerçek değerleri değildir"* — yani "sizin değeriniz değil". **Söylemediği:** bu rakamlar canlı veriden değil, `routes_faz4.py:334` `_SEKTOR_BENCHMARKS` sabit tablosundan geliyor (`{"otomotiv": {"OEE": 65…}}`). Müşteri gerçek sektör verisi sanabilirdi → güven kaybı riski.
+- Uyarı metni verinin **kaynağını** söylüyor: *"sektör raporlarından derlenmiş sabit örnek değerlerdir — Kokpitim'deki diğer kurumların canlı verisinden hesaplanmamıştır"*
+- Servis yorumu genişletildi: gerçek benchmark neden yok (k-anonimlik için sektör başına ~5 gerçek kurum gerekir; 10 tenant'ın çoğu test/klon, `sector` çoğunda boş), veri yapısı neden hazır (aynı KPI adları 5 kurumda geçiyor)
+- **Ekran doğrulandı:** yeni uyarı VAR, eski yanıltıcı metin GİTTİ (HTTP 200)
+
+### TASK-265 — yerel LLM ZATEN ÇALIŞIYOR, belgesizdi
+Öneri belgesi *"altyapı %90 hazır"* demişti. **Ölçüm: %100 hazır.** Zincir tam:
+`tenant_llm_config.base_url` (yorumu bile *"OpenRouter, self-hosted için"*) → `_resolve_provider` → `_call_openai(base_url=...)` → **UI'da bile alan var** (`ai_settings.html`). Ollama/vLLM OpenAI-uyumlu API sunduğu için `provider=openai` + `base_url=http://10.0.0.5:11434/v1` bugün çalışıyor.
+**Sorun kod değil, görünürlüktü:** `AI-POLITIKASI.md` bundan hiç bahsetmiyordu — kurumsal/kamu satışının en güçlü argümanı görünmez duruyordu.
+- `docs/AI-POLITIKASI.md` → "🔒 Veri ikametgâhı — kendi sunucunuzdaki LLM (KVKK)" bölümü: çalışan örnek yapılandırma, KVKK gerekçesi (hiçbir ülkeye yeterlilik kararı yok → her yurt dışı çağrı "uygun güvence + 5 gün bildirim" yükü), rakip karşılaştırması (Spider Impact metadata-only ama TR'de barındırma yok), sınırlar
+- `tests/test_yerel_llm_yolu.py` (yeni, 6 test) → **`base_url` zincirde düşerse veri yurt dışına gider ve kimse fark etmez**; test bunu engeller. Ayrıca: BYOK sistem kotasına yazılmaz, key şifreli, PII maskeleme yerel LLM'de de açık.
+
+### Doğrulama
+- **Tam paket: 588 passed, 0 failed** (öncesi 582) · yerel LLM **6/6**, benchmark ekran doğrulandı
+- `_resolve_provider` gerçek config ile test edildi: `base_url` korunuyor, pasif config kullanılmıyor, `base_url=None` davranışı değişmiyor (geriye dönük uyum)
+
+### Notlar
+- `pybabel update` kullanılmadı (TASK-263 dersi) — çeviri elle eklendi, fuzzy 0.
+- **Gerçek k-anonim benchmark** hâlâ açılamaz (müşteri sayısı) — mimarisi öneri belgesinde, açılış müşteriye bağlı.
+- Dal: `claude/faz3-benchmark-uyari`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-261 + TASK-262 | 2026-07-15 | ✅ Tamamlandı (🏆 HEDEF MANİPÜLASYONU RADARI)
+
+**Görev:** Hedef değişiklik izi (261) → Hedef Manipülasyonu Radarı (262) — ürünün en büyük farklılaştırıcısı
+**Modül:** app/models/process.py, micro/modules/surec/routes_kpi_data.py, app/services/hedef_radar_service.py (yeni), services/yonetim_ozeti_service.py, ui/templates/platform/masaustu/yonetim_ozeti.html
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Neden bu iş: kategorinin en büyük açığı
+Rakipler *"hedefe ulaştın mı?"* sorar. Bu radar *"hedefin kendisi dürüst mü?"* sorar. Pazar kanıtı: Microsoft, 66M kullanıcılı Viva paketinin **içinde** OKR ürününü tutturamadı ve yazılı olarak itiraf etti (*"adoption and usage… hasn't grown"*, 31.12.2025 kapandı). Bir dashboard "hedefe ulaştın mı" sorduğu sürece tiyatroya hizmet eder. **Ek kanıt:** AI OKR *kalite skorlama* 16 üründe de yok — herkes hedef yazdırıyor, kimse not vermiyor.
+
+### TASK-261 — hedef izi (radarın dayanağı yoktu)
+**Ölçüm:** `kpi_data_audits` 297 kayıt ama yalnız **5 UPDATE**. Daha kötüsü: `old_value/new_value` **yalnız GERÇEKLEŞME'yi** (`actual_value`) tutuyordu. Hedef değişince `action_detail`'e sadece `"hedef"` etiketi düşüyor, **NE'den NE'ye değiştiği kayboluyordu** — oysa `routes_kpi_data.py:405` `old_target`/`new_target`'ı **zaten hesaplıyordu**, sadece audit'e yazmıyordu.
+- `KpiDataAudit.old_target` + `new_target` kolonları (migration `c927a97a2fef`)
+- Partial index: `WHERE new_target IS NOT NULL` (kayıtların çoğunda hedef değişmez)
+- Yazma yolu bağlandı; hedef değişmediyse **NULL** (her satıra kopyalamak "değişti" sanısı yaratırdı)
+
+### TASK-262 — radar
+- `app/services/hedef_radar_service.py` (yeni): yön tespiti (aşağı/yukarı/sabit/**belirsiz**), sapma %, **dönem kapanışına kala gün**, `gec_ve_asagi` (en kritik sinyal), çok revize edilen KPI'lar, tenant kapsamlı
+- `services/yonetim_ozeti_service.py` → üst yönetimin "5 saniyede durum" ekranına bağlandı
+- `ui/templates/.../yonetim_ozeti.html` → radar kartı + **dürüstlük notu**
+- `tests/test_hedef_radar.py` (yeni, **22 test**)
+
+### Bilinçli tasarım kararları
+- **Radar NİYET OKUMAZ.** "Hedef aşağı çekildi" bir OLGU; sebebi meşru olabilir. Çıktı suçlama değil **soru** üretir — bu ekrana da yazıldı.
+- **`belirsiz` yönü var:** aralık hedefi (`'90-100'`) ve `'-'` sayıya indirgenemez → atılmaz, "belirsiz" sayılır.
+- **%1 eşiği:** ölçüm gürültüsünü (yuvarlama) manipülasyondan ayırır.
+- **7 gün:** aylık dönemde son hafta — gerçekleşme bellidir, hedef sonuca uydurulabilir konumdadır.
+
+### Doğrulama
+- **Tam paket: 582 passed, 0 failed** (öncesi 560) · radar testleri **22/22**
+- 🎯 **UÇTAN UCA, GERÇEK API + GERÇEK DB:** hedef `280 → 210` düşürüldü → radar **"aşağı -25.0% | Deniz Tunç"** olarak yakaladı. Veri geri alındı.
+- 🎯 **EKRAN:** hedef `82 → 65.6` → `/yonetim-ozeti/api/ozet` → `toplam=1 aşağı=1 ort_sapma=-20.0%`; sayfa HTTP 200, kart + dürüstlük notu render. Veri geri alındı.
+- Gerçek veride radar **0** gösteriyor — **doğru**: iz bugün açıldı, geçmiş revizyonlar kayıtlı değil (üretilemez).
+
+### 🔴 Yol boyunca yakaladığım kendi hatam (TASK-256'nın tekrarı)
+İlk 20 testim audit kaydını **elle üretiyordu**. Hedef izini kapattım → **20/20 hâlâ geçti**. Yani testler gerçek yazma yolunu korumuyordu. `test_gercek_api_hedef_izini_yaziyor` eklendi (gerçek API çağırır); kapatınca *"Gerçek API'den yapılan hedef değişikliği radara DÜŞMEDİ"* ile **kırıldı**. **Ders (ikinci kez): test yazmak yetmez — testin doğru şeyi yakaladığı kanıtlanmalı.**
+
+### Notlar
+- `pybabel update` **kullanılmadı** (TASK-263 dersi: katalogu bozuyor). 9 metin elle eklendi → fuzzy 0, derleme hatasız.
+- **Radar bugün boş görünür** — normal. İz yeni açıldı; 1 dönem veri birikince anlam kazanır.
+- Dal: `claude/faz3-audit-kapsam`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-263 | 2026-07-15 | ✅ Tamamlandı (Faz 3.3 — audit_logs'tan modül kullanım özeti)
+
+**Görev:** `audit_logs` 5 aydır yazılıyor ama okunmuyordu → paketleme kararına kanıt üret
+**Modül:** app/services/admin_logs_service.py, micro/modules/admin/routes_admin_tools.py, ui/templates/platform/admin/loglar.html, translations
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `app/services/admin_logs_service.py` → `modul_kullanim_ozeti(gun=90)`: modül bazında işlem/kullanıcı sayısı + giriş yapan vs veri giren ayrımı. tomofiltest hariç (mevcut desen).
+- `micro/modules/admin/routes_admin_tools.py` → `/admin/araclar/loglar` özeti de veriyor (ayrı `try`: özet patlarsa mevcut log ekranı çalışmaya devam etsin)
+- `ui/templates/platform/admin/loglar.html` → "Modül Kullanımı" kartı (mevcut `mc-card` + `data-card-code` desenine uygun)
+- `translations/{en,tr}/messages.po/.mo` → 7 yeni metin
+- `tests/test_modul_kullanim_ozeti.py` (yeni, 7 test)
+
+### Gerçek veriyle ilk bulgu — paketleme kararı için doğrudan kanıt
+- **27 kullanıcı giriş yapıyor ama yalnız 7'si veri giriyor** (%74 sadece bakıyor)
+- **PG Veri Girişi: 270 işlem ama 3 kullanıcı** — ürünün kalbi 3 kişide
+- Proje Yönetimi: **1 işlem** · Kurum Yönetimi: 13 · Kullanıcı Yönetimi: 10
+
+### ⚠️ Planın varsayımı düzeltildi
+Plan *"hangi ekran hiç açılmıyor"* diyordu. **Ölçüm:** `AuditLogger` yalnız CRUD + login kaydediyor (`log_create/update/delete/login`); sayfa görüntüleme (GET) izlenmiyor — 1135 kaydın 721'i POST, 68'i GET (o da logout). Yani bu veri **"hangi modülde iş yapılıyor"** der, "hangi ekran ziyaret ediliyor" demez. Kapsam sınırı hem servis docstring'ine, hem çıktıya (`kapsam_notu`), hem ekrana yazıldı — yanlış beklenti kurulmasın. Ziyaret analitiği istenirse önce sayfa-görüntüleme izlemesi gerekir (ayrı iş).
+
+### Doğrulama
+- **Tam paket: 560 passed, 0 failed** (öncesi 553).
+- **Ekran doğrulandı** (test client, gerçek DB): HTTP 200, kart render, **gerçek sayılar ekranda** (27 / 7), modül satırları görünüyor, kapsam notu yerinde.
+- Platform `Admin` rollü gerçek kullanıcı YOK → doğrulama için geçici kullanıcı üretildi, sonra `is_active=False` yapıldı.
+
+### 🔴 Yol boyunca yaptığım hata (kayıt) — i18n katalogu
+Çevirileri eklemek için `pybabel update` çalıştırdım. **Katalogu yeniden yazdı:** 36 fuzzy oluştu, `tr/messages.mo` **78KB → 49KB düştü** (çeviri kaybı!), 30k satır değişti. Memory'deki "i18n TR/EN devir" işi (4742 msgid, main'e push edilmiş) zarar görüyordu. **`git checkout -- translations/` ile geri aldım** (fuzzy 0, .mo 78128'e döndü). Doğru yol: yalnız kendi 7 metnimi elle eklemek → diff 58 satır, derleme hatasız, fuzzy 0.
+**Ders: `pybabel update` mevcut katalogda toplu fuzzy eşleştirme yapıyor — bu projede kullanılmamalı.**
+
+### Notlar
+- Dal: `claude/faz3-audit-analitik`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-259 ✅ ZATEN YAPILMIŞ · TASK-260 ⏸️ ERTELENDİ | 2026-07-15
+
+> **Kod değişikliği YOK** — ikisi de ölçümle kapatıldı.
+
+### TASK-259 (EVM projeksiyonu) — ZATEN VAR, planım yanlış tabloya bakmış
+Plan *"`evm_snapshots` boş, önce snapshot üretimi gerekir"* diyordu. **Ölçüm:**
+- `evm_snapshots` gerçekten boş (0) ve `project`/`task`/`time_entry` de boş — **ama yanlış tablo**.
+- Gerçek EVM `plan_projects` (**21**) + `plan_project_tasks` (**63**) üzerinden çalışıyor.
+- `app/services/project_evm_service.py` **EAC/ETC/VAC'ı zaten hesaplıyor** (satır 11-13) ve `sp/routes_frameworks.py`'den çağrılıyor.
+- **Gerçek veriyle test edildi:** proje 1000019 → SPI=0.463 CPI=0.249 EAC=3.347.980 ETC=2.067.493 VAC=-2.513.134 · proje 1000001 → SPI=0.964 CPI=0.841 · proje 1000004 → CPI=1.371 VAC=+403.266.
+- **Sonuç: iş zaten yapılmış.** `evm_snapshots` ayrı bir yol (yalnız seed script'i yazıyor, `k_rapor` okuyor → o rapor boş).
+
+### TASK-260 (Kule'yi yeniden aç) — ERTELENDİ, gerekçesi hâlâ geçerli
+E1 erteleme sebebi: *"Sihirbaz/tur sistemi UI değişikliklerine sıkı bağımlı. UI hâlâ yoğun geliştirme altında."* **Ölçüm bunu doğruluyor:**
+- **17 tur YAML'i** var (`docs/tours/`) ama `data-tour` çapası yalnız **5 template'te** (hepsi `sp/` + launcher).
+- `admin_users`, `k_radar`, `bireysel`, `surec`, `admin_tenants`, `sp_vrio`, `sp_xmatrix`… turlarının hedefi **yok** → açılsa kırık tur gösterirdi.
+- E1 belgesi "13 template'e `data-tour` eklendi" diyor; bugün 5 kalmış → **UI değişimi turların dayanağını aşındırmış**.
+- Üstelik bu oturumda `base.html` + arama butonu + kart CSS'i değişti — UI hâlâ hareketli.
+- CSP engel değil (`cdn.jsdelivr.net` izinli).
+- **Açmadan önce gereken:** 17 turun çapalarını mevcut UI'a göre yenilemek (ayrı iş).
+
+---
+
+## TASK-257 ⏸️ ERTELENDİ · TASK-258 🔍 KARAR BEKLİYOR | 2026-07-15
+
+> **Kod değişikliği YOK** — ikisi de ölçüm sonucu durduruldu. Bulgular kaybolmasın diye kayıt.
+> Tam plan: [`docs/oneri/IS-PLANI-2026-H2.md`](oneri/IS-PLANI-2026-H2.md) §Faz 2
+
+### TASK-257 (mevsimsellik) — ERTELENDİ, veri yok
+Kullanıcı kararı: "atla". Gerekçe ölçüldü:
+- Mevsimsellik aynı ayın **2+ yıl** tekrarını gerektirir. **1395 KPI'ın HİÇBİRİNDE** 6 ay 2+ yıl tekrar etmiyor — **sıfır**. İki bağımsız yoldan doğrulandı (`period_month` ve `data_date`).
+- 40 KPI'da 2+ yıllık aylık veri var, 12'sinde 3+; ama yıl başına 4-8 ay → aynı ay çakışmıyor.
+- **Ayrıca mevcut `detect_seasonality` istatistiksel olarak hatalı:** "son 12 ay verisi" alıp `groupby('month').mean()` yapıyor — 12 ay = her aydan **1 gözlem**, tek gözlemin "ortalaması" mevsimsellik değil. `variance > 100` eşiği de gerekçesiz (endeks yüzde ölçeğinde, neden 100?).
+- **Sonuç:** kimsenin kullanamayacağı özellik yazmak israf olurdu. Veri birikince yeniden değerlendir.
+
+### TASK-258 (mock_* ayıklama) — KARAR BEKLİYOR, kapsam plandan büyük
+Ölçüm:
+- **29 `mock_*` tablonun 29'u da BOŞ** (tek satır veri yok).
+- Kaynak: [`models/__init__.py:148-168`](../models/__init__.py#L148) — `type(ad, (db.Model,), {...})` ile üretilen **sahte modeller**; yalnız `id` kolonu. Kendi yorumu: *"Eksik olan Faz 2/3 modellerini mock olarak ekle (import hatalarını önlemek için)"*.
+- Zincir kısır: `models/__init__` üretir → `legacy_extras` import eder → `legacy_bridge` export eder → **hiçbir modern kod kullanmaz**.
+- 🔴 **ANCAK:** `main/routes/projects.py`'deki **29 legacy route** bunları kullanıyor (`/gemba`, `/mtbp`, `/competencies`, `/risks`…) ve **ZATEN KIRIK**. Kanıt: `ObjectiveComment(objective_id=..., comment_text=...)` → `TypeError: 'objective_id' is an invalid keyword argument` — **eski kodda da patlıyor** (mock'ta yalnız `id` var). Yani mock'lar route'ları çalıştırmıyor, sadece *import hatasını* gizliyor.
+- Template'lerde bu route'lara **hiç link yok** → kullanıcı ulaşamıyor.
+- **Sadece mock silmek MÜMKÜN DEĞİL:** `ImportError` → `create_app` patlar. Route'larla birlikte ele alınmalı.
+- **Kapsam:** `projects.py` 59 route'un **29'u kırık**, 30'u sağlam; dosya 1843 satır. Silinirse 169→140 tablo (%17), dosya ~900 satır.
+- Denendi ve **geri alındı** — uygulama açılmaz hâlde bırakılmadı; çalışma ağacı temiz, `create_app` OK (879 route).
+
+**Sıradaki oturumda:** kullanıcı "mock + kırık route'ları sil" derse ~5 dk'lık iş (bulgular hazır).
+
+---
+
+## TASK-256 | 2026-07-15 | ✅ Tamamlandı (Faz 2.1 — analiz tahmini KIRIKTI, onarıldı)
+
+**Görev:** Plan "iki tahmin motorunu tekleştir + UI'a bağla" diyordu — ölçüm bambaşka bir gerçek gösterdi
+**Modül:** app/services/analytics_service.py, app/services/forecast_service.py, micro/modules/analiz/routes.py
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Planın 4 varsayımından 3'ü ÇÜRÜDÜ (ölçüldü)
+1. ❌ *"Tahmin UI'da görünmüyor"* → **Görünüyor**; `analiz.js` + `analiz/index.html` tahmin grafiği çiziyor.
+2. ❌ *"Veri kaybı var (ham float parse)"* → Yerelde `float()`'ın kaçırıp `actual_numeric`'in yakaladığı **0 satır**.
+3. ❌ *"Performans kazancı"* → 24 satırlık sorguda fark yok (1.6ms vs 2.3ms).
+4. ❌ *"İki motor var"* → **ÜÇ** motor var.
+
+### Gerçek sorun: analiz ekranındaki tahmin ÇALIŞMIYORDU
+`AnalyticsService.get_forecast` (UI'nin kullandığı motor) **gerçek veriyle patlıyordu**:
+- `'value': d.actual_value` ham **metin** veriyordu → pandas `.mean()` string kolonda `'81.79'+'70.29'+'87.83'` = `'81.7970.2987.83'` birleştirip **TypeError**. Gerçek KPI ile doğrulandı.
+- `linear_trend` dalı da kırıktı (string çıkarma).
+- 🔴 **Route `process_id` geçiriyordu, servis `kpi_id` bekliyordu** → 380 süreçten **366'sında** "veri yok"; ID'si çakışan 14'ünde **başka bir KPI'ın tahmini** gösteriliyordu.
+- `except` hatayı yutuyordu (`exc_info` yok) → kullanıcı "Tahmin verisi alınamadı" görüyor, sebep log'a bile düşmüyordu.
+- `method="linear"` gönderiliyordu ama servis `'moving_average'`/`'linear_trend'` bekliyordu → hiçbir dala girmiyordu.
+
+### Değiştirilen Dosyalar
+- `app/services/analytics_service.py` → `get_forecast` kendi (kırık) implementasyonunu bıraktı, **kanonik motora** (`forecast_service`: regresyon + %95 CI + R², saf Python, testli) devrediyor. İmza `kpi_id` → **`process_id`** (kardeş `get_process_health_score(process_id)` ile tutarlı). Süreç → **en çok veriye sahip KPI** seçilir (farklı birimlerdeki KPI'ları toplamak anlamsız sayı üretir); hangi KPI kullanıldığı çıktıda raporlanır. Güven etiketi artık **R²'ye dayanıyor** (eskiden sabit `'medium'`/`'low'` yazıyordu).
+- `app/services/forecast_service.py` → `float(r.actual_value)` → `r.actual_numeric` (TASK-252 aynası)
+- `micro/modules/analiz/routes.py` → `exc_info=True` + `periods` sınırı (k_rapor ile aynı)
+- `tests/test_analiz_forecast.py` (yeni, 11 test)
+
+### Doğrulama
+- **Tam paket: 553 passed, 0 failed** (öncesi 542).
+- **Gerçek veri (tenant 27, 3 süreç):** "Satış ve Pazarlama" → Aylık Satış Adedi (24 örnek, tahmin 7574.47), "Üretim Planlama" → OEE (59.81). Hepsi `confidence: low` — R² gerçekten düşük, **model dürüst davranıyor**.
+- **Gerçek tarayıcı** (Playwright): `/analysis` açıldı, API `success: True` (eskiden TypeError), **JS hatası yok**, ekran görüntüsü incelendi.
+- **Virgül testi kanıtlandı:** ham `float()`'a döndürüldü → test KIRILDI; geri alındı → geçti.
+
+### Yol boyunca kendi hatam (kayıt)
+İlk testlerimde `actual_numeric` değişikliğini ham `float()`'a döndürdüm → **10/10 hâlâ geçti**. Yani değişikliğim test tarafından korunmuyordu (test verimde virgüllü değer yoktu). `'12,5'` senaryosu ekledim; şimdi gerçekten kırılıyor. **Test yazmak yetmez — testin doğru şeyi yakaladığı kanıtlanmalı.**
+
+### Notlar
+- **`analiz` modülü çoğu tenant'ta PAKET DIŞI** — rol yeterli olsa da (`PRIVILEGED_ROLES`) tenant paketinde yok (5 modül var, `analiz` dahil değil). Tarayıcı doğrulaması için paketinde `analiz` olan tek kullanıcı bulundu (`ustyonetim@kokpitim.com`, tenant 1). O tenant'ta yalnız 2 veri noktası var (min 3) → ekran boş, **doğru davranış**.
+- **`ml_service` dokunulmadı:** `calculate_achievement_probability` elle yazılmış eşiklere dayanıyor (`>=100 → 0.85`) — istatistiksel olasılık değil, kural tablosu. "Olasılık" adı yanıltıcı; ayrı karar.
+- Dal: `claude/faz2-tahmin`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-254 | 2026-07-15 | ✅ Tamamlandı (Faz 1.3 — Redis: cache + rate limit)
+
+**Görev:** Redis altyapısı + cache/rate-limit'i ortak depoya bağlama (kullanıcı onayı: "ekleyebiliriz")
+**Modül:** app/utils/redis_health.py (yeni), app/utils/security.py, app/__init__.py, config.py, docker-compose.yml, scripts/ops/oracle/
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Ölçüm önce: sorun gerçek mi?
+**Evet.** Cache canlı yolda kullanılıyor: **15 `@cache.memoize`** — `k_radar_service.py`'de `get_hub_summary`, `get_ks_data`, `get_kp_data` (K-Radar'ın ana veri fonksiyonları) + `routes_exec_advisor.py` `cache.get/set`. Dockerfile `GUNICORN_WORKERS:-8` → **8 worker = 8 ayrı SimpleCache** → aynı K-Radar verisi worker'a göre farklı görünebiliyor.
+
+### Yol boyunca 3 gerçek tuzak bulundu
+1. 🔴 **`CACHE_REDIS_URL` varsayılanı doluydu** (`redis://localhost:6379/0`) → `REDIS_URL` env'i TANIMSIZ olsa bile `security.py:27`'deki `startswith("redis")` kontrolü **her zaman `True`** dönüyordu → Redis'siz Yayın'da limiter var olmayan sunucuya bağlanmaya çalışırdı. `config.py:125`'teki *"Redis yoksa limiter her istekte kilitlenir"* uyarısı **kendi kodunun** yarattığı riski tarif ediyormuş.
+2. 🔴 **`.env.production.example` ile config uyumsuz:** örnek `CACHE_REDIS_URL=` yazıyor, config yalnız `REDIS_URL` okuyordu → **örneği birebir uygulayan operatörün ayarı sessizce etkisiz kalıyordu**.
+3. 🟠 **`RedisCache` seçili + Redis yok = uygulama ölür** (her cache çağrısı 500). Fallback yoktu.
+
+### Değiştirilen Dosyalar
+- `app/utils/redis_health.py` (yeni) → `redis_erisilebilir()`: URL'in **şekline değil PING cevabına** bakar. Başlangıçta bir kez (her istekte ping gecikme ekler).
+- `app/utils/security.py` → `init_limiter` artık ping kanıtına dayanıyor; Redis yoksa `memory://` + **error** log (izolasyon kırık uyarısı)
+- `app/__init__.py` → `RedisCache` istendi ama erişilemiyorsa **SimpleCache'e düş** (uygulama ölmez) + error log
+- `config.py` → `CACHE_REDIS_URL` artık **iki env ismini de** kabul ediyor (tuzak 2)
+- `docker-compose.yml` → `redis:7-alpine` servisi (healthcheck, AOF, LRU) + web'e `CACHE_TYPE`/`REDIS_URL`/`RATELIMIT_STORAGE_URL`. **Ayrı DB numaraları** (cache=0, limit=1) — cache flush'ı rate-limit sayaçlarını silmesin.
+- `scripts/ops/oracle/redis_kur.sh` (yeni) → **tek seferlik** host kurulumu. Gerçek deploy `docker run --network host` kullanıyor → Redis compose'dan değil host'tan gelir (PostgreSQL ile aynı desen). Güvenlik: yalnız `127.0.0.1` dinlemeli — script bunu **doğruluyor**, `0.0.0.0` görürse hata verip çıkıyor.
+- `scripts/ops/oracle/oracle_safe_deploy.sh` → 6 adım → **7**: Redis kontrolü. Redis ayakta mı, `.env` doğru mu, **uygulama gerçekten bağlandı mı** (log kanıtı `RedisCache kullaniliyor`) — üçü de kontrol ediliyor, sessiz düşüş yakalanıyor.
+- `tests/test_redis_fallback.py` (yeni, 12 test)
+
+### Doğrulama
+- **Tam paket: 542 passed, 0 failed** (öncesi 530).
+- **Fallback kanıtlandı:** ping kontrolü geçici kaldırıldı → **4 test kırıldı**; geri konunca geçti.
+- `RedisCache` + erişilemez Redis → `create_app` ayakta, `CACHE_TYPE` otomatik `SimpleCache` (test).
+- Her iki env ismi (`CACHE_REDIS_URL` / `REDIS_URL`) okunuyor (test).
+- Bash script'leri `bash -n` ile sözdizimi doğrulandı.
+
+### Notlar
+- **Yerelde Redis ile CANLI test YAPILAMADI** — Docker Desktop çalışmıyordu, `redis-server` Windows'ta yok. Kod Redis'siz yolu (fallback) tam test ediyor; **Redis'li yol Yayın'da `redis_kur.sh` sonrası doğrulanmalı**. Deploy script'i bunu kontrol ediyor.
+- `CacheService` (`app/services/cache_service.py`) hâlâ **ölü** — yalnız kendi içinde çağrılıyor. Bağlanmadı: canlı cache zaten `@cache.memoize` üzerinden çalışıyor; ölü katmanı diriltmek ayrı karar (kapsam kontrolü).
+- **Sıradaki adım (operatör):** `sudo bash scripts/ops/oracle/redis_kur.sh` → `.env`'e 3 satır → container **yeniden run** (restart env'i yeniden okumaz — memory: ENCRYPTION_KEY dersi).
+- Dal: `claude/faz1-redis`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-253 | 2026-07-15 | ✅ Tamamlandı (Faz 1.2 — period_type + orphan onarımı)
+
+**Görev:** `period_type` normalizasyonu — ama tek kök nedenli 3 semptom çıktı, hepsi birlikte çözüldü
+**Modül:** app/constants/periods.py (yeni), app/models/process.py, app/services/bulk_import_service.py, migrations, tests
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Teşhis — plan "202 kaydı normalize et" diyordu, gerçek daha derindi
+202 kayıt **2026-03-26'da tek seferde** yüklenmiş ("Kayseri Model Fabrika", 10 silinmiş kullanıcı). Aynı 202 kayıt **üç semptomun da kaynağı**:
+1. `period_type='Aylık'` → `'aylik'` (365.925) ile ayrı kova
+2. `user_id` `users`'ta yok → FK ihlali
+3. (2) yüzünden TASK-252 backfill'i bu satırları atlamış → `*_numeric` NULL
+
+**Asıl sorun 202 kayıt değil, kanonik kümenin tanımsız olmasıydı:** kod iki sözlük kullanıyor — Türkçe büyük harf (`"Aylık"`, bulk import) ve ASCII küçük (`"aylik"`, JS/API). `process_activity_service.py:14` bu dağınıklığa uyum sağlamış: `if period_type in ('aylik', 'aylık')`.
+
+### Değiştirilen Dosyalar
+- `app/constants/periods.py` (yeni) → `PERIOD_TYPES` kanonik küme + `normalize_period_type()`. **CHECK constraint YOK** — kod 6 değer üretiyor (JS `'halfyear'` dahil), tanınmayanı reddetmek çalışan girişi kırardı; tanınmayan olduğu gibi kalır (görünür), sessizce yanlış kovaya atılmaz.
+- `app/models/process.py` → `period_type` için ORM `set` listener (KpiData + IndividualKpiData); `user_id` `nullable=False` → `nullable=True, ondelete='SET NULL'` (+ index)
+- `app/services/bulk_import_service.py` → DB'ye yazarken normalize. **Bu servis `bulk_insert_mappings` kullanıyor → ORM event'leri ÇALIŞMAZ**, normalize elle eklendi (TASK-252'de yazdığım "raw SQL listener'ı atlar" sınırının gerçek örneği). Excel'de kullanıcı Türkçe yazmaya devam eder (UI kuralı), sapma yalnız DB sınırında düzelir.
+- `migrations/versions/e9669efe440c_*.py` (yeni) → 4 adım: FK kaldır → orphan NULL → FK yeniden kur → normalize + backfill tamamla
+- `tests/test_period_type_normalize.py` (yeni, 21 test)
+
+### Doğrulama
+- **Tam paket: 530 passed, 0 failed** (öncesi 509). `user_id` nullable değişikliği regresyon yaratmadı.
+- **Bağımsız DB doğrulaması** (migration'ın kendi raporuna güvenilmedi): `'Aylık'` kovası **yok oldu** → `aylik` 365.925+202 = **366.127** ✓ · orphan **0** ✓ · `user_id NULL` **202** ✓ · sayısal ayna 366.381 → **366.583** (+202) ✓
+- `user_id` NULL güvenliği önceden doğrulandı: `_user_display_name(None)` → `"—"`, `routes_kpi_data.py:550` `if u else "Bilinmiyor"`. Kod zaten hazırdı.
+
+### Yol boyunca 2 hata (kayıt)
+1. **Migration sırası yanlıştı:** `create_foreign_key` yeni constraint'i **anında doğruluyor** → orphan'lar dururken kurmak `ForeignKeyViolation` verdi. Doğru sıra: kaldır → temizle → yeniden kur.
+2. **Kendi yorumum yanlıştı:** "Türkçe'de `'I'.lower()` == `'i'` tuzağı var" diye elle `I`→`ı` çevirimi yazdım. Test ettim: Python'da `'AYLIK'.lower()` zaten `'aylik'` veriyor; benim çevirim `'AYLIK'`'ı `'aylık'`'a taşıyıp kuralı eşleme tablosuna bağımlı kılıyordu — kazançsız ve kırılgan. Kaldırıldı, sade `lower()` + iki yazımı da tutan eşleme. (Gerçek incelik: `'AYLIK'.lower()`='aylik' ama `'Aylık'.lower()`='aylık' — **iki farklı string**, eşleme ikisini de tutmalı.)
+
+### Notlar
+- **Kapsam dışı:** `individual_kpi_data` verisi zaten temiz (18.865 `'aylik'`), yalnız listener eklendi.
+- **Doğan iş yok** — TASK-252'nin bıraktığı orphan borcu bu task'ta kapandı.
+- Dal: `claude/faz1-period-type`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-252 | 2026-07-15 | ✅ Tamamlandı (Faz 1.1 — KPI sayısal ayna)
+
+**Görev:** `actual_value`/`target_value` String(100) → sayısal ayna kolonları + 366k satır backfill
+**Modül:** app/models/process.py, migrations, tests
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `app/models/process.py` → `KpiData.actual_numeric` + `target_numeric` (`Numeric(20,6)`) + dosya sonuna ORM `set` event listener (`_numeric_aynasi`)
+- `migrations/versions/f0aa4591b689_*.py` (yeni) → kolonlar + SQL backfill + doğrulama raporu + `ix_kpi_data_actual_numeric`
+- `tests/test_kpi_numeric_ayna.py` (yeni, 16 test) → senkron koruması
+
+### Yapılan İşlem
+Ham metin kolonları **korunarak** sayısal ayna eklendi: `*_value` kullanıcı girdisi (tek yazma kaynağı), `*_numeric` onun `safe_float` türevi. Senkron ORM `set` event'i ile sağlandı — **59 dosyaya dokunmadan** (her yazma noktasına "numeric'i de güncelle" eklemek 59 yerde + her yeni noktada unutma riskiydi).
+
+### Yol boyunca 3 keşif (plan bunları öngörmemişti)
+1. **Aralık hedefleri iş kuralıymış.** `'90-100'`, `'17-23'` bozuk veri değil — `DH` (81 satır) ve `HKY` (75 satır) yöntemleriyle tanımlı. Sayıya indirgenemez, `NULL` kalmalı. Plan "parse edilemeyenler raporlanır" diyordu; gerçekte bunların çoğu **hata değil**.
+2. **202 orphan satır** (`user_id` `users`'ta yok, hepsi "Kayseri Model Fabrika"). `kpi_data_user_id_fkey` **`validated=True` işaretli ama veri ihlal ediyor** — constraint doğrulanmadan eklenmiş. `UPDATE` satırı yeniden yazınca FK patladı. Backfill bu satırları atlıyor + raporluyor → **ayrı veri onarım işi**.
+3. **`Numeric(20,4)` yetersizmiş.** Doğrulama testi 1 sapma yakaladı: `'0.4444444444444444'` → `0.4444`. Veri ölçüldü (max 381.806.691 = 9 tam basamak, 4'ten fazla ondalık yalnız 1 satırda) → `(20,6)`'ya çıkarıldı.
+
+### Doğrulama
+- **Tam paket: 509 passed, 0 failed** (öncesi 493).
+- **Backfill 366.514 satırda `safe_float` ile BİREBİR aynı — 0 sapma.** (İlk denemede `(20,4)` ile 1 sapma vardı; ölçek düzeltilince sıfırlandı.)
+- Backfill sonucu: `actual_numeric` **366.381** dolu (366.715 − 132 indirgenemez − 202 orphan ✓ rakamlar tutuyor), `target_numeric` 365.956.
+- **Asıl kazanç kanıtlandı:** `SELECT avg(actual_numeric) … tenant 27, 2025` → **9377.34 (13.815 satır)**. Bu sorgu String kolonda **imkânsızdı**.
+- Listener koruması kanıtlandı: geçici kapatıldı → **8 test kırıldı**; geri açıldı → geçti.
+- Migration downgrade → upgrade → downgrade → upgrade doğrulandı.
+
+### Notlar
+- **Sınır:** raw SQL `UPDATE` (ORM'siz) listener'ı atlar → toplu SQL güncellemesinde `*_numeric` elle set edilmeli veya backfill tekrar koşturulmalı. Kod yorumunda yazılı.
+- **Kapsam dışı bırakıldı:** `IndividualKpiData` (19.159 satır, aynı sorun) → ayrı task.
+- **Doğan yeni iş:** 202 orphan satır onarımı + FK'nın gerçekten validate edilmesi.
+- Dal: `claude/faz1-sayisal-kolon`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## 📋 PLANLANAN — TASK-252…272 | 2026 H2 iş planı
 
 > Tam plan: **[`docs/oneri/IS-PLANI-2026-H2.md`](oneri/IS-PLANI-2026-H2.md)** · Dayanak: [`docs/oneri/OZELLIK-ONERILERI-2026-07.md`](oneri/OZELLIK-ONERILERI-2026-07.md)
