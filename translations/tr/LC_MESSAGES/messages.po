@@ -25847,3 +25847,32 @@ msgstr ""
 
 msgid "Geciken aktivite"
 msgstr ""
+
+#: ui/templates/platform/admin/loglar.html:52
+msgid "Modül Kullanımı"
+msgstr "Modül Kullanımı"
+
+#: ui/templates/platform/admin/loglar.html:55
+#, python-format
+msgid "son %(g)s gün"
+msgstr "son %(g)s gün"
+
+#: ui/templates/platform/admin/loglar.html:63
+msgid "giriş yapan"
+msgstr "giriş yapan"
+
+#: ui/templates/platform/admin/loglar.html:67
+msgid "veri giren"
+msgstr "veri giren"
+
+#: ui/templates/platform/admin/loglar.html:76
+msgid "Modül"
+msgstr "Modül"
+
+#: ui/templates/platform/admin/loglar.html:95
+msgid "Bu dönemde modül hareketi yok."
+msgstr "Bu dönemde modül hareketi yok."
+
+#: ui/templates/platform/admin/loglar.html:101
+msgid "Yalnız veri değişikliği (ekleme/güncelleme/silme) ve giriş sayılır; sayfa görüntüleme izlenmez. Bu liste hangi modülde iş yapıldığını gösterir, hangi ekranın ziyaret edildiğini değil."
+msgstr "Yalnız veri değişikliği (ekleme/güncelleme/silme) ve giriş sayılır; sayfa görüntüleme izlenmez. Bu liste hangi modülde iş yapıldığını gösterir, hangi ekranın ziyaret edildiğini değil."

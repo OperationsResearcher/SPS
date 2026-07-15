@@ -27178,3 +27178,32 @@ msgstr "Open risks"
 
 msgid "Geciken aktivite"
 msgstr "Overdue activity"
+
+#: ui/templates/platform/admin/loglar.html:52
+msgid "Modül Kullanımı"
+msgstr "Module Usage"
+
+#: ui/templates/platform/admin/loglar.html:55
+#, python-format
+msgid "son %(g)s gün"
+msgstr "last %(g)s days"
+
+#: ui/templates/platform/admin/loglar.html:63
+msgid "giriş yapan"
+msgstr "signed in"
+
+#: ui/templates/platform/admin/loglar.html:67
+msgid "veri giren"
+msgstr "entered data"
+
+#: ui/templates/platform/admin/loglar.html:76
+msgid "Modül"
+msgstr "Module"
+
+#: ui/templates/platform/admin/loglar.html:95
+msgid "Bu dönemde modül hareketi yok."
+msgstr "No module activity in this period."
+
+#: ui/templates/platform/admin/loglar.html:101
+msgid "Yalnız veri değişikliği (ekleme/güncelleme/silme) ve giriş sayılır; sayfa görüntüleme izlenmez. Bu liste hangi modülde iş yapıldığını gösterir, hangi ekranın ziyaret edildiğini değil."
+msgstr "Only data changes (create/update/delete) and sign-ins are counted; page views are not tracked. This list shows which module work happens in, not which screen is visited."

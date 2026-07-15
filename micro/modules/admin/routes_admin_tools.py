@@ -74,7 +74,16 @@ def admin_tools_loglar():
     except Exception as e:
         current_app.logger.error(f"[admin_tools] loglar: {e}", exc_info=True)
         logs = None
-    return render_template("platform/admin/loglar.html", logs=logs)
+    # TASK-263: modül kullanım özeti — audit_logs 5 aydır yazılıyordu ama
+    # okunmuyordu. Paketleme kararına (hangi modül hangi tier'a) kanıt.
+    # Ayrı try: özet patlarsa mevcut log ekranı çalışmaya devam etsin.
+    try:
+        from app.services.admin_logs_service import modul_kullanim_ozeti
+        kullanim = modul_kullanim_ozeti(90)
+    except Exception as e:
+        current_app.logger.error(f"[admin_tools] modul_kullanim: {e}", exc_info=True)
+        kullanim = None
+    return render_template("platform/admin/loglar.html", logs=logs, kullanim=kullanim)
 
 
 @app_bp.route("/admin/araclar/loglar/kurum/<int:tenant_id>")

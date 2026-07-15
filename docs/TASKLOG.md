@@ -2,6 +2,64 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-263 | 2026-07-15 | ✅ Tamamlandı (Faz 3.3 — audit_logs'tan modül kullanım özeti)
+
+**Görev:** `audit_logs` 5 aydır yazılıyor ama okunmuyordu → paketleme kararına kanıt üret
+**Modül:** app/services/admin_logs_service.py, micro/modules/admin/routes_admin_tools.py, ui/templates/platform/admin/loglar.html, translations
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `app/services/admin_logs_service.py` → `modul_kullanim_ozeti(gun=90)`: modül bazında işlem/kullanıcı sayısı + giriş yapan vs veri giren ayrımı. tomofiltest hariç (mevcut desen).
+- `micro/modules/admin/routes_admin_tools.py` → `/admin/araclar/loglar` özeti de veriyor (ayrı `try`: özet patlarsa mevcut log ekranı çalışmaya devam etsin)
+- `ui/templates/platform/admin/loglar.html` → "Modül Kullanımı" kartı (mevcut `mc-card` + `data-card-code` desenine uygun)
+- `translations/{en,tr}/messages.po/.mo` → 7 yeni metin
+- `tests/test_modul_kullanim_ozeti.py` (yeni, 7 test)
+
+### Gerçek veriyle ilk bulgu — paketleme kararı için doğrudan kanıt
+- **27 kullanıcı giriş yapıyor ama yalnız 7'si veri giriyor** (%74 sadece bakıyor)
+- **PG Veri Girişi: 270 işlem ama 3 kullanıcı** — ürünün kalbi 3 kişide
+- Proje Yönetimi: **1 işlem** · Kurum Yönetimi: 13 · Kullanıcı Yönetimi: 10
+
+### ⚠️ Planın varsayımı düzeltildi
+Plan *"hangi ekran hiç açılmıyor"* diyordu. **Ölçüm:** `AuditLogger` yalnız CRUD + login kaydediyor (`log_create/update/delete/login`); sayfa görüntüleme (GET) izlenmiyor — 1135 kaydın 721'i POST, 68'i GET (o da logout). Yani bu veri **"hangi modülde iş yapılıyor"** der, "hangi ekran ziyaret ediliyor" demez. Kapsam sınırı hem servis docstring'ine, hem çıktıya (`kapsam_notu`), hem ekrana yazıldı — yanlış beklenti kurulmasın. Ziyaret analitiği istenirse önce sayfa-görüntüleme izlemesi gerekir (ayrı iş).
+
+### Doğrulama
+- **Tam paket: 560 passed, 0 failed** (öncesi 553).
+- **Ekran doğrulandı** (test client, gerçek DB): HTTP 200, kart render, **gerçek sayılar ekranda** (27 / 7), modül satırları görünüyor, kapsam notu yerinde.
+- Platform `Admin` rollü gerçek kullanıcı YOK → doğrulama için geçici kullanıcı üretildi, sonra `is_active=False` yapıldı.
+
+### 🔴 Yol boyunca yaptığım hata (kayıt) — i18n katalogu
+Çevirileri eklemek için `pybabel update` çalıştırdım. **Katalogu yeniden yazdı:** 36 fuzzy oluştu, `tr/messages.mo` **78KB → 49KB düştü** (çeviri kaybı!), 30k satır değişti. Memory'deki "i18n TR/EN devir" işi (4742 msgid, main'e push edilmiş) zarar görüyordu. **`git checkout -- translations/` ile geri aldım** (fuzzy 0, .mo 78128'e döndü). Doğru yol: yalnız kendi 7 metnimi elle eklemek → diff 58 satır, derleme hatasız, fuzzy 0.
+**Ders: `pybabel update` mevcut katalogda toplu fuzzy eşleştirme yapıyor — bu projede kullanılmamalı.**
+
+### Notlar
+- Dal: `claude/faz3-audit-analitik`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-259 ✅ ZATEN YAPILMIŞ · TASK-260 ⏸️ ERTELENDİ | 2026-07-15
+
+> **Kod değişikliği YOK** — ikisi de ölçümle kapatıldı.
+
+### TASK-259 (EVM projeksiyonu) — ZATEN VAR, planım yanlış tabloya bakmış
+Plan *"`evm_snapshots` boş, önce snapshot üretimi gerekir"* diyordu. **Ölçüm:**
+- `evm_snapshots` gerçekten boş (0) ve `project`/`task`/`time_entry` de boş — **ama yanlış tablo**.
+- Gerçek EVM `plan_projects` (**21**) + `plan_project_tasks` (**63**) üzerinden çalışıyor.
+- `app/services/project_evm_service.py` **EAC/ETC/VAC'ı zaten hesaplıyor** (satır 11-13) ve `sp/routes_frameworks.py`'den çağrılıyor.
+- **Gerçek veriyle test edildi:** proje 1000019 → SPI=0.463 CPI=0.249 EAC=3.347.980 ETC=2.067.493 VAC=-2.513.134 · proje 1000001 → SPI=0.964 CPI=0.841 · proje 1000004 → CPI=1.371 VAC=+403.266.
+- **Sonuç: iş zaten yapılmış.** `evm_snapshots` ayrı bir yol (yalnız seed script'i yazıyor, `k_rapor` okuyor → o rapor boş).
+
+### TASK-260 (Kule'yi yeniden aç) — ERTELENDİ, gerekçesi hâlâ geçerli
+E1 erteleme sebebi: *"Sihirbaz/tur sistemi UI değişikliklerine sıkı bağımlı. UI hâlâ yoğun geliştirme altında."* **Ölçüm bunu doğruluyor:**
+- **17 tur YAML'i** var (`docs/tours/`) ama `data-tour` çapası yalnız **5 template'te** (hepsi `sp/` + launcher).
+- `admin_users`, `k_radar`, `bireysel`, `surec`, `admin_tenants`, `sp_vrio`, `sp_xmatrix`… turlarının hedefi **yok** → açılsa kırık tur gösterirdi.
+- E1 belgesi "13 template'e `data-tour` eklendi" diyor; bugün 5 kalmış → **UI değişimi turların dayanağını aşındırmış**.
+- Üstelik bu oturumda `base.html` + arama butonu + kart CSS'i değişti — UI hâlâ hareketli.
+- CSP engel değil (`cdn.jsdelivr.net` izinli).
+- **Açmadan önce gereken:** 17 turun çapalarını mevcut UI'a göre yenilemek (ayrı iş).
+
+---
+
 ## TASK-257 ⏸️ ERTELENDİ · TASK-258 🔍 KARAR BEKLİYOR | 2026-07-15
 
 > **Kod değişikliği YOK** — ikisi de ölçüm sonucu durduruldu. Bulgular kaybolmasın diye kayıt.
