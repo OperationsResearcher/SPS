@@ -127,3 +127,39 @@ def _cached(user, key: str, fn) -> bool:
     if ck not in store:
         store[ck] = bool(fn(user))
     return store[ck]
+
+
+# ── Route guard (Faz 2 — belge §6, route sertleştirme) ──────────────────────
+# Menüde gizli bir modülün route'una elle URL ile erişimi de engeller.
+# Görme (can_see_module) ile erişim tek kaynaktan gelir → asla çelişmez.
+
+def require_module_access(module_id: str, *, api: bool = False):
+    """Route decorator: kullanıcı module_id'yi göremiyorsa erişimi reddet.
+
+    api=False (sayfa): /desktop'a redirect + uyarı flash.
+    api=True  (JSON uç): JSON 403.
+    login zorunluluğu ayrıca @login_required ile sağlanmalı (bu decorator
+    kimliği doğrulanmış kullanıcı varsayar; yoksa da güvenli reddeder).
+    """
+    from functools import wraps
+
+    def decorator(fn):
+        @wraps(fn)
+        def wrapper(*args, **kwargs):
+            from flask import redirect, url_for, flash, jsonify
+            from flask_babel import gettext as _
+            from flask_login import current_user
+
+            allowed = getattr(current_user, "is_authenticated", False) and \
+                can_see_module(current_user, module_id)
+            if not allowed:
+                if api:
+                    return jsonify({
+                        "success": False,
+                        "message": _("Bu sayfaya erişim yetkiniz yok."),
+                    }), 403
+                flash(_("Bu sayfaya erişim yetkiniz yok."), "warning")
+                return redirect(url_for("app_bp.masaustu"))
+            return fn(*args, **kwargs)
+        return wrapper
+    return decorator

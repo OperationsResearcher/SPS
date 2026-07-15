@@ -2,6 +2,76 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-247 | 2026-07-12 | ✅ Tamamlandı (Faz 4 — Yönetim Özeti dashboard)
+
+**Görev:** Üst yönetim + kurum yöneticisi için '5 saniyede durum' özet dashboard'u + login sonrası rol-bazlı iniş
+**Modül:** masaustu (route), services (yeni), tenant_scope (landing), base.html (menü), i18n
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `services/yonetim_ozeti_service.py` (yeni) → `build_yonetim_ozeti(user, tenant_id)`: mevcut 3 servisi birleştirir (get_hub_summary kurum skoru + build_kurum_overview geciken + build_exec_snapshot KPI + strateji SQL bottom-5). Her blok hataya dayanıklı.
+- `micro/modules/masaustu/routes.py` → `/yonetim-ozeti` (sayfa, privileged değilse launcher redirect) + `/yonetim-ozeti/api/ozet` (JSON, privileged değilse 403)
+- `ui/templates/platform/masaustu/yonetim_ozeti.html` (yeni) → 4 kart (kurum skoru+band, geciken işler, KPI özeti, bottom-5), mc-* kart diliyle, JS API'den doldurur, data-card-code'lu
+- `app/utils/tenant_scope.py` → `default_landing_endpoint`: executive_manager/tenant_admin → yonetim_ozeti, diğerleri launcher (platform Admin hariç — tek-tenant dashboard)
+- `ui/templates/platform/base.html` → sidebar "Yönetim Özeti" linki (yalnız tenant_admin/executive_manager)
+- `translations/{tr,en}/messages.po/.mo` → 16 yeni UI metni
+
+### Yapılan İşlem
+İlk geri bildirimdeki "üst yönetim 5 saniyede işler nasıl gidiyor görmeli" isteğinin karşılığı. Sıfırdan hesaplama yok — 4 hazır servis birleştirildi. Yeni ekran salt-okunur, kurum-geneli; exec-dashboard (derin analiz), Savaş Odası (TV), masaüstü (kişisel) ile çakışmaz. Login sonrası üst yönetim doğrudan buraya iner (TASK-237 rol-bazlı iniş yalnız privileged için geri geldi).
+
+### Doğrulama
+Canlı HTTP: exec/tadmin login → /yonetim-ozeti redirect ✓, personel → /desktop-launcher ✓. Dashboard exec'te 200 + veri (total_score=66.7, 4 strateji bottom-5); personel → launcher redirect + API 403. Sayfa render: 8 data-card-code, t() i18n, menü linki görünür.
+
+### Notlar
+- Platform Admin launcher'a gider (dashboard tek-tenant).
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
+## TASK-246 | 2026-07-12 | ✅ Tamamlandı (Faz 3 — altyapı)
+
+**Görev:** Rol bazlı görünüm katmanı Faz 3 — kart düzeyi rol süzme altyapısı (mekanizma; süzülecek kart listesi boş başlar)
+**Modül:** app/constants (roles), app/__init__ (card_visible)
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `app/constants/roles.py` → `ROLE_VISIBLE_CARD_CODES` (boş harita, tek-kaynak) + `card_hidden_for_role(card_code, role_name)` yardımcısı (Admin bypass, haritada yoksa açık)
+- `app/__init__.py` → `card_visible` context helper'ına rol kapısı: paket VE rol (rol ekseni haritadan; fail-open korundu)
+
+### Yapılan İşlem
+Keşif gösterdi ki kartların çoğu zaten modül kapısıyla (Faz 1 `can_see_module`) süzülüyor — personel görmediği modülün kartlarını hiç render etmiyor. Faz 3 yalnız "sayfa açık ama şu kart yalnız yönetime" senaryosu için gerekli ve şu an DB'de böyle tanımlı ihtiyaç yok (system_cards'ta rol kolonu yok). Kullanıcı kararı: altyapıyı kur, mekanizma hazır olsun. Bir kartı gizlemek artık `roles.py`'de tek satır (`"sayfa.kart": PRIVILEGED_ROLES`). 699 kart ellenmedi, DB migration gerekmedi, rol kararı tek merkezde.
+
+### Doğrulama
+Birim test: harita boşken hiçbir kart gizlenmiyor (regresyon yok); örnek kart eklenince standard_user→gizli, executive_manager→görür, Admin→bypass, haritada olmayan→açık. card_visible context'te sorunsuz çözülüyor.
+
+### Notlar
+- Görsel etki YOK (harita boş) — bilinçli; gerçek gizleme ihtiyacı doğunca kart eklenecek.
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
+## TASK-245 | 2026-07-12 | ✅ Tamamlandı (Faz 2)
+
+**Görev:** Rol bazlı görünüm katmanı Faz 2 — route seviyesi yetki sertleştirme (menüde gizli sayfa URL ile açılmasın)
+**Modül:** platform_core, app/constants
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı)
+
+### Değiştirilen Dosyalar
+- `platform_core/__init__.py` → mevcut `_enforce_package_module_gating` before_request hook'una rol/liderlik kapısı eklendi: `_ROLE_GATED_PREFIX_MODULE` (/k-radar, /k-analiz, /analysis, /sp) → `can_see_module`. Sayfa → /desktop redirect; API/AJAX → JSON 403. Admin bypass + fail-open korundu.
+- `app/constants/module_visibility.py` → `require_module_access(module_id, api=)` decorator (tek-route guard için yardımcı; hook yeterli olduğundan şu an hook kullanılıyor, decorator ileri kullanım için hazır)
+
+### Yapılan İşlem
+Faz 1 menüyü gizliyordu ama route'lar açıktı (personel gizli sayfaya URL ile ulaşabiliyordu). Zaten var olan prefix-bazlı paket-gating hook'u genişletildi: aynı hook artık hem paket hem rol/liderlik ekseninde kapı tutuyor (tek kaynak = `can_see_module`, menüyle asla çelişmez). 222 route'a tek tek decorator eklemek yerine merkezi hook tercih edildi (yeni route otomatik korunur).
+
+### Doğrulama
+Canlı HTTP: ilişkisiz personel /k-radar → /desktop redirect, /k-radar/api/kp → 403, /k-radar/ks → redirect. Lider (t27) ve k_radar-paketli exec → tüm K-Radar 200. Probe: Faz 1 veri scope'u KORUNDU (lider kpi_count=3, exec=210 route guard sonrası da). paket AND rol birlikte çalışıyor (paketsiz exec k-radar'a paket kapısından redirect — doğru).
+
+### Notlar
+- Sayfa=redirect, API=403 ayrımı kullanıcı kararı.
+- Dal: `claude/rol-gorunum-katmani`.
+
+---
+
 ## TASK-244 | 2026-07-11 | ✅ Tamamlandı (Tur 2b)
 
 **Görev:** Rol bazlı görünüm katmanı Faz 1 / Tur 2b — K-Radar extended + cross scope + kapsam bilgi şeridi

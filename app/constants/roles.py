@@ -62,3 +62,32 @@ def is_admin(role_name: str | None) -> bool:
 def is_privileged(role_name: str | None) -> bool:
     """Kullanıcının yetkili rolde olup olmadığını döner."""
     return bool(role_name and role_name in PRIVILEGED_ROLES)
+
+
+# ── Kart-düzeyi rol görünürlüğü (Faz 3 — belge §6) ──────────────────────────
+# Aynı GÖRÜNÜR sayfada bazı kartları role göre gizlemek için tek-kaynak harita.
+# Modül/menü düzeyi zaten module_visibility ile süzülüyor; bu yalnız "sayfa açık
+# ama şu kart sadece yönetime" senaryosu içindir. Boş başlar, gerektikçe dolar.
+#
+# Anahtar: data-card-code (<sayfa>.<kart>). Değer: kartı GÖREBİLECEK rol seti.
+# Kart burada YOKSA → herkese açık (paket kapısına tabi). Kart VARSA → yalnız
+# listedeki roller görür (+ platform Admin her zaman bypass).
+#
+# Örnek (yorumda — gerçek kart eklendiğinde açılır):
+#   "kurum.aktif_kullanici_sayisi": PRIVILEGED_ROLES,
+ROLE_VISIBLE_CARD_CODES: dict[str, frozenset[str]] = {
+}
+
+
+def card_hidden_for_role(card_code: str, role_name: str | None) -> bool:
+    """Bu kart, bu rol için gizli mi? (rol ekseni — paketten bağımsız).
+
+    Platform Admin asla gizlenmez. Kart haritada yoksa gizlenmez (herkese açık).
+    Kart haritada varsa yalnız izin verilen rollerde görünür.
+    """
+    if role_name in PLATFORM_ADMIN_ROLES:
+        return False
+    allowed = ROLE_VISIBLE_CARD_CODES.get(card_code)
+    if allowed is None:
+        return False  # haritada yok → rol ekseninde kısıt yok
+    return role_name not in allowed

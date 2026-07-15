@@ -27130,3 +27130,51 @@ msgstr "Individual PI Detail List — k-report analysis card."
 
 msgid "Süreç ve proje kartları yalnızca sizin sorumlu olduğunuz süreç/projeleri gösterir. Strateji, rekabet ve risk kartları kurum genelidir."
 msgstr "Process and project cards show only the processes/projects you are responsible for. Strategy, competition and risk cards are organization-wide."
+
+msgid "Yönetim Özeti"
+msgstr "Management Summary"
+
+msgid "Kurumunuz nasıl gidiyor?"
+msgstr "How is your organization doing?"
+
+msgid "Kurum genelinde tek bakışta durum — skor, geciken işler ve dikkat gereken noktalar."
+msgstr "Organization-wide status at a glance — score, overdue items and points needing attention."
+
+msgid "Kurum Skoru"
+msgstr "Organization Score"
+
+msgid "Dikkat Gereken"
+msgstr "Needs Attention"
+
+msgid "KPI Özeti"
+msgstr "KPI Summary"
+
+msgid "En Düşük Performanslı Stratejiler"
+msgstr "Lowest-Performing Strategies"
+
+msgid "İzlenmeli"
+msgstr "Monitor"
+
+msgid "Süresi geçen proje"
+msgstr "Overdue projects"
+
+msgid "Düşük sağlıklı proje"
+msgstr "Low-health projects"
+
+msgid "Açık RAID maddesi"
+msgstr "Open RAID items"
+
+msgid "7 gün içinde biten görev"
+msgstr "Tasks due within 7 days"
+
+msgid "Veri girilmiş"
+msgstr "With data"
+
+msgid "Hedef üstü %"
+msgstr "On-target %"
+
+msgid "Açık risk"
+msgstr "Open risks"
+
+msgid "Geciken aktivite"
+msgstr "Overdue activity"

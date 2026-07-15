@@ -784,3 +784,37 @@ def masaustu_koe_danisman_ai():
     except Exception as e:
         current_app.logger.warning(f"[koe-danisman-ai] {e}")
         return jsonify({"success": False, "message": _("AI danışman çağrılamadı.")}), 500
+
+
+# ── Yönetim Özeti Dashboard (Faz 4 — üst yönetim '5 saniyede durum') ──────────
+@app_bp.route("/yonetim-ozeti")
+@login_required
+def yonetim_ozeti():
+    """Üst yönetim + kurum yöneticisi için tek sayfalık kurum özeti.
+
+    Yalnız privileged roller; diğerleri launcher'a yönlendirilir.
+    docs/paketler/ROL-GORUNUM-KATMANI.md Faz 4.
+    """
+    from flask import redirect, url_for
+    from app.constants.roles import is_privileged
+    role_name = current_user.role.name if current_user.role else None
+    if not is_privileged(role_name):
+        return redirect(url_for("app_bp.launcher"))
+    return render_template("platform/masaustu/yonetim_ozeti.html")
+
+
+@app_bp.route("/yonetim-ozeti/api/ozet")
+@login_required
+def yonetim_ozeti_api():
+    """Yönetim özeti verisi (JSON). Yalnız privileged."""
+    from app.constants.roles import is_privileged
+    role_name = current_user.role.name if current_user.role else None
+    if not is_privileged(role_name):
+        return jsonify({"success": False, "message": _("Bu sayfaya erişim yetkiniz yok.")}), 403
+    try:
+        from services.yonetim_ozeti_service import build_yonetim_ozeti
+        data = build_yonetim_ozeti(current_user, current_user.tenant_id)
+        return jsonify({"success": True, "data": data})
+    except Exception as e:
+        current_app.logger.error(f"[yonetim_ozeti] {e}", exc_info=True)
+        return jsonify({"success": False, "message": _("Özet yüklenemedi.")}), 500

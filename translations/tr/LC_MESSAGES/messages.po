@@ -25799,3 +25799,51 @@ msgstr ""
 
 msgid "Süreç ve proje kartları yalnızca sizin sorumlu olduğunuz süreç/projeleri gösterir. Strateji, rekabet ve risk kartları kurum genelidir."
 msgstr ""
+
+msgid "Yönetim Özeti"
+msgstr ""
+
+msgid "Kurumunuz nasıl gidiyor?"
+msgstr ""
+
+msgid "Kurum genelinde tek bakışta durum — skor, geciken işler ve dikkat gereken noktalar."
+msgstr ""
+
+msgid "Kurum Skoru"
+msgstr ""
+
+msgid "Dikkat Gereken"
+msgstr ""
+
+msgid "KPI Özeti"
+msgstr ""
+
+msgid "En Düşük Performanslı Stratejiler"
+msgstr ""
+
+msgid "İzlenmeli"
+msgstr ""
+
+msgid "Süresi geçen proje"
+msgstr ""
+
+msgid "Düşük sağlıklı proje"
+msgstr ""
+
+msgid "Açık RAID maddesi"
+msgstr ""
+
+msgid "7 gün içinde biten görev"
+msgstr ""
+
+msgid "Veri girilmiş"
+msgstr ""
+
+msgid "Hedef üstü %"
+msgstr ""
+
+msgid "Açık risk"
+msgstr ""
+
+msgid "Geciken aktivite"
+msgstr ""
