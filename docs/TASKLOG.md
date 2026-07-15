@@ -2,6 +2,41 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-252 | 2026-07-15 | ✅ Tamamlandı (Faz 1.1 — KPI sayısal ayna)
+
+**Görev:** `actual_value`/`target_value` String(100) → sayısal ayna kolonları + 366k satır backfill
+**Modül:** app/models/process.py, migrations, tests
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `app/models/process.py` → `KpiData.actual_numeric` + `target_numeric` (`Numeric(20,6)`) + dosya sonuna ORM `set` event listener (`_numeric_aynasi`)
+- `migrations/versions/f0aa4591b689_*.py` (yeni) → kolonlar + SQL backfill + doğrulama raporu + `ix_kpi_data_actual_numeric`
+- `tests/test_kpi_numeric_ayna.py` (yeni, 16 test) → senkron koruması
+
+### Yapılan İşlem
+Ham metin kolonları **korunarak** sayısal ayna eklendi: `*_value` kullanıcı girdisi (tek yazma kaynağı), `*_numeric` onun `safe_float` türevi. Senkron ORM `set` event'i ile sağlandı — **59 dosyaya dokunmadan** (her yazma noktasına "numeric'i de güncelle" eklemek 59 yerde + her yeni noktada unutma riskiydi).
+
+### Yol boyunca 3 keşif (plan bunları öngörmemişti)
+1. **Aralık hedefleri iş kuralıymış.** `'90-100'`, `'17-23'` bozuk veri değil — `DH` (81 satır) ve `HKY` (75 satır) yöntemleriyle tanımlı. Sayıya indirgenemez, `NULL` kalmalı. Plan "parse edilemeyenler raporlanır" diyordu; gerçekte bunların çoğu **hata değil**.
+2. **202 orphan satır** (`user_id` `users`'ta yok, hepsi "Kayseri Model Fabrika"). `kpi_data_user_id_fkey` **`validated=True` işaretli ama veri ihlal ediyor** — constraint doğrulanmadan eklenmiş. `UPDATE` satırı yeniden yazınca FK patladı. Backfill bu satırları atlıyor + raporluyor → **ayrı veri onarım işi**.
+3. **`Numeric(20,4)` yetersizmiş.** Doğrulama testi 1 sapma yakaladı: `'0.4444444444444444'` → `0.4444`. Veri ölçüldü (max 381.806.691 = 9 tam basamak, 4'ten fazla ondalık yalnız 1 satırda) → `(20,6)`'ya çıkarıldı.
+
+### Doğrulama
+- **Tam paket: 509 passed, 0 failed** (öncesi 493).
+- **Backfill 366.514 satırda `safe_float` ile BİREBİR aynı — 0 sapma.** (İlk denemede `(20,4)` ile 1 sapma vardı; ölçek düzeltilince sıfırlandı.)
+- Backfill sonucu: `actual_numeric` **366.381** dolu (366.715 − 132 indirgenemez − 202 orphan ✓ rakamlar tutuyor), `target_numeric` 365.956.
+- **Asıl kazanç kanıtlandı:** `SELECT avg(actual_numeric) … tenant 27, 2025` → **9377.34 (13.815 satır)**. Bu sorgu String kolonda **imkânsızdı**.
+- Listener koruması kanıtlandı: geçici kapatıldı → **8 test kırıldı**; geri açıldı → geçti.
+- Migration downgrade → upgrade → downgrade → upgrade doğrulandı.
+
+### Notlar
+- **Sınır:** raw SQL `UPDATE` (ORM'siz) listener'ı atlar → toplu SQL güncellemesinde `*_numeric` elle set edilmeli veya backfill tekrar koşturulmalı. Kod yorumunda yazılı.
+- **Kapsam dışı bırakıldı:** `IndividualKpiData` (19.159 satır, aynı sorun) → ayrı task.
+- **Doğan yeni iş:** 202 orphan satır onarımı + FK'nın gerçekten validate edilmesi.
+- Dal: `claude/faz1-sayisal-kolon`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## 📋 PLANLANAN — TASK-252…272 | 2026 H2 iş planı
 
 > Tam plan: **[`docs/oneri/IS-PLANI-2026-H2.md`](oneri/IS-PLANI-2026-H2.md)** · Dayanak: [`docs/oneri/OZELLIK-ONERILERI-2026-07.md`](oneri/OZELLIK-ONERILERI-2026-07.md)

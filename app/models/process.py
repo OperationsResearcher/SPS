@@ -7,6 +7,7 @@ SOFT DELETE STANDARDI:
   deleted_at mevcut tablolarda geriye dönük uyumluluk için korunur.
 """
 from datetime import datetime, timezone
+from sqlalchemy import event
 from sqlalchemy.ext.associationproxy import association_proxy
 from sqlalchemy.orm import synonym
 from extensions import db
@@ -391,12 +392,29 @@ class KpiData(db.Model):
     period_no = db.Column(db.Integer, nullable=True)
     period_month = db.Column(db.Integer, nullable=True)
     
+    # Kullanıcının girdiği HAM metin — tek yazma kaynağı, asla kaybolmaz.
+    # Serbest format bilinçli: '-' (girilmedi), '%100', '90-100' (aralık hedefi,
+    # DH/HKY yöntemleri), '₺100.070.853' gibi değerler iş kuralı gereği geçerli.
     target_value = db.Column(db.String(100), nullable=True)
     actual_value = db.Column(db.String(100), nullable=True)
+
+    # Analitik için sayısal ayna (TASK-252). safe_float ile TÜRETİLİR — elle
+    # yazılmaz. Parse edilemeyen ham değerlerde NULL kalır (aralık hedefi,
+    # '-', para birimi vb. → bunlar hata değil, sayıya indirgenemez veri).
+    # Amaç: DB tarafında AVG/percentile/trend; 366k satırı Python'a çekmeden.
+    # Doğru kaynak hangisi? Gösterim/giriş → *_value · Hesap/analitik → *_numeric
+    #
+    # Ölçek (20,6): yereldeki en büyük değer 381.806.691 (9 tam basamak),
+    # ondalık ihtiyacı en fazla 1 satırda 16 basamak. 6 ondalık o satırda
+    # 4.4e-7 fark bırakır (KPI ölçümünde anlamsız); (20,4) ise 0.4444'e
+    # yuvarlayıp safe_float'tan SAPIYORDU — ölçüldü, bu yüzden 6.
+    target_numeric = db.Column(db.Numeric(20, 6), nullable=True)
+    actual_numeric = db.Column(db.Numeric(20, 6), nullable=True)
+
     status = db.Column(db.String(50), nullable=True)
     status_percentage = db.Column(db.Float, nullable=True)
     description = db.Column(db.Text, nullable=True)
-    
+
     # Auditing
     user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Veriyi giren
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
@@ -729,3 +747,29 @@ class FavoriteKpi(db.Model):
     # Legacy aliases
     surec_pg_id = synonym("process_kpi_id")
 
+
+# ─── Sayısal ayna senkronizasyonu (TASK-252) ─────────────────────────────────
+# KpiData.actual_value / target_value ham METİN (serbest format, iş kuralı:
+# '-' girilmedi, '90-100' aralık hedefi (DH/HKY), '%100', '₺100.070.853').
+# *_numeric bunların safe_float türevidir; sayıya indirgenemeyende NULL kalır.
+#
+# İkisinin sapmaması ZORUNLU — sapan ayna sessizce yanlış karne üretir.
+#
+# Neden ORM event? 59 dosya bu kolonlara yazıyor. Her birine "numeric'i de
+# güncelle" satırı eklemek 59 yerde + her yeni yazma noktasında unutma riski
+# demekti. Listener ile senkron ORM katmanında garanti; çağıran kod değişmiyor.
+#
+# SINIR: raw SQL UPDATE (ORM'siz) bu listener'ı ATLAR. Toplu SQL güncellemesi
+# yapılırsa *_numeric elle set edilmeli ya da backfill yeniden koşturulmalı.
+
+def _numeric_aynasi(hedef_kolon: str):
+    """`<x>_value` set edildiginde `<x>_numeric`'i safe_float ile turetir."""
+    def _dinleyici(target, value, oldvalue, initiator):
+        from app.utils.numeric import safe_float
+        setattr(target, hedef_kolon, safe_float(value))
+        return value
+    return _dinleyici
+
+
+event.listen(KpiData.actual_value, "set", _numeric_aynasi("actual_numeric"), retval=True)
+event.listen(KpiData.target_value, "set", _numeric_aynasi("target_numeric"), retval=True)
