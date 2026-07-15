@@ -2,6 +2,48 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-256 | 2026-07-15 | ✅ Tamamlandı (Faz 2.1 — analiz tahmini KIRIKTI, onarıldı)
+
+**Görev:** Plan "iki tahmin motorunu tekleştir + UI'a bağla" diyordu — ölçüm bambaşka bir gerçek gösterdi
+**Modül:** app/services/analytics_service.py, app/services/forecast_service.py, micro/modules/analiz/routes.py
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Planın 4 varsayımından 3'ü ÇÜRÜDÜ (ölçüldü)
+1. ❌ *"Tahmin UI'da görünmüyor"* → **Görünüyor**; `analiz.js` + `analiz/index.html` tahmin grafiği çiziyor.
+2. ❌ *"Veri kaybı var (ham float parse)"* → Yerelde `float()`'ın kaçırıp `actual_numeric`'in yakaladığı **0 satır**.
+3. ❌ *"Performans kazancı"* → 24 satırlık sorguda fark yok (1.6ms vs 2.3ms).
+4. ❌ *"İki motor var"* → **ÜÇ** motor var.
+
+### Gerçek sorun: analiz ekranındaki tahmin ÇALIŞMIYORDU
+`AnalyticsService.get_forecast` (UI'nin kullandığı motor) **gerçek veriyle patlıyordu**:
+- `'value': d.actual_value` ham **metin** veriyordu → pandas `.mean()` string kolonda `'81.79'+'70.29'+'87.83'` = `'81.7970.2987.83'` birleştirip **TypeError**. Gerçek KPI ile doğrulandı.
+- `linear_trend` dalı da kırıktı (string çıkarma).
+- 🔴 **Route `process_id` geçiriyordu, servis `kpi_id` bekliyordu** → 380 süreçten **366'sında** "veri yok"; ID'si çakışan 14'ünde **başka bir KPI'ın tahmini** gösteriliyordu.
+- `except` hatayı yutuyordu (`exc_info` yok) → kullanıcı "Tahmin verisi alınamadı" görüyor, sebep log'a bile düşmüyordu.
+- `method="linear"` gönderiliyordu ama servis `'moving_average'`/`'linear_trend'` bekliyordu → hiçbir dala girmiyordu.
+
+### Değiştirilen Dosyalar
+- `app/services/analytics_service.py` → `get_forecast` kendi (kırık) implementasyonunu bıraktı, **kanonik motora** (`forecast_service`: regresyon + %95 CI + R², saf Python, testli) devrediyor. İmza `kpi_id` → **`process_id`** (kardeş `get_process_health_score(process_id)` ile tutarlı). Süreç → **en çok veriye sahip KPI** seçilir (farklı birimlerdeki KPI'ları toplamak anlamsız sayı üretir); hangi KPI kullanıldığı çıktıda raporlanır. Güven etiketi artık **R²'ye dayanıyor** (eskiden sabit `'medium'`/`'low'` yazıyordu).
+- `app/services/forecast_service.py` → `float(r.actual_value)` → `r.actual_numeric` (TASK-252 aynası)
+- `micro/modules/analiz/routes.py` → `exc_info=True` + `periods` sınırı (k_rapor ile aynı)
+- `tests/test_analiz_forecast.py` (yeni, 11 test)
+
+### Doğrulama
+- **Tam paket: 553 passed, 0 failed** (öncesi 542).
+- **Gerçek veri (tenant 27, 3 süreç):** "Satış ve Pazarlama" → Aylık Satış Adedi (24 örnek, tahmin 7574.47), "Üretim Planlama" → OEE (59.81). Hepsi `confidence: low` — R² gerçekten düşük, **model dürüst davranıyor**.
+- **Gerçek tarayıcı** (Playwright): `/analysis` açıldı, API `success: True` (eskiden TypeError), **JS hatası yok**, ekran görüntüsü incelendi.
+- **Virgül testi kanıtlandı:** ham `float()`'a döndürüldü → test KIRILDI; geri alındı → geçti.
+
+### Yol boyunca kendi hatam (kayıt)
+İlk testlerimde `actual_numeric` değişikliğini ham `float()`'a döndürdüm → **10/10 hâlâ geçti**. Yani değişikliğim test tarafından korunmuyordu (test verimde virgüllü değer yoktu). `'12,5'` senaryosu ekledim; şimdi gerçekten kırılıyor. **Test yazmak yetmez — testin doğru şeyi yakaladığı kanıtlanmalı.**
+
+### Notlar
+- **`analiz` modülü çoğu tenant'ta PAKET DIŞI** — rol yeterli olsa da (`PRIVILEGED_ROLES`) tenant paketinde yok (5 modül var, `analiz` dahil değil). Tarayıcı doğrulaması için paketinde `analiz` olan tek kullanıcı bulundu (`ustyonetim@kokpitim.com`, tenant 1). O tenant'ta yalnız 2 veri noktası var (min 3) → ekran boş, **doğru davranış**.
+- **`ml_service` dokunulmadı:** `calculate_achievement_probability` elle yazılmış eşiklere dayanıyor (`>=100 → 0.85`) — istatistiksel olasılık değil, kural tablosu. "Olasılık" adı yanıltıcı; ayrı karar.
+- Dal: `claude/faz2-tahmin`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## TASK-254 | 2026-07-15 | ✅ Tamamlandı (Faz 1.3 — Redis: cache + rate limit)
 
 **Görev:** Redis altyapısı + cache/rate-limit'i ortak depoya bağlama (kullanıcı onayı: "ekleyebiliriz")
