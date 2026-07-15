@@ -2,6 +2,43 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-253 | 2026-07-15 | ✅ Tamamlandı (Faz 1.2 — period_type + orphan onarımı)
+
+**Görev:** `period_type` normalizasyonu — ama tek kök nedenli 3 semptom çıktı, hepsi birlikte çözüldü
+**Modül:** app/constants/periods.py (yeni), app/models/process.py, app/services/bulk_import_service.py, migrations, tests
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Teşhis — plan "202 kaydı normalize et" diyordu, gerçek daha derindi
+202 kayıt **2026-03-26'da tek seferde** yüklenmiş ("Kayseri Model Fabrika", 10 silinmiş kullanıcı). Aynı 202 kayıt **üç semptomun da kaynağı**:
+1. `period_type='Aylık'` → `'aylik'` (365.925) ile ayrı kova
+2. `user_id` `users`'ta yok → FK ihlali
+3. (2) yüzünden TASK-252 backfill'i bu satırları atlamış → `*_numeric` NULL
+
+**Asıl sorun 202 kayıt değil, kanonik kümenin tanımsız olmasıydı:** kod iki sözlük kullanıyor — Türkçe büyük harf (`"Aylık"`, bulk import) ve ASCII küçük (`"aylik"`, JS/API). `process_activity_service.py:14` bu dağınıklığa uyum sağlamış: `if period_type in ('aylik', 'aylık')`.
+
+### Değiştirilen Dosyalar
+- `app/constants/periods.py` (yeni) → `PERIOD_TYPES` kanonik küme + `normalize_period_type()`. **CHECK constraint YOK** — kod 6 değer üretiyor (JS `'halfyear'` dahil), tanınmayanı reddetmek çalışan girişi kırardı; tanınmayan olduğu gibi kalır (görünür), sessizce yanlış kovaya atılmaz.
+- `app/models/process.py` → `period_type` için ORM `set` listener (KpiData + IndividualKpiData); `user_id` `nullable=False` → `nullable=True, ondelete='SET NULL'` (+ index)
+- `app/services/bulk_import_service.py` → DB'ye yazarken normalize. **Bu servis `bulk_insert_mappings` kullanıyor → ORM event'leri ÇALIŞMAZ**, normalize elle eklendi (TASK-252'de yazdığım "raw SQL listener'ı atlar" sınırının gerçek örneği). Excel'de kullanıcı Türkçe yazmaya devam eder (UI kuralı), sapma yalnız DB sınırında düzelir.
+- `migrations/versions/e9669efe440c_*.py` (yeni) → 4 adım: FK kaldır → orphan NULL → FK yeniden kur → normalize + backfill tamamla
+- `tests/test_period_type_normalize.py` (yeni, 21 test)
+
+### Doğrulama
+- **Tam paket: 530 passed, 0 failed** (öncesi 509). `user_id` nullable değişikliği regresyon yaratmadı.
+- **Bağımsız DB doğrulaması** (migration'ın kendi raporuna güvenilmedi): `'Aylık'` kovası **yok oldu** → `aylik` 365.925+202 = **366.127** ✓ · orphan **0** ✓ · `user_id NULL` **202** ✓ · sayısal ayna 366.381 → **366.583** (+202) ✓
+- `user_id` NULL güvenliği önceden doğrulandı: `_user_display_name(None)` → `"—"`, `routes_kpi_data.py:550` `if u else "Bilinmiyor"`. Kod zaten hazırdı.
+
+### Yol boyunca 2 hata (kayıt)
+1. **Migration sırası yanlıştı:** `create_foreign_key` yeni constraint'i **anında doğruluyor** → orphan'lar dururken kurmak `ForeignKeyViolation` verdi. Doğru sıra: kaldır → temizle → yeniden kur.
+2. **Kendi yorumum yanlıştı:** "Türkçe'de `'I'.lower()` == `'i'` tuzağı var" diye elle `I`→`ı` çevirimi yazdım. Test ettim: Python'da `'AYLIK'.lower()` zaten `'aylik'` veriyor; benim çevirim `'AYLIK'`'ı `'aylık'`'a taşıyıp kuralı eşleme tablosuna bağımlı kılıyordu — kazançsız ve kırılgan. Kaldırıldı, sade `lower()` + iki yazımı da tutan eşleme. (Gerçek incelik: `'AYLIK'.lower()`='aylik' ama `'Aylık'.lower()`='aylık' — **iki farklı string**, eşleme ikisini de tutmalı.)
+
+### Notlar
+- **Kapsam dışı:** `individual_kpi_data` verisi zaten temiz (18.865 `'aylik'`), yalnız listener eklendi.
+- **Doğan iş yok** — TASK-252'nin bıraktığı orphan borcu bu task'ta kapandı.
+- Dal: `claude/faz1-period-type`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## TASK-252 | 2026-07-15 | ✅ Tamamlandı (Faz 1.1 — KPI sayısal ayna)
 
 **Görev:** `actual_value`/`target_value` String(100) → sayısal ayna kolonları + 366k satır backfill

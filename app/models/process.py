@@ -416,7 +416,12 @@ class KpiData(db.Model):
     description = db.Column(db.Text, nullable=True)
 
     # Auditing
-    user_id = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=False)  # Veriyi giren
+    # user_id: veriyi giren. nullable + SET NULL (TASK-253) — kullanıcı silinince
+    # ÖLÇÜM KAYBOLMAMALI, yalnız "kim girdi" bilgisi düşer. Eskiden NOT NULL idi
+    # ama FK doğrulanmadan eklendiği için veri zaten ihlal ediyordu (202 orphan
+    # satır). Okuyan kod None'a hazır: _user_display_name(None) → "—".
+    # deleted_by_id ile aynı desen.
+    user_id = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True, index=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc))
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)  # Soft delete: is_active=False
@@ -773,3 +778,19 @@ def _numeric_aynasi(hedef_kolon: str):
 
 event.listen(KpiData.actual_value, "set", _numeric_aynasi("actual_numeric"), retval=True)
 event.listen(KpiData.target_value, "set", _numeric_aynasi("target_numeric"), retval=True)
+
+
+# ─── period_type normalizasyonu (TASK-253) ───────────────────────────────────
+# İki ayrı sözlük kullanılıyordu: 'aylik' (365.925) vs 'Aylık' (202, bulk
+# import default'u) → GROUP BY aynı dönemi iki kovaya bölüyordu. Kanonik
+# biçim ASCII küçük harf; yazma anında normalize edilir.
+# CHECK constraint konmadı: kod 6 farklı değer üretiyor (JS 'halfyear' dahil)
+# ve tanınmayan değeri sessizce reddetmek çalışan girişi kırardı.
+
+def _period_type_normalize(target, value, oldvalue, initiator):
+    from app.constants.periods import normalize_period_type
+    return normalize_period_type(value)
+
+
+event.listen(KpiData.period_type, "set", _period_type_normalize, retval=True)
+event.listen(IndividualKpiData.period_type, "set", _period_type_normalize, retval=True)
