@@ -3,6 +3,7 @@
 from __future__ import annotations
 
 import re
+from datetime import date
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parents[2]
@@ -39,11 +40,18 @@ def count_routes(path: Path) -> list[tuple[str, str]]:
 
 
 def main() -> None:
+    # Tarih damgası: "Tarih: otomatik" yazan eski hali dokümanın ne zaman
+    # üretildiğini gizliyordu; envanter 16 Haziran'da donup yanlış yön
+    # gösterdiği hâlde fark edilmedi (2026-07-15).
+    today = date.today().isoformat()
     lines = [
         "# Legacy / Platform Route Envanteri",
         "",
         "> Otomatik üretim: `python scripts/dev/inventory_legacy_routes.py`",
-        f"> Tarih: otomatik",
+        f"> Üretim tarihi: {today}",
+        ">",
+        "> ⚠️ Bu dosya ELLE düzenlenmez — sayılar bayatlarsa script'i yeniden çalıştır.",
+        "> Çalışan uygulamadaki kanonik dağılım için `docs/SISTEM-HARITASI.md`'ye bak.",
         "",
         "| Katman | Dosya sayısı (py) | Route sayısı | Not |",
         "|--------|-------------------|--------------|-----|",
@@ -61,16 +69,24 @@ def main() -> None:
         else:
             total_legacy += len(rows)
 
+    toplam = total_legacy + total_platform
+    pay = (total_platform / toplam * 100) if toplam else 0
+    yon = "modern baskın ✅" if total_platform > total_legacy else "⚠️ legacy baskın"
     lines.extend(
         [
             "",
-            f"**Özet:** Legacy ~{total_legacy} route, Platform (micro) ~{total_platform} route.",
+            f"**Özet:** Legacy ~{total_legacy} route, Platform (micro) ~{total_platform} route "
+            f"→ modern pay %{pay:.0f} ({yon}).",
+            "",
+            "Strangler yönü: `micro/` büyür, legacy erir. Bu oran her ölçümde modern lehine",
+            "artmalı; azalıyorsa yeni iş yanlış katmana yazılıyor demektir.",
             "",
             "## Öncelik",
             "",
             "1. Yeni özellikler yalnızca `micro/modules/` + `ui/templates/platform/`.",
             "2. Legacy `main/` / `api/` yalnızca bakım; yeni endpoint eklenmez.",
-            "3. Kök `app/routes/process.py` ile `micro/modules/surec/` örtüşmesi — süreç API tekilleştirme fazı.",
+            "3. `app/routes/process.py` 2026-07-15'te silindi (1806 satır ölü kod) —",
+            "   süreç yüzeyi artık tek: `micro/modules/surec/`.",
             "",
         ]
     )

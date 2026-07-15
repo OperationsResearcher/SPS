@@ -2,6 +2,51 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-248 | 2026-07-15 | ✅ Tamamlandı (iyileştirme paketi — 6 iş)
+
+**Görev:** Denetim bulgularının uygulanması: cross-tenant açık, index, N+1 testi, ölü kod, envanter, CI köprüsü
+**Modül:** proje (yetki), core (model), migrations, tests, scripts/ci, docs
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı)
+
+### Değiştirilen Dosyalar
+- `micro/modules/proje/permissions.py` → **GÜVENLİK**: `is_platform_admin()` + `_same_tenant()` eklendi; 4 yetki fonksiyonunda (`user_can_access_project`, `user_is_project_leader`, `user_can_edit_tasks`, `user_can_manage_task`) tenant kontrolü artık `is_privileged`'den ÖNCE
+- `micro/modules/proje/routes_tasks.py` → `project_task_delete` rol-bazlı `can_crud_project_portfolio` yerine proje-bağlamlı `user_can_manage_task` kullanıyor (kardeş route'larla aynı kalıp)
+- `app/models/core.py` → `User.tenant_id` + `User.role_id` → `index=True`
+- `migrations/versions/da9b27f1a650_*.py` (yeni) → PG'de `CONCURRENTLY` ile index (Yayın'da tablo kilitlenmesin), diğer dialect'te normal
+- `app/routes/process.py` → **SİLİNDİ** (1806 satır ölü kod)
+- `app/__init__.py`, `config.py` → `LEGACY_PROCESS_BP_ENABLED` flag + lazy import bloğu kaldırıldı
+- `tests/test_proje_tenant_izolasyonu.py` (yeni) → 4 test: cross-tenant erişim/silme kapalı, platform Admin bypass korunuyor
+- `tests/test_n1_regression.py` → seed'e bağımlı `pytest.skip` kaldırıldı; fixture kendi verisini üretiyor
+- `tests/test_smoke_routes.py` → bayat `/micro/*` yolları düzeltildi (19 test) + route'un url_map'te varlığı doğrulanıyor
+- `tests/test_sp_strateji_haritasi.py` → uydurma `kurum_kullanici` rolü → `executive_manager`; + rol kapısı testi
+- `tests/test_process_api_surface.py` → flag testi yerine "dosya geri gelmesin" koruması
+- `scripts/ci/yerel_kontrol.py` (yeni) → CI kilidi köprüsü: ruff + 3 import guard + pytest tek komutta
+- `scripts/dev/inventory_legacy_routes.py` → tarih damgası + modern pay yüzdesi + "elle düzenleme" uyarısı
+- `docs/LEGACY_ROUTE_INVENTORY.md` → yeniden üretildi (yanlış "Legacy 352 > Platform 329" → doğru "Legacy 212 / micro 615, modern %74")
+- `.gitignore` → `.coverage`, `htmlcov/`, `.pytest_cache/` (`.coverage` takipten çıkarıldı, disk dosyası duruyor)
+
+### Yapılan İşlem
+Denetimde bulunan tek gerçek istismar edilebilir açık kapatıldı: `tenant_admin`/`executive_manager` KURUM-BAŞINA rollerdir ama `is_privileged` tenant kontrolünden önce erken dönüyordu → A kurumunun yöneticisi B kurumunun görevini silebiliyordu (DB'de tenant 1 ve 83'te ayrı exec kullanıcıları mevcut — istismar edilebilir). Sorun tek route'ta değil, ortak yardımcıdaydı; platform Admin (tenant üstü) ile kurum yöneticisi ayrıştırıldı.
+
+Ölü kod silindi: `app/routes/process.py` üç bağımsız kanıtla ölüydü (config default `false`, lazy import, testi kapalı olmasını şart koşuyordu).
+
+21 kırık test onarıldı. Teşhis: hiçbiri kod hatası değildi — 19'u bayat `/micro/*` yolları (prefix kaldırılmış, testler güncellenmemiş → 404 alıp hiçbir şey doğrulamıyorlardı), 2'si `roles.py`'de tanımlı olmayan uydurma `kurum_kullanici` rolü (TASK-245 rol kapısı doğru davranıyordu).
+
+### Doğrulama
+- **Tam paket: 440 passed, 0 failed** (öncesi: 418 passed / **21 failed**). 21 kırık test `main`'de de kırıktı — bu iş öncesi mevcut borçtu (stash ile teyit edildi).
+- **Güvenlik düzeltmesi kanıtlandı:** düzeltme geçici geri alınınca `test_baska_kurumun_yoneticisi_gorev_silemez` KIRILDI (`user_can_manage_task` → `True`), geri konunca geçti. Test gerçek açığı yakalıyor.
+- **N+1 testi kanıtlandı:** `joinedload` geçici kaldırılınca test KIRILDI → artık gerçek koruma (eskiden `skip` ile sessizce atlanıyordu).
+- **Migration:** yerel PG'de upgrade → `ix_users_tenant_id` + `ix_users_role_id` oluştu; downgrade → silindi; tekrar upgrade → geldi.
+- `ruff check .` → All checks passed. 3 import guard → OK.
+
+### Notlar
+- **CI hâlâ kapalı** (GitHub Actions faturalandırma kilidi) — kodla çözülemez, hesap müdahalesi gerekir. 21 testin sessizce kırılmasının sebebi buydu. `python scripts/ci/yerel_kontrol.py` köprü olarak eklendi.
+- **Yapılmadı (bilinçli):** CacheService devreye alma, frontend bundling, eventlet pin temizliği, %0 kapsamlı servis testleri (yedekleme/demo_reset/tenant_clone), `raporlar/` staging dağıtımı, `k_rapor` god-object bölme. Bunlar ayrı task — kapsam kontrolü için bu pakete alınmadı.
+- **Sessiz except bulgusu yanlış pozitifti:** rapor edilen ~96 bloğun çoğu log çağrısını sarmalıyor (log patlarsa yedekleme bozulmasın) — savunulabilir kalıp, dokunulmadı.
+- Dal: `claude/iyilestirme-paketi`. Merge/push/deploy YAPILMADI — kullanıcı isteyince.
+
+---
+
 ## TASK-247 | 2026-07-12 | ✅ Tamamlandı (Faz 4 — Yönetim Özeti dashboard)
 
 **Görev:** Üst yönetim + kurum yöneticisi için '5 saniyede durum' özet dashboard'u + login sonrası rol-bazlı iniş

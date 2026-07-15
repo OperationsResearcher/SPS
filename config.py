@@ -135,8 +135,8 @@ class Config:
 
     # Dalga A: legacy HTML yönlendirme middleware (GET → platform)
     LEGACY_SUNSET_ENABLED = os.environ.get("LEGACY_SUNSET_ENABLED", "true").lower() == "true"
-    # Çift /process yüzeyi — micro/surec canonical; legacy process_bp kapalı
-    LEGACY_PROCESS_BP_ENABLED = os.environ.get("LEGACY_PROCESS_BP_ENABLED", "false").lower() == "true"
+    # 2026-07-15: LEGACY_PROCESS_BP_ENABLED kaldırıldı — app/routes/process.py silindi,
+    # micro/surec tek yüzey (bkz. test_process_api_surface.py)
     LEGACY_DASHBOARD_BP_ENABLED = os.environ.get("LEGACY_DASHBOARD_BP_ENABLED", "false").lower() == "true"
 
     # Error Tracking (Sentry - optional)

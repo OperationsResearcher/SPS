@@ -1,30 +1,26 @@
 # Legacy / Platform Route Envanteri
 
 > Otomatik üretim: `python scripts/dev/inventory_legacy_routes.py`
-> Tarih: otomatik
+> Üretim tarihi: 2026-07-15
+>
+> ⚠️ Bu dosya ELLE düzenlenmez — sayılar bayatlarsa script'i yeniden çalıştır.
+> Çalışan uygulamadaki kanonik dağılım için `docs/SISTEM-HARITASI.md`'ye bak.
 
 | Katman | Dosya sayısı (py) | Route sayısı | Not |
 |--------|-------------------|--------------|-----|
-| Legacy main | 3 | 159 | `main_bp` |
-| Legacy api | 3 | 96 | `api_bp` |
-| Legacy auth | 2 | 11 | `auth_bp` |
-| Legacy admin | 1 | 2 | `admin_bp` |
-| Legacy app/routes | 8 | 84 | `çeşitli` |
-| Platform micro | 70 | 329 | `app_bp` |
+| Legacy main | 8 | 96 | `main_bp` |
+| Legacy api | 10 | 89 | `api_bp` |
+| Legacy app/routes | 6 | 27 | `çeşitli` |
+| Platform micro | 106 | 615 | `app_bp` |
 
-**Özet:** Legacy ~352 route, Platform (micro) ~329 route.
+**Özet:** Legacy ~212 route, Platform (micro) ~615 route → modern pay %74 (modern baskın ✅).
+
+Strangler yönü: `micro/` büyür, legacy erir. Bu oran her ölçümde modern lehine
+artmalı; azalıyorsa yeni iş yanlış katmana yazılıyor demektir.
 
 ## Öncelik
 
 1. Yeni özellikler yalnızca `micro/modules/` + `ui/templates/platform/`.
 2. Legacy `main/` / `api/` yalnızca bakım; yeni endpoint eklenmez.
-3. Kök `app/routes/process.py` ile `micro/modules/surec/` örtüşmesi — süreç API tekilleştirme fazı.
-
-## Çift-model çift-veri borcu (2026-06-16)
-
-Sayım envanterinin ötesinde, **aynı kavramın legacy + modern iki ayrı tabloda senkronsuz tutulduğu**
-somut çakışmalar tespit edildi (Vizyon/Misyon, Ana/Alt Strateji, Değerler, Etik, Kalite, Süreç/PG).
-Kullanıcı semptomu: `/kurum` ile `/sp` farklı Vizyon/Misyon gösteriyor.
-
-→ Tam teşhis, kavram-bazlı harita ve faz planı: [`CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md`](CIFT-MODEL-BORCU-KURUMSAL-KIMLIK.md)
-→ Bu konsolidasyon, L1 paketinin KOE ölçümü için **ön koşul**.
+3. `app/routes/process.py` 2026-07-15'te silindi (1806 satır ölü kod) —
+   süreç yüzeyi artık tek: `micro/modules/surec/`.
