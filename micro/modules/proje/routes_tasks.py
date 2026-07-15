@@ -15,7 +15,6 @@ from extensions import db
 from app.models.portfolio_project import Task
 from app_platform.modules.proje.helpers import kurum_id, load_project, tenant_core_users, kpis_for_tenant
 from app_platform.modules.proje.permissions import (
-    can_crud_project_portfolio,
     user_can_access_project,
     user_can_edit_tasks,
     user_can_manage_task,
@@ -328,10 +327,10 @@ def project_task_edit(project_id: int, task_id: int):
 @login_required
 def project_task_delete(project_id: int, task_id: int):
     proj = load_project(project_id)
-    if not can_crud_project_portfolio(current_user):
+    task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
+    if not user_can_manage_task(current_user, proj, task):
         flash(_("Görev silme yetkiniz yok."), "danger")
         return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
-    task = Task.query.filter_by(id=task_id, project_id=project_id).first_or_404()
     task.is_archived = True
     db.session.commit()
     AuditLogger.log_delete("Proje Faaliyeti", task.id,

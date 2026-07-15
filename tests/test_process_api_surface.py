@@ -1,8 +1,17 @@
-"""Dalga B4 — süreç API canonical yüzey (micro, legacy process_bp kapalı)."""
+"""Dalga B4 — süreç API canonical yüzey (micro, legacy process_bp silindi).
+
+2026-07-15: `app/routes/process.py` (1806 satır) silindi. Flag ile kapalı,
+lazy import edilen ve testi "kapalı olmalı" diyen ölü koddu. Aşağıdaki test
+dosyanın geri gelmemesini korur.
+"""
+import os
 
 
-def test_process_bp_disabled_by_default(app):
-  assert app.config.get("LEGACY_PROCESS_BP_ENABLED") is False
+def test_legacy_process_module_stays_deleted():
+  """app/routes/process.py silindi — micro/surec canonical, geri eklenmemeli."""
+  assert not os.path.exists(os.path.join("app", "routes", "process.py")), (
+      "Legacy app/routes/process.py geri gelmiş. Süreç işi micro/surec'e yazılır."
+  )
 
 
 def test_micro_process_kpi_list_route_exists(app):

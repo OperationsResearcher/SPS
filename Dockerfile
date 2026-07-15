@@ -1,4 +1,11 @@
-# Production Flask uygulaması - Python 3.9 slim
+# Yayın Flask uygulaması
+#
+# ORTAM PARİTESİ UYARISI (2026-07-15): burası 3.11, CI 3.11, ama yerel
+# geliştirme 3.13. Sürüm sapması "yerelde çalışıyor, Yayın'da patlıyor"
+# (veya tersi) sınıfı hataların kaynağıdır — eventlet tam bunun örneğiydi:
+# 3.13'te import edilemiyordu, 3.11'de sessizce duruyordu.
+# Hizalama (3.11→3.13) Yayın'ı etkiler; ayrı bir iş olarak, kullanıcı
+# onayıyla ve Test ortamında doğrulanarak yapılmalı.
 FROM python:3.11-slim
 
 # Çalışma dizini

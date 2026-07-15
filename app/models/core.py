@@ -120,8 +120,11 @@ class User(UserMixin, db.Model):
     # Soft delete: is_active=False (deleted_at kolonu KASITLI olarak yok —
     # sil tarihi/kim sildi gerekirse audit_logs'tan alınabilir)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
-    tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True)
-    role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=True)
+    # index: multi-tenant filtrenin ana kolonu — hemen her sorgu buradan geçer
+    tenant_id = db.Column(
+        db.Integer, db.ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True, index=True
+    )
+    role_id = db.Column(db.Integer, db.ForeignKey("roles.id"), nullable=True, index=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
     # Eski kullanıcı formu alanları (snake_case, İngilizce)

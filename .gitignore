@@ -41,3 +41,9 @@ logs/
 static/videos/kullanim_kilavuzu/
 static/img/kullanim_kilavuzu/
 docs/kokpitim_master_kullanim_kilavuzu.pdf
+
+# Test/coverage çıktıları — makine üretimi, her koşuda değişir
+.coverage
+.coverage.*
+htmlcov/
+.pytest_cache/

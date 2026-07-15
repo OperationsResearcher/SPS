@@ -500,8 +500,7 @@ def create_app(config_class=None):
     # Sprint 26: 2FA TOTP blueprint
     from app.routes.totp import totp_bp
     # Sprint 52: strategy_bp silindi — micro/sp canonical (safe_urls.py mapping mevcut)
-    # Sprint 29-30: process_bp lazy import — sadece LEGACY_PROCESS_BP_ENABLED ise yüklenir
-    # (1.805 satır legacy kod; mikro/surec canonical)
+    # 2026-07-15: process_bp silindi — micro/surec canonical (safe_urls.py mapping mevcut)
     from app.routes.core import core_bp
 
     from app.api.routes import api_bp as app_api_v1_bp
@@ -527,10 +526,7 @@ def create_app(config_class=None):
     except Exception as _i18n_err:
         app.logger.warning(f"[i18n] Atlandı: {_i18n_err}")
     # Sprint 52: strategy_bp register kaldırıldı (safe_url_for ile micro/sp'ye yönlendir)
-    if app.config.get("LEGACY_PROCESS_BP_ENABLED"):
-        # Sprint 29-30: legacy bp lazy load — sadece flag açıksa import edilir
-        from app.routes.process import process_bp
-        app.register_blueprint(process_bp, url_prefix="")
+    # 2026-07-15: process_bp register kaldırıldı (safe_url_for ile micro/surec'e yönlendir)
     app.register_blueprint(core_bp, url_prefix="")
 
     app.register_blueprint(app_api_v1_bp, url_prefix="")

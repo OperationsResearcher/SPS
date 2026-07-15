@@ -163,6 +163,15 @@
   }
 
   // ── Olaylar ────────────────────────────────────────────────────────────
+  // Topbar arama butonu (2026-07-15: base.html'de inline onclick="" idi —
+  // sahte KeyboardEvent gönderiyordu; artık doğrudan open() çağırıyor).
+  const searchBtn = document.querySelector(".topbar-search-btn");
+  if (searchBtn) {
+    searchBtn.addEventListener("click", () => {
+      if (overlay.style.display === "flex") close(); else open();
+    });
+  }
+
   document.addEventListener("keydown", (e) => {
     // Ctrl+K (veya Cmd+K)
     if ((e.ctrlKey || e.metaKey) && e.key.toLowerCase() === "k") {

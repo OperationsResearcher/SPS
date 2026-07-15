@@ -57,22 +57,41 @@ def auth_client(app, client):
 
 # ── Kimlik doğrulama gerektiren route'lar unauthenticated 302 döndürmeli ─────
 
+# NOT (2026-07-15): Bu listeler eskiden "/micro/..." prefix'liydi. Prefix bir
+# noktada kaldırılmış, testler güncellenmemiş → her istek 404 dönüyor ve
+# "korunan route login ister" iddiası aslında HİÇ test edilmiyordu (CI kapalı
+# olduğu için de fark edilmedi). Aşağıdaki test artık önce route'un VAR
+# olduğunu doğruluyor; yol tekrar değişirse sessizce geçmek yerine kırılır.
 PROTECTED_ROUTES = [
-    "/micro/k-radar",
-    "/micro/k-radar/ks",
-    "/micro/k-radar/kp",
-    "/micro/k-radar/kpr",
-    "/micro/k-radar/cross",
-    "/micro/k-radar/kp/maturity",
-    "/micro/k-radar/kpr/cpm",
-    "/micro/process/api/karne/1",
-    "/micro/sp",
+    "/k-radar",
+    "/k-radar/ks",
+    "/k-radar/kp",
+    "/k-radar/kpr",
+    "/k-radar/cross",
+    "/k-radar/kp/maturity",
+    "/k-radar/kpr/cpm",
+    "/process/api/karne/1",
+    "/sp",
 ]
 
 
+def _route_taninir(app, yol: str) -> bool:
+    """Yol url_map'te eşleşiyor mu? (404 = test bayat, koruma yok demek)"""
+    adapter = app.url_map.bind("localhost")
+    try:
+        adapter.match(yol, method="GET")
+        return True
+    except Exception as e:
+        # MethodNotAllowed/Redirect = route var; NotFound = yok
+        return e.__class__.__name__ != "NotFound"
+
+
 @pytest.mark.parametrize("route", PROTECTED_ROUTES)
-def test_unauthenticated_redirects(client, route):
+def test_unauthenticated_redirects(app, client, route):
     """Giriş yapılmamış istekler 302 ile login'e yönlendirilmeli."""
+    assert _route_taninir(app, route), (
+        f"{route} url_map'te yok — test bayatlamış, gerçek yolu güncelle."
+    )
     resp = client.get(route)
     assert resp.status_code in (302, 401), (
         f"{route} → {resp.status_code} (302 veya 401 bekleniyor)"
@@ -82,21 +101,24 @@ def test_unauthenticated_redirects(client, route):
 # ── K-Radar API uçları unauthenticated 302/401 döndürmeli ────────────────────
 
 K_RADAR_API_ROUTES = [
-    "/micro/k-radar/api/hub-summary",
-    "/micro/k-radar/api/ks",
-    "/micro/k-radar/api/kp",
-    "/micro/k-radar/api/kpr",
-    "/micro/k-radar/api/cross/risk-heatmap",
-    "/micro/k-radar/api/recommendations",
-    "/micro/k-radar/api/ks/swot-summary",
-    "/micro/k-radar/api/kp/maturity",
-    "/micro/k-radar/api/kpr/cpm",
-    "/micro/k-radar/api/cross/stakeholder",
+    "/k-radar/api/hub-summary",
+    "/k-radar/api/ks",
+    "/k-radar/api/kp",
+    "/k-radar/api/kpr",
+    "/k-radar/api/cross/risk-heatmap",
+    "/k-radar/api/recommendations",
+    "/k-radar/api/ks/swot-summary",
+    "/k-radar/api/kp/maturity",
+    "/k-radar/api/kpr/cpm",
+    "/k-radar/api/cross/stakeholder",
 ]
 
 
 @pytest.mark.parametrize("route", K_RADAR_API_ROUTES)
-def test_k_radar_api_unauthenticated(client, route):
+def test_k_radar_api_unauthenticated(app, client, route):
+    assert _route_taninir(app, route), (
+        f"[k_radar_api] {route} url_map'te yok — test bayatlamış."
+    )
     resp = client.get(route)
     assert resp.status_code in (302, 401), (
         f"[k_radar_api] {route} → {resp.status_code}"

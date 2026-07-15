@@ -17,7 +17,7 @@ from app.models.portfolio_project import (
 
 
 # Kurum / platform yöneticileri (süreç modülüyle aynı)
-from app.constants.roles import PRIVILEGED_ROLES
+from app.constants.roles import PRIVILEGED_ROLES, PLATFORM_ADMIN_ROLES
 
 
 def role_name(user) -> str | None:
@@ -27,6 +27,27 @@ def role_name(user) -> str | None:
 def is_privileged(user) -> bool:
     rn = role_name(user)
     return rn in PRIVILEGED_ROLES if rn else False
+
+
+def is_platform_admin(user) -> bool:
+    """Yalnız platform admini — tenant üstü, tüm kurumları görür."""
+    rn = role_name(user)
+    return rn in PLATFORM_ADMIN_ROLES if rn else False
+
+
+def _same_tenant(user, project: Project) -> bool:
+    """Kullanıcı ile projenin kurumu aynı mı?
+
+    tenant_admin / executive_manager KURUM-BAŞINA rollerdir; yetkileri yalnız
+    kendi kurumları içinde geçerlidir. Bu kontrol atlanırsa bir kurumun
+    yöneticisi başka kurumun kaydına erişir.
+    """
+    if not user or not project:
+        return False
+    kurum_id = getattr(user, "kurum_id", None) or getattr(user, "tenant_id", None)
+    if kurum_id is None:
+        return False
+    return project.kurum_id == kurum_id
 
 
 def _uid(user) -> int | None:
@@ -90,13 +111,12 @@ def user_assigned_to_project(user, project: Project) -> bool:
 
 def user_can_access_project(user, project: Project) -> bool:
     """Projeyi görüntüleme (detay, liste filtre)."""
+    if is_platform_admin(user):
+        return True
+    if not _same_tenant(user, project):
+        return False
     if is_privileged(user):
         return True
-    if not user or not project:
-        return False
-    kurum_id = getattr(user, "kurum_id", None) or getattr(user, "tenant_id", None)
-    if project.kurum_id != kurum_id:
-        return False
     return user_assigned_to_project(user, project)
 
 
@@ -105,6 +125,10 @@ def user_is_project_leader(user, project: Project) -> bool:
 
     Birden fazla proje lideri `project_leaders` ile; `manager_id` birincil lider kaydıdır.
     """
+    if is_platform_admin(user):
+        return True
+    if not _same_tenant(user, project):
+        return False
     if is_privileged(user):
         return True
     return user_is_project_manager(user, project)
@@ -112,13 +136,12 @@ def user_is_project_leader(user, project: Project) -> bool:
 
 def user_can_edit_tasks(user, project: Project) -> bool:
     """Görev oluşturma/düzenleme: yönetici veya üye (gözlemci değil)."""
+    if is_platform_admin(user):
+        return True
+    if not _same_tenant(user, project):
+        return False
     if is_privileged(user):
         return True
-    if not user or not project:
-        return False
-    kurum_id = getattr(user, "kurum_id", None) or getattr(user, "tenant_id", None)
-    if project.kurum_id != kurum_id:
-        return False
     if user_is_project_manager(user, project):
         return True
     if user_is_project_member(user, project):
@@ -128,13 +151,14 @@ def user_can_edit_tasks(user, project: Project) -> bool:
 
 def user_can_manage_task(user, project: Project, task: Task) -> bool:
     """Görev üzerinde değişiklik/tamamlama: lider/manager veya atanan üye."""
+    if is_platform_admin(user):
+        return True
+    if not task:
+        return False
+    if not _same_tenant(user, project):
+        return False
     if is_privileged(user):
         return True
-    if not user or not project or not task:
-        return False
-    kurum_id = getattr(user, "kurum_id", None) or getattr(user, "tenant_id", None)
-    if project.kurum_id != kurum_id:
-        return False
     if user_is_project_manager(user, project):
         return True
     return bool(task.assignee_id and int(task.assignee_id) == int(user.id))

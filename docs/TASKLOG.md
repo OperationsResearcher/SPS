@@ -2,6 +2,156 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-251 | 2026-07-15 | ✅ Tamamlandı (raporlar haritası) · ⛔ Cache işi BLOKE
+
+**Görev:** `raporlar/` faz isimleri belgelendi (kullanıcı kararı); Cache+Redis işi altyapı eksiği nedeniyle durduruldu
+**Modül:** micro/modules/raporlar, tests
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `micro/modules/raporlar/__init__.py` → docstring "hangi rapor nerede" haritasına çevrildi (6 dosya, 93 route, tüm sayfa route'ları listeli) + "geçici staging" yalanı düzeltildi (yapı fiilen KALICI) + yeniden adlandırma önerisi not edildi
+- `tests/test_raporlar_haritasi.py` (yeni, 10 test) → haritadaki route sayıları gerçekle uyuşmalı; yeni `routes_*.py` haritaya girmeli; URL'lerde "faz" ismi sızmamalı
+
+### Yapılan İşlem
+Kullanıcı kararı: yeniden adlandırma değil, belgeleme. Gerekçe: kazanç (isim netliği) ~5000 satırlık diff'i şu an haklı çıkarmıyor. Önemli tespit — URL'ler ve endpoint adları **zaten alan-bazlı** (`/reports/cfo-dashboard` → `app_bp.raporlar_cfo_dashboard`); 72 template `url_for` çağrısı fonksiyon adına bağlı, dosya yoluna değil. Yani yeniden adlandırma ileride yapılabilir, URL kırılmaz.
+
+Belge çürümesin diye teste bağlandı: `LEGACY_ROUTE_INVENTORY` tam bu yüzden aylarca yanlış sayı gösterdi. Harita bozulursa test kırılıp doğru dosyayı işaret ediyor.
+
+### Doğrulama
+- Harita testi kanıtlandı: faz2 sayısı 10→99 yapıldı → test "haritada 99 yazıyor ama gerçekte 10" ile KIRILDI; geri alındı → geçti.
+- Tam paket: **493 passed, 0 failed** (öncesi 483).
+
+### Yol boyunca yapılan hata (kayıt)
+İlk yazımda `tests/test_raporlar_haritasi.py` içinde `import micro.modules.raporlar` vardı. Bu, test toplama sırasında modülü import edip route'ları `app_bp`'ye kaydediyor; ardından `create_app` aynı endpoint'i tekrar kaydetmeye çalışıyor → `AssertionError: View function mapping is overwriting an existing endpoint function: app_bp.raporlar_index` → **tüm pakette 216 hata**. Tek başına çalışınca sorun görünmüyordu (yalnız tam pakette çıkıyor). Düzeltme: modülü hiç import etme, docstring'i dosyadan metin olarak oku. Test dosyasına da uyarı yorumu kondu.
+
+### ⛔ CACHE + REDIS İŞİ YAPILMADI — BLOKE (altyapı eksiği)
+Denetimde "en ucuz kazanç" denen iş **kod tarafında yapılamaz**:
+- `CacheService` yazılı ama **0 çağrı** — açmak için Redis şart.
+- **Redis hiçbir yerde yok:** yerelde çalışmıyor (ping timeout), `docker-compose.yml`'de tek servis var (`kokpitim-web`), Yayın deploy script'inde (`oracle_safe_deploy.sh`) redis geçmiyor.
+- `CACHE_TYPE` default `SimpleCache` + Dockerfile `GUNICORN_WORKERS:-8` → **8 worker = 8 tutarsız cache**. Redis'siz açmak Yayın'da kullanıcıya yanlış rakam gösterir (kırmızı çizgi).
+- `config.py:125` zaten uyarıyor: "konteynerde Redis yoksa limiter her istekte kilitlenir".
+- **Gereken:** Yayın'a Redis servisi eklenmesi (altyapı kararı — kullanıcıya ait). Sonra `CACHE_TYPE=RedisCache` + `CacheService` çağrılarının bağlanması tek task.
+- Aynı sorun rate limit'te: `security.py:23` default `memory://` → 8 worker'da limit fiilen 8× gevşek.
+
+### Notlar
+- Dal: `claude/kalan-isler`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-250 | 2026-07-15 | ✅ Tamamlandı (ölü auth modülü + base.html inline temizliği)
+
+**Görev:** `app/api/auth.py` silme (kullanıcı onayı) + base.html KURALLAR §3 inline ihlali temizliği
+**Modül:** app/api (silme), ui/templates/platform/base.html, ui/static (2 CSS + 1 JS yeni), command_palette.js
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `app/api/auth.py` → **SİLİNDİ** (221 satır). Kullanıcı onayıyla. Hiçbir yerden import edilmiyordu; içindeki `api_key_required` API key'i DOĞRULAMIYORDU (varlık kontrolü + TODO). Ölü olduğu için canlı açık değildi.
+- `requirements.txt` → `PyJWT==2.8.0` kaldırıldı (tek kullanıcısı silinen modüldü; `pywebpush`→`py-vapid` zinciri JWT'ye bağlı DEĞİL — `cryptography` kullanıyor, doğrulandı)
+- `tests/test_silinen_olu_kod.py` (yeni, 3 test) → silinen ölü kod geri gelmesin (tek yerde liste: `app/routes/process.py`, `app/api/auth.py`) + JWT tekrar import edilirse yakala
+- `ui/static/platform/js/chart_defaults.js` (yeni) → base.html'deki 22 satırlık Chart.js global ayarları (saf JS, Jinja yoktu)
+- `ui/static/platform/css/card_layer.css` (yeni) → kart kısa-ID rozeti + (i) modal CSS'i (37 satır inline `<style>`)
+- `ui/static/platform/css/topbar_search.css` (yeni) → Ctrl+K arama butonu; inline `<style>` + `style=""` attribute birleştirildi, `!important`'lar kaldırıldı (inline'ı ezmek için vardılar)
+- `ui/templates/platform/base.html` → 2 inline `<style>` **0'a**, `onclick=""` **0'a**; 3 harici varlık `<link>`/`<script>` ile bağlandı
+- `ui/static/platform/js/command_palette.js` → topbar arama butonu artık `addEventListener` ile doğrudan `open()` çağırıyor (inline `onclick` sahte `KeyboardEvent` gönderiyordu)
+- `tests/test_base_html_inline_kurali.py` (yeni, 8 test) → inline `<style>`/`onclick` sıfır kalmalı; inline script sayısı artmamalı; kalanlar gerçekten Jinja içermeli; taşınan 3 varlık sayfada yüklenmeli
+
+### Yapılan İşlem
+base.html'de 6 inline `<script>` (271 satır) + 2 `<style>` (42 satır) vardı. Hepsini taşımak mümkün değildi — 3 blok Jinja veri enjeksiyonu içeriyor (`js_i18n_map()`, `url_for`, kart sistemi `kk_is_admin`), 1 blok FOUC önleyici tema (harici dosya geç yüklenir → titreme). Saf JS/CSS olanlar taşındı, kalanlar test ile "artmasın" diye sabitlendi. Kule bloğu `{# #}` yorumunda (E1 ertelendi) → test yorumları hariç tutuyor.
+
+### Doğrulama
+- **Tam paket: 483 passed, 0 failed** (öncesi 472).
+- **GERÇEK TARAYICI DOĞRULAMASI** (Playwright, yerel 5001): arama butonuna tıklandı → komut paleti `display: none` → `flex` oldu, JS hatası yok. Ekran görüntüsü incelendi: palet açık, buton doğru render, sayfa bütün.
+- **CSS kuralları ölçüldü** (`!important` kaldırma güvenli miydi): light `rgb(241,245,249)` ✓, hover `rgb(238,242,255)` ✓, dark `rgb(30,41,59)` ✓, dark+hover `rgb(49,46,129)` ✓ — hepsi beklenen değerler.
+- `chart_defaults.js` çalışıyor: `Chart.defaults.font.family='Inter…'`, `KOKPITIM_CHART_COLORS` dizi ✓.
+- Silme koruması kanıtlandı: `app/api/auth.py` geçici geri konuldu → test KIRILDI; silinince geçti.
+
+### Notlar
+- **Kalan:** base.html'de 49 `style=""` attribute (ayrı iş) + 5 Jinja'lı inline script (data-* refactor'ü — kart sistemi 202 satır, riskli).
+- `defer` ekleme hâlâ yapılmadı: inline script'ler harici yükleme sırasına bel bağlıyor; önce yukarıdaki data-* refactor'ü gerekir.
+- Yerel sunucu kapatılırken memory'deki "stale süreç tuzağı" bizzat görüldü: reloader 2 süreç açtı (3056+5812), biri öldürülünce port hâlâ 200 döndü. İkisi de öldürülerek temizlendi.
+- Dal: `claude/kalan-isler`. Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-249 | 2026-07-15 | ✅ Tamamlandı (yıkıcı servis testleri + bağımlılık temizliği)
+
+**Görev:** %0 kapsamlı yıkıcı servislere guard testleri; eventlet ölü pin kaldırma; sürüm alt sınırları
+**Modül:** tests (3 yeni dosya), requirements, Dockerfile
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `tests/test_yedekleme_service.py` (yeni, 12 test) → rotasyon (yedek SİLEN kod): en yeni N korunur, eşik altında silme yok, desen izolasyonu (DB rotasyonu kod arşivine dokunmaz); arşiv kapsamı (.git/node_modules dışlanır, `instance/yedekler` yedek-içinde-yedek almaz, `instance/uploads` YEDEKLENİR); `_db_conn` PG-olmayan URI'yi reddeder + parola PGPASSWORD'e gider; `dump_db` hatayı yutmaz; DB patlasa da kod yedeği alınır
+- `tests/test_demo_reset_service.py` (yeni, 10 test) → DEMİR GUARD: `KOKPITIM_DEMO_MODE` kapalıyken 5 yıkıcı yol (snapshot/restore/fk_safe_load/mark_activity/sweep) DB motoruna ERİŞMEDEN reddeder; `alembic_version`+`demo_runtime` truncate kapsamı dışında
+- `tests/test_tenant_clone_service.py` (yeni, 10 test) → Yayın kilidi (klon+wipe); **kendini klonlama tuzağı**: `'%tomofil%'` LIKE `tomofiltest`'i de eşler → kaynak olarak ASLA seçilmemeli; CLONE_ORDER sıra tutarlılığı (49 tablo, `_map_X` atıfları X'ten sonra), SKIP/CLONE çakışmaz
+- `requirements.txt` → **eventlet==0.33.3 KALDIRILDI** (kodda hiç import edilmiyor; `async_mode="threading"` + gunicorn sync worker; 0.33.3 Python 3.12+'da import edilemiyor = kurulumu kıran ölü pin). 19 pinsiz paket → yerelde doğrulanmış `>=` alt sınırlar + tekrarlanabilirlik uyarısı
+- `Dockerfile` → yanlış yorum düzeltildi ("Python 3.9" yazıyordu, gerçek 3.11) + ortam paritesi uyarısı (Docker 3.11 / CI 3.11 / yerel 3.13)
+
+### Yapılan İşlem
+Üç servis %0 kapsamdaydı ve hepsi veri siliyor/kopyalıyor. Mock'la sahte kapsam üretmek yerine gerçek risk test edildi: **guard'lar**. `demo_reset` için "demo modu kapalıyken DB motoruna erişilirse testi patlat" fixture'ı yazıldı — KURALLAR §8.4'ün ("demo işlemleri yalnız *-demo hedeflerine dokunur") koda bağlanmış hali.
+
+eventlet gerçekten ölüydü: `python -c "import eventlet"` yerelde patlıyor (AttributeError/distutils), kodda tek import yok, SocketIO threading modunda. Kaldırıldıktan sonra `pip install --dry-run -r requirements.txt` temiz çözümlendi ve SocketIO import'u sorunsuz.
+
+### Doğrulama
+- **Tam paket: 472 passed, 0 failed** (öncesi 440) — bağımlılık değişikliği regresyon yaratmadı.
+- **Guard testleri kanıtlandı:** `_assert_demo` geçici delindi → 6 test "GUARD DELİNDİ: demo modu kapalıyken DB motoruna erişildi!" ile KIRILDI; geri konunca geçti.
+- **Sıra testi kanıtlandı:** CLONE_ORDER'da `sub_strategies` `strategies`'ten öne alındı → test KIRILDI; geri alındı.
+- Kapsam: `yedekleme_service` %0→**%72**, `demo_reset_service` %0→**%24**, `tenant_clone_service` %0→**%25**.
+- `create_app` OK (879 route), SocketIO eventlet'siz import ediliyor.
+
+### Notlar
+- **Kapsam yüzdeleri bilinçli olarak mütevazı:** kalan satırlar gerçek PG truncate/pg_restore/klon yürütmesi. Mock'layıp %90 göstermek sahte güven olurdu; test edilen şey guard'lar — asıl risk orada.
+- **KEŞİF — `app/api/auth.py` ölü ve içinde çalışmayan güvenlik kodu var:** `api_key_required` dekoratörü API key'in yalnız VARLIĞINI kontrol edip TODO bırakmış (satır 102-105) — herhangi bir değer geçer. Ancak modül hiçbir yerde import EDİLMİYOR (`APIAuth`/`jwt_required`/`rate_limit_by_key` kullanımı sıfır; JWT yalnız burada). Yani canlı açık DEĞİL, ölü kod. Silme kararı kullanıcıya bırakıldı — bu yüzden `PyJWT` pini de ellenmedi.
+- **Yapılmadı (bilinçli, gerekçeli):** `defer` ekleme (121 script tag; inline script'ler harici yükleme sırasına bel bağlıyorsa sayfa kırılır — önce inline'ların taşınması gerekir); `raporlar/` faz→alan taşıması (93 route'un URL'i değişmemeli); Docker 3.11→3.13 (Yayın'ı etkiler, Test'te doğrulama ister); `marshmallow`/`PyJWT` sürüm atlaması (davranış değişebilir).
+- **KEŞİF — `base.html` KURALLAR §3 ihlali:** 6 inline `<script>` bloğu (271 satır) + 2 inline `<style>` (42 satır). Kural "harici dosyaya taşı" diyor. Ayrı task — CSP'yi de etkiler.
+- Dal: `claude/kalan-isler` (TASK-248 üzerine). Merge/push/deploy YAPILMADI.
+
+---
+
+## TASK-248 | 2026-07-15 | ✅ Tamamlandı (iyileştirme paketi — 6 iş)
+
+**Görev:** Denetim bulgularının uygulanması: cross-tenant açık, index, N+1 testi, ölü kod, envanter, CI köprüsü
+**Modül:** proje (yetki), core (model), migrations, tests, scripts/ci, docs
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK (L paketleri kuralı)
+
+### Değiştirilen Dosyalar
+- `micro/modules/proje/permissions.py` → **GÜVENLİK**: `is_platform_admin()` + `_same_tenant()` eklendi; 4 yetki fonksiyonunda (`user_can_access_project`, `user_is_project_leader`, `user_can_edit_tasks`, `user_can_manage_task`) tenant kontrolü artık `is_privileged`'den ÖNCE
+- `micro/modules/proje/routes_tasks.py` → `project_task_delete` rol-bazlı `can_crud_project_portfolio` yerine proje-bağlamlı `user_can_manage_task` kullanıyor (kardeş route'larla aynı kalıp)
+- `app/models/core.py` → `User.tenant_id` + `User.role_id` → `index=True`
+- `migrations/versions/da9b27f1a650_*.py` (yeni) → PG'de `CONCURRENTLY` ile index (Yayın'da tablo kilitlenmesin), diğer dialect'te normal
+- `app/routes/process.py` → **SİLİNDİ** (1806 satır ölü kod)
+- `app/__init__.py`, `config.py` → `LEGACY_PROCESS_BP_ENABLED` flag + lazy import bloğu kaldırıldı
+- `tests/test_proje_tenant_izolasyonu.py` (yeni) → 4 test: cross-tenant erişim/silme kapalı, platform Admin bypass korunuyor
+- `tests/test_n1_regression.py` → seed'e bağımlı `pytest.skip` kaldırıldı; fixture kendi verisini üretiyor
+- `tests/test_smoke_routes.py` → bayat `/micro/*` yolları düzeltildi (19 test) + route'un url_map'te varlığı doğrulanıyor
+- `tests/test_sp_strateji_haritasi.py` → uydurma `kurum_kullanici` rolü → `executive_manager`; + rol kapısı testi
+- `tests/test_process_api_surface.py` → flag testi yerine "dosya geri gelmesin" koruması
+- `scripts/ci/yerel_kontrol.py` (yeni) → CI kilidi köprüsü: ruff + 3 import guard + pytest tek komutta
+- `scripts/dev/inventory_legacy_routes.py` → tarih damgası + modern pay yüzdesi + "elle düzenleme" uyarısı
+- `docs/LEGACY_ROUTE_INVENTORY.md` → yeniden üretildi (yanlış "Legacy 352 > Platform 329" → doğru "Legacy 212 / micro 615, modern %74")
+- `.gitignore` → `.coverage`, `htmlcov/`, `.pytest_cache/` (`.coverage` takipten çıkarıldı, disk dosyası duruyor)
+
+### Yapılan İşlem
+Denetimde bulunan tek gerçek istismar edilebilir açık kapatıldı: `tenant_admin`/`executive_manager` KURUM-BAŞINA rollerdir ama `is_privileged` tenant kontrolünden önce erken dönüyordu → A kurumunun yöneticisi B kurumunun görevini silebiliyordu (DB'de tenant 1 ve 83'te ayrı exec kullanıcıları mevcut — istismar edilebilir). Sorun tek route'ta değil, ortak yardımcıdaydı; platform Admin (tenant üstü) ile kurum yöneticisi ayrıştırıldı.
+
+Ölü kod silindi: `app/routes/process.py` üç bağımsız kanıtla ölüydü (config default `false`, lazy import, testi kapalı olmasını şart koşuyordu).
+
+21 kırık test onarıldı. Teşhis: hiçbiri kod hatası değildi — 19'u bayat `/micro/*` yolları (prefix kaldırılmış, testler güncellenmemiş → 404 alıp hiçbir şey doğrulamıyorlardı), 2'si `roles.py`'de tanımlı olmayan uydurma `kurum_kullanici` rolü (TASK-245 rol kapısı doğru davranıyordu).
+
+### Doğrulama
+- **Tam paket: 440 passed, 0 failed** (öncesi: 418 passed / **21 failed**). 21 kırık test `main`'de de kırıktı — bu iş öncesi mevcut borçtu (stash ile teyit edildi).
+- **Güvenlik düzeltmesi kanıtlandı:** düzeltme geçici geri alınınca `test_baska_kurumun_yoneticisi_gorev_silemez` KIRILDI (`user_can_manage_task` → `True`), geri konunca geçti. Test gerçek açığı yakalıyor.
+- **N+1 testi kanıtlandı:** `joinedload` geçici kaldırılınca test KIRILDI → artık gerçek koruma (eskiden `skip` ile sessizce atlanıyordu).
+- **Migration:** yerel PG'de upgrade → `ix_users_tenant_id` + `ix_users_role_id` oluştu; downgrade → silindi; tekrar upgrade → geldi.
+- `ruff check .` → All checks passed. 3 import guard → OK.
+
+### Notlar
+- **CI hâlâ kapalı** (GitHub Actions faturalandırma kilidi) — kodla çözülemez, hesap müdahalesi gerekir. 21 testin sessizce kırılmasının sebebi buydu. `python scripts/ci/yerel_kontrol.py` köprü olarak eklendi.
+- **Yapılmadı (bilinçli):** CacheService devreye alma, frontend bundling, eventlet pin temizliği, %0 kapsamlı servis testleri (yedekleme/demo_reset/tenant_clone), `raporlar/` staging dağıtımı, `k_rapor` god-object bölme. Bunlar ayrı task — kapsam kontrolü için bu pakete alınmadı.
+- **Sessiz except bulgusu yanlış pozitifti:** rapor edilen ~96 bloğun çoğu log çağrısını sarmalıyor (log patlarsa yedekleme bozulmasın) — savunulabilir kalıp, dokunulmadı.
+- Dal: `claude/iyilestirme-paketi`. Merge/push/deploy YAPILMADI — kullanıcı isteyince.
+
+---
+
 ## TASK-247 | 2026-07-12 | ✅ Tamamlandı (Faz 4 — Yönetim Özeti dashboard)
 
 **Görev:** Üst yönetim + kurum yöneticisi için '5 saniyede durum' özet dashboard'u + login sonrası rol-bazlı iniş
