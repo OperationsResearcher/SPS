@@ -2,6 +2,42 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-251 | 2026-07-15 | ✅ Tamamlandı (raporlar haritası) · ⛔ Cache işi BLOKE
+
+**Görev:** `raporlar/` faz isimleri belgelendi (kullanıcı kararı); Cache+Redis işi altyapı eksiği nedeniyle durduruldu
+**Modül:** micro/modules/raporlar, tests
+**Durum:** ✅ Tamamlandı (yerelde) — Test/Yayın'a deploy YOK
+
+### Değiştirilen Dosyalar
+- `micro/modules/raporlar/__init__.py` → docstring "hangi rapor nerede" haritasına çevrildi (6 dosya, 93 route, tüm sayfa route'ları listeli) + "geçici staging" yalanı düzeltildi (yapı fiilen KALICI) + yeniden adlandırma önerisi not edildi
+- `tests/test_raporlar_haritasi.py` (yeni, 10 test) → haritadaki route sayıları gerçekle uyuşmalı; yeni `routes_*.py` haritaya girmeli; URL'lerde "faz" ismi sızmamalı
+
+### Yapılan İşlem
+Kullanıcı kararı: yeniden adlandırma değil, belgeleme. Gerekçe: kazanç (isim netliği) ~5000 satırlık diff'i şu an haklı çıkarmıyor. Önemli tespit — URL'ler ve endpoint adları **zaten alan-bazlı** (`/reports/cfo-dashboard` → `app_bp.raporlar_cfo_dashboard`); 72 template `url_for` çağrısı fonksiyon adına bağlı, dosya yoluna değil. Yani yeniden adlandırma ileride yapılabilir, URL kırılmaz.
+
+Belge çürümesin diye teste bağlandı: `LEGACY_ROUTE_INVENTORY` tam bu yüzden aylarca yanlış sayı gösterdi. Harita bozulursa test kırılıp doğru dosyayı işaret ediyor.
+
+### Doğrulama
+- Harita testi kanıtlandı: faz2 sayısı 10→99 yapıldı → test "haritada 99 yazıyor ama gerçekte 10" ile KIRILDI; geri alındı → geçti.
+- Tam paket: **493 passed, 0 failed** (öncesi 483).
+
+### Yol boyunca yapılan hata (kayıt)
+İlk yazımda `tests/test_raporlar_haritasi.py` içinde `import micro.modules.raporlar` vardı. Bu, test toplama sırasında modülü import edip route'ları `app_bp`'ye kaydediyor; ardından `create_app` aynı endpoint'i tekrar kaydetmeye çalışıyor → `AssertionError: View function mapping is overwriting an existing endpoint function: app_bp.raporlar_index` → **tüm pakette 216 hata**. Tek başına çalışınca sorun görünmüyordu (yalnız tam pakette çıkıyor). Düzeltme: modülü hiç import etme, docstring'i dosyadan metin olarak oku. Test dosyasına da uyarı yorumu kondu.
+
+### ⛔ CACHE + REDIS İŞİ YAPILMADI — BLOKE (altyapı eksiği)
+Denetimde "en ucuz kazanç" denen iş **kod tarafında yapılamaz**:
+- `CacheService` yazılı ama **0 çağrı** — açmak için Redis şart.
+- **Redis hiçbir yerde yok:** yerelde çalışmıyor (ping timeout), `docker-compose.yml`'de tek servis var (`kokpitim-web`), Yayın deploy script'inde (`oracle_safe_deploy.sh`) redis geçmiyor.
+- `CACHE_TYPE` default `SimpleCache` + Dockerfile `GUNICORN_WORKERS:-8` → **8 worker = 8 tutarsız cache**. Redis'siz açmak Yayın'da kullanıcıya yanlış rakam gösterir (kırmızı çizgi).
+- `config.py:125` zaten uyarıyor: "konteynerde Redis yoksa limiter her istekte kilitlenir".
+- **Gereken:** Yayın'a Redis servisi eklenmesi (altyapı kararı — kullanıcıya ait). Sonra `CACHE_TYPE=RedisCache` + `CacheService` çağrılarının bağlanması tek task.
+- Aynı sorun rate limit'te: `security.py:23` default `memory://` → 8 worker'da limit fiilen 8× gevşek.
+
+### Notlar
+- Dal: `claude/kalan-isler`. Merge/push/deploy YAPILMADI.
+
+---
+
 ## TASK-250 | 2026-07-15 | ✅ Tamamlandı (ölü auth modülü + base.html inline temizliği)
 
 **Görev:** `app/api/auth.py` silme (kullanıcı onayı) + base.html KURALLAR §3 inline ihlali temizliği
