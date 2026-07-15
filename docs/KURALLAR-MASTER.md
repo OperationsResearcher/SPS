@@ -1,7 +1,7 @@
 # KOKPİTİM — MASTER KURALLAR
 > Tek gerçek kaynak. Tüm IDE'ler buraya referans verir.
 > Kural değişince SADECE bu dosya güncellenir.
-> Son güncelleme: 2026-04-03
+> Son güncelleme: 2026-07-15 (§8.6 veri çekme eklendi)
 
 ---
 
@@ -250,6 +250,40 @@ ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175
 |-|-|
 | Instance | `sps-server-v2` / `europe-west3-c` (STOP) |
 | Geçiş yedekleri | `backups/oracle_migration/`, `docs/gcp2oraclegecisplani.md` |
+
+### 8.6 VERİ ÇEKME — Yayın → Yerel (ters yön)
+
+> Tetikleyici: kullanıcı **"yayındaki verileri yerele çek"** dediğinde çalışır. Otomatik değil.
+
+**YÖN KURALI — karıştırmak felakettir:**
+
+| | Yön | Nasıl |
+|---|---|---|
+| **Şema (yapı)** | ⬆️ Yerel → Yayın | Alembic migration, kod deploy (§8.3) |
+| **Veri** | ⬇️ Yayın → Yerel | `scripts/ops/yayin_yerele_cek.py` — kopya |
+
+Veriyi yerelden Yayın'a itmek **müşteri verisini ezer**. Şemayı Yayın'dan yerele çekmek **migration geçmişini bozar**. İki yön asla karışmaz.
+
+**Tek giriş noktası — başka yol arama:**
+```bash
+python scripts/ops/yayin_yerele_cek.py              # KONTROL (varsayılan, hiçbir şey yazmaz)
+python scripts/ops/yayin_yerele_cek.py --calistir   # çek
+```
+Kıyas aracı ayrıca tek başına koşar: `python scripts/ops/yayin_yerel_kiyas.py`
+
+**Akış (script yapar):** kıyas → yerel yedek → Yayın dump (salt okunur) → restore → `alembic upgrade head` → kıyas doğrula.
+
+**LİSTE TUTULMAZ — bilerek.** Hiçbir tablo adı script'te veya bu belgede yazılı değil. Elle tutulan liste bakılmadığı gün yalan söyler; atlanan tablo sessizce veri kaybettirir (canlı örnek: `scripts/ops/compare_db_counts.py` 6 tablo listeliyor — 169 tablo var). Bunun yerine `pg_dump` her şeyi alır, kıyas `pg_tables`'tan her şeyi sayar. **Yeni tablo eklendiğinde ikisi de otomatik kapsar; bakım gerekmez.** Bu kuralı "iyileştirip" liste eklemeyin.
+
+**Güvenlik kilidi:** Adım 1'de "yerelde fazla" bulursa script **durur** — o satırlar restore'da silinir. Bilinçli eziyorsanız `--yine-de`. Kilidi kaldırmayın.
+
+**Yayın'a asla yazmaz.** Yayın'daki tek işlem `pg_dump` (salt okunur). Kimlik bilgisi (`DATABASE_URL`) dışarı çıkarılmaz — dump container'ın kendi içinde üretilir.
+
+**Yedek bedava gelir:** Adım 3'ün dump'ı (`backups/yayin/yayin_<tarih>.dump`) aynı zamanda **Yayın yedeğidir** — silmeyin. Not: yerele kopya tek başına yedek *değildir*; yerel makine bozulursa ikisi de gider.
+
+**Çekim sonrası:** Yapı tabloları (`system_cards`, `system_pages` vb.) Yayın'dan geldiği için geride kalır → seed'leri koştur + Admin > Kart Yönetimi'nden kart keşfi. `system_pages` ve `bsc_kpi_perspectives` hiçbir seed'den doğmaz (ölçüldü, 2026-07-15).
+
+**Bilinen tuzaklar:** ID kayması (aynı kurum iki tarafta farklı ID — YeniTomofil `57→76`) · sequence drift (`setval` atlanırsa ilk kayıtta çakışma) → `docs/VERI-CEKME-YAYIN-YEREL.md`
 
 ---
 
