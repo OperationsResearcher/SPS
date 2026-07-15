@@ -85,7 +85,22 @@ def upgrade():
         # constraint'i anında doğrular; orphan'lar dururken kurmaya çalışmak
         # ForeignKeyViolation verir (ilk denemede bu oldu). Doğru sıra:
         # kaldır → temizle → yeniden kur (artık doğrulama geçer).
-        op.drop_constraint('kpi_data_user_id_fkey', 'kpi_data', type_='foreignkey')
+        #
+        # ADI VARSAYMA: FK adı ortamdan ortama değişir, hatta hiç olmayabilir.
+        # Test'te `kpi_data.user_id` üzerinde FK YOKTU → sabit ada yazılmış
+        # drop_constraint UndefinedObject ile patladı (2026-07-15, yerelde
+        # geçmişti). Adı pg_catalog'dan oku; yoksa bu adımı atla.
+        mevcut_fk = bind.execute(sa.text(
+            "SELECT conname FROM pg_constraint "
+            "WHERE conrelid = 'kpi_data'::regclass AND contype = 'f' "
+            "  AND conkey = ARRAY[(SELECT attnum FROM pg_attribute "
+            "                      WHERE attrelid = 'kpi_data'::regclass "
+            "                        AND attname = 'user_id')]"
+        )).scalar()
+        if mevcut_fk:
+            op.drop_constraint(mevcut_fk, 'kpi_data', type_='foreignkey')
+        else:
+            print("[TASK-253] kpi_data.user_id uzerinde FK yok — drop atlandi")
 
         # 2) Orphan temizliği — FK yokken UPDATE serbest
         orphan = bind.execute(sa.text(
@@ -99,7 +114,10 @@ def upgrade():
         # FK'yi yeniden kur — orphan kalmadigi icin dogrulama gecer
         op.create_foreign_key('kpi_data_user_id_fkey', 'kpi_data', 'users',
                               ['user_id'], ['id'], ondelete='SET NULL')
-        op.create_index('ix_kpi_data_user_id', 'kpi_data', ['user_id'])
+        # Index: yarida kalmis bir kosudan sonra zaten var olabilir (Test'te oldu)
+        bind.execute(sa.text(
+            "CREATE INDEX IF NOT EXISTS ix_kpi_data_user_id ON kpi_data (user_id)"
+        ))
 
         # 3) period_type normalize
         norm = bind.execute(sa.text(_NORMALIZE)).rowcount
