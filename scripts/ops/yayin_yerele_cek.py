@@ -59,11 +59,18 @@ def _kos(cmd: list[str], **kw) -> subprocess.CompletedProcess:
 
 
 def _yerel_db_url() -> str:
-    from config import Config
-    u = os.environ.get("DATABASE_URL") or getattr(Config, "SQLALCHEMY_DATABASE_URI", "")
+    # KAYNAK: uygulamanin GERCEKTE cozdugu URL (create_app). os.environ'i ONCE
+    # okumak yanlisti — shell'de takili kalan eski DATABASE_URL=sqlite yuzunden
+    # script yanlis DB'yi (sqlite) goruyordu; kiyas ise create_app uzerinden
+    # PostgreSQL'i kullaniyordu. Ikisi ayni kaynaktan gelmeli.
+    from app import create_app
+    app = create_app()
+    u = app.config.get("SQLALCHEMY_DATABASE_URI", "")
     if not u or not u.startswith("postgres"):
-        raise RuntimeError(f"Yerel DB PostgreSQL degil / bulunamadi: {u[:30]}")
-    return u
+        sema = u.split(":")[0] if u else "YOK"
+        raise RuntimeError(f"Yerel DB PostgreSQL degil (sema={sema}) — pg_dump yapilamaz")
+    # pg_dump/pg_restore SQLAlchemy surucü ekini (+psycopg2/+psycopg) anlamaz
+    return u.replace("+psycopg2", "").replace("+psycopg", "")
 
 
 # ── 1 & 6: kiyas ──────────────────────────────────────────────────────────────
@@ -94,24 +101,29 @@ def yerel_yedek() -> Path:
 
 
 # ── 3: Yayin dump (SALT OKUNUR) ───────────────────────────────────────────────
+# YAYIN DB MIMARISI (kanonik: scripts/ops/oracle/oracle_safe_deploy.sh:19):
+#   PostgreSQL HOST makinede calisir (container'da DEGIL) -> `sudo -u postgres`.
+#   Test/Demo farkli: onlarda DB container icinde. Bu yuzden `docker exec ...
+#   pg_dump` Test'te calisti ama Yayin'da socket hatasi verdi (2026-07-16).
+YAYIN_PG_DB = "kokpitim_db"   # KURALLAR-MASTER §8.1 + deploy script PG_DB
+
+
 def yayin_dump() -> Path:
-    """Yayin'da pg_dump. Kimlik bilgisi (DATABASE_URL) DISARI CIKARILMAZ —
-    dump container'in kendi icinde uretilir, sonra dosya olarak cekilir."""
+    """Yayin DB'sini HOST'ta `sudo -u postgres pg_dump` ile alir (kanonik yol).
+    Kimlik bilgisi kullanilmaz — postgres peer-auth ile baglanir, sifre gecmez."""
     YEDEK_DIZIN.mkdir(parents=True, exist_ok=True)
     uzak_yol = f"/tmp/yayin_{_ts()}.dump"
     hedef = YEDEK_DIZIN / f"yayin_{_ts()}.dump"
 
-    # Container ICINDE dump — kimlik disari cikmaz
+    # HOST'ta dump — DB host'ta calisiyor, peer-auth (sifre yok, disari cikmaz)
     p = _kos(["ssh", "-i", SSH_KEY, "-o", "StrictHostKeyChecking=no", SSH_HOST,
-              f'sudo docker exec {YAYIN_CONTAINER} sh -c '
-              f'\'pg_dump -Fc -f {uzak_yol} "$DATABASE_URL"\''], timeout=1800)
+              f'sudo -u postgres pg_dump -Fc -f {uzak_yol} {YAYIN_PG_DB}'], timeout=1800)
     if p.returncode != 0:
         raise RuntimeError(f"Yayin dump basarisiz:\n{p.stderr[-400:]}")
 
-    p = _kos(["ssh", "-i", SSH_KEY, "-o", "StrictHostKeyChecking=no", SSH_HOST,
-              f"sudo docker cp {YAYIN_CONTAINER}:{uzak_yol} {uzak_yol}"], timeout=600)
-    if p.returncode != 0:
-        raise RuntimeError(f"docker cp basarisiz:\n{p.stderr[-400:]}")
+    # postgres kullanicisinin yazdigi dosyayi cekmeden once okunur yap
+    _kos(["ssh", "-i", SSH_KEY, "-o", "StrictHostKeyChecking=no", SSH_HOST,
+          f"sudo chmod 644 {uzak_yol}"])
 
     p = _kos(["scp", "-i", SSH_KEY, "-o", "StrictHostKeyChecking=no",
               f"{SSH_HOST}:{uzak_yol}", str(hedef)], timeout=1800)
@@ -120,7 +132,7 @@ def yayin_dump() -> Path:
 
     # Yayin'da iz birakma
     _kos(["ssh", "-i", SSH_KEY, "-o", "StrictHostKeyChecking=no", SSH_HOST,
-          f"sudo rm -f {uzak_yol}; sudo docker exec {YAYIN_CONTAINER} rm -f {uzak_yol}"])
+          f"sudo rm -f {uzak_yol}"])
     print(f"  yayin dump : {hedef.name} ({hedef.stat().st_size/1e6:.1f} MB)")
     print(f"               ^ bu dosya AYNI ZAMANDA Yayin yedegidir — silme")
     return hedef
@@ -128,15 +140,42 @@ def yayin_dump() -> Path:
 
 # ── 4: restore ────────────────────────────────────────────────────────────────
 def restore(dump: Path) -> None:
+    """Semayi BASTAN kurar (public schema drop+create), sonra restore.
+
+    NEDEN --clean --if-exists DEGIL: o yontem tablolari tek tek dusurup kurar
+    ama FK bagimlilik sirasini cozemez -> "tenant_id=61 not present" gibi 76
+    hata verdi (2026-07-16). Sema bastan bos kurulunca pg_restore FK'lari
+    dogru sirada olusturur (once tum veri, sonra constraint).
+
+    Yerel DB bozulmaz: hata olursa main() adim 2'deki yedekten geri donulur."""
     pg_restore = PG_BIN / "pg_restore.exe"
+    psql = PG_BIN / "psql.exe"
     if not pg_restore.is_file():
         raise RuntimeError(f"pg_restore yok: {pg_restore}")
-    p = _kos([str(pg_restore), "--clean", "--if-exists", "--no-owner", "--no-privileges",
-              "-d", _yerel_db_url(), str(dump)], timeout=3600)
-    # pg_restore uyari verse de rc!=0 olabilir; gercek hatayi ayirt et
-    if p.returncode != 0 and "error" in p.stderr.lower():
-        raise RuntimeError(f"Restore basarisiz:\n{p.stderr[-600:]}")
-    print("  restore tamam")
+    url = _yerel_db_url()
+
+    # 1) public schema'yi bastan kur — temiz zemin (FK sirasi sorunu biter)
+    p = _kos([str(psql), "-d", url, "-v", "ON_ERROR_STOP=1", "-c",
+              "DROP SCHEMA public CASCADE; CREATE SCHEMA public;"], timeout=300)
+    if p.returncode != 0:
+        raise RuntimeError(f"Schema sifirlama basarisiz:\n{p.stderr[-400:]}")
+
+    # 2) restore. --exit-on-error KULLANMA: Yayin'in KENDI verisi bazi FK'lari
+    #    ihlal ediyor (orphan — silinmis user'a bagli kpi_data; olculdu: 202 satir,
+    #    TASK-253 ile ayni). Bu FK'lar kurulamaz ve bu BEKLENEN. Alembic upgrade
+    #    (adim 5) orphan'lari NULL'a cekip FK'lari dogru kurar. Restore'un bu
+    #    yuzden durmasi YANLIS olurdu — veri tamamen yuklenmis olur, yalniz birkac
+    #    constraint eksik kalir; onlari migration tamamlar.
+    p = _kos([str(pg_restore), "--no-owner", "--no-privileges",
+              "-d", url, str(dump)], timeout=3600)
+    # Veri yuklendi mi? Kritik tablolari say — asil basari olcutu bu, rc degil.
+    kontrol = _kos([str(psql), "-d", url, "-At", "-c",
+                    "select count(*) from kpi_data"], timeout=120)
+    n = (kontrol.stdout or "").strip()
+    if not n.isdigit() or int(n) == 0:
+        raise RuntimeError(f"Restore basarisiz — kpi_data bos/okunamiyor:\n{p.stderr[-500:]}")
+    # rc!=0 olabilir (atlanmis FK'lar) ama veri geldi. FK'lari alembic tamamlar.
+    print(f"  restore tamam (kpi_data={n}; eksik FK'lar alembic'te tamamlanir)")
 
 
 # ── 5: alembic (semayi geri getirir) ──────────────────────────────────────────
