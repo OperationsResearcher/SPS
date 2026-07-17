@@ -112,12 +112,25 @@ path'e düştü → kök `k_rapor`'a verildi, `raporlar_index` → `/k-report/al
 **Kapsam dışı (bilinçli):** `/reports/daily|weekly|monthly|dashboard|performance`
 — `ai_bp`/`api_bp` dış REST API'leri, `app_bp` değil. Test koruyor.
 
-### FAZ 5 — Risk borcu (ŞEMA + VERİ, ayrı koşabilir)
-- [ ] Migration: `risk_heatmap_items`'a `source_id` + FK ekle.
-- [ ] 35 gerçek riski geniş-kaynağa eşle (SWOT/PESTEL/süreç/proje):
-      Kur→PESTEL, Yetenek→SWOT, Tedarik→süreç…
-- [ ] `source=manual` seçeneğini kaldır (kaynaksız risk girişi engellenir).
-- [ ] Test: her risk bir kaynağa bağlı, kaynaksız girilemiyor.
+### FAZ 5 — Risk borcu ✅ UYGULANDI (2026-07-17, TASK-276)
+- [x] Migration `b7d3e1f4a920`: `source_id` + `(source_type, source_id)` indeksi
+- [x] **5 türü** geniş-kaynağa eşle → 70 satır otomatik doldu (35 DEĞİL, aşağıda)
+- [x] `source=manual` kaldırıldı: kod (`_kaynak_dogrula`) + UI (seçenek silindi)
+- [x] Test: 598 passed · Faz 5 smoke 14/14 · **downgrade test edildi**
+
+⚠️ **"35 gerçek risk" İDDİASI YANLIŞTI.** DB ölçümü: 70 manual =
+**5 eşsiz risk × 7 plan yılı × 2 kurum** (hepsi 2026-05-26, aynı p/i/rpn = seed).
+Eşlenecek 35 değil 5 tür vardı; iş 7× küçüldü. Kullanıcı kararı: 5 türü eşle.
+
+⚠️ **`source_id`'ye FK YOK** (plan "FK ekle" diyordu). `source_id` polimorfik —
+`source_type`'a göre 4 farklı tabloyu işaret eder; tek kolona 4 FK konulamaz.
+Uygulama katmanında doğrulanır. Detay: `ENDPOINT-SOZLESMESI.md` §Faz 5.
+
+🔻 **AÇIK BORÇ — tenant 28'in 10 gerçek riski.** `source_type`'ta kategori
+değerleri taşıyorlar (`Finansal`, `Operasyonel`, `Düzenleyici`…) — seed ederken
+kolon yanlış anlaşılmış. Migration onlara **dokunmadı** (gerçek müşteri verisi,
+eşlemesi iş bilgisi ister). **Karar gerekiyor:** kategori ayrı kolona mı alınsın,
+yoksa kaynağa mı eşlensin?
 
 ### FAZ 6 — Temizlik
 - [ ] Eski redirect'leri koru (bookmark'lar için kalıcı) ama iç `url_for`'lar

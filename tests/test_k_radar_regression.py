@@ -179,6 +179,50 @@ def test_k_radar_write_forbidden_for_non_manager(client, app):
     assert payload["success"] is False
 
 
+def test_risk_kaynaksiz_girilemez(client, app):
+    """Katman ilkesi: HER RİSK BİR KAYNAĞA BAĞLI (TASK-276, Faz 5).
+
+    Kaynaksız / 'manual' / geçersiz kaynak reddedilir. Bu kural kaldırılırsa
+    risk konsolidasyonu tekrar kaynağı bilinmeyen kayıtlarla dolar.
+    """
+    with app.app_context():
+        seeded = _seed_k_radar_dataset()
+        _login(client, seeded["admin"].id)
+
+    temel = {"title": "Kural Testi", "probability": 3, "impact": 3}
+
+    # kaynak yok
+    r = client.post("/k-radar/api/risk/add", json=temel)
+    assert r.status_code == 400, f"kaynaksız risk kabul edildi: {r.status_code}"
+
+    # 'manual' artık geçersiz — Faz 5'te kaldırıldı
+    r = client.post("/k-radar/api/risk/add", json={**temel, "source_type": "manual"})
+    assert r.status_code == 400, "source_type='manual' hâlâ kabul ediliyor"
+
+    # uydurma kaynak
+    r = client.post("/k-radar/api/risk/add", json={**temel, "source_type": "xyz"})
+    assert r.status_code == 400, "geçersiz kaynak kabul edildi"
+
+
+def test_risk_gecerli_kaynakla_eklenir(client, app):
+    """Geniş kaynak tanımı {swot, pestel, porter, process, project} çalışır.
+
+    Kurumsal-genel riskler zorla projeye değil, doğdukları analize bağlanır
+    (Kur Riski → PESTEL). Kaynak listesi daralırsa bu test kırılır.
+    """
+    with app.app_context():
+        seeded = _seed_k_radar_dataset()
+        _login(client, seeded["admin"].id)
+
+    for kaynak in ["swot", "pestel", "porter", "process", "project"]:
+        r = client.post("/k-radar/api/risk/add", json={
+            "title": f"Kaynak testi {kaynak}", "probability": 2,
+            "impact": 2, "source_type": kaynak,
+        })
+        assert r.status_code == 200, f"{kaynak} reddedildi: {r.status_code}"
+        assert (r.get_json() or {}).get("success") is True, kaynak
+
+
 def test_k_radar_teshis_yazma_yuzeyi_yok(client, app):
     """Teşhis katmanında yazma YÜZEYİ kalmadı (Faz 3).
 
