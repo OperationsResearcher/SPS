@@ -470,7 +470,7 @@
             <button id="btn-strategy-add-empty" class="mc-btn mc-btn-primary">
               <i class="fas fa-plus"></i> {{ _("İlk Ana Stratejiyi Ekle") }}
             </button>
-            <a href="{{ url_for('app_bp.sp_templates_page') if 'app_bp.sp_templates_page' in current_app.view_functions else '/sp/templates' }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+            <a href="{{ url_for('app_bp.sp_templates_page') if 'app_bp.sp_templates_page' in current_app.view_functions else '/k-plan/strategy/templates' }}" class="mc-btn mc-btn-secondary mc-btn-sm">
               <i class="fas fa-file-import"></i> {{ _("Hazır Şablondan Başla") }}
             </a>
             {% endif %}

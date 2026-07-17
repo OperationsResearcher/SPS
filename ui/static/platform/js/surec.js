@@ -670,7 +670,7 @@
 
     if (!payload) return;
     try {
-      const data = await postJson("/process/api/activity/add", payload);
+      const data = await postJson("/k-plan/process/api/activity/add", payload);
       if (!data.success) throw new Error(data.message || t("Faaliyet kaydedilemedi."));
       const successMsg = data.message || t("Faaliyet eklendi.");
       const noticeLbl = data.notice && data.notice.label;
@@ -2622,7 +2622,7 @@
     });
     if (!payload) return;
     try {
-      const data = await postJson(`/process/api/activity/postpone/${actId}`, payload);
+      const data = await postJson(`/k-plan/process/api/activity/postpone/${actId}`, payload);
       if (!data.success) throw new Error(data.message || t("Faaliyet ertelenemedi."));
       toastSuccess(data.message || t("Faaliyet ertelendi."));
       await loadKarne();
@@ -2727,7 +2727,7 @@
       const ok = await confirmDelete(t("Faaliyet iptal edilsin mi?"), t("Faaliyet durumu 'İptal' olarak güncellenecek."));
       if (!ok) return;
       try {
-        const data = await postJson(`/process/api/activity/cancel/${btnActCancel.dataset.actId}`, {});
+        const data = await postJson(`/k-plan/process/api/activity/cancel/${btnActCancel.dataset.actId}`, {});
         if (!data.success) throw new Error(data.message || t("Faaliyet iptal edilemedi."));
         toastSuccess(data.message || t("Faaliyet iptal edildi."));
         loadKarne();
@@ -2752,7 +2752,7 @@
       const ok = await confirmDelete(t("Faaliyet tamamlandı olarak işaretlensin mi?"), t("Durum 'Tamamlandı', ilerleme %100 olacak."));
       if (!ok) return;
       try {
-        const data = await postJson(`/process/api/activity/complete/${btnActComplete.dataset.actId}`, {});
+        const data = await postJson(`/k-plan/process/api/activity/complete/${btnActComplete.dataset.actId}`, {});
         if (!data.success) throw new Error(data.message || t("Faaliyet tamamlanamadı."));
         toastSuccess(data.message || t("Faaliyet tamamlandı."));
         loadKarne();
@@ -2995,7 +2995,7 @@
       return tab === "activities";
     })();
     const qs = wantsActivities ? "?tab=activities" : "";
-    window.location.href = `/process/${pid}/karne${qs}`;
+    window.location.href = `/k-plan/process/${pid}/karne${qs}`;
   });
 
   document.getElementById("btn-kpi-add")?.addEventListener("click", openAddKpiModal);

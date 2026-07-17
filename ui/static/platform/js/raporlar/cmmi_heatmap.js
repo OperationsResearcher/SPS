@@ -56,7 +56,7 @@
     }
     procs.sort((a, b) => b.level - a.level);
     document.getElementById('cmmi-grid').innerHTML = procs.map(p => `
-      <a href="/process/${p.id}/karne" style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#1e293b;">
+      <a href="/k-plan/process/${p.id}/karne" style="display:flex; align-items:center; gap:10px; padding:10px 12px; background:#fff; border:1px solid #e2e8f0; border-radius:8px; text-decoration:none; color:#1e293b;">
         <div style="width:32px; height:32px; border-radius:6px; background:${colorMap[p.level]}; color:#fff; font-weight:800; font-size:14px; display:flex; align-items:center; justify-content:center; flex-shrink:0;">${p.level}</div>
         <div style="flex:1; min-width:0;">
           <div style="font-size:12.5px; font-weight:600; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${p.code ? `<span style="font-family:monospace; color:#64748b;">${esc(p.code)}</span> ` : ''}${esc(p.name)}</div>
@@ -71,7 +71,7 @@
     if (!items || !items.length) { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
     list.innerHTML = items.map(p => `
-      <a href="/process/${p.id}/karne" style="background:#fff; border:1px solid #fde68a; padding:3px 8px; border-radius:4px; text-decoration:none; color:#92400e;">
+      <a href="/k-plan/process/${p.id}/karne" style="background:#fff; border:1px solid #fde68a; padding:3px 8px; border-radius:4px; text-decoration:none; color:#92400e;">
         ${p.code ? `<b>${esc(p.code)}</b> · ` : ''}${esc(p.name)}
       </a>`).join('');
   }

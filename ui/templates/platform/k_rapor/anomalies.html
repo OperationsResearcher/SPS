@@ -61,7 +61,7 @@ let lastAnomalies = [];
 async function loadAnomalies() {
     const threshold = document.getElementById("threshold").value;
     try {
-        const resp = await fetch(`/k-rapor/api/anomalies?threshold=${threshold}&limit=100`);
+        const resp = await fetch(`/k-report/api/anomalies?threshold=${threshold}&limit=100`);
         const data = await resp.json();
         if (!data.success) throw new Error(data.message);
         lastAnomalies = data.data || [];

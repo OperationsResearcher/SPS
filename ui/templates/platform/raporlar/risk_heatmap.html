@@ -84,7 +84,7 @@
 
   // Yıl seçicisini doldur
   const yearSel = document.getElementById('rh-year');
-  fetch('/sp/api/plan-years', {credentials:'same-origin'}).then(r => r.json()).then(j => {
+  fetch('/k-plan/strategy/api/plan-years', {credentials:'same-origin'}).then(r => r.json()).then(j => {
     if (j.success && j.plan_years) {
       j.plan_years.forEach(py => {
         const opt = document.createElement('option');

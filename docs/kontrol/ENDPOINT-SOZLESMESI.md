@@ -290,6 +290,68 @@ kaydından doğmadılar. Yeni kayıtlarda kullanıcı kaynağı seçince dolar.
 verisi bozulmadı. `upgrade` tekrar koştu. Geri dönüş yolu güvenli.
 Yedek: `backups/faz5/risk_heatmap_items_oncesi.dump`.
 
+## Faz 6 — UYGULANDI ✅ (2026-07-17, TASK-277) — KATMAN MİMARİSİ TAMAM
+
+Temizlik fazı. Yol haritasının 3 maddesinden **2'si zaten yapılmıştı**; asıl iş
+önceki fazların **taramalarının kaçırdıklarını** bulmaktı.
+
+### Yol haritası maddeleri — ölçüm sonucu
+| Madde | Durum |
+|---|---|
+| "Sidebar adları Türkçe + role göre" | **Zaten yapılmış** — hepsi `{{ _() }}` ile sarılı |
+| "Ölü K-Analiz izlerini temizle" | **İzlerin çoğu ölü değil** — 15 iz'in 10'u `stratejik-analiz` (K-Rapor sekmesi, farklı şey); `/k-analiz` UI'da linklenmiyor ama **çalışan alias**, kalıcı redirect olarak KALIR |
+| "İç `url_for`'lar yeni endpoint'i kullansın" | **Gerçek iş buydu** — aşağıda |
+
+### 🔴 Önceki taramaların KAÇIRDIĞI 3 kalıp (ders)
+Faz 3/4 regex'leri tam string arıyordu (`"/sp/swot"`). Şunları **görmedi**:
+
+| Kalıp | Örnek | Adet |
+|---|---|---:|
+| Template literal (değişken gömülü) | `` `/process/${p.id}/karne` `` | ~30 |
+| Query string | `'/k-rapor?tab=kurumsal'` | 22 |
+| Sondaki `/` olmadan | `"/process"` | 3 |
+
+**Toplam 53 + 22 = 75 hardcoded path** düzeltildi. Hepsi redirect üzerinden
+çalışıyordu (kırık değildi) ama her tıklama gereksiz atlamaydı.
+
+**Faz 6 son taraması** üç kalıbı da kapsıyor:
+`scratchpad/faz6_son_tarama.py` — yeni katman öneki eklenirse tekrar koşulmalı.
+
+### 🔴 5. ve 6. SESSİZ KIRILMA bulundu (Faz 3'ün dersi devam ediyor)
+Faz 3'te 4 kapı dosyası bulmuştuk. Faz 6 **iki tane daha** buldu — ikisi de
+path önekine bakıyor, ikisi de `/k-plan`, `/k-report` tanımıyordu:
+
+| Dosya | Ne kırılmıştı |
+|---|---|
+| `app/__init__.py::_inject_current_section` | **Breadcrumb üst bağlantısı SESSİZCE kayboluyordu** (eşleşme yok → `current_section` None) |
+| `app/services/hata_kontrol_service.py::_MODULE_MAP` | Hata raporları modülsüz etiketleniyordu |
+
+İkisi de düzeltildi + `test_katman_breadcrumb_cozuluyor` ile korundu.
+
+**GÜNCEL KURAL — yeni katman öneki eklerken 6 dosya:**
+1. `platform_core/__init__.py::_GATED_PREFIX_MODULE` (paket kapısı)
+2. `platform_core/__init__.py::_ROLE_GATED_PREFIX_MODULE` (rol kapısı)
+3. `micro/core/module_registry.py` (sidebar/launcher `url`)
+4. `app/middleware/legacy_sunset.py::_is_platform_canonical`
+5. **`app/__init__.py::sections`** (breadcrumb) ← Faz 6'da bulundu
+6. **`app/services/hata_kontrol_service.py::_MODULE_MAP`** ← Faz 6'da bulundu
+
+### 🔻 Bulunan ÖLÜ ZİNCİR — dokunulmadı (kullanıcı kararı)
+`ui/templates/platform/sp/projeler.html` şablonunu **hiçbir route render etmiyor**;
+`sp_projeler.js`'i de yalnız o şablon yüklüyor → kapalı döngü, kimse erişemiyor.
+Beslediği 6 route'un (`sp_api_proje_*`) başka tüketicisi yok.
+
+Bu, Faz 3'teki *"sp_projeler.js'i bilerek bıraktım, çalışıyor"* değerlendirmemi
+düzeltiyor: kod çalışmıyordu — **hiç çalışmıyordu**. Üstelik string ikamesi
+(`PROJE_SAVE_URL.replace("/proje", …)`) Faz 3 taşımasından sonra `/proje` bulamadığı
+için `/k-plan/strategy/api/proje/5/gorevct` gibi **var olmayan URL** üretiyordu.
+
+İkame kaldırıldı, `data-*` ile gerçek URL verildi (zararsız düzeltme). **Silme ayrı
+karar** — 2 dosya + 6 route, TASK-258 (29 kırık route + mock temizliği) ile ele alınır.
+
+⚠️ `[:-1]` kalıbı tuzağı: ID URL'nin **ortasındaysa** (`…/project/<id>/task`) bu
+kalıp `/task`'ı `/tas` yapar. Yalnız ID sonda olduğunda kullanılır.
+
 ## Hatırlatmalar
 
 - **CI çalışmıyor** → doğrulama `python -m pytest -q` (yerel) + `scripts/ci/yerel_kontrol.py`

@@ -20,8 +20,8 @@
      data-revision-no="{{ process.revision_no or '' | e }}"
      data-current-year="{{ current_year }}"
      data-karne-api-url="{{ url_for('app_bp.surec_api_karne', process_id=process.id) }}"
-     data-activity-track-url-base="/process/api/activity/track/"
-     data-activity-delete-url-base="/process/api/activity/delete/"
+     data-activity-track-url-base="/k-plan/process/api/activity/track/"
+     data-activity-delete-url-base="/k-plan/process/api/activity/delete/"
      data-can-crud-activity="{{ 'true' if page_flags.can_crud_activity else 'false' }}"
      data-can-track-activity="{{ 'true' if page_flags.can_track_activity else 'false' }}">
 

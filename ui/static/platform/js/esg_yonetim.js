@@ -245,7 +245,7 @@
 
   async function delValue(vid) {
     try {
-      const d = await postJson(`/reports/api/esg/values/${vid}/delete`, {});
+      const d = await postJson(`/k-report/api/esg/values/${vid}/delete`, {});
       if (d.success) { toast(t("Değer silindi.")); load(); }
       else showError(d.message || t("Silinemedi."));
     } catch (e) { showError(t("Sunucu hatası:") + " " + e.message); }

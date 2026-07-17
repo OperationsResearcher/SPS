@@ -2,6 +2,56 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-277 | 2026-07-17 | ✅ Tamamlandı — 🏁 KATMAN MİMARİSİ TAMAM
+
+**Görev:** Katman mimarisi Faz 6 — temizlik + önceki fazların kaçırdıkları
+**Modül:** ui (25 dosya), app/__init__, hata_kontrol_service, sp_projeler
+**Durum:** ✅ Tamamlandı — yerelde doğrulandı, Test'e gitmedi
+
+### Değiştirilen Dosyalar
+- 27 dosya (template + JS) → **75 hardcoded path** düzeltildi
+- `app/__init__.py` → `sections` tablosuna `/k-plan`, `/k-report` (**breadcrumb kırıktı**)
+- `app/services/hata_kontrol_service.py` → `_MODULE_MAP` katman önekleri
+- `ui/templates/platform/k_radar/hub.html` → 22 `/k-rapor?tab=` → `/k-report?tab=`
+- `ui/static/platform/js/sp_projeler.js` + `sp/projeler.html` → kırık string ikamesi → `data-*`
+- `tests/test_k_radar_regression.py` → **4 yeni breadcrumb testi** + `pytest` import
+
+### Yapılan İşlem
+Yol haritasının 3 maddesinden 2'si zaten yapılmıştı (sidebar Türkçe; K-Analiz izleri
+ölü değil). Asıl iş **önceki fazların taramalarının kaçırdıklarıydı**: template literal
+(`` `/process/${id}/karne` ``), query string (`'/k-rapor?tab=x'`), sondaki `/` olmadan
+(`"/process"`). Faz 3/4 regex'leri tam string arıyordu, bunları görmedi.
+
+### Notlar
+🔴 **5. ve 6. SESSİZ KIRILMA bulundu.** Faz 3'te 4 kapı dosyası demiştik; iki tane daha
+çıktı, ikisi de path önekine bakıyor ve `/k-plan`+`/k-report` tanımıyordu:
+`app/__init__.py::sections` → **breadcrumb üst bağlantısı sessizce kayboluyordu**;
+`hata_kontrol_service::_MODULE_MAP` → hatalar modülsüz etiketleniyordu. Düzeltildi,
+4 test eklendi. **GÜNCEL KURAL: yeni katman öneki = 6 dosya** (belgede).
+
+🔴 **Faz 3'teki değerlendirmem yanlıştı.** `sp_projeler.js` için "bilerek bıraktım,
+legacy redirect üzerinden çalışıyor" demiştim. Gerçek: `PROJE_SAVE_URL.replace("/proje",
+…)` — Faz 3'te URL `/k-plan/strategy/api/project` olunca `/proje` bulunamadı, ikame
+sessizce çalışmadı ve `/k-plan/strategy/api/proje/5/gorevct` gibi **var olmayan URL**
+üretiyordu. Kod çalışmıyordu; ama zaten **hiç çalışmıyordu** (aşağıda).
+
+🔻 **ÖLÜ ZİNCİR bulundu — kullanıcı kararı: dokunma.** `sp/projeler.html`'i hiçbir
+route render etmiyor, `sp_projeler.js`'i yalnız o şablon yüklüyor → kapalı döngü.
+6 route'un (`sp_api_proje_*`) başka tüketicisi yok. İkame düzeltildi (zararsız);
+**silme TASK-258 ile** ele alınacak.
+
+⚠️ **`[:-1]` tuzağı:** ID URL'nin ortasındaysa (`…/project/<id>/task`) bu kalıp
+`/task`'ı `/tas` yapar. Yalnız ID sonda olduğunda kullanılır (ölçümle yakalandı).
+
+**Doğrulama (CI çalışmıyor → yerel):** `pytest -q` → **602 passed**, 1 skipped,
+1 xfailed (598 + 4 breadcrumb testi), sıfır regresyon · 4 smoke paketi **70/70** ·
+87 JS `node --check` temiz · son tarama: gerçek URL kaçağı **0**.
+
+**🏁 KATMAN MİMARİSİ TAMAM:** `/k-plan/*` girdi · `/k-radar/*` teşhis · `/k-report/*`
+rapor. Endpoint adları hiç değişmedi. Yayın'a çıkmadı (L paketleri kuralı).
+
+---
+
 ## TASK-276 | 2026-07-17 | ✅ Tamamlandı
 
 **Görev:** Katman mimarisi Faz 5 — Risk borcu: `source_id` + kaynak eşleme + `manual` kaldırma

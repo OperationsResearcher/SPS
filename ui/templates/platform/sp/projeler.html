@@ -16,6 +16,14 @@
      data-proje-url="{{ url_for('app_bp.sp_api_proje_list') }}"
      data-proje-save-url="{{ url_for('app_bp.sp_api_proje_save') }}"
      data-proje-delete-base="{{ url_for('app_bp.sp_api_proje_delete', item_id=0)[:-1] }}"
+     {# Görev uçları: JS eskiden bunları PROJE_SAVE_URL üzerinde string ikamesiyle
+        türetiyordu (`.replace("/proje", ...)`). Faz 3'te URL /k-plan/strategy/api/project
+        olunca "/proje" bulunamadı → ikame sessizce hiçbir şey yapmadı ve YANLIŞ
+        endpoint üretildi. Artık gerçek URL'ler data-* ile veriliyor (TASK-277). #}
+     {# NOT: ID URL'nin ORTASINDA (…/project/<id>/task) — bu yüzden başka
+        data-*'larda kullanılan [:-1] kalıbı BURADA ÇALIŞMAZ ("/task"ı "/tas"
+        yapar). JS yer tutucu 0'ı gerçek id ile değiştirir. #}
+     data-gorev-base="{{ url_for('app_bp.sp_api_proje_gorev_list', project_id=0) }}"
 >
 
 {% if not plan_year_feature or not active_plan_year %}

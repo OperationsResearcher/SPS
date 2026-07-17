@@ -25,7 +25,7 @@
       document.getElementById('tbl').innerHTML = j.processes.map(p => `
         <tr style="border-bottom:1px solid #f1f5f9;">
           <td style="padding:10px;color:#0f172a;font-weight:600;font-family:monospace;">${esc(p.code||'-')}</td>
-          <td style="padding:10px;color:#1e293b;"><a href="/process/${p.id}/karne" style="color:inherit; text-decoration:none;">${esc(p.name)}</a></td>
+          <td style="padding:10px;color:#1e293b;"><a href="/k-plan/process/${p.id}/karne" style="color:inherit; text-decoration:none;">${esc(p.name)}</a></td>
           <td style="padding:10px;"><span style="background:${p.status==='Aktif'?'#dcfce7':'#fef3c7'};color:${p.status==='Aktif'?'#166534':'#92400e'};padding:2px 8px;border-radius:6px;font-size:11px;font-weight:600;">${esc(p.status||'-')}</span></td>
           <td style="padding:10px;text-align:right;color:#0ea5e9;font-weight:700;">${p.kpi_count}</td>
           <td style="padding:10px;text-align:right;color:#0d9488;font-weight:700;">${p.activity_count}</td>

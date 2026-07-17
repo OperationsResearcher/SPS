@@ -127,7 +127,7 @@
         html += `
           <div class="pgx-row" data-idx="${idx}">
             <div style="display:flex; flex-direction:column; min-width:0;">
-              <a href="/project/${it.project_id}" style="font-weight:600; color:var(--text-default); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(it.project_name)}</a>
+              <a href="/k-plan/project/${it.project_id}" style="font-weight:600; color:var(--text-default); text-decoration:none; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">${escHtml(it.project_name)}</a>
               <div style="font-size:11px; color:#94a3b8;">${t("Sağlık:")} %${Math.round(it.health_score||0)}</div>
             </div>
             <div style="text-align:center; font-weight:600;">${it.process_count}</div>
@@ -167,7 +167,7 @@
             ${it.processes.map(p => {
               const pct = p.pg_total > 0 ? Math.round((p.pg_on_target / p.pg_total) * 100) : null;
               return `
-                <a href="/process/${p.id}/karne" class="pgx-process-card" style="text-decoration:none; color:inherit;">
+                <a href="/k-plan/process/${p.id}/karne" class="pgx-process-card" style="text-decoration:none; color:inherit;">
                   <i class="fas fa-sitemap" style="color:#6366f1;"></i>
                   <div style="flex:1; min-width:0;">
                     <div style="font-weight:600; color:var(--text-default); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">

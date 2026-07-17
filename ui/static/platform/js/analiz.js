@@ -215,7 +215,7 @@
             ${item.value !== undefined && item.value !== null ? `<span>${t("Değer:")} <b style="color:#f59e0b;">${escHtml(String(item.value))}</b></span>` : ''}
             ${item.date ? `<span>${t("Tarih:")} <b>${escHtml(item.date)}</b></span>` : ''}
             ${item.score !== undefined && item.score !== null ? `<span>${t("Z-skor:")} <b>${escHtml(String(Number(item.score).toFixed(2)))}</b></span>` : ''}
-            ${item.process_id ? `<a href="/process/${item.process_id}/karne" style="color:#6366f1; text-decoration:underline;">${t("Süreç karnesi →")}</a>` : ''}
+            ${item.process_id ? `<a href="/k-plan/process/${item.process_id}/karne" style="color:#6366f1; text-decoration:underline;">${t("Süreç karnesi →")}</a>` : ''}
           </div>
         </div>
       </div>

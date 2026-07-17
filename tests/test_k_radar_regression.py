@@ -1,5 +1,6 @@
 from datetime import date
 
+import pytest
 from werkzeug.security import generate_password_hash
 
 from app.models import db
@@ -177,6 +178,32 @@ def test_k_radar_write_forbidden_for_non_manager(client, app):
     assert resp.status_code == 403
     payload = resp.get_json()
     assert payload["success"] is False
+
+
+@pytest.mark.parametrize("path,beklenen_etiket", [
+    ("/k-plan/strategy/swot", "Stratejik Planlama"),
+    ("/k-plan/process", "Süreç Yönetimi"),
+    ("/k-plan/project", "Proje Yönetimi"),
+    ("/k-report/cfo-dashboard", "Raporlar"),
+])
+def test_katman_breadcrumb_cozuluyor(client, app, path, beklenen_etiket):
+    """Breadcrumb katman öneklerini tanır (TASK-277, Faz 6).
+
+    `_inject_current_section` PATH ÖNEKİNE bakar. Katman taşımasında bu tablo
+    güncellenmezse eşleşme bulunamaz, `current_section` None döner ve breadcrumb
+    ÜST BAĞLANTISI SESSİZCE KAYBOLUR — kod hata vermez. Faz 6'da tam bu oldu.
+    Yeni katman öneki eklenirse (app/__init__.py::sections) bu test korur.
+    """
+    with app.app_context():
+        seeded = _seed_k_radar_dataset()
+        _login(client, seeded["admin"].id)
+
+    resp = client.get(path)
+    assert resp.status_code == 200, f"{path} → {resp.status_code}"
+    assert beklenen_etiket.encode() in resp.data, (
+        f"{path} breadcrumb'ında '{beklenen_etiket}' yok — "
+        f"current_section çözülemedi (sections tablosu eksik?)"
+    )
 
 
 def test_risk_kaynaksiz_girilemez(client, app):

@@ -23,10 +23,23 @@ _BLACKLIST = re.compile(
 )
 
 # Modül etiketleri (URL önekine göre)
+#
+# ⚠️ PATH ÖNEKİNE bakar — katman taşımasında güncellenmezse hatalar modülsüz
+# kalır. Katman mimarisi (2026-07-17): /k-plan, /k-report eklendi.
+# Sıra: daha uzun/spesifik önek önce (ilk eşleşen kazanır).
 _MODULE_MAP = [
+    # Girdi katmanı (Faz 3)
+    ("/k-plan/strategy", "Stratejik Planlama"),
+    ("/k-plan/process", "Süreç"),
+    ("/k-plan/project", "Proje"),
+    ("/k-plan/individual", "Bireysel"),
+    # Rapor katmanı (Faz 4)
+    ("/k-report", "Raporlar"),
+    # Teşhis
+    ("/k-radar", "K-Radar"),
+    ("/k-analiz", "K-Radar"),
+    # Eski önekler (legacy redirect'ler)
     ("/sp", "Stratejik Planlama"),
-    ("/k-radar", "K-Analiz"),
-    ("/k-analiz", "K-Analiz"),
     ("/k-rapor", "Raporlar"),
     ("/surec", "Süreç"),
     ("/process", "Süreç"),
@@ -34,6 +47,8 @@ _MODULE_MAP = [
     ("/kurum", "Kurum"),
     ("/proje", "Proje"),
     ("/project", "Proje"),
+    ("/individual", "Bireysel"),
+    ("/reports", "Raporlar"),
     ("/rapor", "Raporlar"),
     ("/admin", "Admin"),
     ("/api", "API"),
