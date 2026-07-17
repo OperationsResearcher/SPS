@@ -1,13 +1,13 @@
 {% extends "platform/base.html" %}
-{% block title %}K-Analiz — Stratejik Planlama Analizi{% endblock %}
-{% block page_title %}K-Analiz{% endblock %}
+{% block title %}{{ _("K-Radar Araçları") }} — {{ _("Teşhis") }}{% endblock %}
+{% block page_title %}{{ _("K-Radar Araçları") }}{% endblock %}
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/k_radar.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'K-Analiz', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('K-Radar Araçları'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -20,15 +20,12 @@
      data-api-pestle="{{ url_for('app_bp.k_radar_api_ks_pestel_real') }}"
      data-api-gap="{{ url_for('app_bp.k_radar_api_ks_gap_real') }}"
      data-api-strateji="{{ url_for('app_bp.k_radar_api_ks_strateji_real') }}"
-     data-api-swot-save="{{ url_for('app_bp.sp_api_swot_save') }}"
-     data-api-tows-save="{{ url_for('app_bp.sp_api_tows_save') }}"
-     data-api-pestle-save="{{ url_for('app_bp.sp_api_pestle_save') }}"
+     {# Teşhis katmanı salt-oku: yazma uçları (swot/tows/pestle save, okr create/update,
+        bsc assign) bilinçli KALDIRILDI — düzenleme Girdi katmanının (SP) tekelinde.
+        Bkz. docs/kontrol/ENDPOINT-SOZLESMESI.md #}
      data-api-okr="{{ url_for('app_bp.sp_api_okr_list') }}"
-     data-api-okr-obj-create="{{ url_for('app_bp.sp_api_okr_objective_create') }}"
-     data-api-okr-obj-base="{{ url_for('app_bp.sp_api_okr_objective_update', obj_id=0)[:-1] }}"
-     data-api-okr-kr-base="{{ url_for('app_bp.sp_api_okr_kr_update', kr_id=0)[:-1] }}"
      data-api-bsc="{{ url_for('app_bp.sp_api_bsc_get') }}"
-     data-api-bsc-assign="{{ url_for('app_bp.sp_api_bsc_assign') }}"
+     data-sp-swot-url="{{ url_for('app_bp.sp_swot_page') }}"
      data-api-efqm="{{ url_for('app_bp.k_radar_api_ks_efqm') }}"
      data-can-manage="{{ 'true' if can_manage_k_radar else 'false' }}">
 
@@ -39,7 +36,7 @@
         <i class="fas fa-magnifying-glass-chart"></i>
       </div>
       <div>
-        <h1 class="kr-header-title">K-Analiz</h1>
+        <h1 class="kr-header-title">{{ _("K-Radar Araçları") }}</h1>
         <p class="kr-header-sub">{{ _("Stratejik Planlama Analiz Merkezi — SWOT · TOWS · PESTLE · GAP · OKR · BSC · EFQM") }}</p>
       </div>
     </div>

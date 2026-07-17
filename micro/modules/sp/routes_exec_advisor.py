@@ -4,7 +4,7 @@
 """
 from __future__ import annotations
 
-from flask import render_template, jsonify, request, current_app
+from flask import render_template, jsonify, request, current_app, redirect, url_for
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
@@ -329,10 +329,15 @@ def sp_api_template_get(code):
 
 # ── TV / War-room modu ────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/tv")
+@app_bp.route("/k-radar/savas-odasi")
 @login_required
 def sp_tv_mode():
-    """Tam ekran TV / war-room KPI duvarı (exec-snapshot verisini döngüyle gösterir)."""
+    """Tam ekran TV / war-room KPI duvarı (exec-snapshot verisini döngüyle gösterir).
+
+    Teşhis katmanı (`/k-radar/`) — saf gösterim, sıfır girdi. Endpoint adı
+    tarihsel (`sp_tv_mode`); endpoint sözleşmesi gereği DEĞİŞMEZ, sadece path
+    taşındı. Bkz. docs/kontrol/ENDPOINT-SOZLESMESI.md
+    """
     if not _can():
         return render_template("errors/403.html"), 403
     return render_template(
@@ -340,6 +345,13 @@ def sp_tv_mode():
         savas_uid=current_user.id,
         savas_tid=current_user.tenant_id or 0,
     )
+
+
+@app_bp.route("/sp/tv")
+@login_required
+def sp_tv_mode_legacy():
+    """Eski Savaş Odası adresi → teşhis katmanı. Bookmark'lar kırılmasın."""
+    return redirect(url_for("app_bp.sp_tv_mode"), code=301)
 
 
 # ── Tenant-geneli AI Yönetici Özeti (exec + kurum üstü) ───────────────────────

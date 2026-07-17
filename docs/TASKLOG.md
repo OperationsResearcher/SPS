@@ -2,6 +2,48 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-273 | 2026-07-17 | ✅ Tamamlandı
+
+**Görev:** Katman mimarisi Faz 0 (endpoint sözleşmesi) + Faz 2 (Teşhis katmanı salt-oku)
+**Modül:** k_radar, sp, i18n
+**Durum:** ✅ Tamamlandı — yerelde doğrulandı, Test'e gitmedi
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/ENDPOINT-SOZLESMESI.md` → YENİ. Faz 0 çıktısı: 610 route ölçümü + sözleşme
+- `micro/modules/sp/routes_exec_advisor.py` → Savaş Odası `/sp/tv` → `/k-radar/savas-odasi`; eski path 301 redirect (`sp_tv_mode_legacy`)
+- `micro/modules/k_radar/routes_ks.py` → `can_manage_k_radar=False` sabit (teşhis salt-oku); ölü import temizlendi
+- `ui/templates/platform/k_radar/ks.html` → 6 yazma ucu (swot/tows/pestle save, okr create/update, bsc assign) kaldırıldı; `data-sp-swot-url` eklendi
+- `ui/static/platform/js/k_radar_ks.js` → save handler'ları silindi; `CAN_MANAGE=false` tek kilit; `saveRowHtml` → `editHintHtml` (SP'ye yönlendirir)
+- `ui/templates/platform/base.html` + `k_radar/{ks,kp,kpr,cross}.html` + `analiz/index.html` + `js/command_palette.js` → "K-Analiz" → "K-Radar Araçları"
+- `translations/{tr,en}/LC_MESSAGES/messages.po` + `.mo` → 4 yeni msgid, elle eklendi + compile
+
+### Yapılan İşlem
+Faz 0'da 610 route ölçüldü: **0 çift endpoint adı** → yol haritasının "endpoint adlarını
+dondur, path değiştir" stratejisi kanıtlandı (~64 template'e dokunulmadı). Faz 2'de K-Radar
+teşhis katmanı salt-okuya çevrildi: yazma yolu route (`can_manage=False`) + template
+(attribute yok) + JS (`CAN_MANAGE=false`) olmak üzere 3 katmanda kesildi. Kullanıcı
+kaybetmesin diye modallara "Stratejik Planlama'da düzenle" yönlendirmesi kondu.
+
+### Notlar
+**Ölçüm 2 plan hatasını düzeltti (belgeye işlendi):**
+1. *"K-Analiz ölü sidebar izi, kaldır"* → **YANLIŞ.** KS/KP/KPR/Cross ailesinin
+   alt-navigasyonu; silinse o sayfalara sidebar erişimi biterdi. Kullanıcı kararı:
+   kalsın, "K-Radar Araçları" olarak yeniden adlandırıldı.
+2. *"Yazma borcu = sp_api_swot_save çağrıları"* → **EKSİK.** K-Radar'ın KENDİ 15 yazma
+   route'u var. Kullanıcı kararı: kategori kategori ayır → bu fazda yalnız SP save
+   çağrıları kaldırıldı.
+
+⚠️ **Bilerek DOKUNULMADI (kapsam dışı):** olgunluk 4 route (Faz 3'te taşınacak) ·
+risk 2 route (Faz 5 `source_id` migration) · **paydaş 4 + değer zinciri 3 + takvim 1
+= 9 route KARAR BEKLİYOR** (tasarımda hiç konuşulmadı, teşhis sayıldı ama yazıyorlar).
+
+**Doğrulama (CI çalışmıyor → yerel):** `pytest -q` → **588 passed, 1 skipped, 1 xfailed**
+(baseline ile aynı, sıfır regresyon) · 8/8 smoke: `/sp/tv`→301, salt-oku kanıtı,
+`/k-analiz` alias sağlam, SP hâlâ yazıyor · `node --check` temiz.
+
+**Yan gözlem (düzeltilmedi, benim işim değil):** `translations/tr/…/messages.po:5257`
+→ `msgid "Proje Kanban"` / `msgstr "Stratejik Planlama"` — yanlış eşleşmiş.
+
 ## TASK-266…269 ✅ (Faz 4) · TASK-270…272 ⏸️ (Faz 5) | 2026-07-15
 
 ### TASK-266…269 — Faz 4 "Var olanı anlat" ✅ Tamamlandı

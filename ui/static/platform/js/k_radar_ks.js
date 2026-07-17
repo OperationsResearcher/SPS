@@ -47,6 +47,13 @@
   const hub = document.getElementById("ks-hub-root");
   if (!hub) return;
 
+  // K-Radar = teşhis katmanı → SALT OKU. Strateji verisinin tek sahibi Girdi
+  // katmanıdır (SP); buradan yazılmaz. Sunucu da can_manage_k_radar=False
+  // gönderir (micro/modules/k_radar/routes_ks.py) — bu sabit ikinci kilittir.
+  // Yazmayı geri açmak katman mimarisi kararını bozar:
+  // docs/kontrol/KATMAN-MIMARISI-HEDEF.md
+  const CAN_MANAGE = false;
+
   const API = {
     ks:       hub.dataset.apiKs,
     swot:     hub.dataset.apiSwot,
@@ -266,16 +273,21 @@
     </div>`;
   }
 
-  // Kaydet butonu
-  function saveRowHtml(btnId) {
-    return `<div style="display:flex;justify-content:flex-end;margin-top:10px;">
-      <button id="${btnId}" class="mc-btn mc-btn-success mc-btn-sm"><i class="fas fa-save"></i> ${t("Kaydet")}</button>
+  // Teşhis katmanı salt-oku: düzenleme Girdi katmanında (SP). Kaydet butonu
+  // yerine kullanıcıyı doğru katmana yönlendiren şerit gösterilir.
+  function editHintHtml() {
+    const url = hub.dataset.spSwotUrl;
+    if (!url) return "";
+    return `<div class="ks-edit-hint" style="display:flex;justify-content:flex-end;margin-top:10px;">
+      <a href="${esc(url)}" class="mc-btn mc-btn-secondary mc-btn-sm">
+        <i class="fas fa-pen-to-square"></i> ${t("Stratejik Planlama'da düzenle")}
+      </a>
     </div>`;
   }
 
   // ── SWOT Modal ────────────────────────────────────────────────────────────────
   function loadSwotModal() {
-    const canManage = hub.dataset.canManage === "true";
+    const canManage = CAN_MANAGE;
     setHtml("ks-modal-swot-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
 
     // State
@@ -306,7 +318,7 @@
           <span class="mc-badge mc-badge-warning">T: ${oz.T}</span>
         </div>
         <div class="ks-swot-matrix">${matrixHtml}</div>
-        ${canManage ? saveRowHtml("ks-swot-save") : ""}`);
+        ${editHintHtml()}`);
 
       if (!canManage) return;
 
@@ -361,26 +373,6 @@
         });
       });
 
-      // Kaydet
-      document.getElementById("ks-swot-save")?.addEventListener("click", () => {
-        postJson(hub.dataset.apiSwotSave, {
-          strengths: swotState.s, weaknesses: swotState.w,
-          opportunities: swotState.o, threats: swotState.t,
-        }).then(r => {
-          toast(r.success ? t("SWOT kaydedildi.") : (r.message || t("Hata")), r.success);
-          if (r.success) {
-            delete loaded["swot"];
-            // Hub mini kartını güncelle
-            ["s","w","o","t"].forEach(k => {
-              const el = document.getElementById("ks-swot-" + k);
-              if (el) el.textContent = swotState[k].length;
-            });
-            const badge = document.getElementById("ks-swot-badge");
-            const total = swotState.s.length + swotState.w.length + swotState.o.length + swotState.t.length;
-            if (badge) badge.textContent = total + " " + t("madde");
-          }
-        }).catch(() => toast(t("Bağlantı hatası."), false));
-      });
     }
 
     fetchJson(API.swot).then(res => {
@@ -396,7 +388,7 @@
 
   // ── TOWS Modal ────────────────────────────────────────────────────────────────
   function loadTowsModal() {
-    const canManage = hub.dataset.canManage === "true";
+    const canManage = CAN_MANAGE;
     setHtml("ks-modal-tows-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
 
     const towsState = { so: [], st: [], wo: [], wt: [] };
@@ -440,7 +432,7 @@
             ${cellsHtml([cells[2], cells[3]])}
           </div>
         </div>
-        ${canManage ? saveRowHtml("ks-tows-save") : ""}`);
+        ${editHintHtml()}`);
 
       if (!canManage) return;
 
@@ -476,18 +468,6 @@
         });
       });
 
-      document.getElementById("ks-tows-save")?.addEventListener("click", () => {
-        postJson(hub.dataset.apiTowsSave, towsState)
-          .then(r => {
-            toast(r.success ? t("TOWS kaydedildi.") : (r.message || t("Hata")), r.success);
-            if (r.success) {
-              delete loaded["tows"];
-              const badge = document.getElementById("ks-tows-badge");
-              const total = towsState.so.length + towsState.st.length + towsState.wo.length + towsState.wt.length;
-              if (badge) badge.textContent = total + " " + t("strateji");
-            }
-          }).catch(() => toast(t("Bağlantı hatası."), false));
-      });
     }
 
     fetchJson(API.tows).then(res => {
@@ -504,7 +484,7 @@
   // ── PESTLE Modal ──────────────────────────────────────────────────────────────
   let pestleChart = null;
   function loadPestleModal() {
-    const canManage = hub.dataset.canManage === "true";
+    const canManage = CAN_MANAGE;
     setHtml("ks-modal-pestle-body", `<div class="kr-loading" style="padding:32px;">${t("Yükleniyor…")}</div>`);
 
     const PESTLE_LABELS = [
@@ -538,7 +518,7 @@
 
       setHtml("ks-modal-pestle-body", `
         <div class="mc-grid-3" style="gap:12px;">${cardsHtml}</div>
-        ${canManage ? saveRowHtml("ks-pestle-save") : ""}`);
+        ${editHintHtml()}`);
 
       if (!canManage) return;
 
@@ -574,18 +554,7 @@
         });
       });
 
-      document.getElementById("ks-pestle-save")?.addEventListener("click", () => {
-        postJson(hub.dataset.apiPestleSave, pestleState)
-          .then(r => {
-            toast(r.success ? t("PESTLE kaydedildi.") : (r.message || t("Hata")), r.success);
-            if (r.success) {
-              delete loaded["pestle"];
-              const total = PESTLE_LABELS.reduce((s, m) => s + pestleState[m.key].length, 0);
-              const badge = document.getElementById("ks-pestle-badge");
-              if (badge) badge.textContent = total + " " + t("faktör");
-            }
-          }).catch(() => toast(t("Bağlantı hatası."), false));
-      });
+      // Yazma kaldırıldı (teşhis salt-oku) — PESTEL düzenleme SP'de.
     }
 
     fetchJson(API.pestle).then(res => {
@@ -642,7 +611,7 @@
 
   // ── OKR Modal ─────────────────────────────────────────────────────────────────
   function loadOkrModal() {
-    const canManage = hub.dataset.canManage === "true";
+    const canManage = CAN_MANAGE;
     const OBJ_URL    = hub.dataset.apiOkr;
     const OBJ_CREATE = hub.dataset.apiOkrObjCreate;
     const OBJ_BASE   = hub.dataset.apiOkrObjBase;
@@ -960,7 +929,7 @@
 
   // ── BSC Modal ─────────────────────────────────────────────────────────────────
   function loadBscModal() {
-    const canManage = hub.dataset.canManage === "true";
+    const canManage = CAN_MANAGE;
     const BSC_URL    = hub.dataset.apiBsc;
     const ASSIGN_URL = hub.dataset.apiBscAssign;
 

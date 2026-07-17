@@ -34,7 +34,7 @@
     { title: t("Proje Portföyü"),          url: "/project/portfolio", icon: "fa-layer-group",          group: t("Sayfa") },
     { title: t("Proje Gantt"),             url: "/project/gantt",     icon: "fa-stream",               group: t("Sayfa") },
     { title: t("Proje Kanban"),            url: "/project/kanban",    icon: "fa-columns",              group: t("Sayfa") },
-    { title: t("K-Analiz"),                url: "/k-radar/ks",        icon: "fa-magnifying-glass-chart", group: t("Sayfa") },
+    { title: t("K-Radar Araçları"),        url: "/k-radar/ks",        icon: "fa-magnifying-glass-chart", group: t("Sayfa") },
     { title: t("K-Radar"),                 url: "/reports",          icon: "fa-satellite-dish",       group: t("Sayfa") },
     { title: t("Performans Analitiği"),    url: "/analysis",          icon: "fa-chart-bar",            group: t("Sayfa") },
     { title: t("Bireysel Karne"),          url: "/individual/scorecard", icon: "fa-user-check",        group: t("Sayfa") },

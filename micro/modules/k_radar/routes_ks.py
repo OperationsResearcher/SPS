@@ -4,7 +4,7 @@ from flask import jsonify, render_template, request
 from flask_login import current_user, login_required
 
 from platform_core import app_bp
-from micro.modules.k_radar.routes_common import _can_manage_k_radar, _required_tenant_id, _safe_json
+from micro.modules.k_radar.routes_common import _required_tenant_id, _safe_json
 
 
 def _ks_swot_summary(tenant_id: int) -> dict:
@@ -40,7 +40,13 @@ def _ks_swot_summary(tenant_id: int) -> dict:
 @app_bp.route("/k-radar/ks")
 @login_required
 def k_radar_ks():
-    return render_template("platform/k_radar/ks.html", can_manage_k_radar=_can_manage_k_radar())
+    """Teşhis katmanı — SALT OKU.
+
+    K-Radar strateji araçlarını GÖSTERİR, yazmaz. Düzenleme Girdi katmanının
+    (SP) tekelindedir; şablon "düzeltmek için SP'ye git" linki sunar.
+    Bkz. docs/kontrol/KATMAN-MIMARISI-HEDEF.md — "her veri tek katmanda yazılır".
+    """
+    return render_template("platform/k_radar/ks.html", can_manage_k_radar=False)
 
 
 @app_bp.route("/k-radar/api/ks/swot-summary")
