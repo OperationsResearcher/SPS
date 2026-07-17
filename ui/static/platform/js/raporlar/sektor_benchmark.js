@@ -7,7 +7,7 @@
     document.getElementById('loading').style.display = 'block';
     document.getElementById('content').style.display  = 'none';
     try {
-      const url = '/reports/api/sektor-benchmark' + (sektor ? '?sektor=' + encodeURIComponent(sektor) : '');
+      const url = '/k-report/api/sektor-benchmark' + (sektor ? '?sektor=' + encodeURIComponent(sektor) : '');
       const j = await (await fetch(url, {credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message || 'Veri alınamadı');
       document.getElementById('loading').style.display = 'none';
@@ -109,7 +109,7 @@
   // ── Kota durumu ───────────────────────────────────────────────────────────
   async function loadQuota(){
     try {
-      const j = await (await fetch('/reports/api/ai-status', {credentials:'same-origin'})).json();
+      const j = await (await fetch('/k-report/api/ai-status', {credentials:'same-origin'})).json();
       const badge = document.getElementById('sb-ai-badge');
       if (!badge || !j.success) return;
       if (j.byok) {
@@ -146,7 +146,7 @@
     btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> AI yorumu hazırlanıyor…';
     result.style.display = 'none';
     try {
-      const j = await (await fetch('/reports/api/sektor-benchmark/ai-yorum', {
+      const j = await (await fetch('/k-report/api/sektor-benchmark/ai-yorum', {
         method: 'POST', credentials: 'same-origin',
         headers: {'Content-Type':'application/json'},
         body: JSON.stringify({sektor: seçiliSektor}),

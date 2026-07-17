@@ -197,6 +197,46 @@ Komut paletinde `/project/gantt` ve `/project/kanban` girdileri vardı — **bu 
 hiç var olmamış**. Gerçek adres proje ID'si ister (`/k-plan/project/<id>/views/gantt`).
 Girdiler kaldırıldı.
 
+## Faz 4 — UYGULANDI ✅ (2026-07-17, TASK-275)
+
+Rapor katmanı `/k-report/` önekinde birleşti: **136 route** (`/reports` 106 +
+`/k-rapor` 35 → tek önek) + **99 hardcoded URL** düzeltildi. Endpoint adları
+DEĞİŞMEDİ. Eski adresler 307 redirect.
+
+### ⚠️ Planın "çakışan araçları tekilleştir" işi ÖLÇÜMDE ÇIKMADI
+
+Yol haritası Faz 4'ü "en dağınık, çakışma çözümü gerekiyor" diye tarif ediyordu:
+*risk 6+1, bireysel 5+1, anomali 2+1*. **Ölçüm bunu doğrulamadı:**
+
+| İddia | Gerçek |
+|---|---|
+| risk 6+1 | `/k-report/risk-heatmap` (sayfa) + `/k-report/api/risk` (API) — **farklı şeyler, çakışma değil** |
+| bireysel 5+1 | çakışma **yok** |
+| anomali 2+1 | çakışma **yok** |
+
+Sayfa ile API ucunu "aynı aracın iki kopyası" saymak ölçüm hatasıydı. Faz 4 bu yüzden
+tekilleştirme değil, **saf URL birleştirme** olarak koştu. Kullanıcı kararı: çakışma
+olmasa da taşı — üç katman URL'de görünmezse mimari yarım kalır.
+
+### Bulunan TEK gerçek çakışma — `/k-report` kökü
+`raporlar_index` ve `k_rapor` taşıma sonrası **aynı path'e** düştü (ikisi de
+`/k-report`). Flask ilk eşleşeni seçer, diğeri sessizce erişilemez olurdu.
+Çözüm: kök `k_rapor`'a verildi (daha yetenekli — `?tab=X` ile içerik gösterir,
+tabsız hub'a yönlendirir); `raporlar_index` saf redirect'ti → `/k-report/all`'a
+çekildi, endpoint adı korundu.
+
+### Kapsam dışı — dış REST API (bilinçli)
+`/reports/daily|weekly|monthly` (`ai_bp`) ve `/reports/dashboard|performance/<id>`
+(`api_bp`) **taşınmadı**. Bunlar `app_bp` değil; katman mimarisi UI katmanıdır,
+dış API sözleşmesi bozulmaz. Flask statik kuralı dinamik `<path:subpath>`'e tercih
+ettiği için legacy redirect onları yutmaz — test bunu koruyor
+(`test_dis_api_katman_tasimasindan_etkilenmedi`).
+
+### Faz 3 dersi UYGULANDI — 4 kapı dosyası aynı commit'te
+`/k-report` öneki şuralara eklendi: `_GATED_PREFIX_MODULE` ·
+`module_registry` (k_rapor + raporlar url'leri) · `legacy_sunset::_is_platform_canonical`.
+(`_ROLE_GATED_PREFIX_MODULE`'e gerek yok — rapor rol-kapılı değil.)
+
 ## Hatırlatmalar
 
 - **CI çalışmıyor** → doğrulama `python -m pytest -q` (yerel) + `scripts/ci/yerel_kontrol.py`

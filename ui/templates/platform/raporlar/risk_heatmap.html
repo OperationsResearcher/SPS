@@ -102,7 +102,7 @@
     document.getElementById('rh-error').style.display = 'none';
     try {
       const yr = yearSel.value;
-      const url = '/reports/api/risk-heatmap' + (yr ? '?year=' + yr : '');
+      const url = '/k-report/api/risk-heatmap' + (yr ? '?year=' + yr : '');
       const j = await (await fetch(url, {credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       document.getElementById('rh-loading').style.display = 'none';

@@ -32,14 +32,14 @@ from flask_babel import gettext as _
 
 # ─── IF-01: Mobile Hub (PWA-style responsive sayfa) ────────────────────────
 
-@app_bp.route("/reports/mobile")
+@app_bp.route("/k-report/mobile")
 @login_required
 @require_module("raporlar")
 def raporlar_mobile():
     return render_template("platform/raporlar/mobile.html")
 
 
-@app_bp.route("/reports/api/mobile/snapshot")
+@app_bp.route("/k-report/api/mobile/snapshot")
 @login_required
 @require_module("raporlar")
 def raporlar_api_mobile_snapshot():
@@ -103,14 +103,14 @@ def raporlar_api_mobile_snapshot():
 
 # ─── IF-03: BI Connector ───────────────────────────────────────────────────
 
-@app_bp.route("/reports/bi-connector")
+@app_bp.route("/k-report/bi-connector")
 @login_required
 @require_module("raporlar")
 def raporlar_bi_connector():
     return render_template("platform/raporlar/bi_connector.html")
 
 
-@app_bp.route("/reports/api/bi/kpi-data.csv")
+@app_bp.route("/k-report/api/bi/kpi-data.csv")
 @login_required
 @require_module("raporlar")
 def raporlar_api_bi_kpi_data_csv():
@@ -147,7 +147,7 @@ def raporlar_api_bi_kpi_data_csv():
                     headers={"Content-Disposition": "attachment; filename=kpi_data.csv"})
 
 
-@app_bp.route("/reports/api/bi/strategies.json")
+@app_bp.route("/k-report/api/bi/strategies.json")
 @login_required
 @require_module("raporlar")
 def raporlar_api_bi_strategies_json():
@@ -174,14 +174,14 @@ def raporlar_api_bi_strategies_json():
 
 # ─── IF-05: ML Anomali (IsolationForest) ───────────────────────────────────
 
-@app_bp.route("/reports/ml-anomaly")
+@app_bp.route("/k-report/ml-anomaly")
 @login_required
 @require_module("raporlar")
 def raporlar_ml_anomaly():
     return render_template("platform/raporlar/ml_anomaly.html")
 
 
-@app_bp.route("/reports/api/ml-anomaly")
+@app_bp.route("/k-report/api/ml-anomaly")
 @login_required
 @require_module("raporlar")
 def raporlar_api_ml_anomaly():
@@ -266,14 +266,14 @@ def raporlar_api_ml_anomaly():
 
 # ─── IF-06: Workflow MVP — Initiative Onay Zinciri ────────────────────────
 
-@app_bp.route("/reports/approval-chain")
+@app_bp.route("/k-report/approval-chain")
 @login_required
 @require_module("raporlar")
 def raporlar_onay_zinciri():
     return render_template("platform/raporlar/onay_zinciri.html")
 
 
-@app_bp.route("/reports/api/approval-chain")
+@app_bp.route("/k-report/api/approval-chain")
 @login_required
 @require_module("raporlar")
 def raporlar_api_onay_zinciri():
@@ -338,7 +338,7 @@ def raporlar_api_onay_zinciri():
 
 # ─── PG × Proje Çapraz Etki Analizi (D2) ─────────────────────────────────────
 
-@app_bp.route("/reports/pi-project-impact")
+@app_bp.route("/k-report/pi-project-impact")
 @login_required
 @require_module("raporlar")
 def raporlar_pg_proje_etki():
@@ -346,7 +346,7 @@ def raporlar_pg_proje_etki():
     return render_template("platform/raporlar/pg_proje_etki.html")
 
 
-@app_bp.route("/reports/api/pi-project-impact")
+@app_bp.route("/k-report/api/pi-project-impact")
 @login_required
 @require_module("raporlar")
 def raporlar_api_pg_proje_etki():

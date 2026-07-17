@@ -30,14 +30,14 @@ from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
 
 # ─── PD-01: CFO Dashboard ──────────────────────────────────────────────────
 
-@app_bp.route("/reports/cfo-dashboard")
+@app_bp.route("/k-report/cfo-dashboard")
 @login_required
 @require_module("raporlar")
 def raporlar_cfo_dashboard():
     return render_template("platform/raporlar/cfo_dashboard.html")
 
 
-@app_bp.route("/reports/api/cfo-dashboard")
+@app_bp.route("/k-report/api/cfo-dashboard")
 @login_required
 @require_module("raporlar")
 def raporlar_api_cfo_dashboard():
@@ -126,14 +126,14 @@ def raporlar_api_cfo_dashboard():
 
 # ─── PD-02: COO Dashboard ──────────────────────────────────────────────────
 
-@app_bp.route("/reports/coo-dashboard")
+@app_bp.route("/k-report/coo-dashboard")
 @login_required
 @require_module("raporlar")
 def raporlar_coo_dashboard():
     return render_template("platform/raporlar/coo_dashboard.html")
 
 
-@app_bp.route("/reports/api/coo-dashboard")
+@app_bp.route("/k-report/api/coo-dashboard")
 @login_required
 @require_module("raporlar")
 def raporlar_api_coo_dashboard():
@@ -215,14 +215,14 @@ def raporlar_api_coo_dashboard():
 
 # ─── PD-03: CHRO Dashboard ──────────────────────────────────────────────────
 
-@app_bp.route("/reports/chro-dashboard")
+@app_bp.route("/k-report/chro-dashboard")
 @login_required
 @require_module("raporlar")
 def raporlar_chro_dashboard():
     return render_template("platform/raporlar/chro_dashboard.html")
 
 
-@app_bp.route("/reports/api/chro-dashboard")
+@app_bp.route("/k-report/api/chro-dashboard")
 @login_required
 @require_module("raporlar")
 def raporlar_api_chro_dashboard():
@@ -310,14 +310,14 @@ def raporlar_api_chro_dashboard():
 
 # ─── AI-11: AI Quarterly Review Hazırlayıcısı ──────────────────────────────
 
-@app_bp.route("/reports/quarterly-review")
+@app_bp.route("/k-report/quarterly-review")
 @login_required
 @require_module("raporlar")
 def raporlar_quarterly_review():
     return render_template("platform/raporlar/quarterly_review.html")
 
 
-@app_bp.route("/reports/api/quarterly-review")
+@app_bp.route("/k-report/api/quarterly-review")
 @login_required
 @require_module("raporlar")
 def raporlar_api_quarterly_review():
@@ -421,14 +421,14 @@ def raporlar_api_quarterly_review():
 
 # ─── AI-12: AI Strateji Hikayeleştirici ────────────────────────────────────
 
-@app_bp.route("/reports/strategy-story")
+@app_bp.route("/k-report/strategy-story")
 @login_required
 @require_module("raporlar")
 def raporlar_strateji_hikayesi():
     return render_template("platform/raporlar/strateji_hikayesi.html")
 
 
-@app_bp.route("/reports/api/strategy-story")
+@app_bp.route("/k-report/api/strategy-story")
 @login_required
 @require_module("raporlar")
 def raporlar_api_strateji_hikayesi():

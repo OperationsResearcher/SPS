@@ -142,7 +142,7 @@ async function sendSlack() {
         return;
     }
     try {
-        const resp = await fetch("/k-rapor/api/anomalies/notify-slack", {
+        const resp = await fetch("/k-report/api/anomalies/notify-slack", {
             method: "POST",
             headers: {"Content-Type": "application/json"},
             body: JSON.stringify({ webhook_url: webhook, severity_min: sevMin, limit: 10 }),

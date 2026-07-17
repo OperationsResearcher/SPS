@@ -48,7 +48,7 @@
 
   async function load() {
     try {
-      const j = await (await fetch('/reports/api/ml-anomaly', {credentials:'same-origin'})).json();
+      const j = await (await fetch('/k-report/api/ml-anomaly', {credentials:'same-origin'})).json();
       if (!j.success) throw new Error(j.message);
       document.getElementById('ma-loading').style.display = 'none';
       document.getElementById('ma-content').style.display = 'block';

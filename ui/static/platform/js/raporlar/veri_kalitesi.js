@@ -47,7 +47,7 @@
     try {
       const sel = document.getElementById('year-select');
       const yr = sel ? sel.value : '';
-      const url = '/reports/api/data-quality' + (yr ? ('?year=' + encodeURIComponent(yr)) : '');
+      const url = '/k-report/api/data-quality' + (yr ? ('?year=' + encodeURIComponent(yr)) : '');
       document.getElementById('loading').style.display = 'block';
       document.getElementById('content').style.display = 'none';
       document.getElementById('error').style.display = 'none';

@@ -11,7 +11,7 @@ import pytest
 
 # Test edilen modüllerin ana sayfaları (login redirect bekleniyor)
 PAGE_ROUTES = [
-    "/k-rapor",
+    "/k-report",
     "/k-plan/individual/scorecard",
     "/admin/yonetim-paneli",
     "/admin/users",
@@ -25,10 +25,10 @@ PAGE_ROUTES = [
 
 # JSON API endpoint'ler (login redirect bekleniyor)
 API_ROUTES = [
-    "/k-rapor/api/corporate",
-    "/k-rapor/api/process-pg",
-    "/k-rapor/api/alert",
-    "/k-rapor/api/export-pdf",  # Sprint 11.3
+    "/k-report/api/corporate",
+    "/k-report/api/process-pg",
+    "/k-report/api/alert",
+    "/k-report/api/export-pdf",  # Sprint 11.3
     "/k-plan/individual/api/scorecard",
     "/k-plan/individual/api/scorecard/export-pdf",  # Sprint 11.3
     "/organization/api/overview",

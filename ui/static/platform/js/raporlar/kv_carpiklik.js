@@ -69,7 +69,7 @@
   async function load() {
     try {
       const y = currentYear();
-      const url = '/reports/api/k-vector-skewness' + (y ? ('?year=' + encodeURIComponent(y)) : '');
+      const url = '/k-report/api/k-vector-skewness' + (y ? ('?year=' + encodeURIComponent(y)) : '');
       // İçeriği yükleme moduna al
       document.getElementById('loading').style.display = '';
       document.getElementById('content').style.display = 'none';
