@@ -126,10 +126,25 @@ K-Analiz karışıklığı gideriliyor; ekran metni Türkçe kuralı §2).
 
 **Doğrulama:** `pytest -q` 588 passed (baseline aynı) · 8/8 smoke · `node --check` temiz.
 
-### Faz 2'nin bıraktığı tek açık borç
-**Paydaş (4) + değer zinciri (3) + takvim (1) = 8 yazma route'u** hâlâ K-Radar'da.
-Teşhis katmanında yaşıyorlar ama yazıyorlar → katman kuralını ihlal ediyorlar.
-Tasarımda hiç konuşulmadılar; katman ataması **kullanıcı kararı bekliyor**.
+### Faz 2'nin bıraktığı borç — ÇÖZÜLDÜ (karar: 2026-07-17)
+
+Ölçüm 8 route'u tek grup sanmıştı; gövdeleri okununca **3 ayrı şey** çıktı:
+
+| Grup | Route | Ne yazıyor | Karar |
+|---|---:|---|---|
+| **Paydaş** | 4 | `StakeholderMap` — gerçek iş verisi | **Faz 3**: `/k-plan/strateji/paydas` evi inşa edilir |
+| **Değer zinciri** | 3 | `ValueChainItem` — gerçek iş verisi | **Faz 3**: `/k-plan/surec/deger-zinciri` evi inşa edilir |
+| **Takvim** | 1 | zamanlayıcı ayarı (açık/kapalı + saat) | **KAPSAM DIŞI** — iş verisi değil |
+
+**Takvim neden istisna değil:** `k_radar_schedule_save` iş verisi yazmıyor, K-Radar'ın
+kendi rapor zamanlayıcı *ayarını* kaydediyor. Katman kuralı ("her veri tek katmanda
+yazılır") iş verisi içindir; bir modülün kendi ayarı bu kapsama girmez. Kural
+esnetilmedi — kapsamı doğru okundu.
+
+**Paydaş/VC neden Faz 3'e ertelendi (Faz 2'de yapılmadı):** Girdi katmanında evleri
+yok. Faz 2 salt-oku yapabilirdi ama kullanıcı veriyi giremez hale gelirdi — yetenek
+kaybı olurdu. Olgunluk'ta durum farklı: evi hazır (süreç modülü). Üçü birlikte Faz
+3'te taşınır; K-Radar'da salt-oku görünüm kalır.
 
 ## Hatırlatmalar
 

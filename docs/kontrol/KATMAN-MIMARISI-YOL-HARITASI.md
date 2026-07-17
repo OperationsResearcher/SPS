@@ -57,6 +57,27 @@ K-Radar zaten teşhis; sadece netleştirilir.
 - [ ] **6 hardcoded URL'yi düzelt** (`url_for`'a çevir).
 - [ ] Test: her girdi ekranı tek sahip, yazma çalışıyor.
 
+#### Faz 3 kapsam GENİŞLEMESİ — kullanıcı kararı 2026-07-17
+
+Faz 2 ölçümü, Girdi katmanında **evi olmayan** 2 araç buldu (Faz 0 belgesine bak).
+Olgunluk'tan farkları: onun evi hazırdı (süreç modülü), bunların yok — sadece
+K-Radar'da yaşıyorlar. **Karar: Faz 3'te ev inşa edilir** (aynı dosyalara iki kez
+girilmesin, ara dönemde katman kuralı delik kalmasın):
+
+| Araç | Yazma route | Yeni girdi evi | Not |
+|---|---:|---|---|
+| **Paydaş** (`StakeholderMap`) | 4 | `/k-plan/strateji/paydas` | HEDEF belgede zaten listelenmiş |
+| **Değer zinciri** (`ValueChainItem`) | 3 | `/k-plan/surec/deger-zinciri` | HEDEF belgede zaten listelenmiş |
+| Olgunluk | 4 | `/k-plan/surec/olgunluk` | (zaten planlıydı) |
+
+Her üçünde de K-Radar'da **salt-oku görünüm kalır** — veri orada görünmeye devam
+eder, sadece yazma Girdi'ye taşınır (Faz 2'nin SWOT'ta yaptığının aynısı).
+
+**Takvim (`k_radar_schedule_save`) kapsam DIŞI — ölçümle gerekçelendirildi:**
+İş verisi yazmıyor; K-Radar'ın kendi rapor zamanlayıcı ayarını (açık/kapalı + saat)
+kaydediyor. Katman kuralı iş verisi içindir; modülün kendi ayarı ihlal değildir.
+→ K-Radar'da kalır, dokunulmaz.
+
 ### FAZ 4 — Katman 3 (Rapor) + BİRLEŞME — en büyük, en dağınık
 - [ ] k_rapor + raporlar → `/k-report/*` altında birleştir.
 - [ ] **Çakışan araçları tekilleştir** (risk 6+1, bireysel 5+1, anomali 2+1):
