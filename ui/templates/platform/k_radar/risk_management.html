@@ -93,15 +93,23 @@
                     </select>
                 </div>
                 <div class="col-md-6 mb-3">
-                    <label for="risk-source" class="form-label">{{ _("Kaynak") }}</label>
-                    <select class="form-select" id="risk-source">
-                        <option value="manual">{{ _("Manuel") }}</option>
+                    <label for="risk-source" class="form-label">
+                        {{ _("Kaynak") }} <span class="req">*</span>
+                    </label>
+                    {# Katman ilkesi: her risk bir kaynağa bağlı. "Manuel" seçeneği
+                       KALDIRILDI (TASK-276) — kaynaksız risk girilemez. Sunucu da
+                       reddeder (routes_risk.py::_kaynak_dogrula). #}
+                    <select class="form-select" id="risk-source" required>
+                        <option value="">{{ _("— Kaynak seçin —") }}</option>
+                        <option value="swot">SWOT</option>
+                        <option value="pestel">PESTEL</option>
+                        <option value="porter">Porter</option>
                         <option value="process">{{ _("Süreç") }}</option>
                         <option value="project">{{ _("Proje") }}</option>
-                        <option value="pestel">PESTEL</option>
-                        <option value="swot">SWOT</option>
-                        <option value="porter">Porter</option>
                     </select>
+                    <small class="text-muted">
+                        {{ _("Riskin doğduğu analiz — kurumsal riskler de bir kaynağa bağlanır (ör. Kur Riski → PESTEL).") }}
+                    </small>
                 </div>
             </div>
         </div>
@@ -115,6 +123,15 @@
 <script>
 const SEVERITY_CLASS = {
     critical: "danger", high: "warning", medium: "info", low: "secondary"
+};
+
+// Kaynak türü → ekran metni (KURALLAR §2: URL/kod İngilizce, ekran Türkçe).
+// Eski kayıtlarda kategori değerleri de olabilir ("Finansal" vb.) — eşleşmeyen
+// değer olduğu gibi gösterilir, veri gizlenmez.
+const KAYNAK_ETIKET = {
+    swot: "SWOT", pestel: "PESTEL", porter: "Porter",
+    process: "{{ _('Süreç') }}", project: "{{ _('Proje') }}",
+    manual: "{{ _('Kaynaksız (eski kayıt)') }}"
 };
 
 async function loadRisks() {
@@ -137,7 +154,7 @@ async function loadRisks() {
                 <td class="text-center"><strong>${r.rpn}</strong></td>
                 <td class="text-center"><span class="badge bg-${cls}">${r.severity}</span></td>
                 <td>${escapeHtml(r.status || "—")}</td>
-                <td><small class="text-muted">${escapeHtml(r.source_type || "—")}</small></td>
+                <td><small class="text-muted">${escapeHtml(KAYNAK_ETIKET[r.source_type] || r.source_type || "—")}</small></td>
                 <td>
                     <button class="btn btn-sm btn-link" onclick="editRisk(${r.id})"><i class="bi bi-pencil"></i></button>
                     <button class="btn btn-sm btn-link text-danger" onclick="deleteRisk(${r.id})"><i class="bi bi-trash"></i></button>

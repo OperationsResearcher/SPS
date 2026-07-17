@@ -2,6 +2,59 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-276 | 2026-07-17 | ✅ Tamamlandı
+
+**Görev:** Katman mimarisi Faz 5 — Risk borcu: `source_id` + kaynak eşleme + `manual` kaldırma
+**Modül:** k_radar (risk), migrations, models
+**Durum:** ✅ Tamamlandı — yerelde doğrulandı, Test'e gitmedi
+
+### Değiştirilen Dosyalar
+- `migrations/versions/b7d3e1f4a920_*.py` → YENİ. `source_id` + bileşik indeks + 5 türün eşlemesi
+- `app/models/k_radar_domain.py` → `RiskHeatmapItem.source_id`; FK'siz olmasının gerekçesi yorumda
+- `micro/modules/k_radar/routes_risk.py` → `_kaynak_dogrula()` + `GECERLI_KAYNAKLAR`; add/update yollarına bağlandı; `source_id` API yanıtında
+- `ui/templates/platform/k_radar/risk_management.html` → "Manuel" seçeneği silindi, kaynak zorunlu, `KAYNAK_ETIKET` (ekran Türkçe)
+- `tests/test_k_radar_regression.py` → **2 yeni kural testi**
+
+### Yapılan İşlem
+"Her risk bir kaynağa bağlı" ilkesi şema + veri + kod + UI'da uygulandı. Migration
+`source_id` kolonunu ve `(source_type, source_id)` indeksini ekledi, 70 kaynaksız
+riski geniş-kaynağa eşledi (pestel 28 · project 14 · process 14 · swot 14 ·
+**manual 0**). Yazma yolu artık kaynaksız/`manual`/geçersiz kaydı 400 ile reddediyor;
+UI'da "Manuel" seçeneği yok, kaynak zorunlu alan.
+
+### Notlar
+⚠️ **Planın veri iddiası çürüdü.** Yol haritası + hedef belge: *"70 manual = 35 gerçek
+risk × 2 (test kurumu ID kayması); gerçek kurumsal riskler, silinecek çöp değil."*
+**DB ölçümü: 70 = 5 eşsiz risk × 7 plan yılı × 2 kurum** — hepsi aynı gün (2026-05-26),
+aynı probability/impact/rpn → seed verisi. "35 gerçek risk" diye bir şey yok.
+Kullanıcı kararı: **5 türü eşle**, migration 70 satırı otomatik doldursun (iş 7× küçüldü).
+
+⚠️ **`source_id`'ye FK KOYMADIM** (plan "source_id + FK ekle" diyordu). `source_id`
+polimorfik: `source_type`'a göre swot/pestel/process/project tablolarını işaret eder.
+Tek kolona 4 tabloya FK konulamaz — Postgres desteklemez. Uygulama katmanında
+doğrulanıyor + bileşik indeks kondu. Alternatif (4 nullable FK / bağlantı tablosu)
+ayrı şema kararı.
+
+✅ **`source_type` karışıklığı çözüldü — tasarımda değil, veride.** Kolon zaten
+"kaynak" anlamında tasarlanmış (UI seçenekleri kanıt: manual/process/project/pestel/
+swot/porter). Tenant 28'in `Finansal`/`Operasyonel` değerleri bu listede yok = seed
+ederken kategori sanılmış.
+
+🔻 **AÇIK BORÇ — tenant 28'in 10 gerçek riski** hâlâ kategori değeri taşıyor
+("AB CBAM karbon vergisi" → `Düzenleyici`). Migration **dokunmadı**: gerçek müşteri
+verisi, eşlemesi iş bilgisi ister. Ekranda olduğu gibi görünüyor (veri gizlenmiyor).
+**Karar bekliyor:** kategori ayrı kolona mı, kaynağa mı eşlensin?
+
+**Güvenlik/geri dönüş:** `flask db downgrade` **test edildi** → 70 risk `manual`'a
+döndü, `source_id` düştü, tenant 28 verisi bozulmadı; `upgrade` tekrar koştu.
+Yedek: `backups/faz5/risk_heatmap_items_oncesi.dump` (migration öncesi).
+
+**Doğrulama (CI çalışmıyor → yerel):** `pytest -q` → **598 passed**, 1 skipped,
+1 xfailed (596 + 2 yeni kural testi), sıfır regresyon · Faz 5 smoke 14/14 ·
+önceki fazlar korunuyor.
+
+---
+
 ## TASK-275 | 2026-07-17 | ✅ Tamamlandı
 
 **Görev:** Katman mimarisi Faz 4 — Rapor katmanı `/k-report/` önekinde birleşti

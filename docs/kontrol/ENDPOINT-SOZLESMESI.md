@@ -237,6 +237,59 @@ ettiği için legacy redirect onları yutmaz — test bunu koruyor
 `module_registry` (k_rapor + raporlar url'leri) · `legacy_sunset::_is_platform_canonical`.
 (`_ROLE_GATED_PREFIX_MODULE`'e gerek yok — rapor rol-kapılı değil.)
 
+## Faz 5 — UYGULANDI ✅ (2026-07-17, TASK-276)
+
+Risk borcu kapandı: `source_id` kolonu + bileşik indeks eklendi, 70 kaynaksız risk
+geniş-kaynağa eşlendi, `manual` seçeneği kaldırıldı (kod + UI).
+
+### ⚠️ Planın veri iddiası ÖLÇÜMDE ÇÜRÜDÜ
+
+| İddia (yol haritası + hedef belge) | DB gerçeği (2026-07-17) |
+|---|---|
+| "70 manual = **35 gerçek risk** × 2 (test kurumu ID kayması)" | 70 = **5 eşsiz risk × 7 plan yılı × 2 kurum** |
+| "35 gerçek riski kaynağa eşle" | Eşlenecek **5 tür** var |
+| "Gerçek kurumsal riskler — silinecek çöp değil" | Hepsi aynı gün (2026-05-26), aynı p/i/rpn → **seed verisi** |
+
+5 eşsiz başlık: Hammadde Fiyat Artışı · Kur Riski · Anahtar Yetenek Kaybı ·
+Tedarik Zinciri Kesintisi · Teknoloji Geliştirme Gecikmesi.
+**Kullanıcı kararı:** 5 türü eşle, migration 70 satırı otomatik doldursun (iş 7× küçüldü).
+
+### Eşleme (hedef tasarım §Karar 3 örnekleriyle birebir)
+| Risk | Kaynak | Gerekçe |
+|---|---|---|
+| Kur Riski · Hammadde Fiyat Artışı | `pestel` | Ekonomik dış faktör |
+| Anahtar Yetenek Kaybı | `swot` | İç zayıflık |
+| Tedarik Zinciri Kesintisi | `process` | Süreç riski |
+| Teknoloji Geliştirme Gecikmesi | `project` | Proje riski |
+
+Sonuç: pestel 28 · project 14 · process 14 · swot 14 · **manual 0**.
+
+### `source_type` karışıklığı — çözüldü (tasarımda değil, veride)
+Kolon **zaten "kaynak" anlamında tasarlanmış** — UI seçenekleri bunu kanıtlıyor
+(`risk_management.html`: manual/process/project/pestel/swot/porter). Tenant 28'in
+`Finansal`/`Operasyonel`/`Teknoloji` değerleri bu listede **yok**: seed ederken
+kategori sanılıp yanlış doldurulmuş.
+
+⚠️ **AÇIK BORÇ:** Tenant 28'in **10 gerçek riski** hâlâ kategori değerleri taşıyor
+("AB CBAM karbon vergisi" → `Düzenleyici`). Bu migration onlara **dokunmadı** —
+gerçek müşteri verisi, eşlemesi iş bilgisi ister. Ekranda olduğu gibi görünür
+(veri gizlenmez). Ayrı karar gerekiyor: kategori ayrı kolona mı, kaynağa mı eşlensin?
+
+### ⚠️ `source_id`'ye FK YOK — bilinçli (yol haritası "FK ekle" diyordu)
+`source_id` **polimorfiktir**: `source_type`'a göre farklı tabloyu işaret eder
+(swot→sp_swot_items, pestel→sp_pestel_items, process→processes, project→projects).
+Tek kolona 4 tabloya FK konulamaz — Postgres desteklemez. Alternatifler (4 ayrı
+nullable FK, ya da bağlantı tablosu) ayrı şema kararı. Çift uygulama katmanında
+doğrulanır; `(source_type, source_id)` bileşik indeksi kondu.
+
+Seed risklerinde `source_id` **NULL**: tür düzeyinde eşlendiler, somut bir SWOT
+kaydından doğmadılar. Yeni kayıtlarda kullanıcı kaynağı seçince dolar.
+
+### Downgrade TEST EDİLDİ
+`flask db downgrade` → 70 risk `manual`'a döndü, `source_id` düştü, tenant 28
+verisi bozulmadı. `upgrade` tekrar koştu. Geri dönüş yolu güvenli.
+Yedek: `backups/faz5/risk_heatmap_items_oncesi.dump`.
+
 ## Hatırlatmalar
 
 - **CI çalışmıyor** → doğrulama `python -m pytest -q` (yerel) + `scripts/ci/yerel_kontrol.py`

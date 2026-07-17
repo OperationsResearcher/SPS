@@ -108,7 +108,15 @@ class RiskHeatmapItem(TenantScopedMixin, db.Model):
     rpn = db.Column(db.Integer, nullable=True)
     owner_id = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     status = db.Column(db.String(50), nullable=True)
+    # Katman mimarisi: "her risk bir kaynağa bağlı" (TASK-276, Faz 5).
+    # source_type = kaynak TÜRÜ {swot, pestel, porter, process, project}.
+    # source_id   = o kaynağın PK'si — POLİMORFİK, bu yüzden FK YOK:
+    #   tek kolon source_type'a göre farklı tabloyu işaret eder, Postgres
+    #   bunu tek FK ile ifade edemez. Çift uygulama katmanında doğrulanır.
+    # 'manual' ARTIK GEÇERSİZ — kaynaksız risk girilemez (routes_risk.py).
+    # (source_type, source_id) bileşik indeksi migration'da: ix_risk_heatmap_items_source
     source_type = db.Column(db.String(50), nullable=True)
+    source_id = db.Column(db.Integer, nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = db.Column(

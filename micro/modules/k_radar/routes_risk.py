@@ -27,6 +27,28 @@ def _is_manager() -> bool:
     )
 
 
+# Katman mimarisi ilkesi: "Her risk bir kaynağa bağlı." Kaynak = GENİŞ tanım —
+# kurumsal-genel riskler zorla projeye değil, doğdukları stratejik analize bağlanır
+# (Kur Riski → PESTEL, Yetenek Kaybı → SWOT). TASK-276, Faz 5.
+# 'manual' BİLİNÇLİ OLARAK YOK: kaynaksız risk girişi engellendi.
+GECERLI_KAYNAKLAR = frozenset({"swot", "pestel", "porter", "process", "project"})
+
+
+def _kaynak_dogrula(payload) -> tuple[str | None, str | None]:
+    """(source_type, hata_mesajı) döndürür. Hata varsa source_type None."""
+    kaynak = (payload.get("source_type") or "").strip().lower()
+    if not kaynak:
+        return None, _("Kaynak seçimi zorunludur — her risk bir kaynağa bağlıdır.")
+    if kaynak == "manual":
+        return None, _(
+            "Kaynaksız risk girilemez. Riskin doğduğu analizi seçin "
+            "(SWOT, PESTEL, Porter, Süreç veya Proje)."
+        )
+    if kaynak not in GECERLI_KAYNAKLAR:
+        return None, _("Geçersiz kaynak türü.")
+    return kaynak, None
+
+
 @app_bp.route("/k-radar/risk")
 @login_required
 def k_radar_risk_page():
@@ -81,6 +103,7 @@ def k_radar_api_risk_list():
             "owner_id": r.owner_id,
             "status": r.status,
             "source_type": r.source_type,
+            "source_id": r.source_id,
             "plan_year_id": r.plan_year_id,
         })
     return jsonify({"success": True, "count": len(rows), "data": rows})
@@ -122,6 +145,10 @@ def k_radar_api_risk_add():
     except (ValueError, TypeError):
         return jsonify({"success": False, "message": _("probability/impact 1-5 arası olmalı.")}), 400
 
+    kaynak, kaynak_hata = _kaynak_dogrula(payload)
+    if kaynak_hata:
+        return jsonify({"success": False, "message": kaynak_hata}), 400
+
     risk = RiskHeatmapItem(
         tenant_id=current_user.tenant_id,
         plan_year_id=payload.get("plan_year_id") or None,
@@ -131,7 +158,8 @@ def k_radar_api_risk_add():
         rpn=prob * imp,
         owner_id=payload.get("owner_id") or None,
         status=payload.get("status") or "Open",
-        source_type=payload.get("source_type") or "manual",
+        source_type=kaynak,
+        source_id=payload.get("source_id") or None,
     )
     db.session.add(risk)
     db.session.commit()
@@ -170,6 +198,15 @@ def k_radar_api_risk_modify(risk_id):
             pass
     if "status" in payload:
         risk.status = payload["status"]
+    # Kaynak düzeltilebilir ama KALDIRILAMAZ (katman ilkesi: her risk bir
+    # kaynağa bağlı). Gönderilmezse mevcut kaynak korunur.
+    if "source_type" in payload:
+        kaynak, kaynak_hata = _kaynak_dogrula(payload)
+        if kaynak_hata:
+            return jsonify({"success": False, "message": kaynak_hata}), 400
+        risk.source_type = kaynak
+        if "source_id" in payload:
+            risk.source_id = payload.get("source_id") or None
     risk.rpn = (risk.probability or 0) * (risk.impact or 0)
     db.session.commit()
     return jsonify({"success": True})
