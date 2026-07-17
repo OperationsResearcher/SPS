@@ -40,17 +40,26 @@ Katmanı DA konuyu DA URL'den okuruz; örtüşen araçlar (Gantt) katmana göre 
 ## URL şeması — katman/konu/araç
 
 ### Katman 1 — GİRDİ (`/k-plan/`)
+
+> ⚠️ **DÜZELTİLDİ 2026-07-17 (ölçüm + kullanıcı kararı).** Bu bölüm önce Türkçe konu
+> adlarıyla yazılmıştı (`/k-plan/surec/...`). Ölçüm gösterdi ki girdi modülleri
+> **zaten İngilizce URL'ye taşınmış**: `/process` (37 route), `/individual` (18),
+> `/project` (21) — `/surec`, `/proje` yalnızca legacy redirect olarak kalmış.
+> Türkçe şema hem KURALLAR §2'yi ("URL = İngilizce") ihlal ederdi hem de mevcut
+> kodu geriye döndürürdü. **Karar: İngilizce konu adı.** Ekran metni Türkçe kalır.
+
 ```
-/k-plan/strateji/swot          SWOT, TOWS, PESTEL, Porter, VRIO, BSC, OKR,
-/k-plan/strateji/pestel        Blue Ocean, X-Matrix, vizyon, misyon, değerler,
-/k-plan/strateji/okr           PAYDAŞ (plan yılı + strateji bağlamı)
-/k-plan/surec/liste            süreç, PG
-/k-plan/surec/olgunluk         OLGUNLUK (K-Radar domain'inden TAŞINIR)
-/k-plan/surec/deger-zinciri
-/k-plan/proje/gantt            görev, Gantt, Kanban, Takvim, Kapasite
-/k-plan/proje/kanban           (anlık yönetim = girdi, kullanıcı kararı)
-/k-plan/proje/raid             PROJE RİSKİ (her risk bir kaynağa bağlı)
-/k-plan/bireysel/karne         bireysel karne, hedef
+/k-plan/strategy/swot            SWOT, TOWS, PESTEL, Porter, VRIO, BSC, OKR,
+/k-plan/strategy/pestel          Blue Ocean, X-Matrix, vizyon, misyon, değerler
+/k-plan/strategy/okr
+/k-plan/strategy/stakeholder     PAYDAŞ — girdi evi İNŞA EDİLİR (Faz 3)
+/k-plan/process/list             süreç, PG
+/k-plan/process/maturity         OLGUNLUK (K-Radar domain'inden TAŞINIR)
+/k-plan/process/value-chain      DEĞER ZİNCİRİ — girdi evi İNŞA EDİLİR (Faz 3)
+/k-plan/project/gantt            görev, Gantt, Kanban, Takvim, Kapasite
+/k-plan/project/kanban           (anlık yönetim = girdi, kullanıcı kararı)
+/k-plan/project/raid             PROJE RİSKİ (her risk bir kaynağa bağlı)
+/k-plan/individual/scorecard     bireysel karne, hedef
 ```
 
 ### Katman 2 — TEŞHİS (`/k-radar/`) — SALT OKU

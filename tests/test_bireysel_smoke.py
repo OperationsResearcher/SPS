@@ -3,15 +3,15 @@ import pytest
 
 
 PAGES = [
-    "/individual",
-    "/individual/scorecard",
+    "/k-plan/individual",
+    "/k-plan/individual/scorecard",
 ]
 
 APIS = [
-    "/individual/api/scorecard",
-    "/individual/api/scorecard/export-pdf",   # Sprint 11
-    "/individual/api/alignment-score",
-    "/individual/api/team-alignment",
+    "/k-plan/individual/api/scorecard",
+    "/k-plan/individual/api/scorecard/export-pdf",   # Sprint 11
+    "/k-plan/individual/api/alignment-score",
+    "/k-plan/individual/api/team-alignment",
 ]
 
 

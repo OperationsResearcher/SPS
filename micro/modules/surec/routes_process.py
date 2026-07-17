@@ -74,7 +74,7 @@ from micro.modules.surec.helpers import (
 # Sayfa Route'ları
 # ──────────────────────────────────────────────────
 
-@app_bp.route("/process")
+@app_bp.route("/k-plan/process")
 @login_required
 def surec():
     """Süreç Yönetimi ana sayfası — hiyerarşik ağaç; erişim rol/atamaya göre filtrelenir."""
@@ -206,7 +206,7 @@ def surec():
     )
 
 
-@app_bp.route("/process/<int:process_id>/karne")
+@app_bp.route("/k-plan/process/<int:process_id>/karne")
 @login_required
 def surec_karne(process_id):
     """Süreç Karnesi sayfası (PG odaklı)."""
@@ -301,7 +301,7 @@ def surec_karne(process_id):
     )
 
 
-@app_bp.route("/process/<int:process_id>/faaliyetler")
+@app_bp.route("/k-plan/process/<int:process_id>/faaliyetler")
 @login_required
 def surec_faaliyetler(process_id):
     """Geriye dönük URL: faaliyet görünümünü karne sayfasında açar."""
@@ -317,7 +317,7 @@ def surec_faaliyetler(process_id):
 # API — Süreç CRUD
 # ──────────────────────────────────────────────────
 
-@app_bp.route("/process/api/add", methods=["POST"])
+@app_bp.route("/k-plan/process/api/add", methods=["POST"])
 @login_required
 def surec_api_add():
     if not can_crud_process_entity(current_user):
@@ -396,7 +396,7 @@ def surec_api_add():
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/get/<int:process_id>", methods=["GET"])
+@app_bp.route("/k-plan/process/api/get/<int:process_id>", methods=["GET"])
 @login_required
 def surec_api_get(process_id):
     p = (
@@ -443,7 +443,7 @@ def surec_api_get(process_id):
     })
 
 
-@app_bp.route("/process/api/update/<int:process_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/update/<int:process_id>", methods=["POST"])
 @login_required
 def surec_api_update(process_id):
     p = _process_for_user(process_id)
@@ -528,7 +528,7 @@ def surec_api_update(process_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/delete/<int:process_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/delete/<int:process_id>", methods=["POST"])
 @login_required
 def surec_api_delete(process_id):
     if not can_crud_process_entity(current_user):
@@ -558,7 +558,7 @@ def surec_api_delete(process_id):
 
 
 # ── PG Mini Sparkline (C2) — Süreç başına son 3 ay PG hedef üstü % ─────────
-@app_bp.route("/process/api/sparklines")
+@app_bp.route("/k-plan/process/api/sparklines")
 @login_required
 def surec_api_sparklines():
     """Tenant'ın tüm süreçleri için son 3 ay aylık PG hedef-üstü oranı.

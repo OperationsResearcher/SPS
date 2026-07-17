@@ -27,7 +27,7 @@ from app.utils.audit_logger import AuditLogger
 from flask_babel import gettext as _
 
 
-@app_bp.route("/project/<int:project_id>/task/new", methods=["GET", "POST"])
+@app_bp.route("/k-plan/project/<int:project_id>/task/new", methods=["GET", "POST"])
 @login_required
 def project_task_new(project_id: int):
     proj = load_project(project_id)
@@ -110,7 +110,7 @@ def project_task_new(project_id: int):
     return redirect(url_for("app_bp.project_detail", project_id=project_id))
 
 
-@app_bp.route("/project/api/task/quick-add", methods=["POST"])
+@app_bp.route("/k-plan/project/api/task/quick-add", methods=["POST"])
 @login_required
 def project_task_quick_add():
     """Takvim vb. için JSON ile hızlı proje görevi oluşturma."""
@@ -214,7 +214,7 @@ def project_task_quick_add():
     )
 
 
-@app_bp.route("/project/<int:project_id>/task/<int:task_id>")
+@app_bp.route("/k-plan/project/<int:project_id>/task/<int:task_id>")
 @login_required
 def project_task_detail(project_id: int, task_id: int):
     proj = load_project(project_id)
@@ -236,7 +236,7 @@ def project_task_detail(project_id: int, task_id: int):
     )
 
 
-@app_bp.route("/project/<int:project_id>/task/<int:task_id>/edit", methods=["GET", "POST"])
+@app_bp.route("/k-plan/project/<int:project_id>/task/<int:task_id>/edit", methods=["GET", "POST"])
 @login_required
 def project_task_edit(project_id: int, task_id: int):
     proj = load_project(project_id)
@@ -323,7 +323,7 @@ def project_task_edit(project_id: int, task_id: int):
     return redirect(url_for("app_bp.project_task_detail", project_id=project_id, task_id=task_id))
 
 
-@app_bp.route("/project/<int:project_id>/task/<int:task_id>/delete", methods=["POST"])
+@app_bp.route("/k-plan/project/<int:project_id>/task/<int:task_id>/delete", methods=["POST"])
 @login_required
 def project_task_delete(project_id: int, task_id: int):
     proj = load_project(project_id)

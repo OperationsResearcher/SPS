@@ -14,7 +14,7 @@ def _can_view():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/strategy-project-matrix")
+@app_bp.route("/k-plan/strategy/strategy-project-matrix")
 @login_required
 def sp_strategy_project_matrix():
     if not _can_view():
@@ -22,7 +22,7 @@ def sp_strategy_project_matrix():
     return render_template("platform/sp/strategy_project_matrix.html")
 
 
-@app_bp.route("/sp/api/strategy-project-matrix")
+@app_bp.route("/k-plan/strategy/api/strategy-project-matrix")
 @login_required
 def sp_api_strategy_project_matrix():
     """Aktif plan yılı için ana strateji × proje hizalama matrisi.

@@ -17,7 +17,7 @@ def _can():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/llm-usage")
+@app_bp.route("/k-plan/strategy/llm-usage")
 @login_required
 def sp_llm_usage_page():
     if not _can():
@@ -25,7 +25,7 @@ def sp_llm_usage_page():
     return render_template("platform/sp/llm_usage.html")
 
 
-@app_bp.route("/sp/api/llm-usage/summary")
+@app_bp.route("/k-plan/strategy/api/llm-usage/summary")
 @login_required
 def sp_api_llm_summary():
     if not _can():
@@ -56,7 +56,7 @@ def sp_api_llm_summary():
     })
 
 
-@app_bp.route("/sp/api/llm-usage/recent")
+@app_bp.route("/k-plan/strategy/api/llm-usage/recent")
 @login_required
 def sp_api_llm_recent():
     if not _can():

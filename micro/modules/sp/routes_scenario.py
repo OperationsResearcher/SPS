@@ -17,7 +17,7 @@ def _can():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/scenarios")
+@app_bp.route("/k-plan/strategy/scenarios")
 @login_required
 def sp_scenarios_page():
     if not _can():
@@ -25,7 +25,7 @@ def sp_scenarios_page():
     return render_template("platform/sp/scenarios.html")
 
 
-@app_bp.route("/sp/api/scenarios")
+@app_bp.route("/k-plan/strategy/api/scenarios")
 @login_required
 def sp_api_scenarios_list():
     """Tenant'a ait tüm plan yılları + senaryo ağacı."""
@@ -51,7 +51,7 @@ def sp_api_scenarios_list():
     return jsonify({"success": True, "items": items})
 
 
-@app_bp.route("/sp/api/scenarios", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/scenarios", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_scenario_create():
@@ -100,7 +100,7 @@ def sp_api_scenario_create():
     }), 201
 
 
-@app_bp.route("/sp/api/scenarios/<int:py_id>", methods=["DELETE"])
+@app_bp.route("/k-plan/strategy/api/scenarios/<int:py_id>", methods=["DELETE"])
 @csrf.exempt
 @login_required
 def sp_api_scenario_delete(py_id):
@@ -124,7 +124,7 @@ def sp_api_scenario_delete(py_id):
 
 # ── Senaryo / What-if Kıyas ───────────────────────────────────────────────────
 
-@app_bp.route("/sp/scenarios/compare")
+@app_bp.route("/k-plan/strategy/scenarios/compare")
 @login_required
 def sp_scenarios_compare_page():
     """Baseline ⟷ senaryo yan yana kıyas ekranı."""
@@ -133,7 +133,7 @@ def sp_scenarios_compare_page():
     return render_template("platform/sp/scenarios_kiyas.html")
 
 
-@app_bp.route("/sp/api/scenarios/compare")
+@app_bp.route("/k-plan/strategy/api/scenarios/compare")
 @login_required
 def sp_api_scenarios_compare():
     """Seçilen plan yılları/senaryoları için vizyon skorlarını salt-okunur hesaplar.

@@ -25,7 +25,7 @@ def _can():
 
 # ─── Exec Dashboard ──────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/exec-dashboard")
+@app_bp.route("/k-plan/strategy/exec-dashboard")
 @login_required
 @require_module("surec")  # süreç PG verisi gösterir → süreç paketi gerekir
 def sp_exec_dashboard():
@@ -41,7 +41,7 @@ def sp_exec_dashboard():
     )
 
 
-@app_bp.route("/sp/api/exec-snapshot")
+@app_bp.route("/k-plan/strategy/api/exec-snapshot")
 @login_required
 def sp_api_exec_snapshot():
     if not _can():
@@ -57,7 +57,7 @@ def sp_api_exec_snapshot():
 
 # ─── Strateji bazlı performans sıralaması ────────────────────────────────────
 
-@app_bp.route("/sp/api/exec-strategy-scores")
+@app_bp.route("/k-plan/strategy/api/exec-strategy-scores")
 @login_required
 def sp_api_exec_strategy_scores():
     """Aktif (veya verilen) yıl için strateji bazlı PG hedef üstü %; top 5 + bottom 5."""
@@ -145,7 +145,7 @@ def _kv_score_at(tenant_id: int, as_of_date, plan_year_obj):
         return None
 
 
-@app_bp.route("/sp/api/exec-kvektor-trend")
+@app_bp.route("/k-plan/strategy/api/exec-kvektor-trend")
 @login_required
 def sp_api_exec_kvektor_trend():
     """K-Vektör puanı gelişimi — günlük / aylık / çeyreklik / yıllık seriler."""
@@ -236,7 +236,7 @@ def sp_api_exec_kvektor_trend():
 
 # ─── Son 12 ay sağlık trendi (PG hedef üstü oranı) ───────────────────────────
 
-@app_bp.route("/sp/api/exec-trend")
+@app_bp.route("/k-plan/strategy/api/exec-trend")
 @login_required
 def sp_api_exec_trend():
     """Son 12 ay için aylık PG hedef üstü yüzdesi — sparkline için."""
@@ -279,7 +279,7 @@ def sp_api_exec_trend():
 
 # ─── AI Pivot Advisor ────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/api/ai-pivot", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/ai-pivot", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_ai_pivot():
@@ -300,7 +300,7 @@ def sp_api_ai_pivot():
 
 # ─── Template Marketplace ────────────────────────────────────────────────────
 
-@app_bp.route("/sp/templates")
+@app_bp.route("/k-plan/strategy/templates")
 @login_required
 def sp_templates_page():
     if not _can():
@@ -308,7 +308,7 @@ def sp_templates_page():
     return render_template("platform/sp/templates.html")
 
 
-@app_bp.route("/sp/api/templates")
+@app_bp.route("/k-plan/strategy/api/templates")
 @login_required
 def sp_api_templates_list():
     if not _can():
@@ -316,7 +316,7 @@ def sp_api_templates_list():
     return jsonify({"success": True, "items": list_templates()})
 
 
-@app_bp.route("/sp/api/templates/<code>")
+@app_bp.route("/k-plan/strategy/api/templates/<code>")
 @login_required
 def sp_api_template_get(code):
     if not _can():
@@ -394,7 +394,7 @@ def _exec_heuristik_ozet(snap):
     return " ".join(parts)
 
 
-@app_bp.route("/sp/api/exec-ai-summary")
+@app_bp.route("/k-plan/strategy/api/exec-ai-summary")
 @login_required
 def sp_api_exec_ai_ozet():
     """Tenant-geneli 2-3 cümlelik Türkçe yönetici özeti (exec + kurum üstü).
@@ -434,7 +434,7 @@ def sp_api_exec_ai_ozet():
     return jsonify({"success": True, "ozet": ozet, "kaynak": kaynak})
 
 
-@app_bp.route("/sp/api/templates/<code>/apply", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/templates/<code>/apply", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_template_apply(code):
@@ -513,7 +513,7 @@ def _savas_rank(sql, tid, year):
     }
 
 
-@app_bp.route("/sp/api/war-room/fronts")
+@app_bp.route("/k-plan/strategy/api/war-room/fronts")
 @login_required
 def sp_api_savas_odasi_fronts():
     """Savaş Odası ek cepheleri: alt strateji + süreç (hedef üstü %) + proje (sağlık)."""

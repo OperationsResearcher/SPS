@@ -29,6 +29,21 @@ def k_radar_kp_darbogaz():
 @app_bp.route("/k-radar/kp/value-chain")
 @login_required
 def k_radar_kp_deger_zinciri():
+    """Teşhis katmanı — değer zinciri SALT OKU.
+
+    Girdi evi `/k-plan/process/value-chain` (aynı şablon, can_manage=True).
+    """
+    return render_template("platform/k_radar/kp_deger_zinciri.html", can_manage_k_radar=False)
+
+
+@app_bp.route("/k-plan/process/value-chain")
+@login_required
+def k_plan_deger_zinciri():
+    """Girdi katmanı — değer zincirinin TEK SAHİBİ (yazar).
+
+    Katman mimarisi Faz 3 (2026-07-17): değer zinciri verisi teşhiste
+    yazılıyordu; girdi evi burada açıldı. K-Radar aynı şablonu salt-oku gösterir.
+    """
     return render_template("platform/k_radar/kp_deger_zinciri.html", can_manage_k_radar=_can_manage_k_radar())
 
 
@@ -68,10 +83,7 @@ def k_radar_kp_kapasite():
     return render_template("platform/k_radar/kp_kapasite.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/kp/maturity")
-@login_required
-def k_radar_kp_olgunluk():
-    tenant_id = _required_tenant_id()
+def _olgunluk_context(tenant_id: int):
     rows = (
         ProcessMaturity.query.filter_by(tenant_id=tenant_id, is_active=True)
         .order_by(ProcessMaturity.updated_at.desc())
@@ -83,6 +95,35 @@ def k_radar_kp_olgunluk():
         .order_by(Process.code, Process.name)
         .all()
     )
+    return rows, processes
+
+
+@app_bp.route("/k-radar/kp/maturity")
+@login_required
+def k_radar_kp_olgunluk():
+    """Teşhis katmanı — CMMI olgunluk ısı haritası SALT OKU.
+
+    Girdi evi `/k-plan/process/maturity` (aynı şablon, can_manage=True).
+    Hedef tasarımda planlanan taşıma: olgunluk süreç verisidir, sahibi Girdi.
+    """
+    rows, processes = _olgunluk_context(_required_tenant_id())
+    return render_template(
+        "platform/k_radar/kp_olgunluk.html",
+        can_manage_k_radar=False,
+        rows=rows,
+        processes=processes,
+    )
+
+
+@app_bp.route("/k-plan/process/maturity")
+@login_required
+def k_plan_olgunluk():
+    """Girdi katmanı — süreç olgunluğunun TEK SAHİBİ (yazar).
+
+    Katman mimarisi Faz 3 (2026-07-17): olgunluk K-Radar domain'inde
+    yazılıyordu; hedef tasarım gereği girdi evine taşındı.
+    """
+    rows, processes = _olgunluk_context(_required_tenant_id())
     return render_template(
         "platform/k_radar/kp_olgunluk.html",
         can_manage_k_radar=_can_manage_k_radar(),
@@ -91,7 +132,9 @@ def k_radar_kp_olgunluk():
     )
 
 
-@app_bp.route("/k-radar/kp/maturity/add", methods=["POST"])
+# Girdi katmanı (Faz 3): yazma /k-plan/ altında. Endpoint adı sözleşme gereği
+# korundu — şablondaki url_for otomatik uyum sağlar.
+@app_bp.route("/k-plan/process/maturity/add", methods=["POST"])
 @login_required
 def k_radar_kp_olgunluk_ekle():
     if not _can_manage_k_radar():
@@ -102,7 +145,7 @@ def k_radar_kp_olgunluk_ekle():
     dimension = (request.form.get("dimension") or "").strip() or None
     if not process_id or not maturity_level:
         flash(_("Süreç ve seviye zorunludur."), "danger")
-        return redirect(url_for("app_bp.k_radar_kp_olgunluk"))
+        return redirect(url_for("app_bp.k_plan_olgunluk"))
     row = ProcessMaturity(
         tenant_id=tenant_id,
         process_id=process_id,
@@ -115,7 +158,7 @@ def k_radar_kp_olgunluk_ekle():
     db.session.add(row)
     db.session.commit()
     flash(_("Olgunluk kaydı eklendi."), "success")
-    return redirect(url_for("app_bp.k_radar_kp_olgunluk"))
+    return redirect(url_for("app_bp.k_plan_olgunluk"))
 
 
 @app_bp.route("/k-radar/api/kp")
@@ -250,7 +293,7 @@ def k_radar_api_kp_olgunluk():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/kp/maturity", methods=["POST"])
+@app_bp.route("/k-plan/process/api/maturity", methods=["POST"])
 @login_required
 def k_radar_api_kp_olgunluk_create():
     if not _can_manage_k_radar():
@@ -277,7 +320,7 @@ def k_radar_api_kp_olgunluk_create():
     return _safe_json(_create)
 
 
-@app_bp.route("/k-radar/api/kp/maturity/<int:row_id>", methods=["PUT"])
+@app_bp.route("/k-plan/process/api/maturity/<int:row_id>", methods=["PUT"])
 @login_required
 def k_radar_api_kp_olgunluk_update(row_id: int):
     if not _can_manage_k_radar():
@@ -302,7 +345,7 @@ def k_radar_api_kp_olgunluk_update(row_id: int):
     return _safe_json(_update)
 
 
-@app_bp.route("/k-radar/api/kp/maturity/<int:row_id>", methods=["DELETE"])
+@app_bp.route("/k-plan/process/api/maturity/<int:row_id>", methods=["DELETE"])
 @login_required
 def k_radar_api_kp_olgunluk_delete(row_id: int):
     if not _can_manage_k_radar():
@@ -373,7 +416,7 @@ def k_radar_api_vc_items_list():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/kp/value-chain/items", methods=["POST"])
+@app_bp.route("/k-plan/process/api/value-chain/items", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_add():
     if not _can_manage_k_radar():
@@ -404,7 +447,7 @@ def k_radar_api_vc_item_add():
         return jsonify({"success": False, "message": _("Öğe eklenemedi.")}), 500
 
 
-@app_bp.route("/k-radar/api/kp/value-chain/items/<int:item_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/value-chain/items/<int:item_id>", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_update(item_id):
     if not _can_manage_k_radar():
@@ -435,7 +478,7 @@ def k_radar_api_vc_item_update(item_id):
         return jsonify({"success": False, "message": _("Öğe güncellenemedi.")}), 500
 
 
-@app_bp.route("/k-radar/api/kp/value-chain/items/<int:item_id>/delete", methods=["POST"])
+@app_bp.route("/k-plan/process/api/value-chain/items/<int:item_id>/delete", methods=["POST"])
 @login_required
 def k_radar_api_vc_item_delete(item_id):
     if not _can_manage_k_radar():

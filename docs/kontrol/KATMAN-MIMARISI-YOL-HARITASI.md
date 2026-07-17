@@ -50,12 +50,28 @@ K-Radar zaten teşhis; sadece netleştirilir.
 - [ ] "K-Analiz" ikinci sidebar girişini kaldır (K-Radar zaten var).
 - [ ] Test: teşhis ekranları okuma yapıyor, yazma yok.
 
-### FAZ 3 — Katman 1 (Girdi) — orta risk
-- [ ] SP → `/k-plan/strateji/*` · Süreç → `/k-plan/surec/*` · Proje →
-      `/k-plan/proje/*` · Bireysel → `/k-plan/bireysel/*`.
-- [ ] **Olgunluk taşı:** K-Radar domain'inden → `/k-plan/surec/olgunluk` (girdi).
-- [ ] **6 hardcoded URL'yi düzelt** (`url_for`'a çevir).
-- [ ] Test: her girdi ekranı tek sahip, yazma çalışıyor.
+### FAZ 3 — Katman 1 (Girdi) ✅ UYGULANDI (2026-07-17, TASK-274)
+- [x] SP → `/k-plan/strategy/*` · Süreç → `/k-plan/process/*` · Proje →
+      `/k-plan/project/*` · Bireysel → `/k-plan/individual/*` (**202 route**)
+      · URL dili: **İngilizce konu** (ölçüm: modüller zaten İngilizce'ydi; §2 kuralı)
+- [x] **Olgunluk taşındı** → `/k-plan/process/maturity` (girdi evi, şablon paylaşımı)
+- [x] **Paydaş + değer zinciri evleri inşa edildi** (kapsam genişlemesi, aşağıda)
+- [x] **Hardcoded URL: 27'ymiş (6 değil)** → 26 düzeltildi, 3 bilerek bırakıldı
+- [x] Eski adresler **307** redirect (301 değil — POST gövdesi korunmalı)
+- [x] Test: 589 passed, sıfır regresyon · Faz 3 smoke 20/20 · Faz 2 smoke 16/16
+
+🔴 **FAZ 4 İÇİN ZORUNLU DERS — path kapıları sessizce açılır**
+
+Route path'i değişince **path önekine bakan güvenlik kapıları hata vermeden devre
+dışı kalır**. Faz 3'te SP rol kapısı bu yüzden açıldı (test yakaladı). `/k-report/`
+öneki eklenirken **bu 4 dosya AYNI commit'te** güncellenmeli:
+
+1. `platform_core/__init__.py::_GATED_PREFIX_MODULE` — paket kapısı
+2. `platform_core/__init__.py::_ROLE_GATED_PREFIX_MODULE` — rol/liderlik kapısı
+3. `micro/core/module_registry.py` — modül `url` alanı (sidebar/launcher)
+4. `app/middleware/legacy_sunset.py::_is_platform_canonical` — platform kanonik önek
+
+Detay + kanıt: `ENDPOINT-SOZLESMESI.md` §Faz 3.
 
 #### Faz 3 kapsam GENİŞLEMESİ — kullanıcı kararı 2026-07-17
 

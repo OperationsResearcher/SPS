@@ -15,3 +15,4 @@ from micro.modules.sp import routes_alignment  # noqa: F401  Sprint 3 (Strateji-
 from micro.modules.sp import routes_frameworks  # noqa: F401  Sprint 59-63 (Hoshin, Blue Ocean, VRIO, EVM, Digest)
 from micro.modules.sp import routes_llm_quota  # noqa: F401  LLM kota & kullanım paneli
 from micro.modules.sp import routes_tenant_ai  # noqa: F401  Tenant BYOK ayarları
+from micro.modules.sp import routes_katman_legacy  # noqa: F401  Faz 3: /sp → /k-plan/strategy

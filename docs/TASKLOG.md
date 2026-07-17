@@ -2,6 +2,60 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-274 | 2026-07-17 | ✅ Tamamlandı
+
+**Görev:** Katman mimarisi Faz 3 — Girdi katmanı `/k-plan/` önekine taşındı
+**Modül:** sp, surec, proje, bireysel, k_radar, platform_core
+**Durum:** ✅ Tamamlandı — yerelde doğrulandı, Test'e gitmedi
+
+### Değiştirilen Dosyalar
+- `micro/modules/{sp,surec,proje,bireysel}/**` → **202 route path** `/k-plan/*` altına (endpoint adları DEĞİŞMEDİ)
+- `micro/modules/sp/routes_katman_legacy.py` → YENİ. `/sp` → `/k-plan/strategy` 307 redirect
+- `micro/modules/surec/routes_legacy.py` → `/surec` hedefi düzeltildi + `/process` redirect eklendi
+- `micro/modules/proje/routes_list.py` · `bireysel/routes.py` → `/project`, `/individual` 307 redirect
+- `platform_core/__init__.py` → **kapı tabloları** `/k-plan/*` önekleriyle güncellendi (KRİTİK, aşağıda)
+- `micro/core/module_registry.py` → 4 girdi modülünün URL'si
+- `app/middleware/legacy_sunset.py` → `/k-plan/` platform kanonik listesine
+- `micro/modules/k_radar/routes_{kp,cross}.py` → paydaş/VC/olgunluk girdi evleri + yazma API taşıma
+- 5 template + 6 JS → 26 hardcoded URL düzeltildi
+- `tests/` 9 dosya → eski path'ler güncellendi + **yeni güvenlik testi** eklendi
+
+### Yapılan İşlem
+Girdi katmanı `/k-plan/` önekine taşındı. Endpoint sözleşmesi (Faz 0) sayesinde ~64
+template'e dokunulmadı — `url_for` yeni path'i otomatik üretti, sidebar kendiliğinden
+uyum sağladı. Eski adresler **307** ile yönlendiriliyor (301 DEĞİL: POST gövdesi
+korunmalı). Paydaş/değer zinciri/olgunluk için girdi evleri açıldı: tek şablon, iki
+adres, `can_manage` farkı (Faz 2'nin SWOT kalıbı).
+
+### Notlar
+🔴 **EN ÖNEMLİ BULGU — path kapıları sessizce açılır.** Route path'i değişince path
+önekine bakan güvenlik kapıları **hata vermeden devre dışı kalır**. 3 yerde oldu:
+`_ROLE_GATED_PREFIX_MODULE` (SP rol kapısı AÇILDI), `_GATED_PREFIX_MODULE` (paket
+kapısı), `module_registry` (sidebar eski adres). Yalnızca mevcut test yakaladı
+(`test_sp_rol_kapisi_standart_kullaniciyi_engeller` → 302 beklerken 200). Düzeltildi +
+belgeye kural olarak yazıldı: **path taşırken bu 4 dosya aynı commit'te güncellenir.**
+Faz 4 (`/k-report/`) aynı tuzağa düşmemeli.
+
+**Ölçüm 2 plan hatası daha düzeltti:**
+1. *"URL `/k-plan/surec/...`"* → girdi modülleri **zaten İngilizce'ydi** (`/process`,
+   `/individual`, `/project`). Türkçe şema KURALLAR §2'yi ihlal ederdi. Kullanıcı
+   kararı: **İngilizce konu adı**; HEDEF belge düzeltildi.
+2. *"6 hardcoded URL"* → **27'ymiş** (JS sayılmamış). 26 düzeltildi; 3'ü
+   `sp_projeler.js`'te bilerek bırakıldı (legacy `/proje` üzerinden çalışıyor).
+
+**Yan bulgu (önceden de kırıktı, düzeltildi):** Komut paletinde `/project/gantt` ve
+`/project/kanban` girdileri vardı — bu route'lar **hiç var olmamış** (gerçek adres
+proje ID'si ister). Kaldırıldı.
+
+⚠️ **Kapsam dışı:** `main.*` legacy blueprint (KURALLAR S1) · takvim ayar route'u
+(iş verisi değil) · `sp_projeler.js` 3 hardcoded.
+
+**Doğrulama (CI çalışmıyor → yerel):** `pytest -q` → **589 passed**, 1 skipped,
+1 xfailed (588 baseline + 1 yeni güvenlik testi), sıfır regresyon · Faz 3 smoke 20/20 ·
+Faz 2 smoke 16/16 (kazanımlar korundu) · sidebar denetimi: tüm girdi linkleri `/k-plan/`.
+
+---
+
 ## TASK-273 | 2026-07-17 | ✅ Tamamlandı
 
 **Görev:** Katman mimarisi Faz 0 (endpoint sözleşmesi) + Faz 2 (Teşhis katmanı salt-oku)

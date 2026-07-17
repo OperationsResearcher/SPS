@@ -19,20 +19,42 @@ def k_radar_cross():
     return render_template("platform/k_radar/cross.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/cross/stakeholder")
-@login_required
-def k_radar_cross_paydas():
-    tenant_id = _required_tenant_id()
-    rows = (
+def _paydas_rows(tenant_id: int):
+    return (
         StakeholderMap.query.filter_by(tenant_id=tenant_id, is_active=True)
         .order_by(StakeholderMap.updated_at.desc())
         .limit(200)
         .all()
     )
+
+
+@app_bp.route("/k-radar/cross/stakeholder")
+@login_required
+def k_radar_cross_paydas():
+    """Teşhis katmanı — paydaş haritası SALT OKU.
+
+    Girdi evi `/k-plan/strategy/stakeholder` (aynı şablon, can_manage=True).
+    Şablon paylaşılır; tek kaynak, iki adres — Faz 2'nin SWOT kalıbı.
+    """
+    return render_template(
+        "platform/k_radar/cross_paydas.html",
+        can_manage_k_radar=False,
+        rows=_paydas_rows(_required_tenant_id()),
+    )
+
+
+@app_bp.route("/k-plan/strategy/stakeholder")
+@login_required
+def k_plan_paydas():
+    """Girdi katmanı — paydaş haritasının TEK SAHİBİ (yazar).
+
+    Katman mimarisi Faz 3 (2026-07-17): paydaş verisi teşhiste yazılıyordu;
+    girdi evi burada açıldı. K-Radar aynı şablonu salt-oku gösterir.
+    """
     return render_template(
         "platform/k_radar/cross_paydas.html",
         can_manage_k_radar=_can_manage_k_radar(),
-        rows=rows,
+        rows=_paydas_rows(_required_tenant_id()),
     )
 
 
@@ -54,7 +76,9 @@ def k_radar_cross_anket():
     return render_template("platform/k_radar/cross_anket.html", can_manage_k_radar=_can_manage_k_radar())
 
 
-@app_bp.route("/k-radar/cross/stakeholder/ekle", methods=["POST"])
+# Girdi katmanı (Faz 3): yazma /k-plan/ altında. Endpoint adı sözleşme gereği
+# korundu (k_radar_cross_paydas_ekle) — şablondaki url_for otomatik uyum sağlar.
+@app_bp.route("/k-plan/strategy/stakeholder/ekle", methods=["POST"])
 @login_required
 def k_radar_cross_paydas_ekle():
     if not _can_manage_k_radar():
@@ -67,7 +91,7 @@ def k_radar_cross_paydas_ekle():
     interest = request.form.get("interest", type=int)
     if not name:
         flash(_("Paydaş adı zorunludur."), "danger")
-        return redirect(url_for("app_bp.k_radar_cross_paydas"))
+        return redirect(url_for("app_bp.k_plan_paydas"))
     row = StakeholderMap(
         tenant_id=tenant_id,
         name=name,
@@ -80,7 +104,7 @@ def k_radar_cross_paydas_ekle():
     db.session.add(row)
     db.session.commit()
     flash(_("Paydaş kaydı eklendi."), "success")
-    return redirect(url_for("app_bp.k_radar_cross_paydas"))
+    return redirect(url_for("app_bp.k_plan_paydas"))
 
 
 @app_bp.route("/k-radar/api/cross/risk-heatmap")
@@ -122,7 +146,7 @@ def k_radar_api_cross_paydas():
     return _safe_json(_build)
 
 
-@app_bp.route("/k-radar/api/cross/stakeholder", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/stakeholder", methods=["POST"])
 @login_required
 def k_radar_api_cross_paydas_create():
     if not _can_manage_k_radar():
@@ -151,7 +175,7 @@ def k_radar_api_cross_paydas_create():
     return _safe_json(_create)
 
 
-@app_bp.route("/k-radar/api/cross/stakeholder/<int:row_id>", methods=["PUT"])
+@app_bp.route("/k-plan/strategy/api/stakeholder/<int:row_id>", methods=["PUT"])
 @login_required
 def k_radar_api_cross_paydas_update(row_id: int):
     if not _can_manage_k_radar():
@@ -180,7 +204,7 @@ def k_radar_api_cross_paydas_update(row_id: int):
     return _safe_json(_update)
 
 
-@app_bp.route("/k-radar/api/cross/stakeholder/<int:row_id>", methods=["DELETE"])
+@app_bp.route("/k-plan/strategy/api/stakeholder/<int:row_id>", methods=["DELETE"])
 @login_required
 def k_radar_api_cross_paydas_delete(row_id: int):
     if not _can_manage_k_radar():

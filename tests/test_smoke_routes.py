@@ -70,8 +70,8 @@ PROTECTED_ROUTES = [
     "/k-radar/cross",
     "/k-radar/kp/maturity",
     "/k-radar/kpr/cpm",
-    "/process/api/karne/1",
-    "/sp",
+    "/k-plan/process/api/karne/1",
+    "/k-plan/strategy",
 ]
 
 

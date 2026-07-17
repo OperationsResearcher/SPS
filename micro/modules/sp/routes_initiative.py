@@ -18,7 +18,7 @@ def _can_manage():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/initiatives")
+@app_bp.route("/k-plan/strategy/initiatives")
 @login_required
 def sp_initiatives_page():
     if not _can_manage():
@@ -26,7 +26,7 @@ def sp_initiatives_page():
     return render_template("platform/sp/initiatives.html")
 
 
-@app_bp.route("/sp/api/initiatives", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/initiatives", methods=["GET"])
 @login_required
 def sp_api_initiatives_list():
     if not _can_manage():
@@ -39,7 +39,7 @@ def sp_api_initiatives_list():
     return jsonify({"success": True, "items": [i.to_dict() for i in items]})
 
 
-@app_bp.route("/sp/api/initiatives", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/initiatives", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_initiatives_create():
@@ -81,7 +81,7 @@ def sp_api_initiatives_create():
     return jsonify({"success": True, "item": init.to_dict()}), 201
 
 
-@app_bp.route("/sp/api/initiatives/<int:iid>", methods=["PATCH"])
+@app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>", methods=["PATCH"])
 @csrf.exempt
 @login_required
 def sp_api_initiatives_update(iid):
@@ -130,7 +130,7 @@ def sp_api_initiatives_update(iid):
     return jsonify({"success": True, "item": init.to_dict()})
 
 
-@app_bp.route("/sp/api/initiatives/<int:iid>", methods=["DELETE"])
+@app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>", methods=["DELETE"])
 @csrf.exempt
 @login_required
 def sp_api_initiatives_delete(iid):
@@ -146,7 +146,7 @@ def sp_api_initiatives_delete(iid):
     return jsonify({"success": True})
 
 
-@app_bp.route("/sp/api/initiatives/<int:iid>/milestones", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>/milestones", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_milestone_create(iid):
@@ -180,7 +180,7 @@ def sp_api_milestone_create(iid):
 
 
 # ── Stratejik Girişim ↔ Proje bağlantısı ──────────────────────────────────
-@app_bp.route("/sp/api/initiatives/<int:iid>/projects", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>/projects", methods=["GET"])
 @login_required
 def sp_api_initiative_projects(iid):
     """Bir stratejik girişimin altındaki projeleri döner."""
@@ -203,7 +203,7 @@ def sp_api_initiative_projects(iid):
     } for p in rows]})
 
 
-@app_bp.route("/sp/api/projects/<int:pid>/initiative", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/projects/<int:pid>/initiative", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_project_set_initiative(pid):

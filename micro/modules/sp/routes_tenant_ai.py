@@ -17,7 +17,7 @@ def _can():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/settings/ai")
+@app_bp.route("/k-plan/strategy/settings/ai")
 @login_required
 def sp_ai_settings_page():
     if not _can():
@@ -25,7 +25,7 @@ def sp_ai_settings_page():
     return render_template("platform/sp/ai_settings.html")
 
 
-@app_bp.route("/sp/api/ai-config")
+@app_bp.route("/k-plan/strategy/api/ai-config")
 @login_required
 def sp_api_ai_config_get():
     if not _can():
@@ -46,7 +46,7 @@ def sp_api_ai_config_get():
     })
 
 
-@app_bp.route("/sp/api/ai-config", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/ai-config", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_ai_config_save():
@@ -76,7 +76,7 @@ def sp_api_ai_config_save():
     return jsonify({"success": True, "config": cfg.to_dict()})
 
 
-@app_bp.route("/sp/api/ai-config/test", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/ai-config/test", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_ai_config_test():
@@ -90,7 +90,7 @@ def sp_api_ai_config_test():
         return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
-@app_bp.route("/sp/api/ai-config", methods=["DELETE"])
+@app_bp.route("/k-plan/strategy/api/ai-config", methods=["DELETE"])
 @csrf.exempt
 @login_required
 def sp_api_ai_config_delete():

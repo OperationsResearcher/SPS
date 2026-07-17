@@ -55,7 +55,7 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
-@app_bp.route("/sp/periods")
+@app_bp.route("/k-plan/strategy/periods")
 @login_required
 def sp_donemler():
     """SP Dönem yönetimi sayfası."""
@@ -88,7 +88,7 @@ def sp_donemler():
     )
 
 
-@app_bp.route("/sp/api/period-compare", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/period-compare", methods=["GET"])
 @login_required
 def sp_api_donem_karsilastir():
     """İki stratejik plan dönemini karşılaştırır ve farkları döner."""
@@ -501,7 +501,7 @@ def sp_api_donem_karsilastir():
 
 # ─── Sprint 54 (Ö1): Çeyreklik Review Wizard ─────────────────────────────────
 
-@app_bp.route("/sp/ceyreklik-review")
+@app_bp.route("/k-plan/strategy/ceyreklik-review")
 @login_required
 def sp_quarterly_review_page():
     """Çeyreklik review sayfası."""
@@ -517,7 +517,7 @@ def sp_quarterly_review_page():
     )
 
 
-@app_bp.route("/sp/api/quarterly-review")
+@app_bp.route("/k-plan/strategy/api/quarterly-review")
 @login_required
 def sp_api_quarterly_review():
     """Çeyreklik review JSON."""

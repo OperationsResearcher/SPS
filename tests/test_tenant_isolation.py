@@ -47,9 +47,9 @@ def test_process_api_denies_other_tenant(client, app):
   _login(client, uid)
   headers = {"Accept": "application/json"}
 
-  rv_own = client.get(f"/process/api/kpi/list/{pid_own}", headers=headers)
+  rv_own = client.get(f"/k-plan/process/api/kpi/list/{pid_own}", headers=headers)
   assert rv_own.status_code == 200
   assert rv_own.get_json().get("success") is True
 
-  rv_other = client.get(f"/process/api/kpi/list/{pid_other}", headers=headers)
+  rv_other = client.get(f"/k-plan/process/api/kpi/list/{pid_other}", headers=headers)
   assert rv_other.status_code == 403

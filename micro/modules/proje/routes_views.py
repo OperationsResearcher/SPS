@@ -13,7 +13,7 @@ from app_platform.modules.proje.permissions import user_can_access_project
 from flask_babel import gettext as _
 
 
-@app_bp.route("/project/<int:project_id>/views/calendar")
+@app_bp.route("/k-plan/project/<int:project_id>/views/calendar")
 @login_required
 def project_view_calendar(project_id: int):
     proj = Project.query.get_or_404(project_id)
@@ -23,7 +23,7 @@ def project_view_calendar(project_id: int):
     return render_template("platform/project/calendar.html", project=proj)
 
 
-@app_bp.route("/project/<int:project_id>/views/gantt")
+@app_bp.route("/k-plan/project/<int:project_id>/views/gantt")
 @login_required
 def project_view_gantt(project_id: int):
     proj = Project.query.get_or_404(project_id)
@@ -34,7 +34,7 @@ def project_view_gantt(project_id: int):
     return render_template("platform/project/gantt.html", project=proj, tasks=tasks)
 
 
-@app_bp.route("/project/<int:project_id>/views/raid")
+@app_bp.route("/k-plan/project/<int:project_id>/views/raid")
 @login_required
 def project_view_raid(project_id: int):
     proj = Project.query.get_or_404(project_id)
@@ -44,7 +44,7 @@ def project_view_raid(project_id: int):
     return render_template("platform/project/raid.html", project=proj)
 
 
-@app_bp.route("/project/<int:project_id>/views/kapasite")
+@app_bp.route("/k-plan/project/<int:project_id>/views/kapasite")
 @login_required
 def project_view_kapasite(project_id: int):
     """Kapasite planlama — proje ekibine haftalık saat ayır (L3 eksik tamamlama).
@@ -67,7 +67,7 @@ def project_view_kapasite(project_id: int):
     )
 
 
-@app_bp.route("/project/<int:project_id>/views/kanban")
+@app_bp.route("/k-plan/project/<int:project_id>/views/kanban")
 @login_required
 def project_view_kanban(project_id: int):
     proj = Project.query.get_or_404(project_id)

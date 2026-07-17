@@ -74,7 +74,7 @@ from micro.modules.surec.helpers import (
 # API — KPI CRUD
 # ──────────────────────────────────────────────────
 
-@app_bp.route("/process/api/kpi/add", methods=["POST"])
+@app_bp.route("/k-plan/process/api/kpi/add", methods=["POST"])
 @login_required
 def surec_api_kpi_add():
     data = request.get_json() or {}
@@ -140,7 +140,7 @@ def surec_api_kpi_add():
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/kpi/get/<int:kpi_id>", methods=["GET"])
+@app_bp.route("/k-plan/process/api/kpi/get/<int:kpi_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_get(kpi_id):
     kpi = ProcessKpi.query.join(Process).filter(
@@ -173,7 +173,7 @@ def surec_api_kpi_get(kpi_id):
     })
 
 
-@app_bp.route("/process/api/kpi/update/<int:kpi_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/kpi/update/<int:kpi_id>", methods=["POST"])
 @login_required
 def surec_api_kpi_update(kpi_id):
     kpi = ProcessKpi.query.join(Process).filter(
@@ -233,7 +233,7 @@ def surec_api_kpi_update(kpi_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/kpi/delete/<int:kpi_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/kpi/delete/<int:kpi_id>", methods=["POST"])
 @login_required
 def surec_api_kpi_delete(kpi_id):
     kpi = ProcessKpi.query.join(Process).filter(
@@ -274,7 +274,7 @@ def surec_api_kpi_delete(kpi_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/kpi/list/<int:process_id>", methods=["GET"])
+@app_bp.route("/k-plan/process/api/kpi/list/<int:process_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_list(process_id):
     p = _process_for_user(process_id)
@@ -312,7 +312,7 @@ def surec_api_kpi_list(process_id):
     return jsonify({"success": True, "kpis": kpi_items})
 
 
-@app_bp.route("/process/api/favorite-kpi/toggle", methods=["POST"])
+@app_bp.route("/k-plan/process/api/favorite-kpi/toggle", methods=["POST"])
 @login_required
 def surec_api_favorite_kpi_toggle():
     """Favori KPI ekle/kaldır (legacy process_bp.favorite_kpi_toggle yerine)."""

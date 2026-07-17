@@ -92,7 +92,7 @@
       });
       g.addEventListener('mousemove', (e) => { tooltip.style.left = (e.clientX+14)+'px'; tooltip.style.top = (e.clientY+14)+'px'; });
       g.addEventListener('mouseleave', hideTooltip);
-      g.addEventListener('click', () => { window.location.href = '/sp/initiatives'; });
+      g.addEventListener('click', () => { window.location.href = '/k-plan/strategy/initiatives'; });
     });
   }
 
