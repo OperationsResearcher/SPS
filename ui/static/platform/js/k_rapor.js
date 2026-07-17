@@ -313,7 +313,7 @@
           setHtml("kr-trend-modal-body", `<div class="kr-loading">${t("Bu süreç için PG verisi yok.")}</div>`);
           return;
         }
-        return fetchJson(`/k-rapor/api/trend/${proc.kpi_ids[0]}`, { frequency: "monthly" });
+        return fetchJson(`/k-report/api/trend/${proc.kpi_ids[0]}`, { frequency: "monthly" });
       })
       .then(res => {
         if (!res) return;

@@ -132,13 +132,13 @@
       confirmButtonColor:'#dc2626'
     });
     if (!ok.isConfirmed) return;
-    const r = await fetch('/sp/api/vrio/' + rid, {method:'DELETE'});
+    const r = await fetch('/k-plan/strategy/api/vrio/' + rid, {method:'DELETE'});
     if (r.ok) load();
     else Swal.fire({icon:'error',title:t('Hata'),text:t('Silinemedi')});
   };
 
   window.vrio_update = async function(rid, field, value) {
-    const r = await fetch('/sp/api/vrio/' + rid, {
+    const r = await fetch('/k-plan/strategy/api/vrio/' + rid, {
       method: 'PATCH',
       headers: {'Content-Type':'application/json'},
       body: JSON.stringify({[field]: value}),

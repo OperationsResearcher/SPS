@@ -84,7 +84,7 @@
   async function load() {
     wrap.innerHTML = '<div style="text-align:center; padding:60px; color:#94a3b8; font-size:14px;"><i class="fas fa-spinner fa-spin"></i> ' + t("Matris yükleniyor…") + '</div>';
     try {
-      const res = await fetch("/sp/api/strategy-project-matrix");
+      const res = await fetch("/k-plan/strategy/api/strategy-project-matrix");
       const j = await res.json();
       if (!j.success) throw new Error(j.error || t("Veri alınamadı"));
       const d = j.data;

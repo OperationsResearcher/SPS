@@ -170,7 +170,7 @@
        style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr));
               gap: var(--space-4); margin-bottom: var(--space-6);">
 
-    <a href="/process" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.pg_hedef_ustu" style="padding: var(--space-4); border-left:4px solid var(--color-info);
+    <a href="{{ url_for('app_bp.surec') }}" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.pg_hedef_ustu" style="padding: var(--space-4); border-left:4px solid var(--color-info);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="kpi" title="{{ _('Süreç & PG yönetimine git') }}">
       <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("PG Hedef Üstü") }}</div>
@@ -190,7 +190,7 @@
       <div id="exec-init-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/process" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.gecikmis_faaliyet" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
+    <a href="{{ url_for('app_bp.surec') }}" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.gecikmis_faaliyet" style="padding: var(--space-4); border-left:4px solid var(--color-warning);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="overdue" title="{{ _('Süreçler ve gecikmiş faaliyetler') }}">
       <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("Gecikmiş Faaliyet") }}</div>
@@ -633,7 +633,7 @@
   let trendChart = null;
   async function loadTrend() {
     try {
-      const res = await fetch('/sp/api/exec-trend');
+      const res = await fetch('/k-plan/strategy/api/exec-trend');
       const j = await res.json();
       if (!j.success) return;
       const canvas = document.getElementById('exec-trend-chart');
@@ -670,7 +670,7 @@
   async function loadStrategyScores() {
     try {
       const yq = getYear() ? ('?year=' + encodeURIComponent(getYear())) : '';
-      const res = await fetch('/sp/api/exec-strategy-scores' + yq);
+      const res = await fetch('/k-plan/strategy/api/exec-strategy-scores' + yq);
       const j = await res.json();
       if (!j.success) return;
       const render = (items, color) => items.length ? items.map(it => `
@@ -718,7 +718,7 @@
   async function loadKvektorTrend() {
     try {
       const yq = getYear() ? ('?year=' + encodeURIComponent(getYear())) : '';
-      const res = await fetch('/sp/api/exec-kvektor-trend' + yq);
+      const res = await fetch('/k-plan/strategy/api/exec-kvektor-trend' + yq);
       const j = await res.json();
       if (!j.success) return;
       const d = j.data;
@@ -752,7 +752,7 @@
     if (!newYear) return;
     try {
       const csrf = document.querySelector('meta[name="csrf-token"]')?.content || '';
-      await fetch('/sp/api/plan-years/set-active', {
+      await fetch('/k-plan/strategy/api/plan-years/set-active', {
         method: 'POST',
         headers: { 'Content-Type': 'application/json', 'X-CSRFToken': csrf },
         body: JSON.stringify({ year: newYear })

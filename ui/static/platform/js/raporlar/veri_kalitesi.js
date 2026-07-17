@@ -17,8 +17,8 @@
     container.innerHTML = '<div style="display:grid;gap:8px;">' + items.map(k => `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;font-size:12.5px;">
         <div style="min-width:0;flex:1;">
-          <a href="/process/${k.process_id}/karne#kpi-${k.id}" style="font-weight:600;color:#0ea5e9;text-decoration:none;">${esc(k.code)} · ${esc(k.name)}</a>
-          <div style="font-size:11px;color:#64748b;margin-top:2px;"><a href="/process/${k.process_id}/karne" style="color:#64748b;text-decoration:none;">${esc(k.process_name)}</a>${k.last_data_date ? ` · son: ${esc(k.last_data_date)}` : ''}</div>
+          <a href="/k-plan/process/${k.process_id}/karne#kpi-${k.id}" style="font-weight:600;color:#0ea5e9;text-decoration:none;">${esc(k.code)} · ${esc(k.name)}</a>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;"><a href="/k-plan/process/${k.process_id}/karne" style="color:#64748b;text-decoration:none;">${esc(k.process_name)}</a>${k.last_data_date ? ` · son: ${esc(k.last_data_date)}` : ''}</div>
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap;max-width:50%;justify-content:flex-end;">
           ${k.issues.map(i => `<span style="background:#fee2e2;color:#991b1b;font-size:10.5px;padding:2px 7px;border-radius:8px;font-weight:600;">${esc(i)}</span>`).join('')}
@@ -34,7 +34,7 @@
       const color = rate >= 80 ? '#10b981' : rate >= 50 ? '#f59e0b' : '#dc2626';
       return `
         <div style="display:flex;align-items:center;gap:12px;padding:6px 0;font-size:12.5px;">
-          <a href="/process/${p.process_id}/karne" style="width:200px;flex-shrink:0;color:#0ea5e9;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;" title="${esc(p.name)}">${esc(p.name)}</a>
+          <a href="/k-plan/process/${p.process_id}/karne" style="width:200px;flex-shrink:0;color:#0ea5e9;font-weight:500;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-decoration:none;" title="${esc(p.name)}">${esc(p.name)}</a>
           <div style="flex:1;background:#f1f5f9;border-radius:4px;height:18px;position:relative;overflow:hidden;">
             <div style="background:${color};height:100%;width:${rate}%;transition:width .3s;"></div>
           </div>

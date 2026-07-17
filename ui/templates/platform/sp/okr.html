@@ -135,14 +135,14 @@
 </div>
 
 <script>
-const OKR_API = "/sp/api/okr";
+const OKR_API = "/k-plan/strategy/api/okr";
 let allObjectives = [];
 let allStrategies = [];
 let allSubStrategies = [];
 
 async function loadStrategies() {
     try {
-        const resp = await fetch("/sp/api/strategies");
+        const resp = await fetch("/k-plan/strategy/api/strategies");
         if (!resp.ok) return;
         const data = await resp.json();
         if (data.success) {

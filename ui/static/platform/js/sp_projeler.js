@@ -9,6 +9,10 @@
   const PROJE_URL      = ROOT.dataset.projeUrl;
   const PROJE_SAVE_URL = ROOT.dataset.projeSaveUrl;
   const PROJE_DEL_BASE = ROOT.dataset.projeDeleteBase;
+  // Görev uçları sunucudan gelir — eskiden PROJE_SAVE_URL üzerinde string
+  // ikamesiyle türetiliyordu ve Faz 3 taşımasından sonra YANLIŞ URL üretiyordu
+  // ("/proje" artık URL'de yok → replace sessizce çalışmadı). TASK-277.
+  const GOREV_BASE     = ROOT.dataset.gorevBase;        // …/project/0/task  (0 = yer tutucu)
 
   let projects = [];
   let tasksCache = {}; // project_id → tasks[]
@@ -188,15 +192,13 @@
   });
 
   // ── Görevler ─────────────────────────────────────────────────────────────────
+  // GOREV_BASE = …/project/0/task — yer tutucu 0'ı gerçek proje id'siyle değiştir.
   function getGorevUrl(projectId) {
-    return PROJE_SAVE_URL.replace("/proje", "/proje/" + projectId + "/gorev").replace(/\/$/, "");
-  }
-  function getGorevDeleteBase(projectId) {
-    return PROJE_SAVE_URL.replace("/proje", "/proje/gorev/").replace(/\/$/, "") + "/";
+    return GOREV_BASE.replace("/0/task", "/" + projectId + "/task");
   }
 
   function loadTasks(projectId) {
-    const url = PROJE_URL.replace("/proje", "/proje/" + projectId + "/gorev");
+    const url = getGorevUrl(projectId);
     apiFetch(url).then(d => {
       if (!d.success) return;
       tasksCache[projectId] = d.items || [];

@@ -408,18 +408,31 @@ def create_app(config_class=None):
         from flask import request
         # Path → (etiket, url) eşlemesi. Önek eşleşmesi sıralı; ilk eşleşen kazanır.
         # Sıra: daha uzun/spesifik önek önce.
+        # ⚠️ PATH ÖNEKİNE bakar — katman taşımasında bu tablo güncellenmezse
+        # breadcrumb SESSİZCE kaybolur (eşleşme yok → current_section None).
+        # Katman mimarisi (2026-07-17): /k-plan, /k-report önekleri eklendi.
+        # Yeni katman öneki eklerken buraya da eklenmeli.
+        # Sıra: daha uzun/spesifik önek önce (ilk eşleşen kazanır).
         sections = [
             ("/desktop-launcher",  "Masaüstü", "/desktop-launcher"),
             ("/desktop",           "Masaüstü", "/desktop-launcher"),
-            ("/sp",                "Stratejik Planlama", "/sp"),
-            ("/process",           "Süreç Yönetimi", "/process"),
-            ("/proje",             "Proje Yönetimi", "/project"),
-            ("/project",           "Proje Yönetimi", "/project"),
+            # Girdi katmanı (Faz 3)
+            ("/k-plan/strategy",   "Stratejik Planlama", "/k-plan/strategy"),
+            ("/k-plan/process",    "Süreç Yönetimi", "/k-plan/process"),
+            ("/k-plan/project",    "Proje Yönetimi", "/k-plan/project"),
+            ("/k-plan/individual", "Bireysel Performans", "/k-plan/individual/scorecard"),
+            # Rapor katmanı (Faz 4)
+            ("/k-report",          "Raporlar", "/k-report"),
+            # Eski önekler — legacy redirect'e düşmeden önce breadcrumb çözülsün
+            ("/sp",                "Stratejik Planlama", "/k-plan/strategy"),
+            ("/process",           "Süreç Yönetimi", "/k-plan/process"),
+            ("/proje",             "Proje Yönetimi", "/k-plan/project"),
+            ("/project",           "Proje Yönetimi", "/k-plan/project"),
             ("/k-radar",           "K-Radar", "/k-radar"),
             ("/k-analiz",          "K-Radar", "/k-radar"),
-            ("/k-rapor",           "K-Radar", "/k-radar"),
-            ("/reports",          "K-Radar", "/k-radar"),
-            ("/individual",        "Bireysel Performans", "/individual/scorecard"),
+            ("/k-rapor",           "Raporlar", "/k-report"),
+            ("/reports",           "Raporlar", "/k-report"),
+            ("/individual",        "Bireysel Performans", "/k-plan/individual/scorecard"),
             ("/analysis",          "Performans Analitiği", "/analysis"),
             ("/notification",      "Bildirimler", "/notification"),
             ("/settings",          "Ayarlar", "/settings"),

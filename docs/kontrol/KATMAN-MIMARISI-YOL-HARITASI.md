@@ -132,11 +132,50 @@ kolon yanlış anlaşılmış. Migration onlara **dokunmadı** (gerçek müşter
 eşlemesi iş bilgisi ister). **Karar gerekiyor:** kategori ayrı kolona mı alınsın,
 yoksa kaynağa mı eşlensin?
 
-### FAZ 6 — Temizlik
-- [ ] Eski redirect'leri koru (bookmark'lar için kalıcı) ama iç `url_for`'lar
-      yeni endpoint'i kullansın.
-- [ ] Sidebar ekran adları Türkçe + role göre ("Stratejik Planlama / K-Radar / Raporlar").
-- [ ] Ölü "K-Analiz" izlerini temizle.
+### FAZ 6 — Temizlik ✅ UYGULANDI (2026-07-17, TASK-277) — **MİMARİ TAMAM**
+- [x] Eski redirect'ler korundu (kalıcı); iç linkler yeni path'i kullanıyor
+- [x] **75 hardcoded path** düzeltildi — önceki taramaların kaçırdıkları
+- [x] Sidebar adları: **zaten Türkçe + `_()` sarılı** (madde gereksizmiş)
+- [x] "K-Analiz izleri": çoğu ölü değil — `/k-analiz` çalışan alias, KALIR
+- [x] Test: 602 passed · 4 smoke paketi 70/70 · 87 JS temiz
+
+🔴 **Faz 6'nın asıl bulgusu — önceki taramalar 3 kalıbı kaçırmış:**
+template literal (`` `/process/${id}/karne` ``) · query string (`'/k-rapor?tab=x'`) ·
+sondaki `/` olmadan (`"/process"`). Faz 3/4 regex'leri tam string arıyordu.
+
+🔴 **5. ve 6. sessiz kırılma:** `app/__init__.py::sections` (**breadcrumb sessizce
+kayboluyordu**) ve `hata_kontrol_service::_MODULE_MAP`. İkisi de path önekine bakıyor,
+`/k-plan`+`/k-report` tanımıyordu. Düzeltildi + test korumalı.
+
+**GÜNCEL KURAL — yeni katman öneki eklerken 6 dosya güncellenir** (Faz 3'te 4 demiştik):
+`_GATED_PREFIX_MODULE` · `_ROLE_GATED_PREFIX_MODULE` · `module_registry` ·
+`legacy_sunset::_is_platform_canonical` · **`app/__init__.py::sections`** ·
+**`hata_kontrol_service::_MODULE_MAP`**. Detay: `ENDPOINT-SOZLESMESI.md` §Faz 6.
+
+---
+
+## 🏁 KATMAN MİMARİSİ — TAMAMLANDI (2026-07-17)
+
+| Faz | İş | Sonuç |
+|---|---|---|
+| 0 | Endpoint sözleşmesi | 610 route, **0 çift ad** → strateji kanıtlandı |
+| 2 | Teşhis salt-oku | Savaş Odası taşındı, yazma 3 katmanda kesildi |
+| 3 | Girdi → `/k-plan/` | **202 route** · SP rol kapısı kırılmıştı, test yakaladı |
+| 4 | Rapor → `/k-report/` | **136 route** · "çakışma tekilleştirme" işi ölçümde çıkmadı |
+| 5 | Risk borcu | `source_id` + 70 risk eşlendi · "35 gerçek risk" iddiası çürüdü |
+| 6 | Temizlik | **75 hardcoded** · 2 sessiz kırılma daha bulundu |
+
+**Üç katman URL'de görünür:** `/k-plan/*` (girdi) · `/k-radar/*` (teşhis) ·
+`/k-report/*` (rapor). Endpoint adları hiç değişmedi → ~64 template'e dokunulmadı.
+Tüm eski adresler kalıcı redirect (307; `/sp/tv` 301).
+
+**Doğrulama:** 602 passed, sıfır regresyon · 4 smoke paketi 70/70 · Yayın'a çıkmadı
+(L paketleri kuralı: iş yerelde birikir).
+
+### Kalan açık işler
+- 🔻 **Tenant 28'in 10 gerçek riski** kategori değeri taşıyor (Faz 5) — karar bekliyor
+- 🔻 **Ölü proje zinciri** (`sp/projeler.html` + `sp_projeler.js` + 6 route) — TASK-258 ile
+- 🔻 Rapor katmanı sidebar'da yok (K-Radar hub'dan erişiliyor) — mevcut tasarım, ayrı karar
 
 ---
 

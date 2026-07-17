@@ -201,7 +201,7 @@
     if (!items.length) { wrap.style.display = 'none'; return; }
     wrap.style.display = 'block';
     list.innerHTML = items.map(p => `
-      <a href="/process/${p.id}/karne" style="background:#fff; border:1px solid #fde68a; padding:3px 8px; border-radius:4px; text-decoration:none; color:#92400e;">
+      <a href="/k-plan/process/${p.id}/karne" style="background:#fff; border:1px solid #fde68a; padding:3px 8px; border-radius:4px; text-decoration:none; color:#92400e;">
         ${p.code ? `<b>${esc(p.code)}</b> · ` : ''}${esc(p.name)}
       </a>`).join('');
   }

@@ -47,7 +47,7 @@
         : '<div style="display:grid; gap:8px;">' + j.by_process.slice(0,15).map(p => `
           <div style="padding:12px 14px; border:1px solid #e2e8f0; border-radius:6px; background:#fafbfc;">
             <div style="display:flex; justify-content:space-between; align-items:center; margin-bottom:6px;">
-              <a href="/process/${p.process_id}/karne" style="font-weight:600; color:#0f172a; text-decoration:none;">
+              <a href="/k-plan/process/${p.process_id}/karne" style="font-weight:600; color:#0f172a; text-decoration:none;">
                 <span style="background:#eef2ff; color:#4338ca; padding:1px 7px; border-radius:4px; font-family:monospace; font-size:11px; margin-right:6px;">${esc(p.code||'')}</span>
                 ${esc(p.name)}
               </a>

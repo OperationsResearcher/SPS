@@ -18,9 +18,9 @@
 <div style="max-width:1240px; margin:0 auto;"
      id="surec-index"
      data-add-url="{{ url_for('app_bp.surec_api_add') }}"
-     data-delete-url-base="/process/api/delete/"
-     data-get-url-base="/process/api/get/"
-     data-update-url-base="/process/api/update/"
+     data-delete-url-base="/k-plan/process/api/delete/"
+     data-get-url-base="/k-plan/process/api/get/"
+     data-update-url-base="/k-plan/process/api/update/"
      data-can-crud-process="{{ 'true' if can_crud_process else 'false' }}"
      data-k-vektor-enabled="{{ 'true' if k_vektor_enabled else 'false' }}">
 
@@ -689,7 +689,7 @@
     if (!year) return;
     try {
       var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
-      var res = await fetch("/sp/api/plan-years/set-active", {
+      var res = await fetch("/k-plan/strategy/api/plan-years/set-active", {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
@@ -711,7 +711,7 @@
 {# ── PG Sparkline doldurucu (C2) ─────────────────────────────── #}
 <script>
 (function(){
-  fetch('/process/api/sparklines').then(r => r.json()).then(j => {
+  fetch('/k-plan/process/api/sparklines').then(r => r.json()).then(j => {
     if (!j.success || !j.data) return;
     document.querySelectorAll('.pg-sparkline').forEach(svg => {
       const pid = parseInt(svg.dataset.pid, 10);
