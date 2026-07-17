@@ -36,14 +36,14 @@ def _tid_or_none():
 
 # ─── ST-01: Stratejik Hiyerarşi Sunburst ─────────────────────────────────────
 
-@app_bp.route("/reports/sunburst")
+@app_bp.route("/k-report/sunburst")
 @login_required
 @require_module("raporlar")
 def raporlar_sunburst():
     return render_template("platform/raporlar/sunburst.html")
 
 
-@app_bp.route("/reports/api/sunburst")
+@app_bp.route("/k-report/api/sunburst")
 @login_required
 @require_module("raporlar")
 def raporlar_api_sunburst():
@@ -105,14 +105,14 @@ def raporlar_api_sunburst():
 
 # ─── ST-06: VRIO Portföy 4-Köşe ─────────────────────────────────────────────
 
-@app_bp.route("/reports/vrio-portfoy")
+@app_bp.route("/k-report/vrio-portfoy")
 @login_required
 @require_module("raporlar")
 def raporlar_vrio_portfoy():
     return render_template("platform/raporlar/vrio_portfoy.html")
 
 
-@app_bp.route("/reports/api/vrio-portfoy")
+@app_bp.route("/k-report/api/vrio-portfoy")
 @login_required
 @require_module("raporlar")
 def raporlar_api_vrio_portfoy():
@@ -147,14 +147,14 @@ def raporlar_api_vrio_portfoy():
 
 # ─── ST-09: OKR Cascade Görseli ─────────────────────────────────────────────
 
-@app_bp.route("/reports/okr-cascade")
+@app_bp.route("/k-report/okr-cascade")
 @login_required
 @require_module("raporlar")
 def raporlar_okr_cascade():
     return render_template("platform/raporlar/okr_cascade.html")
 
 
-@app_bp.route("/reports/api/okr-cascade")
+@app_bp.route("/k-report/api/okr-cascade")
 @login_required
 @require_module("raporlar")
 def raporlar_api_okr_cascade():
@@ -201,14 +201,14 @@ def raporlar_api_okr_cascade():
 
 # ─── ST-11: Initiative Roadmap Gantt ────────────────────────────────────────
 
-@app_bp.route("/reports/initiative-roadmap")
+@app_bp.route("/k-report/initiative-roadmap")
 @login_required
 @require_module("raporlar")
 def raporlar_initiative_roadmap():
     return render_template("platform/raporlar/initiative_roadmap.html")
 
 
-@app_bp.route("/reports/api/initiative-roadmap")
+@app_bp.route("/k-report/api/initiative-roadmap")
 @login_required
 @require_module("raporlar")
 def raporlar_api_initiative_roadmap():
@@ -244,7 +244,7 @@ def raporlar_api_initiative_roadmap():
 
 # ─── OP-04: 7 Muda Waste Analizi ───────────────────────────────────────────
 
-@app_bp.route("/reports/muda-analysis")
+@app_bp.route("/k-report/muda-analysis")
 @login_required
 @require_module("raporlar")
 def raporlar_muda_analizi():
@@ -258,7 +258,7 @@ def raporlar_muda_analizi():
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/reports/api/muda-analysis")
+@app_bp.route("/k-report/api/muda-analysis")
 @login_required
 @require_module("raporlar")
 def raporlar_api_muda_analizi():
@@ -326,7 +326,7 @@ def raporlar_api_muda_analizi():
 
 # ─── OP-15: CMMI Olgunluk Heatmap ──────────────────────────────────────────
 
-@app_bp.route("/reports/cmmi-heatmap")
+@app_bp.route("/k-report/cmmi-heatmap")
 @login_required
 @require_module("raporlar")
 def raporlar_cmmi_heatmap():
@@ -340,7 +340,7 @@ def raporlar_cmmi_heatmap():
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/reports/api/cmmi-heatmap")
+@app_bp.route("/k-report/api/cmmi-heatmap")
 @login_required
 @require_module("raporlar")
 def raporlar_api_cmmi_heatmap():
@@ -436,7 +436,7 @@ def raporlar_api_cmmi_heatmap():
 
 # ─── OP-17: Operasyonel İstatistik Sayfası (süreç bazlı) ───────────────────
 
-@app_bp.route("/reports/operation-statistics")
+@app_bp.route("/k-report/operation-statistics")
 @login_required
 @require_module("raporlar")
 def raporlar_op_istatistik():
@@ -450,7 +450,7 @@ def raporlar_op_istatistik():
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/reports/api/operation-statistics")
+@app_bp.route("/k-report/api/operation-statistics")
 @login_required
 @require_module("raporlar")
 def raporlar_api_op_istatistik():
@@ -502,14 +502,14 @@ def raporlar_api_op_istatistik():
 
 # ─── HR-07: Bireysel Hedef Hizalama ────────────────────────────────────────
 
-@app_bp.route("/reports/individual-alignment")
+@app_bp.route("/k-report/individual-alignment")
 @login_required
 @require_module("raporlar")
 def raporlar_bireysel_hizalama():
     return render_template("platform/raporlar/bireysel_hizalama.html")
 
 
-@app_bp.route("/reports/api/individual-alignment")
+@app_bp.route("/k-report/api/individual-alignment")
 @login_required
 @require_module("raporlar")
 def raporlar_api_bireysel_hizalama():
@@ -556,14 +556,14 @@ def raporlar_api_bireysel_hizalama():
 
 # ─── RK-01: Risk Heatmap Detay ─────────────────────────────────────────────
 
-@app_bp.route("/reports/risk-heatmap")
+@app_bp.route("/k-report/risk-heatmap")
 @login_required
 @require_module("raporlar")
 def raporlar_risk_heatmap():
     return render_template("platform/raporlar/risk_heatmap.html")
 
 
-@app_bp.route("/reports/api/risk-heatmap")
+@app_bp.route("/k-report/api/risk-heatmap")
 @login_required
 @require_module("raporlar")
 def raporlar_api_risk_heatmap():
@@ -616,14 +616,14 @@ def raporlar_api_risk_heatmap():
 
 # ─── RK-08: 2FA Kullanım Raporu ────────────────────────────────────────────
 
-@app_bp.route("/reports/two-fa")
+@app_bp.route("/k-report/two-fa")
 @login_required
 @require_module("raporlar")
 def raporlar_iki_fa():
     return render_template("platform/raporlar/iki_fa.html")
 
 
-@app_bp.route("/reports/api/two-fa")
+@app_bp.route("/k-report/api/two-fa")
 @login_required
 @require_module("raporlar")
 def raporlar_api_iki_fa():
@@ -655,14 +655,14 @@ def raporlar_api_iki_fa():
 
 # ─── ES-01: Carbon Footprint Toplam Trend ──────────────────────────────────
 
-@app_bp.route("/reports/carbon-trend")
+@app_bp.route("/k-report/carbon-trend")
 @login_required
 @require_module("raporlar")
 def raporlar_carbon_trend():
     return render_template("platform/raporlar/carbon_trend.html")
 
 
-@app_bp.route("/reports/api/carbon-trend")
+@app_bp.route("/k-report/api/carbon-trend")
 @login_required
 @require_module("raporlar")
 def raporlar_api_carbon_trend():
@@ -702,14 +702,14 @@ def raporlar_api_carbon_trend():
 
 # ─── AI-02: AI Strateji Danışmanı ──────────────────────────────────────────
 
-@app_bp.route("/reports/ai-advisor")
+@app_bp.route("/k-report/ai-advisor")
 @login_required
 @require_module("raporlar")
 def raporlar_ai_danisman():
     return render_template("platform/raporlar/ai_danisman.html")
 
 
-@app_bp.route("/reports/api/ai-advisor")
+@app_bp.route("/k-report/api/ai-advisor")
 @login_required
 @require_module("raporlar")
 def raporlar_api_ai_danisman():
@@ -727,14 +727,14 @@ def raporlar_api_ai_danisman():
 
 # ─── AI-04: AI Coach ───────────────────────────────────────────────────────
 
-@app_bp.route("/reports/ai-coach")
+@app_bp.route("/k-report/ai-coach")
 @login_required
 @require_module("raporlar")
 def raporlar_ai_coach():
     return render_template("platform/raporlar/ai_coach.html")
 
 
-@app_bp.route("/reports/api/ai-coach")
+@app_bp.route("/k-report/api/ai-coach")
 @login_required
 @require_module("raporlar")
 def raporlar_api_ai_coach():
@@ -811,14 +811,14 @@ def raporlar_api_ai_coach():
 
 # ─── AI-05: AI Early Warning Dashboard ─────────────────────────────────────
 
-@app_bp.route("/reports/early-warning")
+@app_bp.route("/k-report/early-warning")
 @login_required
 @require_module("raporlar")
 def raporlar_early_warning():
     return render_template("platform/raporlar/early_warning.html")
 
 
-@app_bp.route("/reports/api/early-warning")
+@app_bp.route("/k-report/api/early-warning")
 @login_required
 @require_module("raporlar")
 def raporlar_api_early_warning():

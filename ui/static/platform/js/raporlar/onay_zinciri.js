@@ -4,7 +4,7 @@
   const fmt = n => new Intl.NumberFormat('tr-TR').format(Math.round(n||0));
   async function load(){
     try {
-      const j = await (await fetch('/reports/api/approval-chain',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/k-report/api/approval-chain',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';

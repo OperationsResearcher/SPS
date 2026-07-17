@@ -74,15 +74,27 @@ Katmanı DA konuyu DA URL'den okuruz; örtüşen araçlar (Gantt) katmana göre 
 /k-radar/savas-odasi           canlı KPI duvarı (SP'den TAŞINIR — saf teşhis)
 ```
 
-### Katman 3 — RAPOR (`/k-report/`)
+### Katman 3 — RAPOR (`/k-report/`) — ✅ UYGULANDI (Faz 4)
+
+> ⚠️ **DÜZELTİLDİ 2026-07-17.** Bu bölüm önce Türkçe **konu klasörleri** öngörüyordu
+> (`/k-report/panel/cfo`). Uygulamada araç adları **düz** ve zaten İngilizce'ydi
+> (`/reports/cfo-dashboard`); konu katmanı uydurmak 136 route'u gereksiz yere yeniden
+> adlandırmak olurdu. **Yapılan: yalnız önek birleşti, araç adları korundu.**
+
 ```
-/k-report/kurumsal/ozet        kurumsal performans, K-Vektör
-/k-report/panel/cfo            CFO, COO, CHRO panelleri
-/k-report/esg/karbon           ESG, karbon
-/k-report/ai/danisman          AI danışman, koç, sunum, NLP sorgu
-/k-report/denetim/paket        denetim, 2FA, uyum
-/k-report/export/pdf           PDF, Excel, Slack, BI connector, yatırımcı sunumu
+/k-report                      hub (k_rapor — ?tab=X ile içerik)
+/k-report/cfo-dashboard        CFO, COO, CHRO panelleri
+/k-report/chro-dashboard
+/k-report/esg-report           ESG, karbon (esg-management, carbon-trend)
+/k-report/ai-advisor           AI danışman, koç, sunum, NLP sorgu
+/k-report/audit-package        denetim, 2FA (two-fa), onay zinciri
+/k-report/investor-presentation  yatırımcı sunumu, BI connector, mobil
+/k-report/risk-heatmap         risk konsolidasyonu
+/k-report/all                  eski rapor merkezi (redirect → K-Radar hub)
 ```
+
+**Kapsam dışı:** `/reports/daily|weekly|monthly|dashboard|performance` — dış REST
+API (`ai_bp`/`api_bp`), `app_bp` değil. Taşınmadı, sözleşme korundu.
 
 ---
 

@@ -2,6 +2,51 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-275 | 2026-07-17 | ✅ Tamamlandı
+
+**Görev:** Katman mimarisi Faz 4 — Rapor katmanı `/k-report/` önekinde birleşti
+**Modül:** raporlar, k_rapor, platform_core, module_registry
+**Durum:** ✅ Tamamlandı — yerelde doğrulandı, Test'e gitmedi
+
+### Değiştirilen Dosyalar
+- `micro/modules/{raporlar,k_rapor}/**` → **136 route** `/k-report/*` altına (endpoint adları korundu)
+- `micro/modules/k_rapor/routes_katman_legacy.py` → YENİ. `/reports` + `/k-rapor` → 307 redirect
+- `micro/modules/raporlar/routes.py` → `raporlar_index` kök çakışması → `/k-report/all`
+- `platform_core/__init__.py` · `micro/core/module_registry.py` · `app/middleware/legacy_sunset.py` → `/k-report` kapı tabloları (Faz 3 dersi)
+- 49 dosya (template + JS) → **99 hardcoded URL** düzeltildi (K-Radar hub tek başına 42)
+- `tests/test_k_rapor_smoke.py`, `test_module_smoke.py` → 22 URL + **7 yeni koruma testi**
+
+### Yapılan İşlem
+`/reports` (106) + `/k-rapor` (35) tek `/k-report/` önekinde birleşti. Endpoint
+sözleşmesi yine tuttu — şablonlara dokunulmadı. Eski adresler 307 ile yönlendiriliyor
+(export/generate uçları POST; 301 gövdeyi düşürürdü). Faz 3'ün dersi uygulandı:
+4 kapı dosyası aynı commit'te güncellendi, bu kez kapı sessizce açılmadı.
+
+### Notlar
+⚠️ **Planın ana işi ölçümde ÇIKMADI.** Yol haritası Faz 4'ü "çakışan araçları
+tekilleştir" diye tarif ediyordu (*risk 6+1, bireysel 5+1, anomali 2+1*). Ölçüm:
+risk/audit "çakışması" = **sayfa + API ucu, farklı şeyler**; bireysel/anomali çakışması
+**hiç yok**. Sayfa ile API'yi aynı aracın kopyası saymak ölçüm hatasıydı. Kullanıcı
+kararı: çakışma olmasa da taşı (üç katman URL'de görünmezse mimari yarım kalır).
+
+**Bulunan TEK gerçek çakışma:** `raporlar_index` + `k_rapor` taşıma sonrası ikisi de
+`/k-report` oldu — Flask ilk eşleşeni seçer, diğeri sessizce ölürdü. Kök `k_rapor`'a
+verildi (daha yetenekli: `?tab=X` içerik gösterir); `raporlar_index` saf redirect'ti
+→ `/k-report/all`.
+
+⚠️ **Kapsam dışı (bilinçli):** `/reports/daily|weekly|monthly` (`ai_bp`) +
+`/reports/dashboard|performance/<id>` (`api_bp`) — dış REST API, `app_bp` değil.
+Katman mimarisi UI katmanıdır; dış sözleşme bozulmaz. Yeni test koruyor.
+
+**Güvenlik doğrulaması:** 307 redirect login kapısını atlatmıyor — kimlik doğrulamasız
+istek zinciri `/k-rapor → /k-report → /login` ile bitiyor (elle izlendi, kanıtlandı).
+
+**Doğrulama (CI çalışmıyor → yerel):** `pytest -q` → **596 passed**, 1 skipped,
+1 xfailed (589 + 7 yeni koruma testi), sıfır regresyon · Faz 4 smoke 22/22 ·
+Faz 3 smoke 20/20 · Faz 2 smoke 16/16 · 39 JS `node --check` temiz · sidebar denetimi.
+
+---
+
 ## TASK-274 | 2026-07-17 | ✅ Tamamlandı
 
 **Görev:** Katman mimarisi Faz 3 — Girdi katmanı `/k-plan/` önekine taşındı

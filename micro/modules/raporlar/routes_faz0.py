@@ -28,7 +28,7 @@ from flask_babel import gettext as _
 
 # ─── Rapor 1: Veri Kalitesi ──────────────────────────────────────────────────
 
-@app_bp.route("/reports/data-quality")
+@app_bp.route("/k-report/data-quality")
 @login_required
 @require_module("raporlar")
 def raporlar_veri_kalitesi():
@@ -44,7 +44,7 @@ def raporlar_veri_kalitesi():
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/reports/api/data-quality")
+@app_bp.route("/k-report/api/data-quality")
 @login_required
 @require_module("raporlar")
 def raporlar_api_veri_kalitesi():
@@ -172,7 +172,7 @@ def raporlar_api_veri_kalitesi():
 
 # ─── Rapor 2: K-Vektör Çarpıklık ──────────────────────────────────────────────
 
-@app_bp.route("/reports/k-vector-skewness")
+@app_bp.route("/k-report/k-vector-skewness")
 @login_required
 @require_module("raporlar")
 def raporlar_kv_carpiklik():
@@ -188,7 +188,7 @@ def raporlar_kv_carpiklik():
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/reports/api/k-vector-skewness")
+@app_bp.route("/k-report/api/k-vector-skewness")
 @login_required
 @require_module("raporlar")
 def raporlar_api_kv_carpiklik():
@@ -291,7 +291,7 @@ def raporlar_api_kv_carpiklik():
 
 # ─── Rapor 3: Stratejik Akış Haritası ────────────────────────────────────────
 
-@app_bp.route("/reports/alignment-sankey")
+@app_bp.route("/k-report/alignment-sankey")
 @login_required
 @require_module("raporlar")
 def raporlar_hizalama_sankey():
@@ -305,7 +305,7 @@ def raporlar_hizalama_sankey():
                            plan_years=years, active_year=active_year)
 
 
-@app_bp.route("/reports/api/alignment-sankey")
+@app_bp.route("/k-report/api/alignment-sankey")
 @login_required
 @require_module("raporlar")
 def raporlar_api_hizalama_sankey():
@@ -492,14 +492,14 @@ def raporlar_api_hizalama_sankey():
 
 # ─── Rapor 4: PG Hedef Revizyon Sıklığı ──────────────────────────────────────
 
-@app_bp.route("/reports/target-revision")
+@app_bp.route("/k-report/target-revision")
 @login_required
 @require_module("raporlar")
 def raporlar_hedef_revizyon():
     return render_template("platform/raporlar/hedef_revizyon.html")
 
 
-@app_bp.route("/reports/api/target-revision")
+@app_bp.route("/k-report/api/target-revision")
 @login_required
 @require_module("raporlar")
 def raporlar_api_hedef_revizyon():
@@ -569,14 +569,14 @@ def raporlar_api_hedef_revizyon():
 
 # ─── Rapor 5: Departman Performans Skoru ─────────────────────────────────────
 
-@app_bp.route("/reports/department-performance")
+@app_bp.route("/k-report/department-performance")
 @login_required
 @require_module("raporlar")
 def raporlar_departman_performans():
     return render_template("platform/raporlar/departman_performans.html")
 
 
-@app_bp.route("/reports/api/department-performance")
+@app_bp.route("/k-report/api/department-performance")
 @login_required
 @require_module("raporlar")
 def raporlar_api_departman_performans():
@@ -643,14 +643,14 @@ def raporlar_api_departman_performans():
 
 # ─── Rapor 6: Yönetici Liderlik Skoru ────────────────────────────────────────
 
-@app_bp.route("/reports/executive-leadership")
+@app_bp.route("/k-report/executive-leadership")
 @login_required
 @require_module("raporlar")
 def raporlar_yonetici_liderlik():
     return render_template("platform/raporlar/yonetici_liderlik.html")
 
 
-@app_bp.route("/reports/api/executive-leadership")
+@app_bp.route("/k-report/api/executive-leadership")
 @login_required
 @require_module("raporlar")
 def raporlar_api_yonetici_liderlik():
@@ -752,14 +752,14 @@ def raporlar_api_yonetici_liderlik():
 
 # ─── Rapor 7: Initiative Portföy Bubble ──────────────────────────────────────
 
-@app_bp.route("/reports/initiative-bubble")
+@app_bp.route("/k-report/initiative-bubble")
 @login_required
 @require_module("raporlar")
 def raporlar_initiative_bubble():
     return render_template("platform/raporlar/initiative_bubble.html")
 
 
-@app_bp.route("/reports/api/initiative-bubble")
+@app_bp.route("/k-report/api/initiative-bubble")
 @login_required
 @require_module("raporlar")
 def raporlar_api_initiative_bubble():
@@ -821,14 +821,14 @@ def raporlar_api_initiative_bubble():
 
 # ─── Rapor 8: Operasyonel Sabah Özeti+ ──────────────────────────────────────
 
-@app_bp.route("/reports/morning-summary")
+@app_bp.route("/k-report/morning-summary")
 @login_required
 @require_module("raporlar")
 def raporlar_sabah_ozeti():
     return render_template("platform/raporlar/sabah_ozeti.html")
 
 
-@app_bp.route("/reports/api/morning-summary")
+@app_bp.route("/k-report/api/morning-summary")
 @login_required
 @require_module("raporlar")
 def raporlar_api_sabah_ozeti():
@@ -928,14 +928,14 @@ def raporlar_api_sabah_ozeti():
 
 # ─── Rapor 9: Yıllar Arası Evrim Filmi ──────────────────────────────────────
 
-@app_bp.route("/reports/evolution-film")
+@app_bp.route("/k-report/evolution-film")
 @login_required
 @require_module("raporlar")
 def raporlar_evrim_filmi():
     return render_template("platform/raporlar/evrim_filmi.html")
 
 
-@app_bp.route("/reports/api/evolution-film")
+@app_bp.route("/k-report/api/evolution-film")
 @login_required
 @require_module("raporlar")
 def raporlar_api_evrim_filmi():
@@ -1036,14 +1036,14 @@ def raporlar_api_evrim_filmi():
 
 # ─── Rapor 10: AI Yıl Sonu Sunum Üretici ────────────────────────────────────
 
-@app_bp.route("/reports/ai-presentation")
+@app_bp.route("/k-report/ai-presentation")
 @login_required
 @require_module("raporlar")
 def raporlar_ai_sunum():
     return render_template("platform/raporlar/ai_sunum.html")
 
 
-@app_bp.route("/reports/api/ai-presentation/preview")
+@app_bp.route("/k-report/api/ai-presentation/preview")
 @login_required
 @require_module("raporlar")
 def raporlar_api_ai_sunum_preview():
@@ -1108,7 +1108,7 @@ def raporlar_api_ai_sunum_preview():
     })
 
 
-@app_bp.route("/reports/api/ai-presentation/generate", methods=["GET", "POST"])
+@app_bp.route("/k-report/api/ai-presentation/generate", methods=["GET", "POST"])
 @login_required
 @require_module("raporlar")
 def raporlar_api_ai_sunum_generate():

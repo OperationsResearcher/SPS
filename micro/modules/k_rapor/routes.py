@@ -35,7 +35,7 @@ def _check_webhook_url(url: str):
 
 # ── Sprint 50: Custom Dashboard Builder — Widget Registry ────────────────────
 
-@app_bp.route("/k-rapor/api/dashboard/widgets")
+@app_bp.route("/k-report/api/dashboard/widgets")
 @login_required
 def k_rapor_dashboard_widgets():
     """Kullanılabilir widget'ları listele (kategori filtreli)."""
@@ -50,7 +50,7 @@ def k_rapor_dashboard_widgets():
 
 # ── Sprint 46: KPI Forecasting ────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/forecast/<int:kpi_id>")
+@app_bp.route("/k-report/api/forecast/<int:kpi_id>")
 @login_required
 def k_rapor_api_forecast(kpi_id):
     """KPI trend forecasting — linear regression + güven aralığı."""
@@ -79,7 +79,7 @@ def k_rapor_api_forecast(kpi_id):
 
 # ── Ana Sayfa ─────────────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor")
+@app_bp.route("/k-report")
 @login_required
 def k_rapor():
     """K-Rapor sayfası — ?tab=X seçiliyse o sekme; değilse K-Radar hub'ına yönlendirir."""
@@ -127,7 +127,7 @@ def k_rapor():
 
 # ── Rapor 1: Kurumsal Performans ──────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/corporate")
+@app_bp.route("/k-report/api/corporate")
 @login_required
 def k_rapor_api_kurumsal():
     """Vizyon skoru + strateji bazlı başarı + en iyi/kötü süreçler."""
@@ -194,7 +194,7 @@ def k_rapor_api_kurumsal():
 
 # ── Rapor 2: Süreç & PG Isı Haritası ─────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/process-pg")
+@app_bp.route("/k-report/api/process-pg")
 @login_required
 def k_rapor_api_surec_pg():
     """Süreçler × dönemler ısı haritası verisi."""
@@ -342,7 +342,7 @@ def k_rapor_api_surec_pg():
 
 # ── Rapor 3: PG Trend ─────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/trend/<int:kpi_id>")
+@app_bp.route("/k-report/api/trend/<int:kpi_id>")
 @login_required
 def k_rapor_api_trend(kpi_id):
     """KPI zaman serisi — analytics_service'e delege."""
@@ -381,7 +381,7 @@ def k_rapor_api_trend(kpi_id):
 
 # ── Rapor 4: Stratejik Uyum ───────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/compliance")
+@app_bp.route("/k-report/api/compliance")
 @login_required
 def k_rapor_api_uyum():
     """Strateji → Alt Strateji → Süreç katkı ağacı."""
@@ -460,7 +460,7 @@ def k_rapor_api_uyum():
 
 # ── Rapor 5: Faaliyet ─────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/activity")
+@app_bp.route("/k-report/api/activity")
 @login_required
 def k_rapor_api_faaliyet():
     """Faaliyet tamamlanma oranı, geciken ve tamamlanan."""
@@ -575,7 +575,7 @@ def k_rapor_api_faaliyet():
 
 # ── Rapor 6: Bireysel Performans ──────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/individual")
+@app_bp.route("/k-report/api/individual")
 @login_required
 def k_rapor_api_bireysel():
     """Kullanıcı bazlı bireysel PG — özet + detay + sağlık."""
@@ -696,7 +696,7 @@ def k_rapor_api_bireysel():
 
 # ── Rapor 7: Veri Giriş Durumu ────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/data-status")
+@app_bp.route("/k-report/api/data-status")
 @login_required
 def k_rapor_api_veri_durumu():
     """Aktif plan yılında cari döneme ait PG veri giriş durumu."""
@@ -798,7 +798,7 @@ _DIMENSION_TR = {
 }
 
 
-@app_bp.route("/k-rapor/api/risk")
+@app_bp.route("/k-report/api/risk")
 @login_required
 def k_rapor_api_risk():
     """Risk matrisi + darboğaz + süreç olgunluk."""
@@ -875,7 +875,7 @@ def k_rapor_api_risk():
 
 # ── Rapor 9: Denetim ──────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/audit")
+@app_bp.route("/k-report/api/audit")
 @login_required
 def k_rapor_api_denetim():
     """Audit log özeti — kim ne yaptı."""
@@ -935,7 +935,7 @@ def k_rapor_api_denetim():
 
 # ── Rapor 10: Uyarı Merkezi ───────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/alert")
+@app_bp.route("/k-report/api/alert")
 @login_required
 def k_rapor_api_uyari():
     """Uyarı merkezi — kritik PG'ler, geciken faaliyetler, yüksek riskler."""
@@ -1068,7 +1068,7 @@ def k_rapor_api_uyari():
 
 # ── Rapor 11: K-Vektör Ağırlık Dağılımı ─────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/k-vektor")
+@app_bp.route("/k-report/api/k-vektor")
 @login_required
 def k_rapor_api_k_vektor():
     """K-Vektör kota dağılımı ve strateji skorları (compute_k_vektor_bundle)."""
@@ -1151,7 +1151,7 @@ def k_rapor_api_k_vektor():
 
 # ── Rapor 11: EVM (Kazanılmış Değer) ─────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/evm")
+@app_bp.route("/k-report/api/evm")
 @login_required
 def k_rapor_api_evm():
     """EVM snapshot — CPI / SPI zaman serisi."""
@@ -1197,7 +1197,7 @@ def k_rapor_api_evm():
 
 # ── Rapor 12: Stratejik Analiz Özeti ─────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/strategic-analysis")
+@app_bp.route("/k-report/api/strategic-analysis")
 @login_required
 def k_rapor_api_stratejik_analiz():
     """SWOT / TOWS / PESTEL / Porter özet — yıl yoksa en son analizi döner."""
@@ -1297,7 +1297,7 @@ def k_rapor_api_stratejik_analiz():
 
 # ── Rapor 13: Paydaş Haritası ─────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/stakeholder")
+@app_bp.route("/k-report/api/stakeholder")
 @login_required
 def k_rapor_api_paydas():
     """Paydaş haritası + anket özeti."""
@@ -1349,7 +1349,7 @@ def k_rapor_api_paydas():
 
 # ── Rapor 14: Rekabet & A3 ────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/competition")
+@app_bp.route("/k-report/api/competition")
 @login_required
 def k_rapor_api_rekabet():
     """Rekabetçi analiz + A3 raporları özeti."""
@@ -1406,7 +1406,7 @@ def k_rapor_api_rekabet():
 
 # ── Export: Excel ─────────────────────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/export-excel")
+@app_bp.route("/k-report/api/export-excel")
 @login_required
 def k_rapor_api_export_excel():
     """Seçili tab verisini Excel olarak indir."""
@@ -1577,14 +1577,14 @@ def k_rapor_api_export_excel():
 # KPI ANOMALI TESPİT + SLACK BİLDİRİM (Sprint 14-15)
 # ══════════════════════════════════════════════════════════════════════════════
 
-@app_bp.route("/k-rapor/anomalies")
+@app_bp.route("/k-report/anomalies")
 @login_required
 def k_rapor_anomalies_page():
     """KPI anomali UI sayfası."""
     return render_template("platform/k_rapor/anomalies.html")
 
 
-@app_bp.route("/k-rapor/api/anomalies")
+@app_bp.route("/k-report/api/anomalies")
 @login_required
 def k_rapor_api_anomalies():
     """Aktif tenant için KPI anomali listesi (Z-score tabanlı)."""
@@ -1607,7 +1607,7 @@ def k_rapor_api_anomalies():
         return jsonify({"success": False, "message": _("Anomali tespiti başarısız.")}), 500
 
 
-@app_bp.route("/k-rapor/api/webhook/test", methods=["POST"])
+@app_bp.route("/k-report/api/webhook/test", methods=["POST"])
 @login_required
 def k_rapor_webhook_test():
     """Sprint 45: Test mesajı gönder (Slack/Teams/Discord).
@@ -1630,7 +1630,7 @@ def k_rapor_webhook_test():
     return jsonify(result)
 
 
-@app_bp.route("/k-rapor/api/anomalies/notify-webhook", methods=["POST"])
+@app_bp.route("/k-report/api/anomalies/notify-webhook", methods=["POST"])
 @login_required
 def k_rapor_anomalies_notify_webhook():
     """Sprint 45: Anomalileri generic webhook ile gönder.
@@ -1678,7 +1678,7 @@ def k_rapor_anomalies_notify_webhook():
         return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
-@app_bp.route("/k-rapor/api/anomalies/notify-slack", methods=["POST"])
+@app_bp.route("/k-report/api/anomalies/notify-slack", methods=["POST"])
 @login_required
 def k_rapor_api_anomalies_notify_slack():
     """Tespit edilen anomalileri Slack'e gönder.
@@ -1734,7 +1734,7 @@ def k_rapor_api_anomalies_notify_slack():
 # EMAIL DIGEST (Sprint 18)
 # ══════════════════════════════════════════════════════════════════════════════
 
-@app_bp.route("/k-rapor/api/digest/preview")
+@app_bp.route("/k-report/api/digest/preview")
 @login_required
 def k_rapor_digest_preview():
     """Digest mail içeriğini HTML olarak preview et."""
@@ -1749,7 +1749,7 @@ def k_rapor_digest_preview():
         return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
-@app_bp.route("/k-rapor/api/digest/send", methods=["POST"])
+@app_bp.route("/k-report/api/digest/send", methods=["POST"])
 @login_required
 def k_rapor_digest_send():
     """Digest mail'i tenant yöneticilerine gönder.
@@ -1776,7 +1776,7 @@ def k_rapor_digest_send():
 # PDF EXPORT (Sprint 11.3 — app/utils/pdf_export.py altyapısı)
 # ══════════════════════════════════════════════════════════════════════════════
 
-@app_bp.route("/k-rapor/api/export-pdf")
+@app_bp.route("/k-report/api/export-pdf")
 @login_required
 def k_rapor_api_export_pdf():
     """K-Rapor kurumsal özet PDF (executive summary).
@@ -1851,7 +1851,7 @@ def k_rapor_api_export_pdf():
 
 # ── Yeni Rapor 1: PG Performans Dağılımı (Histogram) ─────────────────────────
 
-@app_bp.route("/k-rapor/api/pi-dagilim")
+@app_bp.route("/k-report/api/pi-dagilim")
 @login_required
 def k_rapor_api_pg_dagilim():
     """Tüm PG'lerin başarı yüzdesi dağılımı — histogram + özet."""
@@ -1939,7 +1939,7 @@ def k_rapor_api_pg_dagilim():
 
 # ── Yeni Rapor 2: Süreç Faaliyet Matrisi ─────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/activity-matrix")
+@app_bp.route("/k-report/api/activity-matrix")
 @login_required
 def k_rapor_api_faaliyet_matris():
     """Her süreç için faaliyet durumu dağılımı — yatay bar chart."""
@@ -2007,7 +2007,7 @@ def k_rapor_api_faaliyet_matris():
 
 # ── Yeni Rapor 3: Veri Giriş Aktivite Takvimi ────────────────────────────────
 
-@app_bp.route("/k-rapor/api/activity-calendar")
+@app_bp.route("/k-report/api/activity-calendar")
 @login_required
 def k_rapor_api_aktivite_takvim():
     """Son 365 günde günlük veri giriş sayısı — GitHub heatmap tarzı."""
@@ -2083,7 +2083,7 @@ def k_rapor_api_aktivite_takvim():
 
 # ── Yeni Rapor 4: Kurum Karşılaştırma ────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/org-comparison")
+@app_bp.route("/k-report/api/org-comparison")
 @login_required
 def k_rapor_api_kurum_karsilastirma():
     """Kurumları ortalama PG başarısına göre karşılaştır (yalnız Admin)."""
@@ -2184,7 +2184,7 @@ def k_rapor_api_kurum_karsilastirma():
 
 # ── Yeni Rapor 5: Strateji Kapsama Analizi ───────────────────────────────────
 
-@app_bp.route("/k-rapor/api/strategy-coverage")
+@app_bp.route("/k-report/api/strategy-coverage")
 @login_required
 def k_rapor_api_strateji_kapsama():
     """Hangi stratejilerin altında süreç yok, hangi süreçler stratejisiz."""
@@ -2288,7 +2288,7 @@ def k_rapor_api_strateji_kapsama():
 
 # ── Yeni Rapor 6: Faaliyet Sorumlu Analizi ───────────────────────────────────
 
-@app_bp.route("/k-rapor/api/responsible-analysis")
+@app_bp.route("/k-report/api/responsible-analysis")
 @login_required
 def k_rapor_api_sorumlu_analiz():
     """Kişi başına faaliyet yükü, tamamlanma ve gecikme oranları."""
@@ -2362,7 +2362,7 @@ def k_rapor_api_sorumlu_analiz():
 
 # ── Yeni Rapor 7: SWOT/TOWS Trend ────────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/swot-trend")
+@app_bp.route("/k-report/api/swot-trend")
 @login_required
 def k_rapor_api_swot_trend():
     """Yıllar içinde SWOT madde sayıları ve TOWS strateji sayıları."""
@@ -2433,7 +2433,7 @@ def k_rapor_api_swot_trend():
 
 # ── Yeni Rapor 8: Bildirim Analizi ───────────────────────────────────────────
 
-@app_bp.route("/k-rapor/api/notification-analysis")
+@app_bp.route("/k-report/api/notification-analysis")
 @login_required
 def k_rapor_api_bildirim_analiz():
     """Bildirim türü dağılımı, okunma oranı, günlük trend, yaşlanma, kullanıcı bazlı."""
@@ -2543,3 +2543,9 @@ def k_rapor_api_bildirim_analiz():
     except Exception as e:
         current_app.logger.error(f"[k_rapor_api_bildirim_analiz] {e}", exc_info=True)
         return jsonify({"success": False, "message": _("Bildirim analiz verisi alınamadı.")}), 500
+
+
+# Katman mimarisi Faz 4: /k-rapor + /reports → /k-report legacy redirect'leri.
+# En sonda import edilir — bu dosyanın route'ları önce kaydolsun (Flask daha
+# spesifik statik kuralı zaten dinamik <path:subpath>'e tercih eder).
+from micro.modules.k_rapor import routes_katman_legacy  # noqa: E402, F401

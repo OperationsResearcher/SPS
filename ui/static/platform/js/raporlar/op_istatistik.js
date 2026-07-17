@@ -11,7 +11,7 @@
       document.getElementById('loading').style.display='';
       document.getElementById('content').style.display='none';
       const y = yearSel?.value || '';
-      const url = '/reports/api/operation-statistics' + (y ? '?year=' + encodeURIComponent(y) : '');
+      const url = '/k-report/api/operation-statistics' + (y ? '?year=' + encodeURIComponent(y) : '');
       const j = await (await fetch(url,{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';

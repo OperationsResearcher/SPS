@@ -62,14 +62,14 @@ def _pdf_helpers():
 
 # ─── ST-16: Stratejik Yıllık Kitap PDF ─────────────────────────────────────
 
-@app_bp.route("/reports/strategic-annual")
+@app_bp.route("/k-report/strategic-annual")
 @login_required
 @require_module("raporlar")
 def raporlar_stratejik_yillik():
     return render_template("platform/raporlar/stratejik_yillik.html")
 
 
-@app_bp.route("/reports/api/strategic-annual/preview")
+@app_bp.route("/k-report/api/strategic-annual/preview")
 @login_required
 @require_module("raporlar")
 def raporlar_api_stratejik_yillik_preview():
@@ -104,7 +104,7 @@ def raporlar_api_stratejik_yillik_preview():
     }})
 
 
-@app_bp.route("/reports/api/strategic-annual/generate", methods=["GET", "POST"])
+@app_bp.route("/k-report/api/strategic-annual/generate", methods=["GET", "POST"])
 @login_required
 @require_module("raporlar")
 def raporlar_api_stratejik_yillik_generate():
@@ -327,14 +327,14 @@ def raporlar_api_stratejik_yillik_generate():
 
 # ─── AI-17: Yatırımcı Sunum PPTX ───────────────────────────────────────────
 
-@app_bp.route("/reports/investor-presentation")
+@app_bp.route("/k-report/investor-presentation")
 @login_required
 @require_module("raporlar")
 def raporlar_yatirimci_sunum():
     return render_template("platform/raporlar/yatirimci_sunum.html")
 
 
-@app_bp.route("/reports/api/investor-presentation/preview")
+@app_bp.route("/k-report/api/investor-presentation/preview")
 @login_required
 @require_module("raporlar")
 def raporlar_api_yatirimci_sunum_preview():
@@ -373,7 +373,7 @@ def raporlar_api_yatirimci_sunum_preview():
     }})
 
 
-@app_bp.route("/reports/api/investor-presentation/generate", methods=["GET", "POST"])
+@app_bp.route("/k-report/api/investor-presentation/generate", methods=["GET", "POST"])
 @login_required
 @require_module("raporlar")
 def raporlar_api_yatirimci_sunum_generate():
@@ -534,14 +534,14 @@ def raporlar_api_yatirimci_sunum_generate():
 
 # ─── ES-08: GRI/CDP/TCFD ESG Rapor PDF ─────────────────────────────────────
 
-@app_bp.route("/reports/esg-report")
+@app_bp.route("/k-report/esg-report")
 @login_required
 @require_module("raporlar")
 def raporlar_esg_rapor():
     return render_template("platform/raporlar/esg_rapor.html")
 
 
-@app_bp.route("/reports/api/esg-report/generate", methods=["GET", "POST"])
+@app_bp.route("/k-report/api/esg-report/generate", methods=["GET", "POST"])
 @login_required
 @require_module("raporlar")
 def raporlar_api_esg_rapor_generate():
@@ -745,14 +745,14 @@ def raporlar_api_esg_rapor_generate():
 
 # ─── RK-14: Audit Çıktı Paketi PDF ─────────────────────────────────────────
 
-@app_bp.route("/reports/audit-package")
+@app_bp.route("/k-report/audit-package")
 @login_required
 @require_module("raporlar")
 def raporlar_audit_paketi():
     return render_template("platform/raporlar/audit_paketi.html")
 
 
-@app_bp.route("/reports/api/audit-package/generate", methods=["GET", "POST"])
+@app_bp.route("/k-report/api/audit-package/generate", methods=["GET", "POST"])
 @login_required
 @require_module("raporlar")
 def raporlar_api_audit_paketi_generate():
@@ -902,14 +902,14 @@ def raporlar_api_audit_paketi_generate():
 
 # ─── HR-01: Bireysel Karne PDF Batch (ZIP) ─────────────────────────────────
 
-@app_bp.route("/reports/individual-scorecard-batch")
+@app_bp.route("/k-report/individual-scorecard-batch")
 @login_required
 @require_module("raporlar")
 def raporlar_bireysel_karne_batch():
     return render_template("platform/raporlar/bireysel_karne_batch.html")
 
 
-@app_bp.route("/reports/api/individual-scorecard-batch/preview")
+@app_bp.route("/k-report/api/individual-scorecard-batch/preview")
 @login_required
 @require_module("raporlar")
 def raporlar_api_bireysel_karne_batch_preview():
@@ -931,7 +931,7 @@ def raporlar_api_bireysel_karne_batch_preview():
     }})
 
 
-@app_bp.route("/reports/api/individual-scorecard-batch/generate", methods=["GET", "POST"])
+@app_bp.route("/k-report/api/individual-scorecard-batch/generate", methods=["GET", "POST"])
 @login_required
 @require_module("raporlar")
 def raporlar_api_bireysel_karne_batch_generate():

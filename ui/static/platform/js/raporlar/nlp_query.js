@@ -39,7 +39,7 @@
   }
 
   async function loadPatterns(){
-    const r = await fetch('/reports/api/nlp-query/patterns',{credentials:'same-origin'});
+    const r = await fetch('/k-report/api/nlp-query/patterns',{credentials:'same-origin'});
     const j = await r.json();
     if(!j.success) return;
     document.getElementById('patterns').innerHTML = j.patterns.map(p => `

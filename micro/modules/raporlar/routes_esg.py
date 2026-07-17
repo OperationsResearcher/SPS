@@ -45,7 +45,7 @@ def _metric_dict(m, values=None):
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
-@app_bp.route("/reports/esg-management")
+@app_bp.route("/k-report/esg-management")
 @login_required
 @require_module("raporlar")
 def raporlar_esg_yonetim():
@@ -56,7 +56,7 @@ def raporlar_esg_yonetim():
 
 # ── API: Metrik listesi (+ değerler) ──────────────────────────────────────────
 
-@app_bp.route("/reports/api/esg/metrics", methods=["GET"])
+@app_bp.route("/k-report/api/esg/metrics", methods=["GET"])
 @login_required
 @require_module("raporlar")
 def esg_api_metrics_list():
@@ -85,7 +85,7 @@ def esg_api_metrics_list():
 
 # ── API: Metrik CRUD ──────────────────────────────────────────────────────────
 
-@app_bp.route("/reports/api/esg/metrics", methods=["POST"])
+@app_bp.route("/k-report/api/esg/metrics", methods=["POST"])
 @login_required
 @require_module("raporlar")
 def esg_api_metric_add():
@@ -120,7 +120,7 @@ def esg_api_metric_add():
         return jsonify({"success": False, "message": "Metrik eklenemedi."}), 500
 
 
-@app_bp.route("/reports/api/esg/metrics/<int:metric_id>", methods=["POST"])
+@app_bp.route("/k-report/api/esg/metrics/<int:metric_id>", methods=["POST"])
 @login_required
 @require_module("raporlar")
 def esg_api_metric_update(metric_id):
@@ -156,7 +156,7 @@ def esg_api_metric_update(metric_id):
         return jsonify({"success": False, "message": _("Metrik güncellenemedi.")}), 500
 
 
-@app_bp.route("/reports/api/esg/metrics/<int:metric_id>/delete", methods=["POST"])
+@app_bp.route("/k-report/api/esg/metrics/<int:metric_id>/delete", methods=["POST"])
 @login_required
 @require_module("raporlar")
 def esg_api_metric_delete(metric_id):
@@ -178,7 +178,7 @@ def esg_api_metric_delete(metric_id):
 
 # ── API: Değer girişi (yıl bazlı upsert) ──────────────────────────────────────
 
-@app_bp.route("/reports/api/esg/metrics/<int:metric_id>/value", methods=["POST"])
+@app_bp.route("/k-report/api/esg/metrics/<int:metric_id>/value", methods=["POST"])
 @login_required
 @require_module("raporlar")
 def esg_api_value_save(metric_id):
@@ -211,7 +211,7 @@ def esg_api_value_save(metric_id):
         return jsonify({"success": False, "message": _("Değer kaydedilemedi.")}), 500
 
 
-@app_bp.route("/reports/api/esg/values/<int:value_id>/delete", methods=["POST"])
+@app_bp.route("/k-report/api/esg/values/<int:value_id>/delete", methods=["POST"])
 @login_required
 @require_module("raporlar")
 def esg_api_value_delete(value_id):

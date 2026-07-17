@@ -1,0 +1,285 @@
+<!doctype html>
+<html lang="tr">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Rol Görünüm Katmanı — Tarayıcı Kontrol Listesi</title>
+<style>
+  :root {
+    --bg: #f6f7f9;
+    --surface: #ffffff;
+    --surface-2: #eef1f5;
+    --border: #dde2ea;
+    --text: #1b2230;
+    --text-soft: #5a6474;
+    --text-faint: #8a94a4;
+    --accent: #4f46e5;
+    --accent-soft: #eef0fe;
+    --ok: #0f9d6b;
+    --ok-soft: #e6f6ee;
+    --warn: #b7791f;
+    --warn-soft: #fbf1dd;
+    --mono: ui-monospace, "SFMono-Regular", "Menlo", "Consolas", monospace;
+    --sans: system-ui, -apple-system, "Segoe UI", Roboto, sans-serif;
+    --shadow: 0 1px 2px rgba(20,30,50,.05), 0 4px 16px rgba(20,30,50,.04);
+  }
+  @media (prefers-color-scheme: dark) {
+    :root {
+      --bg: #0f1420;
+      --surface: #171d2b;
+      --surface-2: #1f2735;
+      --border: #2a3446;
+      --text: #e7ebf2;
+      --text-soft: #a3adbd;
+      --text-faint: #6b7688;
+      --accent: #8b8bf5;
+      --accent-soft: #23263f;
+      --ok: #4ecb93;
+      --ok-soft: #163027;
+      --warn: #e0b060;
+      --warn-soft: #2f2718;
+      --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 20px rgba(0,0,0,.25);
+    }
+  }
+  :root[data-theme="light"] {
+    --bg: #f6f7f9; --surface: #ffffff; --surface-2: #eef1f5; --border: #dde2ea;
+    --text: #1b2230; --text-soft: #5a6474; --text-faint: #8a94a4;
+    --accent: #4f46e5; --accent-soft: #eef0fe; --ok: #0f9d6b; --ok-soft: #e6f6ee;
+    --warn: #b7791f; --warn-soft: #fbf1dd; --shadow: 0 1px 2px rgba(20,30,50,.05), 0 4px 16px rgba(20,30,50,.04);
+  }
+  :root[data-theme="dark"] {
+    --bg: #0f1420; --surface: #171d2b; --surface-2: #1f2735; --border: #2a3446;
+    --text: #e7ebf2; --text-soft: #a3adbd; --text-faint: #6b7688;
+    --accent: #8b8bf5; --accent-soft: #23263f; --ok: #4ecb93; --ok-soft: #163027;
+    --warn: #e0b060; --warn-soft: #2f2718; --shadow: 0 1px 2px rgba(0,0,0,.3), 0 4px 20px rgba(0,0,0,.25);
+  }
+
+  * { box-sizing: border-box; }
+  body {
+    margin: 0; background: var(--bg); color: var(--text);
+    font-family: var(--sans); line-height: 1.55;
+    -webkit-font-smoothing: antialiased;
+  }
+  .wrap { max-width: 860px; margin: 0 auto; padding: 40px 22px 80px; }
+
+  header { margin-bottom: 30px; }
+  .eyebrow {
+    font-size: 12px; font-weight: 600; letter-spacing: .08em; text-transform: uppercase;
+    color: var(--accent); margin: 0 0 8px;
+  }
+  h1 { font-size: 27px; font-weight: 680; line-height: 1.2; margin: 0 0 10px; text-wrap: balance; letter-spacing: -.01em; }
+  .lead { color: var(--text-soft); font-size: 15px; max-width: 62ch; margin: 0; }
+
+  .meta-row { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 16px; }
+  .chip {
+    font-size: 12px; padding: 4px 10px; border-radius: 999px;
+    background: var(--surface-2); color: var(--text-soft); border: 1px solid var(--border);
+    font-variant-numeric: tabular-nums;
+  }
+  .chip b { color: var(--text); font-weight: 600; }
+
+  h2 {
+    font-size: 13px; font-weight: 600; letter-spacing: .06em; text-transform: uppercase;
+    color: var(--text-faint); margin: 40px 0 14px; padding-bottom: 8px;
+    border-bottom: 1px solid var(--border);
+  }
+
+  /* Hesap tablosu */
+  .accounts { background: var(--surface); border: 1px solid var(--border); border-radius: 12px; overflow: hidden; box-shadow: var(--shadow); }
+  .acc-note {
+    display: flex; align-items: center; gap: 8px; flex-wrap: wrap;
+    padding: 11px 16px; background: var(--accent-soft); border-bottom: 1px solid var(--border);
+    font-size: 13px; color: var(--text);
+  }
+  .acc-note code { font-family: var(--mono); font-size: 13px; background: var(--surface); padding: 2px 7px; border-radius: 5px; border: 1px solid var(--border); font-weight: 600; }
+  table { width: 100%; border-collapse: collapse; font-size: 14px; }
+  th, td { text-align: left; padding: 11px 16px; }
+  th { font-size: 11px; letter-spacing: .05em; text-transform: uppercase; color: var(--text-faint); font-weight: 600; }
+  tbody tr { border-top: 1px solid var(--border); }
+  td.role { font-weight: 600; white-space: nowrap; }
+  td.email { font-family: var(--mono); font-size: 13px; color: var(--text-soft); }
+  .tag { font-size: 11px; padding: 2px 8px; border-radius: 5px; font-weight: 600; white-space: nowrap; }
+  .tag-personel { background: var(--surface-2); color: var(--text-soft); }
+  .tag-lider { background: var(--ok-soft); color: var(--ok); }
+  .tag-yonetim { background: var(--accent-soft); color: var(--accent); }
+
+  /* Senaryo kartları */
+  .card {
+    background: var(--surface); border: 1px solid var(--border); border-radius: 12px;
+    padding: 20px 22px; margin-bottom: 16px; box-shadow: var(--shadow);
+  }
+  .card-head { display: flex; align-items: baseline; justify-content: space-between; gap: 12px; margin-bottom: 4px; flex-wrap: wrap; }
+  .card-title { font-size: 17px; font-weight: 640; margin: 0; letter-spacing: -.01em; }
+  .card-who { font-family: var(--mono); font-size: 12.5px; color: var(--text-faint); }
+  .card-sub { font-size: 13.5px; color: var(--text-soft); margin: 2px 0 16px; }
+
+  ul.checks { list-style: none; margin: 0; padding: 0; display: flex; flex-direction: column; gap: 2px; }
+  ul.checks li { display: flex; gap: 11px; padding: 8px 6px; border-radius: 8px; align-items: flex-start; cursor: pointer; transition: background .12s; }
+  ul.checks li:hover { background: var(--surface-2); }
+  ul.checks input { appearance: none; -webkit-appearance: none; flex-shrink: 0; width: 19px; height: 19px; margin: 1px 0 0; border: 1.5px solid var(--border); border-radius: 5px; background: var(--surface); cursor: pointer; position: relative; transition: all .12s; }
+  ul.checks input:checked { background: var(--accent); border-color: var(--accent); }
+  ul.checks input:checked::after { content: ""; position: absolute; left: 5.5px; top: 2px; width: 4px; height: 9px; border: solid #fff; border-width: 0 2px 2px 0; transform: rotate(45deg); }
+  ul.checks input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+  .ck-text { font-size: 14px; }
+  ul.checks input:checked + .ck-text { color: var(--text-faint); text-decoration: line-through; text-decoration-color: var(--text-faint); }
+  .ck-text .expect { display: block; font-size: 12.5px; color: var(--ok); margin-top: 2px; font-weight: 500; }
+  .ck-text .expect::before { content: "→ Beklenen: "; color: var(--text-faint); font-weight: 400; }
+  .ck-text code { font-family: var(--mono); font-size: 12.5px; background: var(--surface-2); padding: 1px 6px; border-radius: 4px; }
+
+  .callout {
+    display: flex; gap: 11px; padding: 13px 16px; border-radius: 10px;
+    background: var(--warn-soft); border: 1px solid color-mix(in srgb, var(--warn) 30%, transparent);
+    font-size: 13.5px; color: var(--text); margin-top: 26px;
+  }
+  .callout .ico { color: var(--warn); flex-shrink: 0; font-weight: 700; }
+  .callout b { font-weight: 640; }
+
+  footer { margin-top: 34px; padding-top: 18px; border-top: 1px solid var(--border); font-size: 12.5px; color: var(--text-faint); display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+
+  .progress-bar { position: sticky; top: 0; z-index: 5; height: 3px; background: var(--surface-2); margin: 0 -22px 30px; }
+  .progress-fill { height: 100%; width: 0; background: var(--accent); transition: width .2s; }
+
+  @media (max-width: 560px) {
+    .card-head { flex-direction: column; gap: 2px; }
+    th:nth-child(3), td:nth-child(3) { display: none; }
+  }
+  @media print {
+    body { background: #fff; }
+    .card, .accounts { box-shadow: none; break-inside: avoid; }
+    .progress-bar { display: none; }
+  }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="progress-bar"><div class="progress-fill" id="pf"></div></div>
+
+  <header>
+    <p class="eyebrow">Kokpitim · Yerel Doğrulama</p>
+    <h1>Rol Bazlı Görünüm Katmanı — Tarayıcı Kontrol Listesi</h1>
+    <p class="lead">Faz 1'in (menü görünürlüğü + K-Radar lider kapsamı) gerçek arayüzde beklendiği gibi çalıştığını kendi gözünle doğrula. Her hesapla giriş yap, adımları işaretle.</p>
+    <div class="meta-row">
+      <span class="chip">Ortam: <b>Yerel · 127.0.0.1:5001</b></span>
+      <span class="chip">Dal: <b>claude/rol-gorunum-katmani</b></span>
+      <span class="chip">Kapsam: <b>TASK-242 · 243 · 244</b></span>
+    </div>
+  </header>
+
+  <h2>Başlamadan</h2>
+  <ul class="checks" data-group="setup">
+    <li><input type="checkbox"><span class="ck-text">Uygulamayı <code>python pybasla.py</code> ile başlat, <code>http://127.0.0.1:5001</code> aç.</span></li>
+    <li><input type="checkbox"><span class="ck-text">Her yeni hesaba geçerken <b>çıkış yap</b> (aynı oturum karışmasın) veya gizli sekme kullan.</span></li>
+  </ul>
+
+  <h2>Test Hesapları</h2>
+  <div class="accounts">
+    <div class="acc-note">🔑 Tümünün şifresi: <code>Kontrol2026!</code> · Yerel test için hazırlandı.</div>
+    <table>
+      <thead><tr><th>Senaryo</th><th>E-posta</th><th>Rol</th></tr></thead>
+      <tbody>
+        <tr><td class="role">İlişkisiz personel</td><td class="email">user@kokpitim.com</td><td><span class="tag tag-personel">standard_user</span></td></tr>
+        <tr><td class="role">Süreç üyesi</td><td class="email">ahmet4@ornek.com</td><td><span class="tag tag-personel">standard_user</span></td></tr>
+        <tr><td class="role">Süreç lideri</td><td class="email">ahmet5@ornek.com</td><td><span class="tag tag-lider">lider</span></td></tr>
+        <tr><td class="role">Lider · veri dolu <span style="font-weight:400;color:var(--text-faint)">(K-Radar testi)</span></td><td class="email">engin.kaya@kokpitim.com</td><td><span class="tag tag-lider">lider · t27</span></td></tr>
+        <tr><td class="role">Üst yönetim</td><td class="email">1cansu.aydin@kokpitim.com</td><td><span class="tag tag-yonetim">executive_manager</span></td></tr>
+        <tr><td class="role">Kurum yöneticisi</td><td class="email">yonetici@kokpitim.com</td><td><span class="tag tag-yonetim">tenant_admin</span></td></tr>
+      </tbody>
+    </table>
+  </div>
+
+  <h2>Senaryo 1 · İlişkisiz Personel</h2>
+  <div class="card">
+    <div class="card-head"><h3 class="card-title">En sade görünüm</h3><span class="card-who">user@kokpitim.com</span></div>
+    <p class="card-sub">Hiçbir süreç/projeye bağlı olmayan sıradan çalışan. Kendisini ilgilendirmeyen yönetim ekranları görünmemeli.</p>
+    <ul class="checks">
+      <li><input type="checkbox"><span class="ck-text">Sol menüde yalnızca temel öğeler var.<span class="expect">Masaüstüm, Bildirimler, Ayarlar (+ pakete bağlıysa Bireysel/Kurum)</span></span></li>
+      <li><input type="checkbox"><span class="ck-text">Menüde <b>Süreç Yönetimi</b> ve <b>Proje Yönetimi</b> <b>YOK</b>.</span></li>
+      <li><input type="checkbox"><span class="ck-text">Menüde <b>K-Radar</b>, <b>K-Analiz</b>, <b>Stratejik Planlama</b>, <b>Savaş Odası</b>, <b>Analitik</b> <b>YOK</b>.</span></li>
+      <li><input type="checkbox"><span class="ck-text">Menüde <b>Yönetim</b> (Kullanıcılar/Kurumlar) ve <b>Admin</b> bölümleri <b>YOK</b>.</span></li>
+    </ul>
+  </div>
+
+  <h2>Senaryo 2 · Süreç Üyesi</h2>
+  <div class="card">
+    <div class="card-head"><h3 class="card-title">Veri girer, ama yönetmez</h3><span class="card-who">ahmet4@ornek.com</span></div>
+    <p class="card-sub">Bir sürece üye ama lider değil. Süreç ekranını görmeli (veri girişi için) ama analiz aracını değil.</p>
+    <ul class="checks">
+      <li><input type="checkbox"><span class="ck-text">Menüde <b>Süreç Yönetimi</b> <b>GÖRÜNÜR</b>.<span class="expect">üye olduğu için menü açık</span></span></li>
+      <li><input type="checkbox"><span class="ck-text">Menüde <b>K-Radar / K-Analiz</b> hâlâ <b>YOK</b>.<span class="expect">üye ≠ lider → K-Radar bir yönetim aracı</span></span></li>
+      <li><input type="checkbox"><span class="ck-text">Süreç Yönetimi'ne girince içeride yönetim/CRUD butonları kısıtlı, veri girişi açık.</span></li>
+    </ul>
+  </div>
+
+  <h2>Senaryo 3 · Süreç Lideri</h2>
+  <div class="card">
+    <div class="card-head"><h3 class="card-title">Liderlik menüyü açar</h3><span class="card-who">ahmet5@ornek.com</span></div>
+    <p class="card-sub">Bir süreçte lider. Liderlik, K-Radar'ı ve yönetim ekranını açmalı.</p>
+    <ul class="checks">
+      <li><input type="checkbox"><span class="ck-text">Menüde <b>Süreç Yönetimi</b> <b>GÖRÜNÜR</b>.</span></li>
+      <li><input type="checkbox"><span class="ck-text">Menüde <b>K-Radar</b> ve <b>K-Analiz</b> artık <b>GÖRÜNÜR</b>.<span class="expect">liderlik K-Radar'ı açtı</span></span></li>
+      <li><input type="checkbox"><span class="ck-text">Menüde <b>Stratejik Planlama / Savaş Odası / Yönetim</b> hâlâ <b>YOK</b>.<span class="expect">bunlar üst yönetime özel</span></span></li>
+    </ul>
+  </div>
+
+  <h2>Senaryo 4 · Lider · K-Radar Kapsamı <span style="text-transform:none;font-weight:400;color:var(--text-faint)">(en kritik test)</span></h2>
+  <div class="card">
+    <div class="card-head"><h3 class="card-title">Lider yalnız kendi verisini görür</h3><span class="card-who">engin.kaya@kokpitim.com</span></div>
+    <p class="card-sub">Veri dolu bir kurumda (Tomofil / tenant 27) süreç lideri. K-Radar'da rakamlar kurum geneli değil, kişiye özel olmalı.</p>
+    <ul class="checks">
+      <li><input type="checkbox"><span class="ck-text">Menüden <b>K-Radar</b>'a gir → sayfanın üstünde <b>mavi kapsam bilgi şeridi</b> var.<span class="expect">"Süreç ve proje kartları yalnızca sizin sorumlu olduğunuz…"</span></span></li>
+      <li><input type="checkbox"><span class="ck-text"><b>KP-Radar</b> (süreç) kartlarındaki KPI sayısı <b>küçük</b> (kendi sürecinin verisi).<span class="expect">kurum geneli 200+ değil, tek haneli</span></span></li>
+      <li><input type="checkbox"><span class="ck-text"><b>K-Analiz</b> (KS / SWOT / PESTEL) sayfasında şerit yine görünür; strateji verisi kurum geneli.<span class="expect">bunlar sürece bölünemez → kurum geneli, bilinçli</span></span></li>
+    </ul>
+  </div>
+
+  <h2>Senaryo 5 · Üst Yönetim & Kurum Yöneticisi</h2>
+  <div class="card">
+    <div class="card-head"><h3 class="card-title">Her şeyi kurum geneli görür</h3><span class="card-who">1cansu.aydin@… · yonetici@…</span></div>
+    <p class="card-sub">Üst yönetim ve kurum yöneticisi için sadeleştirme yok; kapsam şeridi de görünmez.</p>
+    <ul class="checks">
+      <li><input type="checkbox"><span class="ck-text"><b>Üst yönetim</b>: menüde Süreç, Proje, K-Radar, Stratejik Planlama, Savaş Odası, Analitik <b>hepsi GÖRÜNÜR</b>.</span></li>
+      <li><input type="checkbox"><span class="ck-text"><b>Üst yönetim</b>: K-Radar'da <b>kapsam şeridi YOK</b> ve rakamlar kurum geneli (büyük).<span class="expect">gizleme değil, tam görünürlük</span></span></li>
+      <li><input type="checkbox"><span class="ck-text"><b>Kurum yöneticisi</b>: yukarıdakilere ek olarak <b>Yönetim</b> bölümü (Kullanıcılar, Kurumlar) <b>GÖRÜNÜR</b>.</span></li>
+      <li><input type="checkbox"><span class="ck-text"><b>Kurum yöneticisi</b>: <b>SaaS Paketler / API / Admin Araçları</b> hâlâ <b>YOK</b> (yalnız platform admini).</span></li>
+    </ul>
+  </div>
+
+  <div class="callout">
+    <span class="ico">!</span>
+    <div><b>Bilinçli sınır (hata değil):</b> Faz 1 yalnızca <b>menüyü</b> gizler; adres çubuğuna elle <code>/k-radar</code> gibi bir URL yazan personel sayfaya yine ulaşabilir. Route seviyesi kilit sonraki faza bırakıldı. Yani "menüde yok ama URL açılıyor" beklenen davranış.</div>
+  </div>
+
+  <footer>
+    <span id="count">0 / 0 tamamlandı</span>
+    <span>İşaretler bu tarayıcıda saklanır · Yazdırılabilir</span>
+  </footer>
+</div>
+
+<script>
+  (function () {
+    var boxes = Array.prototype.slice.call(document.querySelectorAll('ul.checks input[type=checkbox]'));
+    var KEY = 'kokpitim-kontrol-v1';
+    var pf = document.getElementById('pf');
+    var count = document.getElementById('count');
+
+    function save() {
+      try { localStorage.setItem(KEY, JSON.stringify(boxes.map(function (b) { return b.checked; }))); } catch (e) {}
+    }
+    function restore() {
+      try {
+        var s = JSON.parse(localStorage.getItem(KEY) || '[]');
+        boxes.forEach(function (b, i) { if (s[i]) b.checked = true; });
+      } catch (e) {}
+    }
+    function update() {
+      var done = boxes.filter(function (b) { return b.checked; }).length;
+      var pct = boxes.length ? Math.round(done / boxes.length * 100) : 0;
+      pf.style.width = pct + '%';
+      count.textContent = done + ' / ' + boxes.length + ' tamamlandı';
+    }
+    restore(); update();
+    boxes.forEach(function (b) { b.addEventListener('change', function () { save(); update(); }); });
+  })();
+</script>
+</body>
+</html>

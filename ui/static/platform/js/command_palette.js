@@ -37,7 +37,7 @@
     // /project/kanban route'ları HİÇ VAR OLMAMIŞ (Faz 3 ölçümü). Gerçek adres
     // proje ID'si ister: /k-plan/project/<id>/views/gantt. ID'siz genel sayfa yok.
     { title: t("K-Radar Araçları"),        url: "/k-radar/ks",        icon: "fa-magnifying-glass-chart", group: t("Sayfa") },
-    { title: t("K-Radar"),                 url: "/reports",          icon: "fa-satellite-dish",       group: t("Sayfa") },
+    { title: t("K-Radar"),                 url: "/k-report",          icon: "fa-satellite-dish",       group: t("Sayfa") },
     { title: t("Performans Analitiği"),    url: "/analysis",          icon: "fa-chart-bar",            group: t("Sayfa") },
     { title: t("Bireysel Karne"),          url: "/k-plan/individual/scorecard", icon: "fa-user-check", group: t("Sayfa") },
     { title: t("Bildirimler"),             url: "/notification",      icon: "fa-bell",                 group: t("Sayfa") },

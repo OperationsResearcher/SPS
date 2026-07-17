@@ -78,14 +78,14 @@ SEKTOR_CATALOG = [
 ]
 
 
-@app_bp.route("/reports/sectoral")
+@app_bp.route("/k-report/sectoral")
 @login_required
 @require_module("raporlar")
 def raporlar_sektorel():
     return render_template("platform/raporlar/sektorel.html", sektorler=SEKTOR_CATALOG)
 
 
-@app_bp.route("/reports/sectoral/<code>")
+@app_bp.route("/k-report/sectoral/<code>")
 @login_required
 @require_module("raporlar")
 def raporlar_sektorel_detay(code):
@@ -98,7 +98,7 @@ def raporlar_sektorel_detay(code):
                            code=code, package=pkg)
 
 
-@app_bp.route("/reports/api/sectoral/<code>")
+@app_bp.route("/k-report/api/sectoral/<code>")
 @login_required
 @require_module("raporlar")
 def raporlar_api_sektorel(code):
@@ -110,7 +110,7 @@ def raporlar_api_sektorel(code):
 
 # ─── AI-01: AI Doğal Dil Sorgu (pattern-based + free) ───────────────────────
 
-@app_bp.route("/reports/nlp-query")
+@app_bp.route("/k-report/nlp-query")
 @login_required
 @require_module("raporlar")
 def raporlar_nlp_query():
@@ -161,14 +161,14 @@ _NLP_PATTERNS = [
 ]
 
 
-@app_bp.route("/reports/api/nlp-query/patterns")
+@app_bp.route("/k-report/api/nlp-query/patterns")
 @login_required
 @require_module("raporlar")
 def raporlar_api_nlp_patterns():
     return jsonify({"success": True, "patterns": _NLP_PATTERNS})
 
 
-@app_bp.route("/reports/api/nlp-query", methods=["GET", "POST"])
+@app_bp.route("/k-report/api/nlp-query", methods=["GET", "POST"])
 @login_required
 @require_module("raporlar")
 def raporlar_api_nlp_query():
@@ -322,7 +322,7 @@ def raporlar_api_nlp_query():
 
 # ─── AI-10: AI Sektör Benchmark ────────────────────────────────────────────
 
-@app_bp.route("/reports/sektor-benchmark")
+@app_bp.route("/k-report/sektor-benchmark")
 @login_required
 @require_module("raporlar")
 def raporlar_sektor_benchmark():
@@ -433,7 +433,7 @@ def _sektor_context(tid, tenant, sektor_override: str | None = None):
     }
 
 
-@app_bp.route("/reports/api/sektor-benchmark")
+@app_bp.route("/k-report/api/sektor-benchmark")
 @login_required
 @require_module("raporlar")
 def raporlar_api_sektor_benchmark():
@@ -461,7 +461,7 @@ def raporlar_api_sektor_benchmark():
     }})
 
 
-@app_bp.route("/reports/api/sektor-benchmark/ai-yorum", methods=["POST"])
+@app_bp.route("/k-report/api/sektor-benchmark/ai-yorum", methods=["POST"])
 @login_required
 @require_module("raporlar")
 @csrf.exempt
@@ -507,7 +507,7 @@ def raporlar_api_sektor_benchmark_ai():
     return jsonify({"success": True, "yorum": yorum})
 
 
-@app_bp.route("/reports/api/ai-status")
+@app_bp.route("/k-report/api/ai-status")
 @login_required
 @require_module("raporlar")
 def raporlar_api_ai_status():

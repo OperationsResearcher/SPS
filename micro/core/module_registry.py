@@ -69,14 +69,15 @@ MODULES = [
     {
         "id": "k_rapor",
         "name": _("K-Rapor"),
-        "url": "/k-rapor",
+        # Katman mimarisi Faz 4 (2026-07-17): rapor katmanı /k-report'ta birleşti.
+        "url": "/k-report",
         "icon": "📈",
         "description": _("Kurumsal raporlama merkezi — süreç, strateji, faaliyet, risk ve denetim raporları"),
     },
     {
         "id": "raporlar",
         "name": _("Raporlar"),
-        "url": "/reports",
+        "url": "/k-report",
         "icon": "🗂️",
         "description": _("İleri raporlama merkezi — CFO/CHRO/COO panoları, ESG, OKR, VRIO portföy analizleri"),
     },

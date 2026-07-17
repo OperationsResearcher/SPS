@@ -56,6 +56,9 @@ _GATED_PREFIX_MODULE = [
     ("/project", "proje"),
     ("/analysis", "analiz"),
     ("/k-radar", "k_radar"),
+    # Faz 4: rapor katmanı /k-report önekinde birleşti. Eski önekler de kalır
+    # (legacy redirect 307 ile yeni adrese gider ama doğrudan istek gelebilir).
+    ("/k-report", "k_rapor"),
     ("/k-rapor", "k_rapor"),
 ]
 

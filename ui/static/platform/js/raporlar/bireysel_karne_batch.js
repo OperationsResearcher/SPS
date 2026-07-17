@@ -1,7 +1,7 @@
 (function(){
   async function load(){
     try {
-      const j = await (await fetch('/reports/api/individual-scorecard-batch/preview',{credentials:'same-origin'})).json();
+      const j = await (await fetch('/k-report/api/individual-scorecard-batch/preview',{credentials:'same-origin'})).json();
       if(!j.success) throw new Error(j.message);
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
@@ -13,7 +13,7 @@
   document.getElementById('dl').addEventListener('click', async()=>{
     const b=document.getElementById('dl'); const o=b.innerHTML; b.disabled=true; b.innerHTML='<i class="fas fa-spinner fa-spin"></i> ZIP hazırlanıyor (10-60sn)…';
     try {
-      const r=await fetch('/reports/api/individual-scorecard-batch/generate',{credentials:'same-origin'});
+      const r=await fetch('/k-report/api/individual-scorecard-batch/generate',{credentials:'same-origin'});
       if(!r.ok) throw new Error('HTTP '+r.status);
       const blob=await r.blob(); const url=URL.createObjectURL(blob); const a=document.createElement('a'); a.href=url;
       const cd=r.headers.get('Content-Disposition')||''; const m=cd.match(/filename="?([^";]+)"?/);
