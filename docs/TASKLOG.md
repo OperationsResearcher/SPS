@@ -2,6 +2,48 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-278 | 2026-07-17 | ✅ Tamamlandı
+
+**Görev:** 36 rapor sayfası sonsuz spinner — JS klasörü taşınmamış (`js/raporlar` → `js/reports`)
+**Modül:** ui/static, tests
+**Durum:** ✅ Tamamlandı — yerelde doğrulandı (canlı 5001 dahil)
+
+### Bulunma şekli
+Kullanıcı yerel testte `/k-report/cfo-dashboard` "spinning oldu kaldı" dedi.
+
+### Kök neden — katman işi DEĞİL, önceden kırıkmış
+Commit `ed713231` ("URL tek-dil: analiz/bireysel/raporlar/shared modülleri İngilizceye")
+36 şablonda JS yolunu `platform/js/raporlar/` → `platform/js/reports/` yaptı ama
+**klasörü taşımadı**. Sonuç: 36 rapor sayfasının JS'i **404**.
+
+Sayfa 200 dönüyordu, API çalışıyordu (`/k-report/api/cfo-dashboard` → 0.0sn, veri
+dolu) — ama JS yüklenmediği için `loading` div'i hiç gizlenmiyordu → sonsuz spinner.
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/raporlar/` → `ui/static/platform/js/reports/` (39 dosya, `git mv`)
+- `tests/test_statik_dosya_varligi.py` → YENİ (153 parametreli kontrol)
+
+### Yapılan İşlem
+`git mv` ile klasör taşındı. **36 şablonun hiçbirine dokunulmadı** — zaten doğru yolu
+istiyorlardı; taşımanın niyeti buydu, yarım kalmıştı (KURALLAR §2: kod/URL İngilizce).
+Taşımadan önce `js/raporlar/` yolunu isteyen başka referans olmadığı tarandı (0 sonuç).
+
+### Notlar
+🔴 **602 test bu hatayı YAKALAYAMADI.** Testler HTTP yanıtına bakıyor; şablonun
+referans verdiği statik dosyanın diskte olup olmadığına **kimse bakmıyordu**.
+Sayfa 200 döndüğü için her şey yolunda görünüyordu.
+
+✅ **Boşluk kapatıldı:** `test_statik_dosya_varligi.py` — `url_for('app_bp.static',
+filename=...)` ile istenen her dosya diskte olmalı (153 referans taranıyor).
+**Testin işe yaradığı kanıtlandı:** klasör geçici geri alındığında **tam 36 test
+kırıldı** (kullanıcının bulduğu sayının aynısı), düzeltilince 153/153 geçti.
+
+**Doğrulama:** `pytest -q` → **755 passed** (602 + 153 statik kontrol), 1 skipped,
+1 xfailed · **canlı 5001'de 36/36 JS artık HTTP 200** (hepsi 404'tü) · sunucu
+yeniden başlatıldı (statik değişti).
+
+---
+
 ## TASK-277 | 2026-07-17 | ✅ Tamamlandı — 🏁 KATMAN MİMARİSİ TAMAM
 
 **Görev:** Katman mimarisi Faz 6 — temizlik + önceki fazların kaçırdıkları
