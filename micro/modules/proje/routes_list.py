@@ -59,10 +59,37 @@ def _load_filter_surecler(kid: int):
 @app_bp.route("/proje")
 @login_required
 def proje_legacy_redirect():
+    # url_for sayesinde endpoint adı korunduğu sürece yeni path'i otomatik üretir
+    # (endpoint sözleşmesi) — Faz 3'te /project → /k-plan/project taşınmasında
+    # bu satıra dokunulmadı.
     return redirect(url_for("app_bp.project_list"))
 
 
+# ── Katman mimarisi Faz 3: /project → /k-plan/project (307) ───────────────────
+# Proje girdi katmanına taşındı. /project dış dünyada kullanılan adres olduğu
+# için kalıcı yönlendirilir. 307: POST gövdesi korunur (301 GET'e çevirirdi).
+
+
 @app_bp.route("/project")
+@app_bp.route("/project/")
+def project_katman_legacy_index():
+    target = "/k-plan/project"
+    qs = request.query_string.decode() if request.query_string else ""
+    if qs:
+        target = f"{target}?{qs}"
+    return redirect(target, code=307)
+
+
+@app_bp.route("/project/<path:subpath>")
+def project_katman_legacy_path(subpath):
+    target = f"/k-plan/project/{subpath}"
+    qs = request.query_string.decode() if request.query_string else ""
+    if qs:
+        target = f"{target}?{qs}"
+    return redirect(target, code=307)
+
+
+@app_bp.route("/k-plan/project")
 @login_required
 def project_list():
     kid = kurum_id()
@@ -113,7 +140,7 @@ def project_list():
     )
 
 
-@app_bp.route("/project/export.csv")
+@app_bp.route("/k-plan/project/export.csv")
 @login_required
 def project_export_csv():
     kid = kurum_id()
@@ -201,7 +228,7 @@ def project_export_csv():
     )
 
 
-@app_bp.route("/project/deadlines.ics")
+@app_bp.route("/k-plan/project/deadlines.ics")
 @login_required
 def project_deadlines_ics():
     kid = kurum_id()
@@ -247,7 +274,7 @@ def project_deadlines_ics():
     )
 
 
-@app_bp.route("/project/bulk-notifications", methods=["POST"])
+@app_bp.route("/k-plan/project/bulk-notifications", methods=["POST"])
 @login_required
 def project_bulk_notifications():
     if not is_privileged(current_user):
@@ -305,7 +332,7 @@ def project_bulk_notifications():
     return redirect(url_for("app_bp.project_list"))
 
 
-@app_bp.route("/project/portfolio")
+@app_bp.route("/k-plan/project/portfolio")
 @login_required
 def project_portfolio():
     if not can_crud_project_portfolio(current_user):

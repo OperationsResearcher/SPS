@@ -107,7 +107,7 @@ def _sync_project_process_links_legacy(proj: Project, kid: int, selected_ids: li
             proj.related_processes.append(sc)
 
 
-@app_bp.route("/project/new", methods=["GET", "POST"])
+@app_bp.route("/k-plan/project/new", methods=["GET", "POST"])
 @login_required
 def project_new():
     kid = kurum_id()
@@ -232,7 +232,7 @@ def project_new():
     return redirect(url_for("app_bp.project_detail", project_id=proj.id))
 
 
-@app_bp.route("/project/<int:project_id>")
+@app_bp.route("/k-plan/project/<int:project_id>")
 @login_required
 def project_detail(project_id: int):
     proj = load_project(project_id)
@@ -278,7 +278,7 @@ def project_detail(project_id: int):
     )
 
 
-@app_bp.route("/project/<int:project_id>/edit", methods=["GET", "POST"])
+@app_bp.route("/k-plan/project/<int:project_id>/edit", methods=["GET", "POST"])
 @login_required
 def project_edit(project_id: int):
     proj = load_project(project_id)
@@ -374,7 +374,7 @@ def project_edit(project_id: int):
     return redirect(url_for("app_bp.project_detail", project_id=proj.id))
 
 
-@app_bp.route("/project/<int:project_id>/strategy")
+@app_bp.route("/k-plan/project/<int:project_id>/strategy")
 @login_required
 def project_strategy(project_id: int):
     if not can_crud_project_portfolio(current_user):
@@ -387,7 +387,7 @@ def project_strategy(project_id: int):
     return render_template("platform/project/strategy_detail.html", **ctx)
 
 
-@app_bp.route("/project/<int:project_id>/strategy/processes", methods=["POST"])
+@app_bp.route("/k-plan/project/<int:project_id>/strategy/processes", methods=["POST"])
 @login_required
 def project_strategy_processes(project_id: int):
     if not can_crud_project_portfolio(current_user):
@@ -405,7 +405,7 @@ def project_strategy_processes(project_id: int):
     return redirect(url_for("app_bp.project_strategy", project_id=project_id))
 
 
-@app_bp.route("/project/<int:project_id>/delete", methods=["POST"])
+@app_bp.route("/k-plan/project/<int:project_id>/delete", methods=["POST"])
 @login_required
 def project_delete(project_id: int):
     if not can_crud_project_portfolio(current_user):

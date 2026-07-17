@@ -76,7 +76,7 @@ from micro.modules.surec.helpers import (
     _users_pick_json,
 )
 
-@app_bp.route("/process/api/kpi-data/add", methods=["POST"])
+@app_bp.route("/k-plan/process/api/kpi-data/add", methods=["POST"])
 @login_required
 def surec_api_kpi_data_add():
     data = request.get_json() or {}
@@ -214,7 +214,7 @@ def surec_api_kpi_data_add():
 
 
 # Sprint 44 — Bulk Excel import
-@app_bp.route("/process/api/kpi-data/bulk-import", methods=["POST"])
+@app_bp.route("/k-plan/process/api/kpi-data/bulk-import", methods=["POST"])
 @login_required
 def surec_api_kpi_data_bulk_import():
     """Excel'den KPI veri toplu import (dry-run + commit modu)."""
@@ -243,7 +243,7 @@ def surec_api_kpi_data_bulk_import():
         return jsonify({"success": False, "message": _("Sunucu hatası oluştu.")}), 500
 
 
-@app_bp.route("/process/api/kpi-data/template.xlsx")
+@app_bp.route("/k-plan/process/api/kpi-data/template.xlsx")
 @login_required
 def surec_api_kpi_data_template():
     """Boş Excel şablonu indir."""
@@ -258,7 +258,7 @@ def surec_api_kpi_data_template():
     )
 
 
-@app_bp.route("/process/api/kpi-data/list/<int:kpi_id>", methods=["GET"])
+@app_bp.route("/k-plan/process/api/kpi-data/list/<int:kpi_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_data_list(kpi_id):
     kpi = ProcessKpi.query.join(Process).filter(
@@ -296,7 +296,7 @@ def surec_api_kpi_data_list(kpi_id):
     })
 
 
-@app_bp.route("/process/api/kpi-data/history/<int:kpi_id>", methods=["GET"])
+@app_bp.route("/k-plan/process/api/kpi-data/history/<int:kpi_id>", methods=["GET"])
 @login_required
 def surec_api_kpi_data_history(kpi_id):
     """
@@ -375,7 +375,7 @@ def surec_api_kpi_data_history(kpi_id):
     })
 
 
-@app_bp.route("/process/api/kpi-data/update/<int:data_id>", methods=["POST", "PUT"])
+@app_bp.route("/k-plan/process/api/kpi-data/update/<int:data_id>", methods=["POST", "PUT"])
 @login_required
 def surec_api_kpi_data_update(data_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
@@ -469,7 +469,7 @@ def surec_api_kpi_data_update(data_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/kpi-data/delete/<int:data_id>", methods=["POST", "DELETE"])
+@app_bp.route("/k-plan/process/api/kpi-data/delete/<int:data_id>", methods=["POST", "DELETE"])
 @login_required
 def surec_api_kpi_data_delete(data_id):
     entry = KpiData.query.join(ProcessKpi).join(Process).filter(
@@ -520,7 +520,7 @@ def surec_api_kpi_data_delete(data_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/kpi-data/detail", methods=["GET"])
+@app_bp.route("/k-plan/process/api/kpi-data/detail", methods=["GET"])
 @login_required
 def surec_api_kpi_data_detail():
     """Kök karne «veri detay» modalı ile uyumlu: periyot bazlı kayıtlar + audit."""
@@ -602,7 +602,7 @@ def surec_api_kpi_data_detail():
     })
 
 
-@app_bp.route("/process/api/kpi/<int:kpi_id>/score-detail", methods=["GET"])
+@app_bp.route("/k-plan/process/api/kpi/<int:kpi_id>/score-detail", methods=["GET"])
 @login_required
 def surec_api_kpi_score_detail(kpi_id: int):
     """KPI başarı puanı hesaplama detayını döner (şeffaflık için)."""
@@ -680,7 +680,7 @@ def surec_api_kpi_score_detail(kpi_id: int):
     })
 
 
-@app_bp.route("/process/api/kpi-data/proje-gorevleri", methods=["GET"])
+@app_bp.route("/k-plan/process/api/kpi-data/proje-gorevleri", methods=["GET"])
 @login_required
 def surec_api_kpi_data_proje_gorevleri():
     """Kök API ile uyumlu; proje modülü entegrasyonu yoksa boş liste."""
@@ -692,7 +692,7 @@ def surec_api_kpi_data_proje_gorevleri():
 # Toplu KPI Veri Girişi — Excel şablon indir / yükle
 # ──────────────────────────────────────────────────
 
-@app_bp.route("/process/api/kpi-data/bulk-template", methods=["GET"])
+@app_bp.route("/k-plan/process/api/kpi-data/bulk-template", methods=["GET"])
 @login_required
 def surec_api_kpi_bulk_template():
     """Tenant'ın aktif KPI listesini Excel şablon olarak indirir."""

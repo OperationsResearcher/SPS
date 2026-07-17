@@ -79,7 +79,7 @@
       <button id="exec-refresh-btn" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Yenile') }}">
         <i class="fas fa-sync"></i>
       </button>
-      <a href="/sp/digest/weekly.pdf" target="_blank" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Haftalık PDF raporu') }}">
+      <a href="{{ url_for('app_bp.sp_digest_pdf') }}" target="_blank" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Haftalık PDF raporu') }}">
         <i class="fas fa-file-pdf"></i> {{ _("Haftalık PDF") }}
       </a>
       <button class="mc-btn mc-btn-primary mc-btn-sm" id="exec-pivot-btn">
@@ -180,7 +180,7 @@
       <div id="exec-kpi-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/sp/initiatives" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.girisim_sagligi" style="padding: var(--space-4); border-left:4px solid var(--color-accent);
+    <a href="{{ url_for('app_bp.sp_initiatives_page') }}" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.girisim_sagligi" style="padding: var(--space-4); border-left:4px solid var(--color-accent);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="init" title="{{ _('Girişim listesine git') }}">
       <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("Girişim Sağlığı") }}</div>
@@ -220,7 +220,7 @@
       <div id="exec-anomaly-detail" style="font-size: var(--text-sm); color: var(--text-subtle); margin-top: var(--space-1);">&nbsp;</div>
     </a>
 
-    <a href="/sp/replan-triggers" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.aktif_tetikleyici" style="padding: var(--space-4); border-left:4px solid var(--color-success);
+    <a href="{{ url_for('app_bp.sp_replan_triggers_page') }}" class="mc-card exec-tile" data-card-code="sp_exec_dashboard.aktif_tetikleyici" style="padding: var(--space-4); border-left:4px solid var(--color-success);
          transition: var(--transition-base); text-decoration:none; color:inherit;" data-tile="trigger" title="{{ _('Replan tetikleyici yönetimi') }}">
       <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase;
            letter-spacing:0.05em; font-weight:600;">{{ _("Aktif Tetikleyici") }}</div>

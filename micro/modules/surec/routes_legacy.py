@@ -68,13 +68,17 @@ from micro.modules.surec.helpers import (
     _users_pick_json,
 )
 
-# ── Eski URL uyumluluğu: /surec → /process (307: POST gövdesi korunur) ──
+# ── Eski URL uyumluluğu: /surec → /k-plan/process (307: POST gövdesi korunur) ──
+#
+# Faz 3 (2026-07-17): süreç girdi katmanına taşındı (/process → /k-plan/process).
+# Bu redirect'ler doğrudan YENİ hedefe gider — zincir (/surec → /process →
+# /k-plan/process) kurulmaz; her atlama gecikme ve kırılma noktasıdır.
 
 
 @app_bp.route("/surec")
 @app_bp.route("/surec/")
 def surec_legacy_index_redirect():
-    target = "/process"
+    target = "/k-plan/process"
     qs = request.query_string.decode() if request.query_string else ""
     if qs:
         target = f"{target}?{qs}"
@@ -83,7 +87,31 @@ def surec_legacy_index_redirect():
 
 @app_bp.route("/surec/<path:subpath>")
 def surec_legacy_path_redirect(subpath):
-    target = f"/process/{subpath}"
+    target = f"/k-plan/process/{subpath}"
+    qs = request.query_string.decode() if request.query_string else ""
+    if qs:
+        target = f"{target}?{qs}"
+    return redirect(target, code=307)
+
+
+# ── Katman mimarisi Faz 3: /process → /k-plan/process ─────────────────────────
+# Süreç girdi katmanına taşındı. /process dış dünyada kullanılan adres olduğu
+# için (bookmark, e-posta linki) kalıcı olarak yönlendirilir.
+
+
+@app_bp.route("/process")
+@app_bp.route("/process/")
+def process_katman_legacy_index():
+    target = "/k-plan/process"
+    qs = request.query_string.decode() if request.query_string else ""
+    if qs:
+        target = f"{target}?{qs}"
+    return redirect(target, code=307)
+
+
+@app_bp.route("/process/<path:subpath>")
+def process_katman_legacy_path(subpath):
+    target = f"/k-plan/process/{subpath}"
     qs = request.query_string.decode() if request.query_string else ""
     if qs:
         target = f"{target}?{qs}"

@@ -57,31 +57,31 @@ from micro.modules.sp.helpers import (
 
 # ── Sayfa route'ları (L3 Dal 2 — iskelet UI'lar) ──────────────────────────────
 
-@app_bp.route("/sp/swot")
+@app_bp.route("/k-plan/strategy/swot")
 @login_required
 def sp_swot_page():
     return render_template("platform/sp/swot.html", can_edit=_check_sp_role(current_user))
 
 
-@app_bp.route("/sp/tows")
+@app_bp.route("/k-plan/strategy/tows")
 @login_required
 def sp_tows_page():
     return render_template("platform/sp/tows.html", can_edit=_check_sp_role(current_user))
 
 
-@app_bp.route("/sp/pestel")
+@app_bp.route("/k-plan/strategy/pestel")
 @login_required
 def sp_pestel_page():
     return render_template("platform/sp/pestel.html", can_edit=_check_sp_role(current_user))
 
 
-@app_bp.route("/sp/bsc")
+@app_bp.route("/k-plan/strategy/bsc")
 @login_required
 def sp_bsc_page():
     return render_template("platform/sp/bsc.html", can_edit=_check_sp_role(current_user))
 
 
-@app_bp.route("/sp/porter")
+@app_bp.route("/k-plan/strategy/porter")
 @login_required
 def sp_porter_page():
     return render_template("platform/sp/porter.html", can_edit=_check_sp_role(current_user))
@@ -94,7 +94,7 @@ _PORTER_FORCES = (
 )
 
 
-@app_bp.route("/sp/api/porter", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/porter", methods=["GET"])
 @login_required
 def sp_api_porter_get():
     """Aktif plan year için Porter 5 Güç verisini döner.
@@ -135,7 +135,7 @@ def sp_api_porter_get():
         return jsonify({"success": False, "message": _("Porter verisi alınamadı.")}), 500
 
 
-@app_bp.route("/sp/api/porter", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/porter", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_porter_save():
@@ -176,7 +176,7 @@ def sp_api_porter_save():
         return jsonify({"success": False, "message": "Porter kaydedilemedi."}), 500
 
 
-@app_bp.route("/sp/api/swot", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/swot", methods=["GET"])
 @login_required
 def sp_api_swot_get():
     """Aktif plan year için SWOT verisini döner."""
@@ -212,7 +212,7 @@ def sp_api_swot_get():
         return jsonify({"success": False, "message": _("SWOT verisi alınamadı.")}), 500
 
 
-@app_bp.route("/sp/api/swot", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/swot", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_swot_save():
@@ -243,7 +243,7 @@ def sp_api_swot_save():
         return jsonify({"success": False, "message": "SWOT kaydedilemedi."}), 500
 
 
-@app_bp.route("/sp/api/tows", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/tows", methods=["GET"])
 @login_required
 def sp_api_tows_get():
     """Aktif plan year için TOWS verisini döner."""
@@ -276,7 +276,7 @@ def sp_api_tows_get():
         return jsonify({"success": False, "message": _("TOWS verisi alınamadı.")}), 500
 
 
-@app_bp.route("/sp/api/tows", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/tows", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_tows_save():
@@ -307,7 +307,7 @@ def sp_api_tows_save():
         return jsonify({"success": False, "message": "TOWS kaydedilemedi."}), 500
 
 
-@app_bp.route("/sp/api/pestle", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/pestle", methods=["GET"])
 @login_required
 def sp_api_pestle_get():
     """Aktif plan year için PESTLE verisini döner."""
@@ -340,7 +340,7 @@ def sp_api_pestle_get():
         return jsonify({"success": False, "message": _("PESTLE verisi alınamadı.")}), 500
 
 
-@app_bp.route("/sp/api/pestle", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/pestle", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_pestle_save():
@@ -375,7 +375,7 @@ def sp_api_pestle_save():
 
 # ── OKR API'leri ──────────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/api/okr/sync-kpis", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/okr/sync-kpis", methods=["POST"])
 @login_required
 def sp_api_okr_sync_kpis():
     """Sprint 33: Tüm bağlı KR'leri KPI'larından senkronize et."""
@@ -388,7 +388,7 @@ def sp_api_okr_sync_kpis():
 
 
 # Sprint 13 — OKR UI sayfası
-@app_bp.route("/sp/okr")
+@app_bp.route("/k-plan/strategy/okr")
 @login_required
 def sp_okr():
     """OKR (Objectives + Key Results) yönetim sayfası."""
@@ -400,7 +400,7 @@ def sp_okr():
     )
 
 
-@app_bp.route("/sp/api/okr", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/okr", methods=["GET"])
 @login_required
 def sp_api_okr_list():
     """Aktif plan year için OKR listesi."""
@@ -464,7 +464,7 @@ def sp_api_okr_list():
         return jsonify({"success": False, "message": _("OKR verisi alınamadı.")}), 500
 
 
-@app_bp.route("/sp/api/okr/objective", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/okr/objective", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_okr_objective_create():
@@ -515,7 +515,7 @@ def sp_api_okr_objective_create():
         return jsonify({"success": False, "message": "Objective eklenemedi."}), 500
 
 
-@app_bp.route("/sp/api/okr/objective/<int:obj_id>", methods=["PUT"])
+@app_bp.route("/k-plan/strategy/api/okr/objective/<int:obj_id>", methods=["PUT"])
 @login_required
 @sp_manage_required
 def sp_api_okr_objective_update(obj_id):
@@ -558,7 +558,7 @@ def sp_api_okr_objective_update(obj_id):
         return jsonify({"success": False, "message": _("Güncellenemedi.")}), 500
 
 
-@app_bp.route("/sp/api/okr/objective/<int:obj_id>", methods=["DELETE"])
+@app_bp.route("/k-plan/strategy/api/okr/objective/<int:obj_id>", methods=["DELETE"])
 @login_required
 @sp_manage_required
 def sp_api_okr_objective_delete(obj_id):
@@ -576,7 +576,7 @@ def sp_api_okr_objective_delete(obj_id):
         return jsonify({"success": False, "message": "Silinemedi."}), 500
 
 
-@app_bp.route("/sp/api/okr/objective/<int:obj_id>/kr", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/okr/objective/<int:obj_id>/kr", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_okr_kr_create(obj_id):
@@ -607,7 +607,7 @@ def sp_api_okr_kr_create(obj_id):
         return jsonify({"success": False, "message": "KR eklenemedi."}), 500
 
 
-@app_bp.route("/sp/api/okr/kr/<int:kr_id>", methods=["PUT"])
+@app_bp.route("/k-plan/strategy/api/okr/kr/<int:kr_id>", methods=["PUT"])
 @login_required
 @sp_manage_required
 def sp_api_okr_kr_update(kr_id):
@@ -637,7 +637,7 @@ def sp_api_okr_kr_update(kr_id):
         return jsonify({"success": False, "message": _("KR güncellenemedi.")}), 500
 
 
-@app_bp.route("/sp/api/okr/kr/<int:kr_id>", methods=["DELETE"])
+@app_bp.route("/k-plan/strategy/api/okr/kr/<int:kr_id>", methods=["DELETE"])
 @login_required
 @sp_manage_required
 def sp_api_okr_kr_delete(kr_id):
@@ -659,7 +659,7 @@ def sp_api_okr_kr_delete(kr_id):
 
 # ── BSC API'leri ──────────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/api/bsc", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/bsc", methods=["GET"])
 @login_required
 def sp_api_bsc_get():
     """BSC verisi: 4 perspektif × KPI'lar + strateji bağlantıları + performans."""
@@ -822,7 +822,7 @@ def sp_api_bsc_get():
         return jsonify({"success": False, "message": _("BSC verisi alınamadı.")}), 500
 
 
-@app_bp.route("/sp/api/bsc/assign", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/bsc/assign", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_bsc_assign():
@@ -873,7 +873,7 @@ def sp_api_bsc_assign():
         return jsonify({"success": False, "message": "Atama kaydedilemedi."}), 500
 
 
-@app_bp.route("/sp/api/bsc/assign-bulk", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/bsc/assign-bulk", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_bsc_assign_bulk():
@@ -926,7 +926,7 @@ def sp_api_bsc_assign_bulk():
         return jsonify({"success": False, "message": "Toplu atama kaydedilemedi."}), 500
 
 
-@app_bp.route("/sp/api/bsc/auto-suggest", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/bsc/auto-suggest", methods=["GET"])
 @login_required
 def sp_api_bsc_auto_suggest():
     """Atanmamış PG'ler için BSC perspektif önerileri (keyword tabanlı sınıflandırıcı)."""
@@ -985,7 +985,7 @@ def sp_api_bsc_auto_suggest():
         return jsonify({"success": False, "message": _("Öneri üretilemedi.")}), 500
 
 
-@app_bp.route("/sp/api/bsc/auto-assign", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/bsc/auto-assign", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_bsc_auto_assign():
@@ -1050,7 +1050,7 @@ def sp_api_bsc_auto_assign():
         return jsonify({"success": False, "message": _("Otomatik atama yapılamadı.")}), 500
 
 
-@app_bp.route("/sp/api/bsc/balance", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/bsc/balance", methods=["GET"])
 @login_required
 def sp_api_bsc_balance():
     """Tenant için BSC denge skoru (Kaplan-Norton ideal %25-%25-%25-%25)."""

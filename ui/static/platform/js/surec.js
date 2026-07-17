@@ -2937,7 +2937,7 @@
     if (PLAN_YEAR_ENABLED && RESOLVE_YEAR_URL) {
       try {
         const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
-        await fetch("/sp/api/plan-years/set-active", {
+        await fetch("/k-plan/strategy/api/plan-years/set-active", {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
           body: JSON.stringify({ year: newYear }),

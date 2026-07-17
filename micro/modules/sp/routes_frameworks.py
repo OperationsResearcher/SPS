@@ -41,7 +41,7 @@ def _can():
 
 # ─── S59: Hoshin X-Matrix ────────────────────────────────────────────────────
 
-@app_bp.route("/sp/xmatrix")
+@app_bp.route("/k-plan/strategy/xmatrix")
 @login_required
 def sp_xmatrix_page():
     if not _can():
@@ -49,7 +49,7 @@ def sp_xmatrix_page():
     return render_template("platform/sp/xmatrix.html")
 
 
-@app_bp.route("/sp/api/xmatrix")
+@app_bp.route("/k-plan/strategy/api/xmatrix")
 @login_required
 def sp_api_xmatrix():
     if not _can():
@@ -68,7 +68,7 @@ def sp_api_xmatrix():
 
 # ─── S60: Blue Ocean ─────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/blue-ocean")
+@app_bp.route("/k-plan/strategy/blue-ocean")
 @login_required
 def sp_blue_ocean_page():
     if not _can():
@@ -76,7 +76,7 @@ def sp_blue_ocean_page():
     return render_template("platform/sp/blue_ocean.html")
 
 
-@app_bp.route("/sp/api/blue-ocean/canvases")
+@app_bp.route("/k-plan/strategy/api/blue-ocean/canvases")
 @login_required
 def sp_api_bo_canvases():
     if not _can():
@@ -87,7 +87,7 @@ def sp_api_bo_canvases():
     return jsonify({"success": True, "items": [c.to_dict() for c in items]})
 
 
-@app_bp.route("/sp/api/blue-ocean/canvases", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/blue-ocean/canvases", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_bo_canvas_create():
@@ -108,7 +108,7 @@ def sp_api_bo_canvas_create():
     return jsonify({"success": True, "item": c.to_dict()}), 201
 
 
-@app_bp.route("/sp/api/blue-ocean/canvases/<int:cid>")
+@app_bp.route("/k-plan/strategy/api/blue-ocean/canvases/<int:cid>")
 @login_required
 def sp_api_bo_canvas_detail(cid):
     if not _can():
@@ -126,7 +126,7 @@ def sp_api_bo_canvas_detail(cid):
     })
 
 
-@app_bp.route("/sp/api/blue-ocean/canvases/<int:cid>/factors", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/blue-ocean/canvases/<int:cid>/factors", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_bo_factor_add(cid):
@@ -149,7 +149,7 @@ def sp_api_bo_factor_add(cid):
     return jsonify({"success": True, "item": f.to_dict()}), 201
 
 
-@app_bp.route("/sp/api/blue-ocean/canvases/<int:cid>/errc", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/blue-ocean/canvases/<int:cid>/errc", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_bo_errc_add(cid):
@@ -178,7 +178,7 @@ def sp_api_bo_errc_add(cid):
 
 # ─── S61: VRIO ───────────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/vrio")
+@app_bp.route("/k-plan/strategy/vrio")
 @login_required
 def sp_vrio_page():
     if not _can():
@@ -186,7 +186,7 @@ def sp_vrio_page():
     return render_template("platform/sp/vrio.html")
 
 
-@app_bp.route("/sp/api/vrio")
+@app_bp.route("/k-plan/strategy/api/vrio")
 @login_required
 def sp_api_vrio_list():
     if not _can():
@@ -197,7 +197,7 @@ def sp_api_vrio_list():
     return jsonify({"success": True, "items": [r.to_dict() for r in items]})
 
 
-@app_bp.route("/sp/api/vrio", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/vrio", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_vrio_create():
@@ -222,7 +222,7 @@ def sp_api_vrio_create():
     return jsonify({"success": True, "item": r.to_dict()}), 201
 
 
-@app_bp.route("/sp/api/vrio/<int:rid>", methods=["PATCH"])
+@app_bp.route("/k-plan/strategy/api/vrio/<int:rid>", methods=["PATCH"])
 @csrf.exempt
 @login_required
 def sp_api_vrio_update(rid):
@@ -242,7 +242,7 @@ def sp_api_vrio_update(rid):
     return jsonify({"success": True, "item": r.to_dict()})
 
 
-@app_bp.route("/sp/api/vrio/<int:rid>", methods=["DELETE"])
+@app_bp.route("/k-plan/strategy/api/vrio/<int:rid>", methods=["DELETE"])
 @csrf.exempt
 @login_required
 def sp_api_vrio_delete(rid):
@@ -260,7 +260,7 @@ def sp_api_vrio_delete(rid):
 
 # ─── S62: Project EVM ────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/api/projects/<int:pid>/evm")
+@app_bp.route("/k-plan/strategy/api/projects/<int:pid>/evm")
 @login_required
 def sp_api_project_evm(pid):
     if not _can():
@@ -275,7 +275,7 @@ def sp_api_project_evm(pid):
 
 # ─── S63: Weekly Digest ──────────────────────────────────────────────────────
 
-@app_bp.route("/sp/digest/weekly.html")
+@app_bp.route("/k-plan/strategy/digest/weekly.html")
 @login_required
 def sp_digest_html():
     # Haftalık digest okuma raporu — tüm giriş yapmış kullanıcılar görebilir.
@@ -285,7 +285,7 @@ def sp_digest_html():
     return Response(html, mimetype="text/html")
 
 
-@app_bp.route("/sp/digest/weekly.pdf")
+@app_bp.route("/k-plan/strategy/digest/weekly.pdf")
 @login_required
 def sp_digest_pdf():
     # Haftalık digest okuma raporu — tüm giriş yapmış kullanıcılar görebilir.

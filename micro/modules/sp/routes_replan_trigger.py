@@ -17,7 +17,7 @@ def _can():
     return _check_sp_role(current_user)
 
 
-@app_bp.route("/sp/replan-triggers")
+@app_bp.route("/k-plan/strategy/replan-triggers")
 @login_required
 def sp_replan_triggers_page():
     if not _can():
@@ -25,7 +25,7 @@ def sp_replan_triggers_page():
     return render_template("platform/sp/replan_triggers.html")
 
 
-@app_bp.route("/sp/api/replan-triggers")
+@app_bp.route("/k-plan/strategy/api/replan-triggers")
 @login_required
 def sp_api_triggers_list():
     if not _can():
@@ -36,7 +36,7 @@ def sp_api_triggers_list():
     return jsonify({"success": True, "items": [i.to_dict() for i in items]})
 
 
-@app_bp.route("/sp/api/replan-triggers", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/replan-triggers", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_triggers_create():
@@ -69,7 +69,7 @@ def sp_api_triggers_create():
     return jsonify({"success": True, "item": t.to_dict()}), 201
 
 
-@app_bp.route("/sp/api/replan-triggers/<int:tid>", methods=["DELETE"])
+@app_bp.route("/k-plan/strategy/api/replan-triggers/<int:tid>", methods=["DELETE"])
 @csrf.exempt
 @login_required
 def sp_api_triggers_delete(tid):
@@ -85,7 +85,7 @@ def sp_api_triggers_delete(tid):
     return jsonify({"success": True})
 
 
-@app_bp.route("/sp/api/replan-triggers/evaluate", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/replan-triggers/evaluate", methods=["POST"])
 @csrf.exempt
 @login_required
 def sp_api_triggers_evaluate():
@@ -106,7 +106,7 @@ def sp_api_triggers_evaluate():
     })
 
 
-@app_bp.route("/sp/api/replan-triggers/events")
+@app_bp.route("/k-plan/strategy/api/replan-triggers/events")
 @login_required
 def sp_api_triggers_events():
     if not _can():

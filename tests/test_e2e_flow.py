@@ -44,8 +44,8 @@ def _seed_user():
     "/desktop",
     "/surec",
     "/project",
-    "/sp",
-    "/individual",
+    "/k-plan/strategy",
+    "/k-plan/individual",
   ],
 )
 def test_platform_pages_authenticated(client, app, path):

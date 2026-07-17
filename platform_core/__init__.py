@@ -41,7 +41,16 @@ from app_platform.modules.raporlar import routes as raporlar_routes  # noqa: E40
 # URL prefix → launcher modül id. Paket'te modül yoksa o prefix'teki sayfalar
 # açılmaz. Yalnızca SAYFA (GET, HTML) istekleri; API/AJAX kendi 403'ünü verir.
 # sp/kurum/masaustu/ayarlar/bildirim → her zaman erişilebilir (gate edilmez).
+#
+# ⚠️ Katman mimarisi Faz 3 (2026-07-17): girdi katmanı /k-plan/ önekine taşındı.
+# Bu tablo PATH ÖNEKİNE bakar — route path'i değişince buradaki giriş de
+# değişmezse kapı SESSİZCE devre dışı kalır (yeni path hiçbir kuralla eşleşmez,
+# _match_prefix None döner, gate atlanır). Eski önekler de listede kalır:
+# legacy redirect'ler 307 ile yeni adrese gider ama doğrudan istek de gelebilir.
 _GATED_PREFIX_MODULE = [
+    ("/k-plan/process", "surec"),
+    ("/k-plan/individual", "bireysel"),
+    ("/k-plan/project", "proje"),
     ("/process", "surec"),
     ("/individual", "bireysel"),
     ("/project", "proje"),
@@ -55,10 +64,14 @@ _GATED_PREFIX_MODULE = [
 # Faz 1'de sidebar'da gizlenen modüllerin route'ları da rol/liderliğe göre
 # kilitlenir. Sayfa → /desktop redirect; API → JSON 403.
 # docs/paketler/ROL-GORUNUM-KATMANI.md §6.
+#
+# ⚠️ Faz 3: /sp → /k-plan/strategy taşındı. Yeni önek EKLENMEZSE SP rol kapısı
+# sessizce açılır (tests/test_sp_strateji_haritasi.py bunu yakalar).
 _ROLE_GATED_PREFIX_MODULE = [
     ("/k-radar", "k_radar"),
     ("/k-analiz", "k_radar"),
     ("/analysis", "analiz"),
+    ("/k-plan/strategy", "sp"),
     ("/sp", "sp"),
 ]
 

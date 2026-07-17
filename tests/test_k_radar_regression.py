@@ -160,14 +160,46 @@ def test_k_radar_new_endpoints_smoke(client, app):
 
 
 def test_k_radar_write_forbidden_for_non_manager(client, app):
+    """Yetkisiz kullanıcı paydaş yazamaz.
+
+    Katman mimarisi Faz 3 (2026-07-17): paydaş yazma girdi katmanına taşındı
+    (/k-plan/strategy/api/stakeholder). Yetki kontrolü taşımadan etkilenmedi —
+    test yeni adresi doğrular.
+    """
     with app.app_context():
         seeded = _seed_k_radar_dataset()
         _login(client, seeded["viewer"].id)
 
-    resp = client.post("/k-radar/api/cross/stakeholder", json={"name": "X", "influence": 3, "interest": 3})
+    resp = client.post(
+        "/k-plan/strategy/api/stakeholder",
+        json={"name": "X", "influence": 3, "interest": 3},
+    )
     assert resp.status_code == 403
     payload = resp.get_json()
     assert payload["success"] is False
+
+
+def test_k_radar_teshis_yazma_yuzeyi_yok(client, app):
+    """Teşhis katmanında yazma YÜZEYİ kalmadı (Faz 3).
+
+    Eski /k-radar/api/... yazma adresleri girdi katmanına taşındı; teşhiste
+    yalnızca okuma kaldı. Bu test katman kuralının kod düzeyinde korunduğunu
+    doğrular — biri yazmayı teşhise geri koyarsa kırılır.
+    """
+    with app.app_context():
+        seeded = _seed_k_radar_dataset()
+        _login(client, seeded["admin"].id)  # YETKİLİ kullanıcı — yine de yazamamalı
+
+    for url in [
+        "/k-radar/api/cross/stakeholder",
+        "/k-radar/api/kp/maturity",
+        "/k-radar/api/kp/value-chain/items",
+    ]:
+        resp = client.post(url, json={})
+        assert resp.status_code in (404, 405), f"{url} teşhiste yazmaya açık: {resp.status_code}"
+
+        # okuma tarafı çalışmaya devam etmeli
+        assert client.get(url).status_code == 200, url
 
 
 def test_k_radar_tenant_isolation_read(client, app):

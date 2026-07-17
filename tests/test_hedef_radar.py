@@ -251,7 +251,7 @@ def test_gercek_api_hedef_izini_yaziyor(app, radar_verisi):
             s["_user_id"] = str(uid)
             s["_fresh"] = True
 
-        r = c.post(f"/process/api/kpi-data/update/{kd_id}", json={"target_value": "75"})
+        r = c.post(f"/k-plan/process/api/kpi-data/update/{kd_id}", json={"target_value": "75"})
         assert r.status_code == 200, (
             f"API cagrisi basarisiz: {r.status_code} {r.data[:120]}"
         )
@@ -284,7 +284,7 @@ def test_gercek_api_hedef_degismezse_iz_birakmaz(app, radar_verisi):
             s["_user_id"] = str(uid)
             s["_fresh"] = True
 
-        r = c.post(f"/process/api/kpi-data/update/{kd_id}", json={"actual_value": "95"})
+        r = c.post(f"/k-plan/process/api/kpi-data/update/{kd_id}", json={"actual_value": "95"})
         assert r.status_code == 200
 
         db.session.expire_all()

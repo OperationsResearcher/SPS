@@ -73,7 +73,7 @@ from micro.modules.surec.helpers import (
 # API — Yıl değişimi: aynı kod → hedef yılın process_id'si
 # ──────────────────────────────────────────────────
 
-@app_bp.route("/process/api/resolve-for-year", methods=["GET"])
+@app_bp.route("/k-plan/process/api/resolve-for-year", methods=["GET"])
 @login_required
 def surec_api_resolve_for_year():
     """
@@ -200,7 +200,7 @@ def _resolve_process_by_source_chain(proc: Process, target_plan_year_id: int):
 # API — Karne AJAX verisi
 # ──────────────────────────────────────────────────
 
-@app_bp.route("/process/api/karne/<int:process_id>", methods=["GET"])
+@app_bp.route("/k-plan/process/api/karne/<int:process_id>", methods=["GET"])
 @login_required
 def surec_api_karne(process_id):
     """Karne sayfasının yıl bazlı KPI + faaliyet aylık takip verisini döner."""
@@ -469,7 +469,7 @@ def surec_api_karne(process_id):
     })
 
 
-@app_bp.route("/process/api/karne/<int:process_id>/export-xlsx", methods=["POST"])
+@app_bp.route("/k-plan/process/api/karne/<int:process_id>/export-xlsx", methods=["POST"])
 @login_required
 def surec_api_karne_export_xlsx(process_id):
     """Karne tablosunu istemcinin ürettiği başlık/satırlarla gerçek .xlsx olarak döner."""
@@ -566,7 +566,7 @@ def _karne_heuristik_ozet(p, year, skor, durum, detay, recs):
     return " ".join(parts)
 
 
-@app_bp.route("/process/api/karne/<int:process_id>/ai-ozet", methods=["GET"])
+@app_bp.route("/k-plan/process/api/karne/<int:process_id>/ai-ozet", methods=["GET"])
 @login_required
 def surec_api_karne_ai_ozet(process_id):
     """Karne üstü 2-3 cümlelik Türkçe yönetici özeti.

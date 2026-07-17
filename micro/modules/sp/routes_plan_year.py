@@ -55,7 +55,7 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
-@app_bp.route("/sp/api/plan-years", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/plan-years", methods=["GET"])
 @login_required
 def sp_api_plan_years_list():
     """Tenant'ın tüm plan yıllarını döner."""
@@ -72,7 +72,7 @@ def sp_api_plan_years_list():
     })
 
 
-@app_bp.route("/sp/api/plan-years", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/plan-years", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -145,7 +145,7 @@ def sp_api_plan_years_create():
         return jsonify({"success": False, "message": _("Plan yılı oluşturulurken hata oluştu.")}), 500
 
 
-@app_bp.route("/sp/api/plan-years/set-active", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/plan-years/set-active", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -168,7 +168,7 @@ def sp_api_plan_years_set_active():
     return jsonify({"success": True, "active_year": year})
 
 
-@app_bp.route("/sp/api/plan-years/<int:year_id>/close", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/close", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -190,7 +190,7 @@ def sp_api_plan_year_close(year_id):
         return jsonify({"success": False, "message": _("Yıl kapatılırken hata oluştu.")}), 500
 
 
-@app_bp.route("/sp/api/plan-years/<int:year_id>/kpi-configs", methods=["GET"])
+@app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/kpi-configs", methods=["GET"])
 @login_required
 def sp_api_plan_year_kpi_configs(year_id):
     """Bir plan yılına ait tüm KPI konfigürasyonlarını döner."""
@@ -220,7 +220,7 @@ def sp_api_plan_year_kpi_configs(year_id):
     })
 
 
-@app_bp.route("/sp/api/plan-years/<int:year_id>/kpi-configs/<int:kpi_id>", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/kpi-configs/<int:kpi_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -250,7 +250,7 @@ def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
         return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/sp/api/plan-years/<int:year_id>/kpi-configs/bulk", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/kpi-configs/bulk", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -304,7 +304,7 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
 
 # ── Plan Yılı Geçiş Sihirbazı ─────────────────────────────────────────────────
 
-@app_bp.route("/sp/wizard/new-year")
+@app_bp.route("/k-plan/strategy/wizard/new-year")
 @login_required
 @sp_manage_required
 def sp_sihirbaz_yeni_yil():
@@ -317,7 +317,7 @@ def sp_sihirbaz_yeni_yil():
     )
 
 
-@app_bp.route("/sp/api/wizard/new-year/preview", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/wizard/new-year/preview", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_sihirbaz_preview():
@@ -357,7 +357,7 @@ def sp_api_sihirbaz_preview():
     })
 
 
-@app_bp.route("/sp/api/wizard/new-year/apply", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/wizard/new-year/apply", methods=["POST"])
 @login_required
 @sp_manage_required
 def sp_api_sihirbaz_uygula():

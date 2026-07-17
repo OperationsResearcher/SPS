@@ -51,7 +51,7 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
-@app_bp.route("/sp/api/strategies")
+@app_bp.route("/k-plan/strategy/api/strategies")
 @login_required
 def sp_api_strategies_list():
     """Ana strateji + alt strateji listesi (OKR vb. dropdown'ları için). Aktif kurum/plan yılı."""
@@ -74,7 +74,7 @@ def sp_api_strategies_list():
     return jsonify({"success": True, "data": data})
 
 
-@app_bp.route("/sp/api/strategy/add", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/strategy/add", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -123,7 +123,7 @@ def sp_add_strategy():
         return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/sp/api/strategy/update/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/strategy/update/<int:strategy_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -161,7 +161,7 @@ def sp_update_strategy(strategy_id):
         return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/sp/api/strategy/delete/<int:strategy_id>", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/strategy/delete/<int:strategy_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -183,7 +183,7 @@ def sp_delete_strategy(strategy_id):
 
 # ── API: Alt Strateji CRUD ────────────────────────────────────────────────────
 
-@app_bp.route("/sp/api/sub-strategy/add", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/sub-strategy/add", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -238,7 +238,7 @@ def sp_add_sub_strategy():
         return jsonify({"success": False, "message": _("Kayıt sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/sp/api/sub-strategy/update/<int:sub_id>", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/sub-strategy/update/<int:sub_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required
@@ -273,7 +273,7 @@ def sp_update_sub_strategy(sub_id):
         return jsonify({"success": False, "message": _("Güncelleme sırasında hata oluştu.")}), 500
 
 
-@app_bp.route("/sp/api/sub-strategy/delete/<int:sub_id>", methods=["POST"])
+@app_bp.route("/k-plan/strategy/api/sub-strategy/delete/<int:sub_id>", methods=["POST"])
 @csrf.exempt
 @login_required
 @sp_manage_required

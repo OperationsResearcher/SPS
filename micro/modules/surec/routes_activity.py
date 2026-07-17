@@ -76,7 +76,7 @@ from micro.modules.surec.helpers import (
     _users_pick_json,
 )
 
-@app_bp.route("/process/api/activity/add", methods=["POST"])
+@app_bp.route("/k-plan/process/api/activity/add", methods=["POST"])
 @login_required
 def surec_api_activity_add():
     data = request.get_json() or {}
@@ -274,7 +274,7 @@ def surec_api_activity_add():
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/activity/get/<int:act_id>", methods=["GET"])
+@app_bp.route("/k-plan/process/api/activity/get/<int:act_id>", methods=["GET"])
 @login_required
 def surec_api_activity_get(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -305,7 +305,7 @@ def surec_api_activity_get(act_id):
     })
 
 
-@app_bp.route("/process/api/activity/update/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/activity/update/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_update(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -430,7 +430,7 @@ def surec_api_activity_update(act_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/activity/delete/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/activity/delete/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_delete(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -451,7 +451,7 @@ def surec_api_activity_delete(act_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/activity/cancel/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/activity/cancel/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_cancel(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -473,7 +473,7 @@ def surec_api_activity_cancel(act_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/activity/postpone/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/activity/postpone/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_postpone(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -517,7 +517,7 @@ def surec_api_activity_postpone(act_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/activity/complete/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/activity/complete/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_complete(act_id):
     act = ProcessActivity.query.join(Process).filter(
@@ -540,7 +540,7 @@ def surec_api_activity_complete(act_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/process/api/activity/track/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/process/api/activity/track/<int:act_id>", methods=["POST"])
 @login_required
 def surec_api_activity_track(act_id):
     """Faaliyet aylık tamamlanma toggle (upsert)."""

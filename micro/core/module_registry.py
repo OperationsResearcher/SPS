@@ -19,14 +19,15 @@ MODULES = [
     {
         "id": "sp",
         "name": _("Stratejik Planlama"),
-        "url": "/sp",
+        # Katman mimarisi Faz 3 (2026-07-17): girdi katmanı /k-plan/ önekine taşındı.
+        "url": "/k-plan/strategy",
         "icon": "🎯",
         "description": _("Stratejiler, alt stratejiler ve hedef takibi"),
     },
     {
         "id": "surec",
         "name": _("Süreç Yönetimi"),
-        "url": "/process",
+        "url": "/k-plan/process",
         "icon": "⚙️",
         "description": _("Süreçler, KPI'lar ve faaliyet takibi"),
     },
@@ -40,14 +41,14 @@ MODULES = [
     {
         "id": "bireysel",
         "name": _("Bireysel Performans"),
-        "url": "/individual/scorecard",
+        "url": "/k-plan/individual/scorecard",
         "icon": "👤",
         "description": _("Bireysel PG'ler, faaliyetler ve kişisel karne"),
     },
     {
         "id": "proje",
         "name": _("Proje Yönetimi"),
-        "url": "/project",
+        "url": "/k-plan/project",
         "icon": "📋",
         "description": _("Projeler, görevler, Kanban ve stratejik portföy"),
     },

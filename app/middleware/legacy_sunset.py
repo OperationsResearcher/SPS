@@ -60,9 +60,13 @@ def _should_skip(path: str) -> bool:
 
 def _is_platform_canonical(path: str) -> bool:
     """Platform kök yolları — legacy yönlendirme uygulanmaz (/kurum-paneli vb. hariç)."""
-    if path in ("/organization", "/individual", "/sp", "/launcher", "/desktop", "/surec"):
+    if path in ("/organization", "/individual", "/sp", "/launcher", "/desktop",
+                "/surec", "/k-plan"):
         return True
     platform_prefixes = (
+        # Katman mimarisi Faz 3 (2026-07-17): girdi katmanı. Bu önek platform
+        # kanoniktir — legacy dönüşüm ASLA uygulanmaz.
+        "/k-plan/",
         "/organization/",
         "/individual/",
         "/sp/",

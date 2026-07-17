@@ -54,7 +54,7 @@ from micro.modules.sp.helpers import (
     _plan_task_to_dict,
 )
 
-@app_bp.route("/sp/flow")
+@app_bp.route("/k-plan/strategy/flow")
 @login_required
 def sp_flow():
     """Stratejik planlama akış özet sayfası."""
@@ -87,7 +87,7 @@ def sp_flow():
     )
 
 
-@app_bp.route("/sp/flow/dynamic")
+@app_bp.route("/k-plan/strategy/flow/dynamic")
 @login_required
 def sp_flow_dynamic():
     """İnteraktif node-edge görselleştirme sayfası."""
@@ -96,7 +96,7 @@ def sp_flow_dynamic():
 
 # ── API: Graf verisi ──────────────────────────────────────────────────────────
 
-@app_bp.route("/sp/api/graph")
+@app_bp.route("/k-plan/strategy/api/graph")
 @login_required
 def sp_api_graph():
     """Vizyon/strateji/alt-strateji/süreç/KPI node ve edge'lerini JSON döndür.

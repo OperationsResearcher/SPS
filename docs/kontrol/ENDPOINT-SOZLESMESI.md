@@ -146,6 +146,57 @@ yok. Faz 2 salt-oku yapabilirdi ama kullanıcı veriyi giremez hale gelirdi — 
 kaybı olurdu. Olgunluk'ta durum farklı: evi hazır (süreç modülü). Üçü birlikte Faz
 3'te taşınır; K-Radar'da salt-oku görünüm kalır.
 
+## Faz 3 — UYGULANDI ✅ (2026-07-17, TASK-274)
+
+Girdi katmanı `/k-plan/` önekine taşındı: **202 route path** (sp 127 → `/k-plan/strategy`,
+surec 39 → `/k-plan/process`, proje 22 → `/k-plan/project`, bireysel 18 →
+`/k-plan/individual`). Endpoint adları DEĞİŞMEDİ → ~64 template'e dokunulmadı.
+
+### ⚠️ EN ÖNEMLİ DERS — path kapıları sessizce açar
+
+Route path'i değişince **path önekine bakan güvenlik kapıları sessizce devre dışı kalır.**
+Kod hata vermez; kapı yalnızca "eşleşme yok" deyip isteği geçirir. Faz 3'te bu **3 yerde**
+oldu ve yalnızca test yakaladı:
+
+| Yer | Ne oldu | Kanıt |
+|---|---|---|
+| `platform_core/__init__.py::_ROLE_GATED_PREFIX_MODULE` | `/sp` kaydı vardı, `/k-plan/strategy` yoktu → **SP rol kapısı açıldı** | `test_sp_rol_kapisi_standart_kullaniciyi_engeller` 200 aldı (302 beklerken) |
+| `platform_core/__init__.py::_GATED_PREFIX_MODULE` | Paket kapısı aynı şekilde girdi katmanında devre dışı | (aynı mekanizma) |
+| `micro/core/module_registry.py` | Modül URL'leri `/sp`, `/process`… → sidebar/launcher eski adrese işaret ediyordu | sidebar denetimi |
+| `app/middleware/legacy_sunset.py::_is_platform_canonical` | `/k-plan/` platform kanonik sayılmıyordu → legacy dönüşüme yakalanabilirdi | önlem olarak eklendi |
+
+**Kural:** Bir modülün path'ini taşırken bu 4 dosya AYNI commit'te güncellenir.
+Yeni bir katman öneki eklenirse (örn. Faz 4 `/k-report/`) hepsine eklenmelidir.
+
+### Redirect: 307, 301 DEĞİL
+`/sp`, `/process`, `/project`, `/individual` → **307** ile yeni adrese. 301 tarayıcıya
+POST'u GET'e çevirme izni verir → form gönderimleri sessizce bozulurdu. Mevcut
+`/surec → /process` redirect'i de 307 kullanıyordu; aynı kalıp sürdürüldü.
+(İstisna: `/sp/tv` → `/k-radar/savas-odasi` 301 — Faz 2'de kondu, saf GET sayfası.)
+
+### Girdi evleri inşa edildi (şablon paylaşımı)
+| Araç | Girdi evi (yazar) | Teşhis (salt-oku) |
+|---|---|---|
+| Paydaş | `/k-plan/strategy/stakeholder` | `/k-radar/cross/stakeholder` |
+| Değer zinciri | `/k-plan/process/value-chain` | `/k-radar/kp/value-chain` |
+| Olgunluk | `/k-plan/process/maturity` | `/k-radar/kp/maturity` |
+
+Tek şablon, iki adres, `can_manage` farkı — Faz 2'nin SWOT kalıbı. Yazma API'leri
+`/k-plan/` altına taşındı; okuma uçları teşhiste kaldı (teşhis okuyabilir).
+
+### Ölçümün düzelttiği 2 plan hatası daha
+1. **"URL şeması `/k-plan/surec/...`"** → YANLIŞ. Girdi modülleri **zaten İngilizce'ye
+   taşınmıştı** (`/process` 37, `/individual` 18, `/project` 21). Türkçe şema hem
+   KURALLAR §2'yi ihlal ederdi hem kodu geri döndürürdü. **Karar: İngilizce konu adı.**
+2. **"6 hardcoded URL"** → **27'ymiş** (5 template + 6 JS). Yol haritası JS'i saymamış.
+   26'sı düzeltildi; 3'ü `sp_projeler.js`'te bilerek bırakıldı (legacy `/proje` üzerinden
+   string türetiyor, çalışıyor, mantığı kırılgan).
+
+### Yan bulgu (Faz 3'ten önce de kırıktı)
+Komut paletinde `/project/gantt` ve `/project/kanban` girdileri vardı — **bu route'lar
+hiç var olmamış**. Gerçek adres proje ID'si ister (`/k-plan/project/<id>/views/gantt`).
+Girdiler kaldırıldı.
+
 ## Hatırlatmalar
 
 - **CI çalışmıyor** → doğrulama `python -m pytest -q` (yerel) + `scripts/ci/yerel_kontrol.py`

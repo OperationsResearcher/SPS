@@ -72,7 +72,7 @@ def _normalize_katman(data) -> tuple:
 
 # ── Sayfa ─────────────────────────────────────────────────────────────────────
 
-@app_bp.route("/individual/scorecard")
+@app_bp.route("/k-plan/individual/scorecard")
 @login_required
 def bireysel_karne():
     """Bireysel karne sayfası."""
@@ -96,7 +96,7 @@ def bireysel_karne():
     )
 
 
-@app_bp.route("/individual")
+@app_bp.route("/k-plan/individual")
 @login_required
 def bireysel():
     """Bireysel modül giriş yönlendirmesi."""
@@ -105,7 +105,7 @@ def bireysel():
 
 # ── API: Bireysel PG CRUD ─────────────────────────────────────────────────────
 
-@app_bp.route("/individual/api/pi/ensure-from-process-kpi", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/pi/ensure-from-process-kpi", methods=["POST"])
 @login_required
 def bireysel_api_pg_ensure_from_process_kpi():
     """
@@ -181,7 +181,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
             return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/individual/api/pi/add", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/pi/add", methods=["POST"])
 @login_required
 def bireysel_api_pg_add():
     data = request.get_json() or {}
@@ -221,7 +221,7 @@ def bireysel_api_pg_add():
             return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/individual/api/pi/update/<int:pg_id>", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/pi/update/<int:pg_id>", methods=["POST"])
 @login_required
 def bireysel_api_pg_update(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
@@ -247,7 +247,7 @@ def bireysel_api_pg_update(pg_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/individual/api/pi/delete/<int:pg_id>", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/pi/delete/<int:pg_id>", methods=["POST"])
 @login_required
 def bireysel_api_pg_delete(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
@@ -265,7 +265,7 @@ def bireysel_api_pg_delete(pg_id):
 
 # ── API: Bireysel Veri Girişi ─────────────────────────────────────────────────
 
-@app_bp.route("/individual/api/data/add", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/data/add", methods=["POST"])
 @login_required
 def bireysel_api_veri_add():
     data = request.get_json() or {}
@@ -333,7 +333,7 @@ def bireysel_api_veri_add():
 
 # ── API: Bireysel Faaliyet CRUD ───────────────────────────────────────────────
 
-@app_bp.route("/individual/api/activity/add", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/activity/add", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_add():
     data = request.get_json() or {}
@@ -358,7 +358,7 @@ def bireysel_api_faaliyet_add():
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/individual/api/activity/update/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/activity/update/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_update(act_id):
     act = IndividualActivity.query.filter_by(
@@ -382,7 +382,7 @@ def bireysel_api_faaliyet_update(act_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/individual/api/activity/delete/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/activity/delete/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_delete(act_id):
     act = IndividualActivity.query.filter_by(
@@ -398,7 +398,7 @@ def bireysel_api_faaliyet_delete(act_id):
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
 
-@app_bp.route("/individual/api/activity/track/<int:act_id>", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/activity/track/<int:act_id>", methods=["POST"])
 @login_required
 def bireysel_api_faaliyet_track(act_id):
     """Bireysel faaliyet aylık tamamlanma toggle."""
@@ -432,7 +432,7 @@ def bireysel_api_faaliyet_track(act_id):
 
 # ── API: Favori PG toggle ─────────────────────────────────────────────────────
 
-@app_bp.route("/individual/api/favorite/toggle/<int:kpi_id>", methods=["POST"])
+@app_bp.route("/k-plan/individual/api/favorite/toggle/<int:kpi_id>", methods=["POST"])
 @login_required
 def bireysel_api_favori_toggle(kpi_id):
     """Favori KPI oluştur veya soft delete."""
@@ -461,7 +461,7 @@ def bireysel_api_favori_toggle(kpi_id):
 
 # ── API: Bireysel Karne AJAX ──────────────────────────────────────────────────
 
-@app_bp.route("/individual/api/scorecard")
+@app_bp.route("/k-plan/individual/api/scorecard")
 @login_required
 def bireysel_api_karne():
     """Yıl bazlı bireysel PG + faaliyet takip verisi."""
@@ -638,7 +638,7 @@ def bireysel_api_karne():
     })
 
 
-@app_bp.route("/individual/api/pi/<int:pg_id>/series")
+@app_bp.route("/k-plan/individual/api/pi/<int:pg_id>/series")
 @login_required
 def bireysel_api_pg_series(pg_id):
     """Seçilen PG için yıllık veri serisi (modal / sparkline)."""
@@ -691,7 +691,7 @@ def bireysel_api_pg_series(pg_id):
 
 # ── Hizalama Skoru ────────────────────────────────────────────────────────────
 
-@app_bp.route("/individual/api/alignment-score")
+@app_bp.route("/k-plan/individual/api/alignment-score")
 @login_required
 def bireysel_api_hizalama_skoru():
     """Oturum kullanıcısının bireysel→stratejik hizalama skorunu döner."""
@@ -700,7 +700,7 @@ def bireysel_api_hizalama_skoru():
     return jsonify({"success": True, "data": data})
 
 
-@app_bp.route("/individual/api/team-alignment")
+@app_bp.route("/k-plan/individual/api/team-alignment")
 @login_required
 def bireysel_api_ekip_hizalama():
     """Yöneticiler için tüm ekip hizalama özeti."""
@@ -714,7 +714,7 @@ def bireysel_api_ekip_hizalama():
 
 # ── Bireysel Karne PDF Export (Sprint 11.3) ──────────────────────────────────
 
-@app_bp.route("/individual/api/scorecard/export-pdf")
+@app_bp.route("/k-plan/individual/api/scorecard/export-pdf")
 @login_required
 def bireysel_api_karne_export_pdf():
     """Kullanıcının bireysel karnesini PDF olarak indir."""
@@ -806,7 +806,7 @@ def _bireysel_heuristik_ozet(year, total_pg, pg_with_data, aktif_fa, geciken_fa)
     return " ".join(parts)
 
 
-@app_bp.route("/individual/api/ai-summary")
+@app_bp.route("/k-plan/individual/api/ai-summary")
 @login_required
 def bireysel_api_ai_ozet():
     """Bireysel karne üstü 2 cümlelik Türkçe AI özet (heuristik + opsiyonel LLM)."""
@@ -853,3 +853,28 @@ def bireysel_api_ai_ozet():
         current_app.logger.info(f"[bireysel-ai-ozet] LLM fallback ({e})")
 
     return jsonify({"success": True, "ozet": ozet, "kaynak": kaynak})
+
+
+# ── Katman mimarisi Faz 3: /individual → /k-plan/individual (307) ─────────────
+# Bireysel girdi katmanına taşındı (2026-07-17). Eski adres dış dünyada
+# kullanıldığı için (bookmark, karne e-posta linki) kalıcı yönlendirilir.
+# 307: POST gövdesi korunur — 301 olsaydı form gönderimleri GET'e düşerdi.
+
+
+@app_bp.route("/individual")
+@app_bp.route("/individual/")
+def individual_katman_legacy_index():
+    target = "/k-plan/individual"
+    qs = request.query_string.decode() if request.query_string else ""
+    if qs:
+        target = f"{target}?{qs}"
+    return redirect(target, code=307)
+
+
+@app_bp.route("/individual/<path:subpath>")
+def individual_katman_legacy_path(subpath):
+    target = f"/k-plan/individual/{subpath}"
+    qs = request.query_string.decode() if request.query_string else ""
+    if qs:
+        target = f"{target}?{qs}"
+    return redirect(target, code=307)

@@ -1154,7 +1154,7 @@
       });
 
       // ── Denge skoru bantı (asenkron yükle) ───────────────────────────────
-      fetchJson('/sp/api/bsc/balance').then(b => {
+      fetchJson('/k-plan/strategy/api/bsc/balance').then(b => {
         if (!b || !b.success) return;
         const banner = document.getElementById('bsc-balance-banner');
         if (!banner) return;
@@ -1188,7 +1188,7 @@
             confirmButtonColor: '#6366f1',
           });
           if (!ok.isConfirmed) return;
-          const r = await fetch('/sp/api/bsc/auto-assign', {
+          const r = await fetch('/k-plan/strategy/api/bsc/auto-assign', {
             method: 'POST',
             headers: {'Content-Type':'application/json', 'X-CSRFToken': CSRF},
             body: JSON.stringify({ min_confidence: 30 }),
