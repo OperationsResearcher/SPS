@@ -104,12 +104,20 @@
     const empty  = document.getElementById("forecast-empty");
     if (!canvas) return;
 
-    // data: { labels, historical, forecast } veya dizi tahmin değerleri
-    const labels     = data.labels     || data.periods     || [];
-    const historical = data.historical || [];
-    const forecast   = data.forecast   || data.values      || [];
+    // API sözleşmesi (TASK-256, kanonik forecast_service):
+    //   historical_data: [{date, value}]
+    //   forecast:        [{date, forecast_value, confidence_low, confidence_high, confidence}]
+    // Eskiden düz sayı dizisi bekleniyordu → nesne basılınca "[object Object]".
+    const histRows = data.historical_data || data.historical || [];
+    const fcRows   = data.forecast        || [];
 
-    if (!labels.length && !forecast.length) {
+    // Nesne dizisini {etiket, değer}'e ayır; eski düz-sayı biçimine de tolerans
+    const histVals   = histRows.map(r => (typeof r === "number" ? r : r?.value));
+    const histLabels = histRows.map(r => (typeof r === "object" ? r?.date : ""));
+    const fcVals     = fcRows.map(r => (typeof r === "number" ? r : r?.forecast_value));
+    const fcLabels   = fcRows.map(r => (typeof r === "object" ? r?.date : ""));
+
+    if (!histVals.length && !fcVals.length) {
       canvas.style.display = "none";
       if (empty) empty.style.display = "";
       return;
@@ -117,17 +125,18 @@
     canvas.style.display = "";
     if (empty) empty.style.display = "none";
 
-    const allLabels = [...(data.hist_labels || []), ...labels];
-    const histData  = historical.map(v => v);
-    const fcData    = new Array(historical.length).fill(null).concat(forecast);
+    const allLabels = [...histLabels, ...fcLabels];
+    const histData  = histVals;
+    const forecast  = fcVals;
+    const fcData    = new Array(histVals.length).fill(null).concat(fcVals);
 
     if (forecastChartInst) forecastChartInst.destroy();
     forecastChartInst = new Chart(canvas, {
       type: "bar",
       data: {
-        labels: allLabels.length ? allLabels : labels,
+        labels: allLabels.length ? allLabels : fcLabels,
         datasets: [
-          ...(historical.length ? [{
+          ...(histData.length ? [{
             label: t("Gerçekleşen"),
             data: histData,
             backgroundColor: "#6366f120",
@@ -160,11 +169,13 @@
       },
     });
 
-    // Sonraki dönem tahmini stat kartına yaz
+    // Sonraki dönem tahmini stat kartına yaz. forecast artık düz sayı dizisi
+    // (fcVals); yine de null/undefined'a karşı korun — "[object Object]" ya da
+    // "undefined" basma.
     const nextEl = document.getElementById("forecast-next");
-    if (nextEl && forecast.length) {
-      const val = forecast[0];
-      nextEl.textContent = typeof val === "number" ? val.toFixed(1) : val;
+    if (nextEl) {
+      const val = forecast.find(v => typeof v === "number");
+      nextEl.textContent = (typeof val === "number") ? val.toFixed(1) : "—";
     }
   }
 
