@@ -5367,8 +5367,27 @@ msgstr "Project Kanban"
 #: ui/static/platform/js/command_palette.js:38
 #: ui/templates/platform/analiz/index.html:63
 #: ui/templates/platform/base.html:221
-msgid "K-Analiz"
-msgstr "K-Analysis"
+#: ui/templates/platform/k_radar/ks.html:2
+#: ui/templates/platform/k_radar/ks.html:3
+#: ui/templates/platform/k_radar/ks.html:10
+#: ui/templates/platform/k_radar/ks.html:39
+#: ui/templates/platform/k_radar/kp.html:5
+#: ui/templates/platform/k_radar/kpr.html:5
+#: ui/templates/platform/k_radar/cross.html:5
+msgid "K-Radar Araçları"
+msgstr "K-Radar Tools"
+
+#: ui/templates/platform/k_radar/ks.html:2
+msgid "Teşhis"
+msgstr "Diagnostics"
+
+#: ui/templates/platform/k_radar/cross.html:5
+msgid "Çapraz"
+msgstr "Cross"
+
+#: ui/static/platform/js/k_radar_ks.js:275
+msgid "Stratejik Planlama'da düzenle"
+msgstr "Edit in Strategic Planning"
 
 #: ui/static/platform/js/command_palette.js:41
 msgid "Bireysel Karne"
