@@ -2,7 +2,7 @@
 
 import datetime as _dt
 
-from flask import render_template, jsonify, request, current_app, redirect, url_for
+from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 from sqlalchemy import func
 from sqlalchemy.orm import joinedload, selectinload
@@ -82,11 +82,13 @@ def k_rapor_api_forecast(kpi_id):
 @app_bp.route("/k-report")
 @login_required
 def k_rapor():
-    """K-Rapor sayfası — ?tab=X seçiliyse o sekme; değilse K-Radar hub'ına yönlendirir."""
-    # Hub artık /k-radar; tab yoksa oraya gönder
-    if not request.args.get("tab"):
-        return redirect(url_for("app_bp.k_radar_hub"))
+    """Rapor katmanı giriş sayfası. ?tab=X seçiliyse o sekme; değilse rapor
+    KATALOĞU (index.html'deki 22 sekme kartı) gösterilir.
 
+    ⚠️ 2026-07-19: Eskiden tab yoksa K-Radar hub'ına REDIRECT ediyordu — bu
+    yüzden sidebar'daki "Raporlar" (Rapor katmanı) ile "K-Radar" (Teşhis katmanı)
+    AYNI sayfaya (K-Radar hub) düşüyordu. İki katman ayrı; rapor katmanının kendi
+    giriş sayfası index.html'dir. Redirect kaldırıldı."""
     from app.models.process import Process, ProcessKpi, KpiData
     from app.models.core import Strategy
     from app.services.plan_year_service import get_active_plan_year_for_user
