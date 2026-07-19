@@ -330,6 +330,38 @@
                 <span class="sidebar-item-icon"><i class="fas fa-cog"></i></span>
                 <span class="sidebar-item-text">{{ _("Ayarlar") }}</span>
             </a>
+
+            {# ══ GÖZDEN GEÇİRİLECEKLER — yalnız platform Admin ═══════════════════
+               Denetim 2026-07-19: yetim/legacy main.* sayfaları (menüde linki
+               yoktu). Kullanıcı tek tek inceleyecek: hangisi kalsın, hangisi
+               bağlansın, hangisi silinsin? Karar verilince bu bölüm kaldırılacak.
+               🟢 = 200 sağlıklı · 🔴 = 500 kırık (dikkat). safe_url_for: main.*
+               endpoint yoksa patlamaz. #}
+            {% if role_name == 'Admin' %}
+            <div class="sidebar-section-label">🔍 {{ _("Gözden Geçirilecekler") }}</div>
+            {% set gozden = [
+                ('main.ai_chat', '🟢 AI Chat'),
+                ('main.akilli_planlama', '🟢 Akıllı Planlama'),
+                ('main.gorev_aktivite_log', '🟢 Görev Aktivite Log'),
+                ('main.portfolio_summary', '🟢 Portföy Özeti'),
+                ('main.proje_analitik', '🟢 Proje Analitik'),
+                ('main.strategy_kpis', '🟢 Strateji KPIs'),
+                ('main.strategy_matrix', '🟢 Strateji Matris'),
+                ('main.strategy_projects', '🟢 Strateji Projeler'),
+                ('main.help_center', '🟢 Yardım Merkezi'),
+                ('main.admin_deleted_organizations', '🟢 Silinen Kurumlar'),
+                ('main.admin_feedback', '🟢 Geri Bildirim'),
+                ('main.ai_coach_page', '🔴 AI Coach (500)'),
+                ('main.executive_dashboard', '🔴 Yönetici Panosu (500)'),
+                ('main.dokuman_merkezi', '🔴 Doküman Merkezi (500)'),
+            ] %}
+            {% for ep_ad, etiket in gozden %}
+            <a href="{{ safe_url_for(ep_ad) }}" class="sidebar-item" style="font-size:12.5px; opacity:.85;">
+                <span class="sidebar-item-icon"><i class="fas fa-flask"></i></span>
+                <span class="sidebar-item-text">{{ etiket }}</span>
+            </a>
+            {% endfor %}
+            {% endif %}
         </nav>
 
         <!-- Footer: kullanıcı -->
