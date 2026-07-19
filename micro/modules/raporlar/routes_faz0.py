@@ -30,7 +30,7 @@ from flask_babel import gettext as _
 
 @app_bp.route("/k-report/data-quality")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_veri_kalitesi():
     """Veri Kalitesi Raporu — PG doluluk, eksik alanlar, son giriş tarihleri."""
     from app.services.plan_year_service import list_plan_years
@@ -46,7 +46,7 @@ def raporlar_veri_kalitesi():
 
 @app_bp.route("/k-report/api/data-quality")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_veri_kalitesi():
     """Veri kalitesi metriklerini JSON döner."""
     tid = current_user.tenant_id
@@ -174,7 +174,7 @@ def raporlar_api_veri_kalitesi():
 
 @app_bp.route("/k-report/k-vector-skewness")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_kv_carpiklik():
     """K-Vektör Çarpıklık — strateji ağırlığı × skor uyumsuzluğu."""
     from app.services.plan_year_service import list_plan_years
@@ -190,7 +190,7 @@ def raporlar_kv_carpiklik():
 
 @app_bp.route("/k-report/api/k-vector-skewness")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_kv_carpiklik():
     """Her ana stratejinin K-Vektör ağırlığı vs gerçek skor uyumsuzluğu."""
     from app.services.plan_year_service import get_plan_year
@@ -293,7 +293,7 @@ def raporlar_api_kv_carpiklik():
 
 @app_bp.route("/k-report/alignment-sankey")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_hizalama_sankey():
     from app.services.plan_year_service import list_plan_years
     years, active_year = [], None
@@ -307,7 +307,7 @@ def raporlar_hizalama_sankey():
 
 @app_bp.route("/k-report/api/alignment-sankey")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_hizalama_sankey():
     """Vizyon → Strateji → Alt Strateji → Süreç → PG akış verisi (5 seviye)."""
     from app.services.plan_year_service import get_plan_year
@@ -494,14 +494,14 @@ def raporlar_api_hizalama_sankey():
 
 @app_bp.route("/k-report/target-revision")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_hedef_revizyon():
     return render_template("platform/raporlar/hedef_revizyon.html")
 
 
 @app_bp.route("/k-report/api/target-revision")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_hedef_revizyon():
     """Yıl bazlı hedef override sayımı (kpi_year_configs vs ProcessKpi.target_value)."""
     tid = current_user.tenant_id
@@ -571,14 +571,14 @@ def raporlar_api_hedef_revizyon():
 
 @app_bp.route("/k-report/department-performance")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_departman_performans():
     return render_template("platform/raporlar/departman_performans.html")
 
 
 @app_bp.route("/k-report/api/department-performance")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_departman_performans():
     """Departman bazlı kullanıcı + bireysel PG + atanan görev sayısı."""
     tid = current_user.tenant_id
@@ -645,14 +645,14 @@ def raporlar_api_departman_performans():
 
 @app_bp.route("/k-report/executive-leadership")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_yonetici_liderlik():
     return render_template("platform/raporlar/yonetici_liderlik.html")
 
 
 @app_bp.route("/k-report/api/executive-leadership")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_yonetici_liderlik():
     """Süreç liderlerinin liderliğindeki süreçlerin ortalama performans skoru."""
     allowed = {"tenant_admin", "executive_manager", "Admin", "yonetici"}
@@ -754,14 +754,14 @@ def raporlar_api_yonetici_liderlik():
 
 @app_bp.route("/k-report/initiative-bubble")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_initiative_bubble():
     return render_template("platform/raporlar/initiative_bubble.html")
 
 
 @app_bp.route("/k-report/api/initiative-bubble")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_initiative_bubble():
     """Initiative portföyü: bütçe × ilerleme × öncelik."""
     tid = current_user.tenant_id
@@ -823,14 +823,14 @@ def raporlar_api_initiative_bubble():
 
 @app_bp.route("/k-report/morning-summary")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_sabah_ozeti():
     return render_template("platform/raporlar/sabah_ozeti.html")
 
 
 @app_bp.route("/k-report/api/morning-summary")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_sabah_ozeti():
     """Bugünün ve son 7 günün operasyonel özeti."""
     tid = current_user.tenant_id
@@ -930,14 +930,14 @@ def raporlar_api_sabah_ozeti():
 
 @app_bp.route("/k-report/evolution-film")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_evrim_filmi():
     return render_template("platform/raporlar/evrim_filmi.html")
 
 
 @app_bp.route("/k-report/api/evolution-film")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_evrim_filmi():
     """Yıllar boyunca strateji ağacının evrimi — her yıl için snapshot."""
     tid = current_user.tenant_id
@@ -1038,14 +1038,14 @@ def raporlar_api_evrim_filmi():
 
 @app_bp.route("/k-report/ai-presentation")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_ai_sunum():
     return render_template("platform/raporlar/ai_sunum.html")
 
 
 @app_bp.route("/k-report/api/ai-presentation/preview")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_ai_sunum_preview():
     """Sunumun veri özetini ve üretilecek slayt başlıklarını döner (preview)."""
     tid = current_user.tenant_id
@@ -1110,7 +1110,7 @@ def raporlar_api_ai_sunum_preview():
 
 @app_bp.route("/k-report/api/ai-presentation/generate", methods=["GET", "POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_ai_sunum_generate():
     """Gerçek PowerPoint dosyasını üretir + indirme URL'i döner."""
     from flask import send_file

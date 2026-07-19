@@ -204,8 +204,12 @@
             {% endif %}
 
             {# K-Radar: tek giriş. Alt araçlar (KS/KP/KPR) hub içinden gezilir —
-               "K-Radar Araçları" ikinci girişi kaldırıldı (dağınıklık denetimi 2026-07-18). #}
-            {% if sidebar_module_ids is none or 'k_radar' in sidebar_module_ids or 'k_rapor' in sidebar_module_ids %}
+               "K-Radar Araçları" ikinci girişi kaldırıldı (dağınıklık denetimi 2026-07-18).
+               ⚠️ K3 (denetim 2026-07-19): link koşulu route gate'iyle HİZALI olmalı.
+               /k-radar route paket_gate=k_radar. Eskiden koşul 'k_radar OR k_rapor'du →
+               Yönetim paketinde (k_rapor var, k_radar yok) link görünüp route engelliyordu.
+               Koşul sadece k_radar'a daraltıldı → link ancak route açıksa görünür. #}
+            {% if sidebar_module_ids is none or 'k_radar' in sidebar_module_ids %}
             <a href="{{ url_for('app_bp.k_radar_hub') }}"
                 class="sidebar-item {% if 'k_radar' in ep and 'k_report' not in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-satellite-dish"></i></span>
@@ -220,7 +224,10 @@
             </a>
             {% endif %}
 
-            {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] and (sidebar_module_ids is none or 'sp' in sidebar_module_ids) %}
+            {# Savaş Odası: route /k-radar/savas-odasi paket_gate=k_radar. Eskiden link
+               koşulu 'sp'ydi (tüm paketlerde) → Başlangıç/Yönetim'de görünüp route
+               engelliyordu. K3: koşul k_radar'a hizalandı. #}
+            {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] and (sidebar_module_ids is none or 'k_radar' in sidebar_module_ids) %}
             <a href="{{ url_for('app_bp.sp_tv_mode') }}" target="_blank" class="sidebar-item">
                 <span class="sidebar-item-icon"><i class="fas fa-tv"></i></span>
                 <span class="sidebar-item-text">{{ _("Savaş Odası") }}</span>

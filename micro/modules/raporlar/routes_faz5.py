@@ -34,14 +34,14 @@ from flask_babel import gettext as _
 
 @app_bp.route("/k-report/mobile")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_mobile():
     return render_template("platform/raporlar/mobile.html")
 
 
 @app_bp.route("/k-report/api/mobile/snapshot")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_mobile_snapshot():
     """Mobile için kompakt veri snapshot — anasayfa metrikleri."""
     tid = _tid_or_none()
@@ -105,14 +105,14 @@ def raporlar_api_mobile_snapshot():
 
 @app_bp.route("/k-report/bi-connector")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_bi_connector():
     return render_template("platform/raporlar/bi_connector.html")
 
 
 @app_bp.route("/k-report/api/bi/kpi-data.csv")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_bi_kpi_data_csv():
     """KPI ölçümlerini CSV olarak döner (Power BI/Tableau direkt çekebilir)."""
     from flask import Response
@@ -149,7 +149,7 @@ def raporlar_api_bi_kpi_data_csv():
 
 @app_bp.route("/k-report/api/bi/strategies.json")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_bi_strategies_json():
     """Strateji ağacı + skor JSON (BI tool'lar için)."""
     tid = _tid_or_none()
@@ -176,14 +176,14 @@ def raporlar_api_bi_strategies_json():
 
 @app_bp.route("/k-report/ml-anomaly")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_ml_anomaly():
     return render_template("platform/raporlar/ml_anomaly.html")
 
 
 @app_bp.route("/k-report/api/ml-anomaly")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_ml_anomaly():
     """IsolationForest tabanlı KPI anomali tespiti."""
     tid = _tid_or_none()
@@ -268,14 +268,14 @@ def raporlar_api_ml_anomaly():
 
 @app_bp.route("/k-report/approval-chain")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_onay_zinciri():
     return render_template("platform/raporlar/onay_zinciri.html")
 
 
 @app_bp.route("/k-report/api/approval-chain")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_onay_zinciri():
     """Initiative onay zinciri MVP — durum + sorumlu + işlem."""
     tid = _tid_or_none()
@@ -340,7 +340,7 @@ def raporlar_api_onay_zinciri():
 
 @app_bp.route("/k-report/pi-project-impact")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_pg_proje_etki():
     """PG × Proje çapraz etki analizi sayfası."""
     return render_template("platform/raporlar/pg_proje_etki.html")
@@ -348,7 +348,7 @@ def raporlar_pg_proje_etki():
 
 @app_bp.route("/k-report/api/pi-project-impact")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_pg_proje_etki():
     """Proje × Süreç × PG matrisini ve özet metrikleri döner."""
     from sqlalchemy import text as _t

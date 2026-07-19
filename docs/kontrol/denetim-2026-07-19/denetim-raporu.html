@@ -1,0 +1,176 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Kokpitim — Link/Bileşen/Paket/Sağlık Denetimi 2026-07-19</title>
+<style>
+  :root{--bg:#f8fafc;--card:#fff;--border:#e2e8f0;--text:#1e293b;--muted:#64748b;
+        --ok:#10b981;--warn:#f59e0b;--err:#ef4444;--info:#6366f1;--critbg:#fef2f2;}
+  *{box-sizing:border-box}
+  body{font-family:-apple-system,Segoe UI,Roboto,sans-serif;background:var(--bg);
+       color:var(--text);margin:0;padding:24px;line-height:1.5;font-size:14px}
+  h1{font-size:24px;margin:0 0 4px}
+  .sub{color:var(--muted);margin-bottom:24px}
+  .crit{background:var(--critbg);border:1px solid #fecaca;border-left:4px solid var(--err);
+        border-radius:8px;padding:14px 18px;margin-bottom:12px}
+  .crit h3{margin:0 0 6px;color:#b91c1c;font-size:16px}
+  .crit .fix{background:#fff;border-radius:6px;padding:6px 10px;margin-top:8px;
+             font-family:ui-monospace,monospace;font-size:12.5px;color:#166534}
+  .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:10px;margin:16px 0}
+  .stat{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px}
+  .stat .n{font-size:22px;font-weight:700}
+  .stat .l{font-size:12px;color:var(--muted)}
+  table{width:100%;border-collapse:collapse;background:var(--card);border-radius:8px;
+        overflow:hidden;margin:12px 0;font-size:13px}
+  th{background:#f1f5f9;text-align:left;padding:9px 12px;font-weight:600;position:sticky;top:0}
+  td{padding:8px 12px;border-top:1px solid var(--border);vertical-align:top}
+  tr:hover td{background:#f8fafc}
+  code{background:#f1f5f9;padding:1px 5px;border-radius:4px;font-size:12px}
+  .badge{display:inline-block;padding:1px 8px;border-radius:99px;font-size:11px;font-weight:600}
+  .b-ok{background:#d1fae5;color:#065f46}.b-warn{background:#fef3c7;color:#92400e}
+  .b-err{background:#fee2e2;color:#991b1b}.b-info{background:#e0e7ff;color:#3730a3}
+  h2{margin-top:32px;border-bottom:2px solid var(--border);padding-bottom:6px}
+  .filterbar{margin:12px 0}
+  .filterbar button{background:#fff;border:1px solid var(--border);border-radius:6px;
+    padding:5px 12px;cursor:pointer;margin-right:6px;font-size:12.5px}
+  .filterbar button.active{background:var(--info);color:#fff;border-color:var(--info)}
+  .hidden{display:none}
+  .pk{font-size:11px;color:var(--muted)}
+  details{background:var(--card);border:1px solid var(--border);border-radius:8px;padding:12px 16px;margin:10px 0}
+  summary{cursor:pointer;font-weight:600}
+</style>
+</head>
+<body>
+<h1>Kokpitim — Denetim Raporu</h1>
+<div class="sub">Link → Bileşen → Paket → Sağlık → Ulaşılabilirlik · 2026-07-19 ·
+  266 sayfa · 4 rol · 4 paket · 3 paralel ajan + doğrudan ölçüm (tahmin yok)</div>
+
+<h2>🔴 3 Kritik Hata</h2>
+
+<div class="crit">
+  <h3>K1 — Rapor katmanı kurum kullanıcılarına TAMAMEN KAPALI</h3>
+  46 rapor sayfası <code>@require_module("raporlar")</code> ile korunuyor, ama
+  <b>"raporlar" diye bir sistem modülü YOK</b> (yalnız <code>k_rapor_modulu</code> var).
+  Bu yüzden hiçbir kurum kullanıcısı geçemiyor — <b>Master paketi (her şey açık) olan
+  Tomofil admin'i bile</b> CFO/ESG/CMMI/risk raporlarına giremiyor. Yalnız platform Admin bypass'lar.
+  <div>Doğrulama: uid 8173 (tenant_admin, Master) → <code>/k-report/cfo-dashboard</code> = <b>302 /desktop</b>. uid 1 (Admin) → 200.</div>
+  <div class="fix">Düzeltme: require_module("raporlar") → require_module("k_rapor") — tek kelime, 46 sayfayı açar</div>
+</div>
+
+<div class="crit">
+  <h3>K2 — Legacy sayfalar HER kullanıcıda 500 (ölü endpoint)</h3>
+  <code>templates/base.html:63,145</code> (kök base) <code>url_for('admin_bp.tenants')</code>
+  çağırıyor — endpoint yeniden adlandırılmış, artık yok. Rol koşulu dışında olduğu için
+  bu base'i kullanan her legacy sayfa <b>BuildError 500</b> veriyor.
+  <div>Etkilenen: /yardim-merkezi, /ai-chat, /ai-coach, /2fa/setup, /portfoy-ozeti, /admin/strategy-management, /admin/kule-iletisim, /admin/feedback</div>
+  <div>Modern <code>platform/base.html</code> temiz — platform sayfaları etkilenmez.</div>
+  <div class="fix">Düzeltme: templates/base.html:63,145 → admin_bp.tenants_archive · 9+ sayfayı kurtarır</div>
+</div>
+
+<div class="crit">
+  <h3>K3 — Sidebar linki görünür ama route ENGELLİYOR (2 çelişki)</h3>
+  Link görünürlük koşulu ile route paket-gate'i uyuşmuyor → "tıkladım açılmadı":
+  <ul style="margin:6px 0">
+    <li><b>K-Radar:</b> sidebar koşulu <code>k_radar OR k_rapor</code> (Yönetim'de görünür), route <code>paket_gate=k_radar</code> (Yönetim'de yok) → engellenir</li>
+    <li><b>Savaş Odası:</b> sidebar <code>sp</code> (tüm paketlerde), route <code>k_radar</code> → Başlangıç/Yönetim'de görünür, açılmaz</li>
+  </ul>
+</div>
+
+<h2>Paket Yapısı</h2>
+<div class="grid">
+  <div class="stat"><div class="n">Başlangıç</div><div class="l">2 modül: sp, kurum</div></div>
+  <div class="stat"><div class="n">Yönetim</div><div class="l">7 modül: +surec,proje,bireysel,analiz,k_rapor</div></div>
+  <div class="stat"><div class="n">Strateji</div><div class="l">8 modül: +k_radar</div></div>
+  <div class="stat"><div class="n">Master</div><div class="l">13 modül (hepsi)</div></div>
+</div>
+
+<h2>Rol Bazlı Sidebar (Playwright ile ölçüldü)</h2>
+<table>
+<tr><th>Rol</th><th>Bölümler</th><th>Link</th></tr>
+<tr><td><span class="badge b-info">Admin</span></td><td>GİRDİ · TEŞHİS · RAPORLAR · YÖNETİM · ADMİN · SİSTEM</td><td><b>19</b></td></tr>
+<tr><td><span class="badge b-info">Kurum Yöneticisi</span></td><td>GİRDİ · TEŞHİS · RAPORLAR · YÖNETİM · SİSTEM</td><td><b>16</b></td></tr>
+<tr><td><span class="badge b-warn">standard_user</span></td><td>GİRDİ · SİSTEM</td><td><b>4</b></td></tr>
+</table>
+
+<h2>Link → Bileşen → Paket → Sağlık (Admin görünümü)</h2>
+<div class="filterbar">
+  <button class="active" onclick="filt(this,'all')">Tümü</button>
+  <button onclick="filt(this,'err')">Sorunlu</button>
+  <button onclick="filt(this,'ok')">Sağlıklı</button>
+</div>
+<table id="matris">
+<tr><th>Link</th><th>URL</th><th>Bileşen</th><th>Rol</th><th>Paketler</th><th>Sağlık</th></tr>
+<tr data-h="ok"><td>Masaüstüm</td><td><code>/desktop</code></td><td>masaustu/index.html</td><td>herkes</td><td class="pk">Tümü</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="ok"><td>Stratejik Planlama</td><td><code>/k-plan/strategy/menu</code></td><td>sp/menu.html (HUB)</td><td>rol+sp</td><td class="pk">Tümü</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="err"><td>Kurum Paneli</td><td><code>/organization</code></td><td>kurum template</td><td>rol+kurum</td><td class="pk">Tümü</td><td><span class="badge b-warn">std_user'a açık</span></td></tr>
+<tr data-h="ok"><td>Süreç Yönetimi</td><td><code>/k-plan/process</code></td><td>surec template</td><td>surec</td><td class="pk">Yön,Str,Mas</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="ok"><td>Proje Yönetimi</td><td><code>/k-plan/project</code></td><td>project/list.html</td><td>proje</td><td class="pk">Yön,Str,Mas</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="ok"><td>Bireysel Performans</td><td><code>/k-plan/individual/scorecard</code></td><td>karne template</td><td>bireysel</td><td class="pk">Yön,Str,Mas</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="err"><td>K-Radar</td><td><code>/k-radar</code></td><td>k_radar/hub.html (HUB)</td><td>k_radar|k_rapor</td><td class="pk">Str,Mas</td><td><span class="badge b-warn">K3 gating</span></td></tr>
+<tr data-h="ok"><td>Performans Analitiği</td><td><code>/k-radar/analysis</code></td><td>analiz template</td><td>rol+analiz</td><td class="pk">Yön,Str,Mas</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="err"><td>Savaş Odası</td><td><code>/k-radar/savas-odasi</code></td><td>TV template</td><td>rol+sp</td><td class="pk">Str,Mas</td><td><span class="badge b-warn">K3 gating</span></td></tr>
+<tr data-h="ok"><td>Yönetim Özeti</td><td><code>/yonetim-ozeti</code></td><td>yonetim template</td><td>rol+k_rapor</td><td class="pk">Yön,Str,Mas</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="err"><td>Raporlar</td><td><code>/k-report</code></td><td>k_rapor/index.html (22 sekme)</td><td>rol+k_rapor</td><td class="pk">Yön,Str,Mas</td><td><span class="badge b-err">K1: tekil raporlar kapalı</span></td></tr>
+<tr data-h="ok"><td>Holding Görünümü</td><td><code>/holding/dashboard</code></td><td>holding_dashboard.html</td><td>rol+holding</td><td class="pk">tenant tipi</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="ok"><td>Kullanıcılar</td><td><code>/admin/users</code></td><td>admin/users.html</td><td>rol</td><td class="pk">paketsiz</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="ok"><td>Kurumlar</td><td><code>/admin/tenants</code></td><td>admin/tenants.html</td><td>rol</td><td class="pk">paketsiz</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="ok"><td>SaaS Paketler</td><td><code>/admin/packages</code></td><td>admin/packages.html</td><td>Admin</td><td class="pk">paketsiz</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="ok"><td>Admin Araçları</td><td><code>/admin/araclar</code></td><td>araclar.html</td><td>Admin</td><td class="pk">paketsiz</td><td><span class="badge b-ok">200</span></td></tr>
+<tr data-h="ok"><td>Ayarlar</td><td><code>/settings</code></td><td>ayarlar/index.html</td><td>herkes</td><td class="pk">Tümü</td><td><span class="badge b-ok">200</span></td></tr>
+</table>
+<p class="pk">Kurum Yöneticisi: aynı liste EKSİ SaaS Paketler / API Dok / Admin Araçları (Admin'e özel).</p>
+
+<h2>Ulaşılabilirlik — "bileşen var ama tıklayarak ulaşabiliyor muyuz?"</h2>
+<details open>
+<summary>GERÇEK YETİM — hiçbir yerden linklenmiyor (48+ sayfa)</summary>
+<table>
+<tr><th>Kategori</th><th>Sayı</th><th>Örnekler</th></tr>
+<tr><td><span class="badge b-err">main.* legacy</span></td><td>37+</td><td>/risks, /crisis, /gemba, /mtbp, /muda-hunter, /black-swan, /metaverse, /yardim-merkezi, /dokuman-merkezi</td></tr>
+<tr><td><span class="badge b-warn">SP alt sayfa</span></td><td>7</td><td>mission, vision, values, flow, periodic-report, wizard/new-year, llm-usage</td></tr>
+<tr><td><span class="badge b-warn">Admin araç</span></td><td>2</td><td>kilavuz-olusturucu, setup-import</td></tr>
+<tr><td><span class="badge b-warn">Bağımsız</span></td><td>2</td><td>/k-analiz hub, /k-report/anomalies</td></tr>
+</table>
+<p class="pk">✅ <code>/k-radar/ks</code> sorunu ARTIK YOK — hub'a Teşhis Radarları şeridi bugün eklendi.</p>
+</details>
+
+<h2>Sağlık — 500 / 404 (test_client, 262 URL × 2 rol)</h2>
+<div class="grid">
+  <div class="stat"><div class="n" style="color:var(--ok)">118/179</div><div class="l">200 sağlıklı (t.admin/Admin)</div></div>
+  <div class="stat"><div class="n" style="color:var(--err)">13/15</div><div class="l">500 çökme</div></div>
+  <div class="stat"><div class="n" style="color:var(--warn)">4/9</div><div class="l">404 kırık</div></div>
+  <div class="stat"><div class="n" style="color:var(--info)">26</div><div class="l">403 gating (normal)</div></div>
+</div>
+<table>
+<tr><th>URL</th><th>Sorun</th><th>Kök neden</th></tr>
+<tr><td><code>/yardim-merkezi</code> +7</td><td><span class="badge b-err">500</span></td><td>K2: admin_bp.tenants ölü endpoint</td></tr>
+<tr><td><code>/debug/surec-data</code></td><td><span class="badge b-err">500</span></td><td>User.username yok</td></tr>
+<tr><td><code>/dokuman-merkezi</code></td><td><span class="badge b-err">500</span></td><td>ProjectFile.scope yok</td></tr>
+<tr><td><code>/dashboard/executive</code></td><td><span class="badge b-err">500</span></td><td>flask_caching yanlış kullanım</td></tr>
+<tr><td><code>/vapid-key</code></td><td><span class="badge b-err">500</span></td><td>VAPID config yok (503 dönmeli)</td></tr>
+<tr><td><code>/demo*</code></td><td><span class="badge b-warn">404</span></td><td>demo modu kapalı (feature flag)</td></tr>
+</table>
+
+<h2>Öncelik Sırası</h2>
+<table>
+<tr><th>#</th><th>Sorun</th><th>Düzeltme</th><th>Etki</th></tr>
+<tr><td>1</td><td>K1 rapor kapalı</td><td>require_module("raporlar")→"k_rapor"</td><td>46 sayfa açılır</td></tr>
+<tr><td>2</td><td>K2 legacy 500</td><td>base.html:63,145 endpoint düzelt</td><td>9+ sayfa</td></tr>
+<tr><td>3</td><td>K3 gating uyumsuz</td><td>K-Radar+Savaş Odası sidebar↔route hizala</td><td>"açılmadı" biter</td></tr>
+<tr><td>4</td><td>model 500'leri</td><td>User.username/ProjectFile.scope/cache</td><td>3 sayfa</td></tr>
+<tr><td>5</td><td>yetim main.*</td><td>ürün kararı: bağla ya da kaldır</td><td>37+ sayfa</td></tr>
+<tr><td>6</td><td>/organization sızıntı</td><td>route'a gate ekle</td><td>std_user kapanır</td></tr>
+</table>
+
+<script>
+function filt(btn,mode){
+  document.querySelectorAll('.filterbar button').forEach(b=>b.classList.remove('active'));
+  btn.classList.add('active');
+  document.querySelectorAll('#matris tr[data-h]').forEach(tr=>{
+    const h=tr.getAttribute('data-h');
+    tr.classList.toggle('hidden', mode!=='all' && h!==mode);
+  });
+}
+</script>
+</body>
+</html>

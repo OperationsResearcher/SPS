@@ -38,14 +38,14 @@ def _tid_or_none():
 
 @app_bp.route("/k-report/sunburst")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_sunburst():
     return render_template("platform/raporlar/sunburst.html")
 
 
 @app_bp.route("/k-report/api/sunburst")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_sunburst():
     tid = _tid_or_none()
     if not tid:
@@ -107,14 +107,14 @@ def raporlar_api_sunburst():
 
 @app_bp.route("/k-report/vrio-portfoy")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_vrio_portfoy():
     return render_template("platform/raporlar/vrio_portfoy.html")
 
 
 @app_bp.route("/k-report/api/vrio-portfoy")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_vrio_portfoy():
     from app.models.strategy_frameworks import VRIOResource
     tid = _tid_or_none()
@@ -149,14 +149,14 @@ def raporlar_api_vrio_portfoy():
 
 @app_bp.route("/k-report/okr-cascade")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_okr_cascade():
     return render_template("platform/raporlar/okr_cascade.html")
 
 
 @app_bp.route("/k-report/api/okr-cascade")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_okr_cascade():
     from app.models.okr import OkrObjective, OkrKeyResult
     tid = _tid_or_none()
@@ -203,14 +203,14 @@ def raporlar_api_okr_cascade():
 
 @app_bp.route("/k-report/initiative-roadmap")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_initiative_roadmap():
     return render_template("platform/raporlar/initiative_roadmap.html")
 
 
 @app_bp.route("/k-report/api/initiative-roadmap")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_initiative_roadmap():
     from app.models.initiative import InitiativeMilestone
     tid = _tid_or_none()
@@ -246,7 +246,7 @@ def raporlar_api_initiative_roadmap():
 
 @app_bp.route("/k-report/muda-analysis")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_muda_analizi():
     from app.services.plan_year_service import list_plan_years
     years, active_year = [], None
@@ -260,7 +260,7 @@ def raporlar_muda_analizi():
 
 @app_bp.route("/k-report/api/muda-analysis")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_muda_analizi():
     from app.services.plan_year_service import get_plan_year
     tid = _tid_or_none()
@@ -328,7 +328,7 @@ def raporlar_api_muda_analizi():
 
 @app_bp.route("/k-report/cmmi-heatmap")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_cmmi_heatmap():
     from app.services.plan_year_service import list_plan_years
     years, active_year = [], None
@@ -342,7 +342,7 @@ def raporlar_cmmi_heatmap():
 
 @app_bp.route("/k-report/api/cmmi-heatmap")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_cmmi_heatmap():
     from app.models.k_radar_domain import ProcessMaturity
     from app.services.plan_year_service import get_plan_year
@@ -438,7 +438,7 @@ def raporlar_api_cmmi_heatmap():
 
 @app_bp.route("/k-report/operation-statistics")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_op_istatistik():
     from app.services.plan_year_service import list_plan_years
     years, active_year = [], None
@@ -452,7 +452,7 @@ def raporlar_op_istatistik():
 
 @app_bp.route("/k-report/api/operation-statistics")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_op_istatistik():
     from app.services.plan_year_service import get_plan_year
     tid = _tid_or_none()
@@ -504,14 +504,14 @@ def raporlar_api_op_istatistik():
 
 @app_bp.route("/k-report/individual-alignment")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_bireysel_hizalama():
     return render_template("platform/raporlar/bireysel_hizalama.html")
 
 
 @app_bp.route("/k-report/api/individual-alignment")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_bireysel_hizalama():
     tid = _tid_or_none()
     if not tid:
@@ -558,14 +558,14 @@ def raporlar_api_bireysel_hizalama():
 
 @app_bp.route("/k-report/risk-heatmap")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_risk_heatmap():
     return render_template("platform/raporlar/risk_heatmap.html")
 
 
 @app_bp.route("/k-report/api/risk-heatmap")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_risk_heatmap():
     from app.models.k_radar_domain import RiskHeatmapItem
     from sqlalchemy import or_
@@ -618,14 +618,14 @@ def raporlar_api_risk_heatmap():
 
 @app_bp.route("/k-report/two-fa")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_iki_fa():
     return render_template("platform/raporlar/iki_fa.html")
 
 
 @app_bp.route("/k-report/api/two-fa")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_iki_fa():
     tid = _tid_or_none()
     if not tid:
@@ -657,14 +657,14 @@ def raporlar_api_iki_fa():
 
 @app_bp.route("/k-report/carbon-trend")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_carbon_trend():
     return render_template("platform/raporlar/carbon_trend.html")
 
 
 @app_bp.route("/k-report/api/carbon-trend")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_carbon_trend():
     from app.models.esg import EsgMetric, EsgMetricValue
     tid = _tid_or_none()
@@ -704,14 +704,14 @@ def raporlar_api_carbon_trend():
 
 @app_bp.route("/k-report/ai-advisor")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_ai_danisman():
     return render_template("platform/raporlar/ai_danisman.html")
 
 
 @app_bp.route("/k-report/api/ai-advisor")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_ai_danisman():
     tid = _tid_or_none()
     if not tid:
@@ -729,14 +729,14 @@ def raporlar_api_ai_danisman():
 
 @app_bp.route("/k-report/ai-coach")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_ai_coach():
     return render_template("platform/raporlar/ai_coach.html")
 
 
 @app_bp.route("/k-report/api/ai-coach")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_ai_coach():
     tid = _tid_or_none()
     if not tid:
@@ -813,14 +813,14 @@ def raporlar_api_ai_coach():
 
 @app_bp.route("/k-report/early-warning")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_early_warning():
     return render_template("platform/raporlar/early_warning.html")
 
 
 @app_bp.route("/k-report/api/early-warning")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_early_warning():
     tid = _tid_or_none()
     if not tid:

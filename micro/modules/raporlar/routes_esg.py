@@ -47,7 +47,7 @@ def _metric_dict(m, values=None):
 
 @app_bp.route("/k-report/esg-management")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_esg_yonetim():
     """ESG metrik + değer yönetim sayfası."""
     return render_template("platform/raporlar/esg_yonetim.html",
@@ -58,7 +58,7 @@ def raporlar_esg_yonetim():
 
 @app_bp.route("/k-report/api/esg/metrics", methods=["GET"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def esg_api_metrics_list():
     tid = current_user.tenant_id
     try:
@@ -87,7 +87,7 @@ def esg_api_metrics_list():
 
 @app_bp.route("/k-report/api/esg/metrics", methods=["POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def esg_api_metric_add():
     if not _can_manage_esg():
         return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
@@ -122,7 +122,7 @@ def esg_api_metric_add():
 
 @app_bp.route("/k-report/api/esg/metrics/<int:metric_id>", methods=["POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def esg_api_metric_update(metric_id):
     if not _can_manage_esg():
         return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
@@ -158,7 +158,7 @@ def esg_api_metric_update(metric_id):
 
 @app_bp.route("/k-report/api/esg/metrics/<int:metric_id>/delete", methods=["POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def esg_api_metric_delete(metric_id):
     if not _can_manage_esg():
         return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
@@ -180,7 +180,7 @@ def esg_api_metric_delete(metric_id):
 
 @app_bp.route("/k-report/api/esg/metrics/<int:metric_id>/value", methods=["POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def esg_api_value_save(metric_id):
     if not _can_manage_esg():
         return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
@@ -213,7 +213,7 @@ def esg_api_value_save(metric_id):
 
 @app_bp.route("/k-report/api/esg/values/<int:value_id>/delete", methods=["POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def esg_api_value_delete(value_id):
     if not _can_manage_esg():
         return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
