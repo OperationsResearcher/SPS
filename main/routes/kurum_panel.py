@@ -78,16 +78,6 @@ def fix_bsc_schema():
         current_app.logger.error(f'BSC şema güncelleme hatası: {e}', exc_info=True)
         return f"Hata: {str(e)}", 500
 
-@main_bp.route('/portfoy-ozeti')
-@login_required
-def portfolio_summary():
-    try:
-        return render_template('projects/portfolio.html')
-    except Exception as e:
-        current_app.logger.error(f'Portföy özeti sayfası hatası: {e}')
-        return f'Hata: {str(e)}', 500
-
-
 @main_bp.route('/api/strategic-planning/graph')
 @login_required
 def api_strategic_planning_graph():
