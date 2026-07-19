@@ -35,7 +35,6 @@ _ROLE_GATED: dict[str, frozenset[str]] = {
     "sp":       PRIVILEGED_ROLES,          # Stratejik Planlama + Savaş Odası
     "analiz":   PRIVILEGED_ROLES,          # Performans Analitiği
     "k_rapor":  PRIVILEGED_ROLES,          # K-Rapor
-    "raporlar": PRIVILEGED_ROLES,          # İleri raporlama
     "admin":    ADMIN_ROLES,               # Yönetim Paneli (Admin + tenant_admin)
     "api":      PLATFORM_ADMIN_ROLES,      # API Dokümantasyonu (yalnız platform Admin)
 }
