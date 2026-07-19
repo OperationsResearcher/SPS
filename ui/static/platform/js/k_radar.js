@@ -4,6 +4,11 @@
   let kpOlgunlukRowsCache = [];
   let crossPaydasRowsCache = [];
 
+  // CSRF: postJson/putJson/deleteJson bu token'i gondermezse Flask-WTF
+  // "CSRF token is missing" 400 doner. Kardes k_radar_ks.js'te vardi, burada
+  // eksikti — olgunluk/darbogaz/paydas TUM yazma cagrilari bu yuzden kiriliyordu.
+  const CSRF = document.querySelector('meta[name="csrf-token"]')?.content || "";
+
   function notify(type, message) {
     if (typeof window.showAppToast === "function") {
       window.showAppToast(type, message);
@@ -40,6 +45,7 @@
       headers: {
         "Content-Type": "application/json",
         "X-Requested-With": "XMLHttpRequest",
+        "X-CSRFToken": CSRF,
       },
       body: JSON.stringify(body || {}),
     });
@@ -52,7 +58,7 @@
   async function putJson(url, body) {
     const resp = await fetch(url, {
       method: "PUT",
-      headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+      headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest", "X-CSRFToken": CSRF },
       body: JSON.stringify(body || {}),
     });
     const payload = await resp.json();
@@ -60,7 +66,7 @@
     return payload;
   }
   async function deleteJson(url) {
-    const resp = await fetch(url, { method: "DELETE", headers: { "X-Requested-With": "XMLHttpRequest" } });
+    const resp = await fetch(url, { method: "DELETE", headers: { "X-Requested-With": "XMLHttpRequest", "X-CSRFToken": CSRF } });
     const payload = await resp.json();
     if (!resp.ok || payload.success === false) throw new Error((payload && payload.message) || ("HTTP " + resp.status));
     return payload;

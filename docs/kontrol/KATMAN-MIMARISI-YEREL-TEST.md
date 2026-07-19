@@ -154,6 +154,26 @@ Sayfa başlığının üstündeki gezinme çizgisi:
 
 ---
 
+---
+
+## ✅ Testte bulunan ve DÜZELTİLEN — 36 rapor sayfası spinner (TASK-278)
+
+**Sen buldun:** `/k-report/cfo-dashboard` "spinning oldu kaldı".
+
+**Kök neden katman işi değildi** — daha eski bir commit (`ed713231`, URL tek-dil
+taşıması) şablonlardaki JS yolunu `js/raporlar/` → `js/reports/` yapmış ama
+**klasörü taşımamış**. 36 rapor sayfasının JS'i 404'tü → hiçbiri veri çekemiyordu.
+
+Sayfa 200 dönüyordu, API çalışıyordu; sadece JS gelmediği için "Yükleniyor…"
+sonsuza kadar kalıyordu. **602 test bunu yakalayamamıştı** (kimse statik dosya
+varlığını kontrol etmiyordu) — o boşluk da kapatıldı.
+
+**Düzeltildi:** klasör taşındı, canlıda 36/36 JS artık 200.
+👉 **Testine devam ederken rapor sayfalarını tekrar dene** — CFO, CHRO, COO, ESG,
+AI Danışman, Sunburst… hepsi artık dolmalı.
+
+---
+
 ## Bulursan bana şunu söyle
 
 | Ne gördün | Bana yaz |
