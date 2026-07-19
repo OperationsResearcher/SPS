@@ -90,3 +90,33 @@ tek hamlede çözer, en yüksek "toparlanma" etkisi. T4/T5 ayrı tur.
 - **Kart sistemine dokunma** — tutarlı, taşımadan etkilenmemiş.
 - **URL'leri yeniden değiştirme** — çalışıyor, redirect'ler yerinde. Sorun URL değil, SUNUM.
 - **Büyük refactor** — dağınıklık navigasyon katmanında, mimaride değil.
+
+---
+
+## UYGULANDI — T4/T5/T6 (2026-07-18)
+
+**T4 — `/analysis` teşhis katmanına taşındı** ✅
+- 7 route: `/analysis/*` → `/k-radar/analysis/*` (endpoint adları korundu)
+- Eski `/analysis` → **307 redirect** (bookmark korunur)
+- Template'te 4 hardcoded API base (`data-trend-base` vb.) yeni path'e güncellendi
+  (url_for kullanmıyordu — açıklama eklendi)
+- 🔴 **Yol haritası dersi uygulandı:** `/k-radar/analysis`, `/k-radar` önekiyle
+  eşleşip `k_radar` paketine gate ediliyordu (analiz paketi olan kullanıcı sessizce
+  engellenecekti). `_GATED_PREFIX_MODULE` + `_ROLE_GATED_PREFIX_MODULE`'e
+  `/k-radar/analysis → analiz` satırı `/k-radar`'dan ÖNCE eklendi (sıra kritik).
+  Doğrulandı: `/k-radar/analysis` paket-gate=analiz, rol-gate=analiz.
+
+**T5 — module_registry temizliği** ✅
+- `analiz` url `/analysis` → `/k-radar/analysis` (Faz yorumuyla)
+- `kurum`/`analiz` katman-dışı olduğu BELGELENDİ (yorumsuzdu → bilinçli işaret)
+- Çift `/k-report` (`k_rapor`+`raporlar`) **silinmedi** — ölçüldü: ikisi ayrı paket,
+  ayrı gating (`@require_module`), Faz 4'te aynı sayfada birleştiler. Erime kalıntısı
+  DEĞİL, kasıtlı. Yorumla açıklandı.
+
+**T6 — gating tektipleştirme** ✅
+- T1-T3 sidebar yeniden yazımında zaten çözüldü: her giriş `role_name` +
+  `sidebar_module_ids` kombinasyonu kullanıyor. Denetimdeki #2 (Yönetim Özeti) ve
+  #13 (Performans Analitiği) tutarsızlığı yeni katman gruplamasıyla giderildi.
+
+**Doğrulama:** `/k-radar/analysis` 200, `/analysis` 307→yeni, API'ler 200,
+gating analiz'e yönlendiriyor, 3 dosya sözdizimi OK, kapılar geçti.

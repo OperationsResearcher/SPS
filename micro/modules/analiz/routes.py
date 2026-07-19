@@ -10,7 +10,7 @@ from app.models.process import Process, ProcessKpi
 from flask_babel import gettext as _
 
 
-@app_bp.route("/analysis")
+@app_bp.route("/k-radar/analysis")
 @login_required
 def analiz():
     """Analitik özet — tenant süreçleri üzerinden."""
@@ -25,7 +25,7 @@ def analiz():
 
 # ── Trend Analizi ─────────────────────────────────────────────────────────────
 
-@app_bp.route("/analysis/api/trend/<int:process_id>")
+@app_bp.route("/k-radar/analysis/api/trend/<int:process_id>")
 @login_required
 def analiz_api_trend(process_id):
     """Süreçteki tüm aktif PG'ler için trend serileri döner (frontend çoklu seri çizer)."""
@@ -82,7 +82,7 @@ def analiz_api_trend(process_id):
 
 # ── Sağlık Skoru ──────────────────────────────────────────────────────────────
 
-@app_bp.route("/analysis/api/health/<int:process_id>")
+@app_bp.route("/k-radar/analysis/api/health/<int:process_id>")
 @login_required
 def analiz_api_health(process_id):
     Process.query.filter_by(
@@ -101,7 +101,7 @@ def analiz_api_health(process_id):
 
 # ── Tahmin Analizi ────────────────────────────────────────────────────────────
 
-@app_bp.route("/analysis/api/forecast/<int:process_id>")
+@app_bp.route("/k-radar/analysis/api/forecast/<int:process_id>")
 @login_required
 def analiz_api_forecast(process_id):
     Process.query.filter_by(
@@ -125,7 +125,7 @@ def analiz_api_forecast(process_id):
 
 # ── Karşılaştırma Analizi ─────────────────────────────────────────────────────
 
-@app_bp.route("/analysis/api/comparison", methods=["POST"])
+@app_bp.route("/k-radar/analysis/api/comparison", methods=["POST"])
 @login_required
 def analiz_api_comparison():
     data = request.get_json() or {}
@@ -149,7 +149,7 @@ def analiz_api_comparison():
 
 # ── Performans Raporu ─────────────────────────────────────────────────────────
 
-@app_bp.route("/analysis/api/report/<int:process_id>")
+@app_bp.route("/k-radar/analysis/api/report/<int:process_id>")
 @login_required
 def analiz_api_report(process_id):
     Process.query.filter_by(
@@ -182,7 +182,7 @@ def analiz_api_report(process_id):
 
 # ── Anomali Tespiti ───────────────────────────────────────────────────────────
 
-@app_bp.route("/analysis/api/anomalies")
+@app_bp.route("/k-radar/analysis/api/anomalies")
 @login_required
 def analiz_api_anomalies():
     """Tenant geneli (veya tek süreç) için tüm aktif PG'lerde anomali tarar."""
@@ -238,3 +238,17 @@ def analiz_api_anomalies():
     except Exception as e:
         current_app.logger.error(f"[analiz_api_anomalies] {e}", exc_info=True)
         return jsonify({"success": False, "message": _("Anomali verisi alınamadı.")}), 500
+
+
+# ── Katman legacy redirect (2026-07-18) ──────────────────────────────────────
+# /analysis -> /k-radar/analysis (teshis katmani). Bookmark/dis link kirilmasin.
+# Diger modullerin *_legacy.py kalibiyla ayni; 307 = GET/POST govdesi korunur.
+@app_bp.route("/analysis")
+@app_bp.route("/analysis/<path:subpath>")
+@login_required
+def analiz_katman_legacy(subpath=""):
+    from flask import redirect
+    hedef = "/k-radar/analysis" + (("/" + subpath) if subpath else "")
+    if request.query_string:
+        hedef += "?" + request.query_string.decode()
+    return redirect(hedef, code=307)

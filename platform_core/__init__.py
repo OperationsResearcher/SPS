@@ -54,6 +54,11 @@ _GATED_PREFIX_MODULE = [
     ("/process", "surec"),
     ("/individual", "bireysel"),
     ("/project", "proje"),
+    # ⚠️ SIRA KRİTİK: /k-radar/analysis analiz modülüne aittir (teşhis katmanı,
+    #    2026-07-18 taşındı). /k-radar'dan ÖNCE gelmeli — _match_prefix sırayla
+    #    eşleşir; yoksa analiz sayfası k_radar paketine gate edilir (analiz
+    #    paketi olup k_radar olmayan kullanıcı sessizce engellenir).
+    ("/k-radar/analysis", "analiz"),
     ("/analysis", "analiz"),
     ("/k-radar", "k_radar"),
     # Faz 4: rapor katmanı /k-report önekinde birleşti. Eski önekler de kalır
@@ -71,6 +76,8 @@ _GATED_PREFIX_MODULE = [
 # ⚠️ Faz 3: /sp → /k-plan/strategy taşındı. Yeni önek EKLENMEZSE SP rol kapısı
 # sessizce açılır (tests/test_sp_strateji_haritasi.py bunu yakalar).
 _ROLE_GATED_PREFIX_MODULE = [
+    # ⚠️ SIRA KRİTİK: /k-radar/analysis, /k-radar'dan ÖNCE (bkz. _GATED_PREFIX_MODULE).
+    ("/k-radar/analysis", "analiz"),
     ("/k-radar", "k_radar"),
     ("/k-analiz", "k_radar"),
     ("/analysis", "analiz"),
