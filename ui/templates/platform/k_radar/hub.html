@@ -21,7 +21,19 @@
     </div>
   </div>
 
-  {# ── K-Radar birincil navigasyon şeridi ─────────────────────────── #}
+  {# ── Teşhis radarları — araç sayfalarına giriş ──────────────────────
+     Sidebar'daki "K-Radar Araçları" girişi kaldırıldı (dağınıklık toparlama
+     2026-07-18); bu araçlara (KS/KP/KPR/Cross/Risk) TEK erişim buradan. #}
+  <div class="kr-hub-nav" style="display:flex; flex-wrap:wrap; gap:6px; padding:6px; background:#eef2ff; border:1px solid #c7d2fe; border-radius:10px; margin-bottom:10px;">
+    <span style="font-size:12px; font-weight:600; color:#4338ca; align-self:center; padding:0 6px;">{{ _("Teşhis Radarları:") }}</span>
+    <a href="{{ url_for('app_bp.k_radar_ks') }}" class="kr-hub-fbtn" style="text-decoration:none;">{{ _("🎯 Strateji (KS)") }}</a>
+    <a href="{{ url_for('app_bp.k_radar_kp') }}" class="kr-hub-fbtn" style="text-decoration:none;">{{ _("⚙️ Süreç (KP)") }}</a>
+    <a href="{{ url_for('app_bp.k_radar_kpr') }}" class="kr-hub-fbtn" style="text-decoration:none;">{{ _("📋 Proje (KPR)") }}</a>
+    <a href="{{ url_for('app_bp.k_radar_cross') }}" class="kr-hub-fbtn" style="text-decoration:none;">{{ _("🔗 Çapraz") }}</a>
+    <a href="{{ url_for('app_bp.k_radar_risk_page') }}" class="kr-hub-fbtn" style="text-decoration:none;">{{ _("🛡 Risk") }}</a>
+  </div>
+
+  {# ── K-Radar birincil navigasyon şeridi (rapor kartı filtresi) ─────── #}
   <div id="kr-hub-filter" class="kr-hub-nav" style="display:flex; flex-wrap:wrap; gap:6px; padding:6px; background:#f8fafc; border:1px solid #e2e8f0; border-radius:10px; margin-bottom:14px;">
     <button type="button" class="kr-hub-fbtn active" data-group="all">{{ _("Tümü") }}</button>
     <button type="button" class="kr-hub-fbtn" data-group="performans">{{ _("📊 Performans") }}</button>
