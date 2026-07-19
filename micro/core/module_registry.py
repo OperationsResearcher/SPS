@@ -32,6 +32,8 @@ MODULES = [
         "description": _("Süreçler, KPI'lar ve faaliyet takibi"),
     },
     {
+        # Katman mimarisi: KATMAN DIŞI bırakıldı (bilinçli). Kurum kimliği hem
+        # girdi hem yönetim niteliği taşıdığı için /k-plan öneki verilmedi.
         "id": "kurum",
         "name": _("Kurum Paneli"),
         "url": "/organization",
@@ -55,7 +57,9 @@ MODULES = [
     {
         "id": "analiz",
         "name": _("Performans Analitiği"),
-        "url": "/analysis",
+        # Katman mimarisi T4 (2026-07-18): teşhis katmanına taşındı → /k-radar/analysis.
+        # Eski /analysis 307 redirect'le korunur.
+        "url": "/k-radar/analysis",
         "icon": "📊",
         "description": _("Süreç bazlı trend, sağlık skoru ve performans raporları"),
     },
@@ -75,6 +79,10 @@ MODULES = [
         "description": _("Kurumsal raporlama merkezi — süreç, strateji, faaliyet, risk ve denetim raporları"),
     },
     {
+        # ÇİFT /k-report BİLİNÇLİDİR: k_rapor ve raporlar İKİ AYRI PAKET ama Faz 4'te
+        # aynı rapor katmanında (/k-report) birleştiler. İkisi ayrı gating taşır
+        # (@require_module("raporlar") vs "k_rapor"); silinemez. Aynı sayfaya iki
+        # farklı paket izniyle erişim — kasıtlı, erime kalıntısı DEĞİL.
         "id": "raporlar",
         "name": _("Raporlar"),
         "url": "/k-report",

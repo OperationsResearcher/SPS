@@ -5,13 +5,16 @@
 {% block breadcrumb %}{{ mc_breadcrumb() }}{% endblock %}
 
 {% block content %}
+{# Base URL'ler JS'te sonuna <id> eklenerek kullanildigi icin url_for ile tam
+   uretilemez; katman tasimasinda (2026-07-18: /analysis -> /k-radar/analysis)
+   bu 4 satir ELLE guncellenmeli. URL degisirse burasi da degisir. #}
 <div id="analiz-root"
-     data-trend-base="/analysis/api/trend/"
-     data-health-base="/analysis/api/health/"
-     data-forecast-base="/analysis/api/forecast/"
+     data-trend-base="/k-radar/analysis/api/trend/"
+     data-health-base="/k-radar/analysis/api/health/"
+     data-forecast-base="/k-radar/analysis/api/forecast/"
      data-comparison-url="{{ url_for('app_bp.analiz_api_comparison') }}"
      data-anomalies-url="{{ url_for('app_bp.analiz_api_anomalies') }}"
-     data-report-base="/analysis/api/report/"
+     data-report-base="/k-radar/analysis/api/report/"
      style="max-width:1240px; margin:0 auto;">
 
   <div class="mc-page-header" style="margin-bottom:16px;">
