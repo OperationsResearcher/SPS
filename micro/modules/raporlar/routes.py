@@ -11,7 +11,7 @@ from platform_core import app_bp
 
 @app_bp.route("/k-report/all")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_index():
     """Eski rapor merkezi — K-Radar hub'ı ile birleştirildi, yönlendirir.
 

@@ -78,17 +78,12 @@ MODULES = [
         "icon": "📈",
         "description": _("Kurumsal raporlama merkezi — süreç, strateji, faaliyet, risk ve denetim raporları"),
     },
-    {
-        # ÇİFT /k-report BİLİNÇLİDİR: k_rapor ve raporlar İKİ AYRI PAKET ama Faz 4'te
-        # aynı rapor katmanında (/k-report) birleştiler. İkisi ayrı gating taşır
-        # (@require_module("raporlar") vs "k_rapor"); silinemez. Aynı sayfaya iki
-        # farklı paket izniyle erişim — kasıtlı, erime kalıntısı DEĞİL.
-        "id": "raporlar",
-        "name": _("Raporlar"),
-        "url": "/k-report",
-        "icon": "🗂️",
-        "description": _("İleri raporlama merkezi — CFO/CHRO/COO panoları, ESG, OKR, VRIO portföy analizleri"),
-    },
+    # NOT: Eskiden ayrı bir "raporlar" launcher modülü vardı (aynı /k-report'a
+    # giden ikinci kutu). Denetim 2026-07-19 (K1): raporlar/ route'ları
+    # @require_module("raporlar") istiyordu ama "raporlar_modulu" DB'de YOK →
+    # hiçbir kullanıcı geçemiyordu. Dekoratörler "k_rapor"a çevrildi ve bu ölü
+    # id (DB modülü yok, get_accessible_modules üretmiyor, sidebar kullanmıyor)
+    # kaldırıldı. Rapor katmanı tek modül: k_rapor.
     {
         "id": "admin",
         "name": _("Yönetim Paneli"),
@@ -169,7 +164,6 @@ _SYSTEM_CODE_TO_LAUNCHER_ID = {
     "performans_analitigi_modulu": "analiz",
     "k_radar_modulu": "k_radar",
     "k_rapor_modulu": "k_rapor",
-    "raporlar_modulu": "raporlar",
 }
 
 _LAUNCHER_MODULE_IDS = frozenset(m["id"] for m in MODULES)

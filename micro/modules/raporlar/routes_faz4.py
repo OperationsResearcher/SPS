@@ -80,14 +80,14 @@ SEKTOR_CATALOG = [
 
 @app_bp.route("/k-report/sectoral")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_sektorel():
     return render_template("platform/raporlar/sektorel.html", sektorler=SEKTOR_CATALOG)
 
 
 @app_bp.route("/k-report/sectoral/<code>")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_sektorel_detay(code):
     pkg = _load_sektor(code)
     if not pkg:
@@ -100,7 +100,7 @@ def raporlar_sektorel_detay(code):
 
 @app_bp.route("/k-report/api/sectoral/<code>")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_sektorel(code):
     pkg = _load_sektor(code)
     if not pkg:
@@ -112,7 +112,7 @@ def raporlar_api_sektorel(code):
 
 @app_bp.route("/k-report/nlp-query")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_nlp_query():
     return render_template("platform/raporlar/nlp_query.html")
 
@@ -163,14 +163,14 @@ _NLP_PATTERNS = [
 
 @app_bp.route("/k-report/api/nlp-query/patterns")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_nlp_patterns():
     return jsonify({"success": True, "patterns": _NLP_PATTERNS})
 
 
 @app_bp.route("/k-report/api/nlp-query", methods=["GET", "POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_nlp_query():
     """Pattern bazlı + free-form NLP sorgu — tenant filtreli güvenli."""
     tid = _tid_or_none()
@@ -324,7 +324,7 @@ def raporlar_api_nlp_query():
 
 @app_bp.route("/k-report/sektor-benchmark")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_sektor_benchmark():
     return render_template("platform/raporlar/sektor_benchmark.html")
 
@@ -435,7 +435,7 @@ def _sektor_context(tid, tenant, sektor_override: str | None = None):
 
 @app_bp.route("/k-report/api/sektor-benchmark")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_sektor_benchmark():
     tid = _tid_or_none()
     if not tid:
@@ -463,7 +463,7 @@ def raporlar_api_sektor_benchmark():
 
 @app_bp.route("/k-report/api/sektor-benchmark/ai-yorum", methods=["POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 @csrf.exempt
 def raporlar_api_sektor_benchmark_ai():
     """AI yorumu isteğe bağlı — butona basılınca çağrılır."""
@@ -509,7 +509,7 @@ def raporlar_api_sektor_benchmark_ai():
 
 @app_bp.route("/k-report/api/ai-status")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_ai_status():
     """Kullanıcının AI kota durumu — BYOK vs sistem anahtarı."""
     tid = _tid_or_none()

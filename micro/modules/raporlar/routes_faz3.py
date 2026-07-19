@@ -64,14 +64,14 @@ def _pdf_helpers():
 
 @app_bp.route("/k-report/strategic-annual")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_stratejik_yillik():
     return render_template("platform/raporlar/stratejik_yillik.html")
 
 
 @app_bp.route("/k-report/api/strategic-annual/preview")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_stratejik_yillik_preview():
     tid = _tid_or_none()
     if not tid:
@@ -106,7 +106,7 @@ def raporlar_api_stratejik_yillik_preview():
 
 @app_bp.route("/k-report/api/strategic-annual/generate", methods=["GET", "POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_stratejik_yillik_generate():
     from flask import send_file
     import io
@@ -329,14 +329,14 @@ def raporlar_api_stratejik_yillik_generate():
 
 @app_bp.route("/k-report/investor-presentation")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_yatirimci_sunum():
     return render_template("platform/raporlar/yatirimci_sunum.html")
 
 
 @app_bp.route("/k-report/api/investor-presentation/preview")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_yatirimci_sunum_preview():
     tid = _tid_or_none()
     if not tid:
@@ -375,7 +375,7 @@ def raporlar_api_yatirimci_sunum_preview():
 
 @app_bp.route("/k-report/api/investor-presentation/generate", methods=["GET", "POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_yatirimci_sunum_generate():
     from flask import send_file
     import io
@@ -536,14 +536,14 @@ def raporlar_api_yatirimci_sunum_generate():
 
 @app_bp.route("/k-report/esg-report")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_esg_rapor():
     return render_template("platform/raporlar/esg_rapor.html")
 
 
 @app_bp.route("/k-report/api/esg-report/generate", methods=["GET", "POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_esg_rapor_generate():
     from flask import send_file
     from app.models.esg import EsgMetric, EsgMetricValue
@@ -747,14 +747,14 @@ def raporlar_api_esg_rapor_generate():
 
 @app_bp.route("/k-report/audit-package")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_audit_paketi():
     return render_template("platform/raporlar/audit_paketi.html")
 
 
 @app_bp.route("/k-report/api/audit-package/generate", methods=["GET", "POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_audit_paketi_generate():
     from flask import send_file
     from app.models.audit import AuditLog
@@ -904,14 +904,14 @@ def raporlar_api_audit_paketi_generate():
 
 @app_bp.route("/k-report/individual-scorecard-batch")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_bireysel_karne_batch():
     return render_template("platform/raporlar/bireysel_karne_batch.html")
 
 
 @app_bp.route("/k-report/api/individual-scorecard-batch/preview")
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_bireysel_karne_batch_preview():
     tid = _tid_or_none()
     if not tid:
@@ -933,7 +933,7 @@ def raporlar_api_bireysel_karne_batch_preview():
 
 @app_bp.route("/k-report/api/individual-scorecard-batch/generate", methods=["GET", "POST"])
 @login_required
-@require_module("raporlar")
+@require_module("k_rapor")
 def raporlar_api_bireysel_karne_batch_generate():
     from flask import send_file
     import io, zipfile

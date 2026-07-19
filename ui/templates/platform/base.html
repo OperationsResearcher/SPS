@@ -140,6 +140,18 @@
                katmanlamayı yansıtır — girdi/teşhis/rapor ayrı bölümler. #}
             <div class="sidebar-section-label">{{ _("Girdi") }}</div>
 
+            {# Kurum Paneli: route /organization TÜM tenant kullanıcılarına açık
+               (görüntüleme herkese, düzenleme rol ile sınırlı — route docstring).
+               Denetim 2026-07-19: link rol bloğu içindeydi → kurum modülüne sahip
+               standard_user route'a erişebiliyor ama linki göremiyordu. Rol bloğunun
+               DIŞINA, modül koşuluna taşındı (Süreç/Bireysel gibi). #}
+            {% if sidebar_module_ids is none or 'kurum' in sidebar_module_ids %}
+            <a href="{{ url_for('app_bp.kurum') }}" class="sidebar-item {% if 'kurum' in ep %}active{% endif %}">
+                <span class="sidebar-item-icon"><i class="fas fa-building"></i></span>
+                <span class="sidebar-item-text">{{ _("Kurum Paneli") }}</span>
+            </a>
+            {% endif %}
+
             {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] %}
             {% set sp_active = ('sp' in ep or 'ceyreklik' in ep or 'quarterly' in ep or 'scenarios' in ep or 'initiatives' in ep or 'replan' in ep or 'exec_dashboard' in ep or 'xmatrix' in ep or 'blue_ocean' in ep or 'vrio' in ep or 'ai_settings' in ep) and 'admin' not in ep %}
             {% if sidebar_module_ids is none or 'sp' in sidebar_module_ids %}
@@ -147,13 +159,6 @@
                 class="sidebar-item {% if sp_active %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-bullseye"></i></span>
                 <span class="sidebar-item-text">{{ _("Stratejik Planlama") }}</span>
-            </a>
-            {% endif %}
-
-            {% if sidebar_module_ids is none or 'kurum' in sidebar_module_ids %}
-            <a href="{{ url_for('app_bp.kurum') }}" class="sidebar-item {% if 'kurum' in ep %}active{% endif %}">
-                <span class="sidebar-item-icon"><i class="fas fa-building"></i></span>
-                <span class="sidebar-item-text">{{ _("Kurum Paneli") }}</span>
             </a>
             {% endif %}
 
@@ -204,8 +209,12 @@
             {% endif %}
 
             {# K-Radar: tek giriş. Alt araçlar (KS/KP/KPR) hub içinden gezilir —
-               "K-Radar Araçları" ikinci girişi kaldırıldı (dağınıklık denetimi 2026-07-18). #}
-            {% if sidebar_module_ids is none or 'k_radar' in sidebar_module_ids or 'k_rapor' in sidebar_module_ids %}
+               "K-Radar Araçları" ikinci girişi kaldırıldı (dağınıklık denetimi 2026-07-18).
+               ⚠️ K3 (denetim 2026-07-19): link koşulu route gate'iyle HİZALI olmalı.
+               /k-radar route paket_gate=k_radar. Eskiden koşul 'k_radar OR k_rapor'du →
+               Yönetim paketinde (k_rapor var, k_radar yok) link görünüp route engelliyordu.
+               Koşul sadece k_radar'a daraltıldı → link ancak route açıksa görünür. #}
+            {% if sidebar_module_ids is none or 'k_radar' in sidebar_module_ids %}
             <a href="{{ url_for('app_bp.k_radar_hub') }}"
                 class="sidebar-item {% if 'k_radar' in ep and 'k_report' not in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-satellite-dish"></i></span>
@@ -220,7 +229,10 @@
             </a>
             {% endif %}
 
-            {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] and (sidebar_module_ids is none or 'sp' in sidebar_module_ids) %}
+            {# Savaş Odası: route /k-radar/savas-odasi paket_gate=k_radar. Eskiden link
+               koşulu 'sp'ydi (tüm paketlerde) → Başlangıç/Yönetim'de görünüp route
+               engelliyordu. K3: koşul k_radar'a hizalandı. #}
+            {% if role_name in ['tenant_admin', 'executive_manager', 'Admin'] and (sidebar_module_ids is none or 'k_radar' in sidebar_module_ids) %}
             <a href="{{ url_for('app_bp.sp_tv_mode') }}" target="_blank" class="sidebar-item">
                 <span class="sidebar-item-icon"><i class="fas fa-tv"></i></span>
                 <span class="sidebar-item-text">{{ _("Savaş Odası") }}</span>
@@ -318,6 +330,38 @@
                 <span class="sidebar-item-icon"><i class="fas fa-cog"></i></span>
                 <span class="sidebar-item-text">{{ _("Ayarlar") }}</span>
             </a>
+
+            {# ══ GÖZDEN GEÇİRİLECEKLER — yalnız platform Admin ═══════════════════
+               Denetim 2026-07-19: yetim/legacy main.* sayfaları (menüde linki
+               yoktu). Kullanıcı tek tek inceleyecek: hangisi kalsın, hangisi
+               bağlansın, hangisi silinsin? Karar verilince bu bölüm kaldırılacak.
+               🟢 = 200 sağlıklı · 🔴 = 500 kırık (dikkat). safe_url_for: main.*
+               endpoint yoksa patlamaz. #}
+            {% if role_name == 'Admin' %}
+            <div class="sidebar-section-label">🔍 {{ _("Gözden Geçirilecekler") }}</div>
+            {% set gozden = [
+                ('main.ai_chat', '🟢 AI Chat'),
+                ('main.akilli_planlama', '🟢 Akıllı Planlama'),
+                ('main.gorev_aktivite_log', '🟢 Görev Aktivite Log'),
+                ('main.portfolio_summary', '🟢 Portföy Özeti'),
+                ('main.proje_analitik', '🟢 Proje Analitik'),
+                ('main.strategy_kpis', '🟢 Strateji KPIs'),
+                ('main.strategy_matrix', '🟢 Strateji Matris'),
+                ('main.strategy_projects', '🟢 Strateji Projeler'),
+                ('main.help_center', '🟢 Yardım Merkezi'),
+                ('main.admin_deleted_organizations', '🟢 Silinen Kurumlar'),
+                ('main.admin_feedback', '🟢 Geri Bildirim'),
+                ('main.ai_coach_page', '🔴 AI Coach (500)'),
+                ('main.executive_dashboard', '🔴 Yönetici Panosu (500)'),
+                ('main.dokuman_merkezi', '🔴 Doküman Merkezi (500)'),
+            ] %}
+            {% for ep_ad, etiket in gozden %}
+            <a href="{{ safe_url_for(ep_ad) }}" class="sidebar-item" style="font-size:12.5px; opacity:.85;">
+                <span class="sidebar-item-icon"><i class="fas fa-flask"></i></span>
+                <span class="sidebar-item-text">{{ etiket }}</span>
+            </a>
+            {% endfor %}
+            {% endif %}
         </nav>
 
         <!-- Footer: kullanıcı -->
