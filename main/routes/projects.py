@@ -41,54 +41,6 @@ def gorev_yeni(project_id):
     return redirect(url_for('app_bp.project_task_new', project_id=project_id))
 
 
-@main_bp.route('/okr/<int:objective_id>/comment', methods=['POST'])
-@login_required
-def okr_comment(objective_id):
-    """OKR/Hedef yorum ekleme - Hoshin Catchball"""
-    try:
-        data = request.get_json() if request.is_json else request.form
-        comment_text = data.get('comment_text', '').strip()
-        comment_type = data.get('comment_type', 'feedback')
-        
-        if not comment_text:
-            return jsonify({'success': False, 'message': 'Yorum metni boş olamaz'}), 400
-        
-        # AltStrateji kontrolü
-        objective = AltStrateji.query.filter_by(id=objective_id).first_or_404()
-        
-        # Yetki kontrolü - kullanıcı aynı kurumda olmalı
-        if objective.ana_strateji.kurum_id != current_user.kurum_id:
-            return jsonify({'success': False, 'message': 'Yetkisiz erişim'}), 403
-        
-        comment = ObjectiveComment(
-            objective_id=objective_id,
-            user_id=current_user.id,
-            comment_text=comment_text,
-            comment_type=comment_type,
-            status='active'
-        )
-        
-        db.session.add(comment)
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Yorum eklendi',
-            'comment': {
-                'id': comment.id,
-                'comment_text': comment.comment_text,
-                'comment_type': comment.comment_type,
-                'user_name': current_user.first_name or current_user.username,
-                'created_at': comment.created_at.isoformat()
-            }
-        })
-    
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f'OKR comment hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
 @main_bp.route('/api/muda-hunter/analyze/<int:surec_id>', methods=['POST'])
 @login_required
 def muda_analyze(surec_id):
@@ -133,81 +85,6 @@ def muda_efficiency_score():
 # ============================================
 
 # V61.0 - Titan & Zenith Paketi
-@main_bp.route('/deep-work/toggle', methods=['POST'])
-@login_required
-@csrf.exempt
-def deep_work_toggle():
-    """Deep Work oturumu başlat/durdur"""
-    try:
-        data = request.get_json() if request.is_json else request.form
-        action = data.get('action', 'start')  # start veya stop
-        
-        if action == 'start':
-            session = DeepWorkSession(
-                user_id=current_user.id,
-                start_time=datetime.utcnow(),
-                status='active'
-            )
-            db.session.add(session)
-            db.session.commit()
-            return jsonify({'success': True, 'message': 'Deep Work oturumu başlatıldı', 'session_id': session.id})
-        else:
-            # Son aktif oturumu bul ve durdur
-            session = DeepWorkSession.query.filter_by(
-                user_id=current_user.id,
-                status='active'
-            ).order_by(DeepWorkSession.start_time.desc()).first()
-            
-            if session:
-                session.end_time = datetime.utcnow()
-                session.duration_minutes = int((session.end_time - session.start_time).total_seconds() / 60)
-                session.status = 'completed'
-                db.session.commit()
-                return jsonify({'success': True, 'message': 'Deep Work oturumu durduruldu', 'duration': session.duration_minutes})
-            else:
-                return jsonify({'success': False, 'message': 'Aktif oturum bulunamadı'}), 404
-    
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f'Deep Work toggle hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
-
-
-# V63.0 - Transcendence Pack
-@main_bp.route('/game-theory/scenario/<int:scenario_id>/calculate-nash', methods=['POST'])
-@login_required
-def calculate_nash_for_scenario(scenario_id):
-    """Belirli bir senaryo için Nash dengesi hesapla"""
-    try:
-        scenario = GameScenario.query.get_or_404(scenario_id)
-        
-        # Sadece kendi kurumunun senaryosunu hesaplayabilir
-        if scenario.kurum_id != current_user.kurum_id:
-            return jsonify({'error': 'Yetkisiz erişim'}), 403
-        
-        from services.game_theory_service import calculate_nash_equilibrium, get_strategy_recommendation
-        
-        if not scenario.payoffs:
-            return jsonify({'error': 'Kazanç matrisi bulunamadı'}), 400
-        
-        nash_result = calculate_nash_equilibrium(scenario.payoffs)
-        recommendation = get_strategy_recommendation(nash_result)
-        
-        # Sonucu senaryoya kaydet
-        scenario.nash_equilibrium = json.dumps(nash_result)
-        scenario.strategy_recommendation = recommendation
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'nash_result': nash_result,
-            'recommendation': recommendation
-        })
-    except Exception as e:
-        current_app.logger.error(f'Nash dengesi hesaplama hatası: {e}')
-        return jsonify({'error': str(e)}), 500
-
-
 @main_bp.route('/admin/get-organization/<kisa_ad>')
 @login_required
 def admin_get_organization(kisa_ad):

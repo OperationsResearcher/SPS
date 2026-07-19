@@ -24,15 +24,9 @@ from app.models.legacy_bridge import (
     PerformansGostergeVeri, PerformansGostergeVeriAudit, BireyselFaaliyet, SurecFaaliyet, UserActivityLog,
     Deger, EtikKural, KalitePolitikasi,
     MainStrategy, SubStrategy, Process, StrategyProcessMatrix,
-    # Faz 2 Modelleri
-    ObjectiveComment, StrategicPlan, PlanItem, GembaWalk,
-    Competency, UserCompetency, StrategicRisk, MudaFinding,
-    # Faz 3 Modelleri
-    CrisisMode, SafetyCheck, SuccessionPlan, OrgScenario, OrgChange, InfluenceScore, MarketIntel,
-    WellbeingScore, SimulationScenario, DeepWorkSession,
-    Persona, ProductSimulation, SmartContract, DaoProposal, DaoVote, MetaverseDepartment, LegacyKnowledge,
-    # Faz 4 Modelleri
-    Competitor, GameScenario, DoomsdayScenario, YearlyChronicle,
+    # NOT: Faz 2/3/4 mock modelleri (ObjectiveComment, StrategicRisk, GembaWalk,
+    # MudaFinding, MetaverseDepartment... 29 adet) KALDIRILDI (2026-07-19).
+    # Onları kullanan 39 legacy sayfa silindiği için mock üretici de temizlendi.
     # V67 Modelleri
     Activity,
     # Feedback Modülü

@@ -145,24 +145,9 @@ __all__ = [
     'Activity', 'CorporateIdentity'
 ]
 
-# Eksik olan Faz 2/3 modellerini mock olarak ekle (Import hatalarını önlemek için)
-models_to_mock = [
-    'ObjectiveComment', 'StrategicPlan', 'PlanItem', 'GembaWalk',
-    'Competency', 'UserCompetency', 'StrategicRisk', 'MudaFinding',
-    'CrisisMode', 'SafetyCheck', 'SuccessionPlan', 'OrgScenario', 'OrgChange', 
-    'InfluenceScore', 'MarketIntel', 'WellbeingScore', 'SimulationScenario', 
-    'DeepWorkSession', 'Persona', 'ProductSimulation', 'SmartContract', 
-    'DaoProposal', 'DaoVote', 'MetaverseDepartment', 'LegacyKnowledge',
-    'Competitor', 'GameScenario', 'DoomsdayScenario', 'YearlyChronicle'
-]
-
-for model_name in models_to_mock:
-    if model_name not in globals():
-        # Geçici Mock Class OLUŞTUR VE GLOBALS'E ATA
-        mock_class = type(model_name, (db.Model,), {
-            '__tablename__': f'mock_{model_name.lower()}',
-            'id': db.Column(db.Integer, primary_key=True),
-            '__module__': __name__
-        })
-        globals()[model_name] = mock_class
-        __all__.append(model_name)
+# NOT: Eskiden burada 29 "Faz 2/3/4" mock modeli üretiliyordu (ObjectiveComment,
+# StrategicRisk, GembaWalk, MudaFinding, MetaverseDepartment, DoomsdayScenario...).
+# Hepsi `mock_<ad>` tablolu, tek `id` kolonlu sahte modellerdi — gerçek şema yoktu.
+# Onları sorgulayan 39 legacy main.* sayfa hata verip /desktop'a atıyordu (TASK-258).
+# O sayfalar silinince (2026-07-19) bu mock üretici de kaldırıldı; artık hiçbir
+# kod bu isimleri import etmiyor (_common/legacy_extras/legacy_bridge temizlendi).
