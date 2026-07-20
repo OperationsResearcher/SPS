@@ -63,6 +63,7 @@ from micro.modules.surec.helpers import (
     _latest_update_audit_by_kpi_data_ids,
     _parent_options_with_depth,
     _process_for_user,
+    muhur_engeli,
     _user_can_add_activity,
     _user_can_manage_activity,
     _user_display_name,
@@ -456,6 +457,10 @@ def surec_api_update(process_id):
         .filter_by(id=process_id, tenant_id=current_user.tenant_id, is_active=True)
         .first_or_404()
     )
+    # MÜHÜR (K8): mühürlü yılın süreç tanımı değiştirilemez
+    engel = muhur_engeli(p)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     data = request.get_json() or {}
     try:
         p.code = data.get("code", p.code)
@@ -534,6 +539,10 @@ def surec_api_delete(process_id):
     if not can_crud_process_entity(current_user):
         return jsonify({"success": False, "message": _("Süreç silme yetkiniz yok.")}), 403
     p = Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
+    # MÜHÜR (K8): mühürlü yılın süreci silinemez
+    engel = muhur_engeli(p)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     try:
         # Soft-delete cascade: torun süreçleri de pasif yap
         to_delete = [p.id]

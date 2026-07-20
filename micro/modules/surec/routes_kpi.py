@@ -27,6 +27,8 @@ from app.models.process import (
     FavoriteKpi,
 )
 from app.models.core import User, Strategy, Tenant
+from app.models.plan_year import PlanYear
+from app.services.date_sovereign import plan_year_writable, build_sealed_error
 from app.services.plan_year_service import (
     get_plan_year, get_kpi_configs_bulk, get_active_plan_year_for_user, list_plan_years,
     upsert_kpi_year_config,
@@ -63,6 +65,7 @@ from micro.modules.surec.helpers import (
     _latest_update_audit_by_kpi_data_ids,
     _parent_options_with_depth,
     _process_for_user,
+    muhur_engeli,
     _user_can_add_activity,
     _user_can_manage_activity,
     _user_display_name,
@@ -87,6 +90,12 @@ def surec_api_kpi_add():
     try:
         active_py = get_active_plan_year_for_user(current_user)
         kpi_plan_year_id = active_py.id if active_py else p.plan_year_id
+        # MÜHÜR (K8): mühürlü yıla yeni PG eklenemez. Kontrol, PG'nin
+        # YAZILACAĞI yıl üzerinden yapılır (aktif yıl ya da sürecin yılı).
+        if kpi_plan_year_id:
+            _hedef_py = db.session.get(PlanYear, kpi_plan_year_id)
+            if _hedef_py is not None and not plan_year_writable(_hedef_py):
+                return jsonify(build_sealed_error(_hedef_py)), 423
         kpi = ProcessKpi(
             process_id=p.id,
             plan_year_id=kpi_plan_year_id,
@@ -184,6 +193,13 @@ def surec_api_kpi_update(kpi_id):
     proc = _process_for_user(kpi.process_id)
     if not proc or not user_can_crud_pg_and_activity(current_user, proc):
         return jsonify({"success": False, "message": _("PG güncelleme yetkiniz yok.")}), 403
+    # MÜHÜR (K8): mühürlü yılın PG tanımı değiştirilemez.
+    # Bu yol, HASAR-TESPITI §2.1'in "asıl tetikleyici bulgu" dediği noktadır:
+    # hedef/ağırlık burada yazılır. Faz 1 sonrası yazma doğru YIL KOPYASINA
+    # gidiyor; mühür de o kopyanın yılına bakar.
+    engel = muhur_engeli(kpi)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     data = request.get_json() or {}
     try:
         kpi.name = data.get("name", kpi.name)
@@ -244,6 +260,10 @@ def surec_api_kpi_delete(kpi_id):
     proc = _process_for_user(kpi.process_id)
     if not proc or not user_can_crud_pg_and_activity(current_user, proc):
         return jsonify({"success": False, "message": "PG silme yetkiniz yok."}), 403
+    # MÜHÜR (K8): mühürlü yılın PG'si silinemez
+    engel = muhur_engeli(kpi)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     try:
         data = request.get_json(silent=True) or {}
         tenant = current_user.tenant
