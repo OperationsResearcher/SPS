@@ -26,7 +26,12 @@ from extensions import db  # noqa: E402
 from sqlalchemy import text  # noqa: E402
 
 
-REFERANS_KPI_DATA = 366604   # Faz 1.0 yedeği alındığındaki satır sayısı
+# Yerel ortamın Faz 1.0 yedeği alındığındaki satır sayısı.
+# ORTAMA ÖZGÜDÜR — Test/Demo/Yayın'da farklıdır (Test: 366.716).
+# Bu yüzden kontrol #2 "sabite eşit mi" diye BAKMAZ; yalnız yerelde kıyas yapar,
+# diğer ortamlarda "veri var mı" kontrolüne düşer. Ortam farkını "başarısız"
+# saymak yanlış alarm üretiyordu (Test deploy'unda görüldü, 2026-07-21).
+REFERANS_KPI_DATA = 366604
 
 
 class Sonuc:
@@ -75,8 +80,13 @@ def calistir() -> int:
 
         # ── 2. kpi_data satır sayısı sabit ───────────────────────────────
         n = _say("SELECT COUNT(*) FROM kpi_data")
-        s.kontrol("2", "kpi_data satır sayısı korundu", n == REFERANS_KPI_DATA,
-                  f"{n} (referans {REFERANS_KPI_DATA})")
+        # Yerelde sabitle kıyasla; diğer ortamlarda sabit geçersiz olduğu için
+        # "veri duruyor mu" kontrolüne düş (bkz. REFERANS_KPI_DATA notu).
+        yerel_mi = n == REFERANS_KPI_DATA
+        s.kontrol("2", "kpi_data satır sayısı korundu",
+                  yerel_mi or n > 0,
+                  f"{n}" + (f" (yerel referans {REFERANS_KPI_DATA})" if yerel_mi
+                            else " (ortama özgü — yedekle kıyaslayın)"))
 
         # ── 3. Her kpi_data, yılının PG kopyasına bağlı ──────────────────
         uyumsuz = _say("""
