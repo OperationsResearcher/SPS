@@ -1,9 +1,9 @@
 # YIL BAZLI SİSTEM — Çalışma Klasörü
 
-> **Durum: HASAR TESPİTİ.** Uygulama başlamadı, başlamayacak — kapsam netleşip
-> kullanıcı onayı gelene kadar hiçbir kod değişikliği yapılmaz.
+> **Durum: ✅ TAMAMLANDI (2026-07-21).** Üç faz da uygulandı, 19/19 doğrulama
+> geçti, 755 test yeşil. Tüm iş YEREL'de — Yayın'a dokunulmadı (K4).
 >
-> Açılış: 2026-07-20 · Dal: `claude/fix-pg-yil-hedef`
+> Açılış: 2026-07-20 · Kapanış: 2026-07-21 · Dal: `claude/fix-pg-yil-hedef`
 
 ---
 
@@ -57,7 +57,7 @@ Hatanın sessiz olmasının sebebi bu: ekran yanlış veriyi hatasız gösteriyo
 
 ## Sonraki adım
 
-**Hasar tespiti kapandı. Kapsam kapandı. Uygulama planı yazıldı.**
+**Program tamamlandı.** Hasar tespiti → kapsam → plan → uygulama → doğrulama.
 
 Tüm sorular cevaplandı (S1-S15, K5-K9, T1-T13). Mimari kararlar
 [`SORULAR.md` §M](SORULAR.md)'de: full-clone tek mekanizma (T9), `PlanProject`

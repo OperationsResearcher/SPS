@@ -440,9 +440,9 @@ Her faz kendi commit'inde. Hata çıkarsa orada durulur ve rapor edilir.
 | 1.7 `plan_year_enabled` | ✅ | 13/13 kurum · 12 kapı · T8/B+D |
 | 1.8 Seed garantisi (S9) | ✅ | clone ile doğar · 4 ham INSERT arşivlendi |
 | **FAZ 1 KAPANIŞ** | ✅ | **13/13 doğrulama geçti** (2026-07-20) |
-| 2 Mühür | ⏳ | sırada |
-| 3 Yıl akışı + D0 | ⏳ | |
-| Toplu doğrulama | ⏳ | |
+| **2 Mühür** | ✅ | 28 yazma yolu · açma+denetim · T7 arayüz |
+| **3 Yıl akışı + D0** | ✅ | S8 · 74→7 hardcoded · S6 · T8 · D0 (604 gösterge) |
+| **Toplu doğrulama** | ✅ | **19/19 geçti** · 755 test yeşil |
 
 ### Faz 1 kapanış ölçümü (2026-07-20)
 

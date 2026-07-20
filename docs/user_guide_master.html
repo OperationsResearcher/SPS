@@ -1,0 +1,587 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+    <meta charset="UTF-8">
+    <title>Kokpitim — YeniTomofil Kurulum Workbook &amp; Kullanım Kılavuzu</title>
+    <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&family=Outfit:wght@400;500;600;700;800&display=swap');
+        
+        @page {
+            size: A4;
+            margin: 20mm 15mm 20mm 15mm;
+        }
+        
+        @media print {
+            body {
+                background: #ffffff;
+                color: #0f172a;
+            }
+            .page-break {
+                page-break-after: always;
+            }
+            .no-print {
+                display: none;
+            }
+        }
+
+        body {
+            font-family: 'Inter', sans-serif;
+            line-height: 1.6;
+            color: #1e293b;
+            background: #f8fafc;
+            margin: 0;
+            padding: 0;
+        }
+
+        .cover-page {
+            height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            text-align: center;
+            background: linear-gradient(135deg, #0f172a 0%, #1e1b4b 100%);
+            color: #ffffff;
+            padding: 40px;
+            box-sizing: border-box;
+        }
+
+        .cover-logo {
+            font-family: 'Outfit', sans-serif;
+            font-size: 52px;
+            font-weight: 800;
+            letter-spacing: -1px;
+            margin-bottom: 20px;
+            background: linear-gradient(90deg, #38bdf8, #818cf8);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .cover-title {
+            font-family: 'Outfit', sans-serif;
+            font-size: 32px;
+            font-weight: 700;
+            margin-top: 10px;
+            margin-bottom: 10px;
+            color: #ffffff;
+            max-width: 700px;
+        }
+
+        .cover-subtitle {
+            font-size: 16.5px;
+            color: #94a3b8;
+            max-width: 600px;
+            margin-bottom: 50px;
+            line-height: 1.5;
+        }
+
+        .cover-metadata {
+            margin-top: auto;
+            font-size: 14px;
+            color: #64748b;
+            border-top: 1px solid #334155;
+            padding-top: 20px;
+            width: 100%;
+            max-width: 400px;
+        }
+
+        .container {
+            max-width: 900px;
+            margin: 0 auto;
+            padding: 40px 20px;
+            box-sizing: border-box;
+        }
+
+        h1, h2, h3, h4 {
+            font-family: 'Outfit', sans-serif;
+            color: #0f172a;
+        }
+
+        h1 {
+            font-size: 26px;
+            border-bottom: 2px solid #e2e8f0;
+            padding-bottom: 8px;
+            margin-top: 40px;
+            margin-bottom: 20px;
+            page-break-inside: avoid;
+        }
+
+        h2 {
+            font-size: 20px;
+            color: #1e3a8a;
+            margin-top: 30px;
+            margin-bottom: 15px;
+            page-break-inside: avoid;
+        }
+
+        h3 {
+            font-size: 16.5px;
+            color: #2563eb;
+            margin-top: 20px;
+            margin-bottom: 10px;
+            page-break-inside: avoid;
+        }
+
+        p {
+            font-size: 14px;
+            margin-top: 0;
+            margin-bottom: 15px;
+            text-align: justify;
+            color: #334155;
+        }
+
+        .alert-box {
+            background: #eff6ff;
+            border-left: 4px solid #3b82f6;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 0 8px 8px 0;
+            font-size: 13.5px;
+            page-break-inside: avoid;
+        }
+
+        .alert-box-title {
+            font-weight: 700;
+            color: #1d4ed8;
+            margin-bottom: 5px;
+        }
+
+        .screenshot-container {
+            margin: 25px 0;
+            border: 1px solid #cbd5e1;
+            border-radius: 8px;
+            overflow: hidden;
+            background: #ffffff;
+            box-shadow: 0 4px 6px -1px rgb(0 0 0 / 0.05);
+            page-break-inside: avoid;
+            text-align: center;
+        }
+
+        .screenshot {
+            width: 100%;
+            height: auto;
+            display: block;
+        }
+
+        .screenshot-caption {
+            background: #f1f5f9;
+            padding: 10px;
+            font-size: 12px;
+            color: #475569;
+            font-weight: 500;
+            border-top: 1px solid #e2e8f0;
+        }
+
+        table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            font-size: 13px;
+            page-break-inside: avoid;
+        }
+
+        th, td {
+            border: 1px solid #cbd5e1;
+            padding: 8px 10px;
+            text-align: left;
+        }
+
+        th {
+            background: #f1f5f9;
+            color: #0f172a;
+            font-weight: 600;
+        }
+
+        tr:nth-child(even) {
+            background: #f8fafc;
+        }
+
+        .step-list {
+            margin: 15px 0;
+            padding-left: 20px;
+        }
+
+        .step-list li {
+            margin-bottom: 10px;
+            font-size: 13.5px;
+        }
+
+        .step-number {
+            font-weight: 700;
+            color: #2563eb;
+        }
+
+        .workbook-section {
+            background: #faf5ff;
+            border: 1px solid #f3e8ff;
+            border-left: 4px solid #a855f7;
+            padding: 15px;
+            margin: 20px 0;
+            border-radius: 8px;
+            font-size: 13.5px;
+            page-break-inside: avoid;
+        }
+
+        .workbook-title {
+            font-weight: 700;
+            color: #7e22ce;
+            margin-bottom: 5px;
+            font-family: 'Outfit', sans-serif;
+            font-size: 15px;
+        }
+    </style>
+</head>
+<body>
+
+    <!-- 1. KAPAK SAYFASI -->
+    <div class="cover-page page-break">
+        <div class="cover-logo">KOKPITIM</div>
+        <div class="cover-title">YeniTomofil Kurulum Workbook &amp; Master Kullanım Kılavuzu</div>
+        <div class="cover-subtitle">
+            Sıfır Kurum Başlangıcından İtibaren, Detaylı Test Verisi "Tomofil" Referans Alınarak Yeni Bir Kurumun Ekran Ekran İnşa Edilmesi ve İleri Düzey K-Radar Analitiklerinin Yapılandırılması
+        </div>
+        <div class="cover-metadata">
+            <strong>Referans Model:</strong> Tomofil Test Kurumu (36 Strateji, 71 Süreç, 221 Gösterge)<br>
+            <strong>Hedef Kurum:</strong> YeniTomofil (admin@yenitomofil.local)<br>
+            <strong>Versiyon:</strong> 1.0.7 (Sprint 52)<br>
+            <strong>Tarih:</strong> Haziran 2026
+        </div>
+    </div>
+
+    <div class="container">
+        <!-- GİRİŞ -->
+        <h1>Giriş &amp; Workbook Metodolojisi</h1>
+        <p>
+            Bu kılavuz, Kokpitim platformunda **sıfırdan bir yapının nasıl kurulacağını** anlatmak üzere özel bir workbook (uygulama kitabı) formatında tasarlanmıştır. Kılavuz boyunca, sistemde yer alan ve çok detaylı veriler barındıran **"Tomofil"** kurumu referans alınarak, sıfır bir kurum olan **"YeniTomofil"**in adım adım nasıl inşa edileceği ekranlar ve gerçek verilerle açıklanmaktadır.
+        </p>
+
+        <div class="alert-box">
+            <div class="alert-box-title">Otonom Kurulum Kısayolu (Test &amp; Gözlem İçin)</div>
+            Eğer bu kılavuzdaki adımların tamamlanmış halini sistemde canlı olarak incelemek isterseniz, terminal üzerinden <code>.venv\Scripts\python.exe docs/clone_yenitomofil.py</code> komutunu çalıştırabilirsiniz. Bu betik, "Tomofil" kurumunu tüm verileriyle kopyalayarak <strong>"YeniTomofil"</strong> kurumunu ve <code>admin@yenitomofil.local</code> (şifre: <code>YeniTomofil!123</code>) yöneticisini veritabanında otomatik olarak oluşturacaktır.
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- BÖLÜM 1 -->
+        <h1>Bölüm 1: Giriş ve Kullanıcı Yapılandırması</h1>
+        <p>
+            YeniTomofil kurumu sisteme ilk tanımlandığında boş bir organizasyon şemasıyla başlar. İlk adım, yöneticinin giriş yapması ve operasyon ekibini tanımlamasıdır.
+        </p>
+
+        <h2>1.1 Sistem Girişi ve Masaüstü (Launcher)</h2>
+        <p>
+            Tarayıcınızdan <code>http://127.0.0.1:5001/login</code> adresine gidin. YeniTomofil admin e-posta adresi (<code>admin@yenitomofil.local</code>) ve şifrenizle (<code>YeniTomofil!123</code>) giriş yapın. Giriş yapıldığında, sizi sistemdeki modüllere yönlendirecek olan **Masaüstü (Launcher)** karşılayacaktır.
+        </p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/01_login.png" alt="Giriş Ekranı">
+            <div class="screenshot-caption">Görsel 1.1: Sistem Giriş Ekranı</div>
+        </div>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/02_launcher.png" alt="YeniTomofil Masaüstü">
+            <div class="screenshot-caption">Görsel 1.2: YeniTomofil Masaüstü (Launcher)</div>
+        </div>
+
+        <h2>1.2 Kurum Yönetimi (Kurum Bilgileri ve Ayarları)</h2>
+        <p>
+            Kullanıcılar tanımlanmadan önce kurumun <strong>temel kimliği</strong> belirlenir. Sol menüden <strong>Kurum Paneli &rarr; Kurum Ayarları</strong> (<code>/kurum/ayarlar</code>) sayfasını açın. Bu sayfaya yalnızca <strong>Kurum Yöneticisi</strong> ve <strong>Kurum Üst Yönetimi</strong> erişebilir. Kurum Adı, Sektör, Vergi No, Adres, Telefon, E-posta ve Website alanlarını doldurun.
+        </p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/03_kurum_form.png" alt="Kurum Bilgileri Formu">
+            <div class="screenshot-caption">Görsel 1.3: Kurum Bilgileri Formu (Ad, Sektör, Vergi No, İletişim)</div>
+        </div>
+
+        <p>
+            <strong>Logo:</strong> "Logo Yükle" alanından kurum logonuzu (örn. <code>kokpitim-logo.png</code>) seçip yükleyin. <strong>Kurum Modülleri:</strong> stratejik ağırlıklandırma için <strong>K-Vektör</strong> etkinleştirilir; geçmiş yıl takibi gerekmiyorsa <strong>Plan Yılı</strong> kapalı bırakılır. <strong>Kaydet</strong> butonuyla bilgiler saklanır ve başarı bildirimi gösterilir.
+        </p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/04_kurum_kaydedildi.png" alt="Kurum Bilgileri Kaydedildi">
+            <div class="screenshot-caption">Görsel 1.4: Kurum Bilgileri Kaydedildi (logo + K-Vektör etkin)</div>
+        </div>
+
+        <h2>1.3 Kullanıcı Yönetimi ve Rol Yetkilendirme</h2>
+        <p>
+            Süreçleri ve projeleri yönetecek ekibi tanımlamak için sol menüden <strong>Yönetim &rarr; Kullanıcılar</strong> rotasını (<code>/admin/users</code>) takip ediniz. Bu sayfada kullanıcıları listeleyebilir, arama yapabilir, tekil <strong>Kullanıcı Ekle</strong> ile veya <strong>Toplu İçe Aktar</strong> (Excel) ile çok sayıda kullanıcı oluşturabilirsiniz.
+        </p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/05_users_page.png" alt="Kullanıcı Yönetim Paneli">
+            <div class="screenshot-caption">Görsel 1.5: Kullanıcı Yönetim Paneli (Ekle / Toplu İçe Aktar / Örnek Excel)</div>
+        </div>
+
+        <p><strong>Kullanıcı Ekle formu</strong> şu alanları içerir: <strong>Ad</strong>, <strong>Soyad</strong>, <strong>E-posta</strong> (zorunlu, giriş kimliği), <strong>Şifre</strong> (boş bırakılırsa güvenli geçici şifre otomatik üretilir) ve <strong>Rol</strong>.</p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/06_user_form_fields.png" alt="Kullanıcı Formu Alanları">
+            <div class="screenshot-caption">Görsel 1.6: Kullanıcı Ekleme Formu &mdash; Alanlar</div>
+        </div>
+
+        <p><strong>Rol</strong> alanında atayabileceğiniz seçenekler: <strong>Kurum Üst Yönetimi</strong> (stratejik karar + yönetim) ve <strong>Kurum Kullanıcısı</strong> (standart çalışan, okuma ağırlıklı).</p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/07_user_form_role.png" alt="Rol Seçimi">
+            <div class="screenshot-caption">Görsel 1.7: Rol Seçimi &mdash; Kurum Üst Yönetimi / Kurum Kullanıcısı</div>
+        </div>
+
+        <div class="workbook-section">
+            <div class="workbook-title">Workbook Uygulaması: Ekip Tanımlama (2 Üst Yönetim + 10 Kullanıcı)</div>
+            <strong>Senaryo:</strong> YeniTomofil ekibini tanımlayalım.<br>
+            1. <strong>Kurum Üst Yönetimi</strong> olarak iki kişi ekleyin: <code>Selin Demir</code> ve <code>Mert Kaya</code>.<br>
+            2. İlk iki <strong>Kurum Kullanıcısı</strong>nı form ile ekleyin (<code>Ahmet Yılmaz</code>, <code>Ayşe Şahin</code>).<br>
+            3. Kalan 8 kullanıcıyı <strong>Toplu İçe Aktar</strong> ile ekleyin: <strong>Örnek Excel İndir</strong> şablonunu doldurup (Ad, Soyad, E-posta, Şifre) yükleyin; sistem her satırı otomatik <code>Kurum Kullanıcısı</code> rolüyle ekler.
+        </div>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/08_std_user_form.png" alt="Kullanıcı Ekleme (Form)">
+            <div class="screenshot-caption">Görsel 1.8: Kurum Kullanıcısı &mdash; Form ile Ekleme</div>
+        </div>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/09_bulk_import.png" alt="Toplu İçe Aktarma">
+            <div class="screenshot-caption">Görsel 1.9: Toplu İçe Aktarma (Excel) ile Kullanıcı Ekleme</div>
+        </div>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/10_users_table_full.png" alt="Kullanıcı Tablosu">
+            <div class="screenshot-caption">Görsel 1.10: Tüm Kullanıcılar &mdash; 1 Kurum Yöneticisi + 2 Üst Yönetim + 10 Kullanıcı</div>
+        </div>
+
+        <h2>1.4 Farklı Rollerle Giriş ve Kullanıcı Ayarları</h2>
+        <p>
+            Oluşturulan kullanıcıların hesaplarıyla giriş yapıldığında her rol farklı menü ve ayarlara erişir. <strong>Kurum Üst Yönetimi</strong> stratejik planlama, kurum ayarları (E-posta/SMTP) ve kullanıcı yönetimine erişebilirken, <strong>Kurum Kullanıcısı</strong> yalnızca kendisine atanan işleri görür ve kişisel ayarlarını değiştirebilir.
+        </p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/11_exec_menu.png" alt="Üst Yönetim Menüsü">
+            <div class="screenshot-caption">Görsel 1.11: Kurum Üst Yönetimi &mdash; Menü (Stratejik Planlama, Kullanıcılar görünür)</div>
+        </div>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/12_exec_eposta_ayarlari.png" alt="E-posta Ayarları">
+            <div class="screenshot-caption">Görsel 1.12: Kurum Ayarları &mdash; E-posta (SMTP) Yapılandırması (Üst Yönetim)</div>
+        </div>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/13_user_menu.png" alt="Kullanıcı Menüsü">
+            <div class="screenshot-caption">Görsel 1.13: Kurum Kullanıcısı &mdash; Kısıtlı Menü (Strateji/Kullanıcılar gizli)</div>
+        </div>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/14_user_hesap_ayarlari.png" alt="Hesap Ayarları">
+            <div class="screenshot-caption">Görsel 1.14: Kurum Kullanıcısı &mdash; Hesap Ayarları (dil, saat dilimi, tema, bildirim)</div>
+        </div>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/15_profil.png" alt="Profil">
+            <div class="screenshot-caption">Görsel 1.15: Kurum Kullanıcısı &mdash; Profil (ad/soyad, şifre, 2FA)</div>
+        </div>
+
+        <div class="page-break"></div>
+
+        <!-- BÖLÜM 2 -->
+        <h1>Bölüm 2: Sıfırdan Stratejik Planlama (SP)</h1>
+        <p>
+            Organizasyon yapısı kurulduktan sonra, kurumun yönünü belirlemek üzere stratejik amaçlar tanımlanır. Bu işlemler `/sp` rotasındaki **Stratejik Planlama** modülünden yürütülür.
+        </p>
+
+        <h2>2.1 Misyon ve Vizyon Tanımlama</h2>
+        <p>
+            Stratejik planlama sayfasını ilk açtığınızda Vizyon ve Misyon kartları boş gelecektir. Düzenleme kalem simgesine tıklayarak kurum vizyonunu giriniz.
+        </p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/14_sp_dashboard.png" alt="Stratejik Planlama Sayfası">
+            <div class="screenshot-caption">Görsel 2.1: Stratejik Planlama Paneli - Vizyon, Misyon ve Stratejiler</div>
+        </div>
+
+        <div class="workbook-section">
+            <div class="workbook-title">Workbook Uygulaması: Stratejik Vizyon ve Hedefler</div>
+            <strong>Senaryo:</strong> Tomofil'in stratejik yapısını YeniTomofil'e aktaralım.<br>
+            1. Vizyon alanını düzenleyin ve şunu yazın: <code>"Sürdürülebilir mobilite çözümlerinde lider, en yüksek müşteri memnuniyetine sahip teknolojik otomotiv markası olmak."</code><br>
+            2. <strong>"Ana Strateji Ekle"</strong> butonuna basın. Başlık: <code>"Teknoloji ve Ürün Geliştirme"</code>, Kod: <code>"STR-TECH"</code> olarak girin.<br>
+            3. Oluşturduğunuz ana stratejinin yanındaki artı (+) butonuna basarak bir Alt Strateji tanımlayın. Başlık: <code>"Elektrikli Araç Altyapısının Kurulması"</code>, Kod: <code>"SUB-EV"</code> yazıp kaydedin.
+        </div>
+
+        <h2>2.2 Mavi Okyanus ve SWOT/TOWS Entegrasyonu</h2>
+        <p>
+            Yatay menüden **Mavi Okyanus** sekmesine geçerek YeniTuval oluşturabilir ve rekabet faktörlerini ekleyebilirsiniz. SWOT/TOWS sekmesinden ise kurumun güçlü yönleri ile fırsatlarını stratejilerle eşleyebilirsiniz.
+        </p>
+
+        <div class="page-break"></div>
+
+        <!-- BÖLÜM 3 -->
+        <h1>Bölüm 3: Süreç Yönetimi ve Performans Göstergeleri (PG/KPI)</h1>
+        <p>
+            Stratejik hedeflere ulaşmak için operasyonel süreçlerin oluşturulması ve bu süreçleri ölçecek göstergelerin (PG) stratejilerle ilişkilendirilmesi gerekir.
+        </p>
+
+        <h2>3.1 Süreçlerin Oluşturulması ve Stratejiyle İlişkilendirilmesi</h2>
+        <p>
+            Sol menüden **Süreç Yönetimi** (`/process`) sayfasına geçiş yapınız.
+        </p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/15_process_list.png" alt="Süreç Karneleri">
+            <div class="screenshot-caption">Görsel 3.1: Süreç Yönetim Arayüzü ve Süreç Karneleri</div>
+        </div>
+
+        <div class="workbook-section">
+            <div class="workbook-title">Workbook Uygulaması: Süreç ve Performans Göstergesi (PG) Entegrasyonu</div>
+            <strong>Senaryo:</strong> Tomofil modelindeki üretim sürecini ve ilgili performans göstergesini kuralım.<br>
+            1. Süreç sayfasında <strong>"Yeni Süreç"</strong> butonuna basın. Süreç Adı: <code>"Elektrikli Motor Montaj Süreci"</code>, Kod: <code>"PRC-MON"</code> yazın. Sorumlu olarak <code>Ahmet Yılmaz</code>'ı seçip kaydedin.<br>
+            2. Süreç listesinden montaj sürecinin satırındaki <strong>"Karne"</strong> bağlantısına tıklayın.<br>
+            3. Karne sayfasında <strong>"Gösterge (PG) Ekle"</strong> butonuna basın.<br>
+            4. Başlık: <code>"Hatalı Montaj Oranı"</code>, Kod: <code>"KPI-MON-ERR"</code>, Birim: <code>"%"</code>, Yıllık Hedef: <code>"0.5"</code> yazın.<br>
+            5. Hizalama (Alignment) alanından 2. bölümde oluşturduğumuz <code>"SUB-EV - Elektrikli Araç Altyapısının Kurulması"</code> alt stratejisini seçip kaydedin.
+        </div>
+
+        <h2>3.2 Performans Veri Girişi (PGV), Düzenleme ve Silme</h2>
+        <p>
+            Dönem sonlarında gerçekleşen performans verilerini girmek için göstergenin yanındaki <strong>"Veri Gir"</strong> butonuna basılarak ilgili ay/çeyrek değeri kaydedilir. Hatalı girişlerde, verinin yanındaki düzenleme ikonuyla revizyon yapılabilir. Silme işlemi ise soft-delete güvencesiyle veritabanında `is_deleted=True` olarak işaretlenir.
+        </p>
+
+        <div class="page-break"></div>
+
+        <!-- BÖLÜM 4 -->
+        <h1>Bölüm 4: Proje ve Görev (Task) Yönetimi</h1>
+        <p>
+            Strateji ve süreçleri destekleyen projelerin ve alt görevlerinin planlanması ve izlenmesidir.
+        </p>
+
+        <div class="workbook-section">
+            <div class="workbook-title">Workbook Uygulaması: Proje ve Görev Tanımlama</div>
+            <strong>Senaryo:</strong> Montaj hattındaki hataları azaltmak için bir proje açıp görev tanımlayalım.<br>
+            1. Sol menüden <strong>Proje Yönetimi</strong> sekmesini açın ve <strong>"Yeni Proje"</strong>ye tıklayın.<br>
+            2. Proje Adı: <code>"Montaj Hattı Kalibrasyon Projesi"</code> yazıp kaydedin.<br>
+            3. Oluşan projenin detayına giderek <strong>"Görev Ekle"</strong> butonuna basın.<br>
+            4. Başlık: <code>"Hassas Tork Aletlerinin Kalibrasyonu"</code> yazıp, görev durumunu <code>"Çalışılıyor"</code> olarak belirleyip kaydedin.
+        </div>
+
+        <h2>4.1 Gantt Şeması ve RAID Günlüğü</h2>
+        <p>
+            Görevlerin birbirine olan bağımlılıkları Gantt şeması üzerinden sürükle-bırak yöntemiyle hizalanır. Proje riskleri ve engelleri ise **RAID Günlüğü** (Riskler, Varsayımlar, Sorunlar, Bağımlılıklar) alanına eklenerek projenin genel sağlık skoru dinamik olarak güncellenir.
+        </p>
+
+        <div class="page-break"></div>
+
+        <!-- BÖLÜM 5 -->
+        <h1>Bölüm 5: K-Radar ve İleri Düzey Analitik</h1>
+        <p>
+            Sistemde toplanan tüm stratejik, operasyonel ve finansal veriler, karar destek mekanizması olan **K-Radar ve K-Analiz** altyapısında konsolide edilir.
+        </p>
+
+        <div class="screenshot-container">
+            <img class="screenshot" src="../static/img/kullanim_kilavuzu/17_kradar_main.png" alt="K-Radar Paneli">
+            <div class="screenshot-caption">Görsel 5.1: YeniTomofil K-Radar Analitik Dashboard Görünümü</div>
+        </div>
+
+        <h2>5.1 Karar Destek Modülleri (K-Analiz) ve Yapay Zeka Koçluğu</h2>
+        <p>
+            K-Analiz sekmesi altında, üst düzey yöneticiler için özel olarak tasarlanmış 3 adet yapay zeka direktör paneli yer alır:
+        </p>
+        <table>
+            <thead>
+                <tr>
+                    <th>Yapay Zeka Paneli</th>
+                    <th>Analiz Derinliği</th>
+                    <th>Kurumsal Fayda</th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td><strong>AI CFO (Finans)</strong></td>
+                    <td>Bütçe gerçekleşme oranları, proje maliyet sapmaları ve ROI (Yatırımın Geri Dönüşü) tahminleri.</td>
+                    <td>Bütçe aşım risklerinin çeyrek öncesinden tespit edilmesi.</td>
+                </tr>
+                <tr>
+                    <td><strong>AI COO (Operasyon)</strong></td>
+                    <td>Süreç darboğaz analizleri, adam/gün verimlilikleri, görev tamamlama hızları.</td>
+                    <td>Operasyonel gecikmelere yol açan tıkanıklık noktalarının bulunması.</td>
+                </tr>
+                <tr>
+                    <td><strong>AI CHRO (İK &amp; Yetkinlik)</strong></td>
+                    <td>wellbeing (esenlik) endeksleri, çalışan yetkinlik haritaları, eğitim gereksinimleri.</td>
+                    <td>Çalışan motivasyonu ve organizasyonel gelişim planlaması.</td>
+                </tr>
+            </tbody>
+        </table>
+
+        <h2>5.2 Anomali Tespiti ve Erken Uyarı</h2>
+        <p>
+            Makine öğrenmesi modelleri, YeniTomofil'e girilen verilerdeki ani sapmaları (anomali) denetler. Örneğin, "Hatalı Montaj Oranı" göstergesi beklenmeyen bir yükseliş trendine girdiğinde, sistem bunu otomatik algılar ve hedeften sapma gerçekleşmeden önce **Erken Uyarı (Early Warning)** uyarısı yayınlar.
+        </p>
+
+        <h2>5.3 Sankey Hizalama ve K-Vektör</h2>
+        <p>
+            **Sankey Diyagramı**, YeniTomofil'in stratejik amaçlarından projelerine akan kaynak ve faaliyet yoğunluğunu gösterir. **K-Vektör** ise projelerin stratejilere hizmet etme doğrultusunu (Hizalama) vektörel olarak hesaplayıp odak sapmalarını raporlar.
+        </p>
+
+        <div class="page-break"></div>
+
+        <!-- BÖLÜM 6 -->
+        <h1>Bölüm 6: K-Radar Bileşen Kartları İşlevleri</h1>
+        <p>
+            K-Radar ana sayfasındaki tüm bileşen kartları ve işlevleri aşağıda teker teker detaylandırılmıştır:
+        </p>
+
+        <h3>1. Süreç Sağlık Skoru Kartı</h3>
+        <p>
+            Süreçlerin genel durumunu (Yeşil/Sarı/Kırmızı) ve hedeften sapan PG sayılarını gösterir. Eğer bir süreçteki göstergelerin %30'undan fazlası Kırmızı seviyede ise sürecin sağlık durumu otomatik olarak "Kritik" olarak işaretlenir.
+        </p>
+
+        <h3>2. Stratejik Hizalama Endeksi (K-Vektör) Kartı</h3>
+        <p>
+            Aktif projelerin, belirlenen alt stratejilere olan geometrik izdüşümünü (hizalanmasını) hesaplar. Hedef %85 ve üzeri hizalanmadır. %60'ın altındaki skorlar, kaynakların strateji dışı projelere harcandığını gösterir.
+        </p>
+
+        <h3>3. Risk Matrisi (Heatmap) Kartı</h3>
+        <p>
+            Projelerden ve departmanlardan bildirilen RAID risk verilerini 5x5'lik kurumsal risk matrisine yerleştirir. Kırmızı bölgedeki (Yüksek olasılık - Yüksek etki) riskler için otomatik aksiyon planı tetiklenir.
+        </p>
+
+        <h3>4. Bütçe ve EVM (Kazanılmış Değer) Kartı</h3>
+        <p>
+            Projelerin planlanan bütçesi ile gerçekleşen maliyetini (Actual Cost) ve kazanılmış değerini (Earned Value) karşılaştırarak bütçe sapma endeksini (CPI) ve zaman sapma endeksini (SPI) hesaplar.
+        </p>
+
+        <h3>5. Darboğaz ve Verimlilik Kartı</h3>
+        <p>
+            Süreç adımlarındaki imza/onay bekleme sürelerini analiz ederek süreçlerin akış hızını hesaplar. Tıkanıklık yaşanan onay aşamalarını kırmızı renkle işaretler.
+        </p>
+
+        <h3>6. Esenlik (Wellbeing) Kartı</h3>
+        <p>
+            Kurum genelindeki anketlerden gelen wellbeing (esenlik) verilerini anonim olarak konsolide ederek departman bazlı kurumsal esenlik skorunu raporlar.
+        </p>
+
+        <div class="page-break"></div>
+
+        <!-- BÖLÜM 7 -->
+        <h1>Bölüm 7: Yönetici Araçları ve Hata Kontrolü</h1>
+        <p>
+            Platform genel yöneticilerinin sistemi yönetmek ve kararlılığı test etmek için kullandığı gelişmiş sistem yönetimi araçlarıdır.
+        </p>
+
+        <h2>7.1 Yedekleme ve Geri Yükleme Yönetimi</h2>
+        <p>
+            Yedekleme bölümü (`/admin/araclar/yedekleme`) üzerinden anlık tam veritabanı yedeği (.dump) ve kod arşivini indirebilir, şifreli onay mekanizmasıyla geri yükleme yapabilirsiniz.
+        </p>
+
+        <h2>7.2 Otonom Görsel Hata Kontrolü ve Canlı İzleme</h2>
+        <p>
+            Hata Kontrolü modülü (`/admin/araclar/hata-kontrolu`), sistemdeki sayfaların kararlılığını Playwright ile test eder.
+        </p>
+
+        <div class="workbook-section">
+            <div class="workbook-title">Yeni Özellik: Canlı İzleme Nasıl Kullanılır?</div>
+            1. Görsel 7.2'de görünen <strong>"Tarayıcıyı Göster (Canlı İzle)"</strong> onay kutusunu işaretleyin.<br>
+            2. <strong>"Taramayı Başlat"</strong> veya <strong>"Senaryoları Çalıştır"</strong> butonuna basın.<br>
+            3. Ekranda otomatik olarak açılan tarayıcı penceresinde, sistemin <code>admin@yenitomofil.local</code> kullanıcısıyla login olduğunu, formları doldurduğunu ve modüller arasında gezindiğini canlı olarak izleyebilirsiniz.
+        </div>
+    </div>
+
+</body>
+</html>
