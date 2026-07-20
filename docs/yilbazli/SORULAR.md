@@ -293,3 +293,70 @@ Bugün iki mekanizma bir arada (full-clone `plan_year_id` + override `*_year_con
 ve iki proje sistemi var. Doğru hedef mimariyi Claude önerecek, kullanıcı onaylayacak.
 
 Bu, uygulama planının **ilk maddesi**: mimari karar belgesi.
+
+---
+
+## I. TASARIM KARARLARI — 2026-07-20 (Claude'un soruları, kullanıcı cevapları)
+
+> Mimari belgeden önce netleştirilen 6 nokta. Tümü onaylandı.
+
+### T1 — Gecikmeli veri: TOLERANS YOK
+Kapalı yıla ait unutulmuş veri için **tolerans süresi yok**. Tek yol: kurum üst
+yönetimi **mührü açar**, veri girilir, yıl tekrar kapatılır.
+
+K8'in mutlaklığı korunur. Denetim izi (T13) kim/ne zaman/neden sorusunu cevaplar.
+
+### T2 — Yıl devri: HER ŞEY kopyalanır
+Yeni yıl açılınca **hedefler dahil her şey** önceki yıldan kopyalanır — süreçler,
+PG'ler, stratejiler, hedef değerleri, ağırlıklar.
+
+Gerekirse kullanıcı değiştirir. Sıfırdan yazmaz.
+
+### T3 — Yıl-agnostik varlıklar: gerçek `plan_year_id` alacak
+S12'nin uygulaması: Blue Ocean, VRIO, Süreç-Strateji bağı vb. varlıklara **gerçek
+`plan_year_id` verilir**.
+
+- **İlk göçte:** mevcut kayıt **tüm yıllara kopyalanır**
+- **Sonrası:** normal yıl bazlı davranır
+
+> Böylece S12 ("her yıla yaz") ile K8 (kapalı yıl korumalı) **çakışmaz** —
+> 2026'da yapılan düzenleme kapalı 2024'e sızmaz.
+
+### T4 — Plan yılı başlangıcı: kurumun ilk verisi
+Her kurum için plan yılı zinciri, **o kurumun ilk verisinin yılından** başlar.
+Sistem geneli 2020'den başlar (K6) ama kuruma boş yıllar üretilmez.
+
+Yeni kurum → 2026'dan başlar (K5).
+
+### T5 — Migration kapsamı: TÜM tenant'lar, klonlar dahil
+4 Tomofil klonu (tenant 58/60/61 + 27) migration'a **dahil**.
+`kpi_data` 366.806 satırın %98'i bunlarda.
+
+> Kullanıcı: *"hepsini yapalım, gerekirse uzun sürsün"*
+
+Migration performansı değil, **bütünlük** önceliklidir.
+
+### T6 — Uygulama sırası: model → mühür → yıl akışı
+
+| # | Faz | Gerekçe |
+|---|---|---|
+| 1 | **Model + migration** | Temel; olmadan diğerleri yamalı kalır |
+| 2 | **Mühür** (kilit + açma + denetim) | Veri güvenliği |
+| 3 | **Yıl akışı** (`get_view_year` yayılımı, 72 hardcoded nokta, frontend) | Kullanıcı doğru veriyi görür |
+
+---
+
+## J. SONRAKİ ADIM
+
+Tüm sorular kapandı (S1-S15 + T1-T6). Sıradaki iş: **mimari karar belgesi**
+(`MIMARI-KARAR.md`) — S4'ün cevabı diğer her şeyi belirlediği için önce o yazılır:
+
+- Hedef mekanizma: clone / override / hibrit → **tek yerde yıl yönetimi** (K-S4)
+- İki proje sisteminin birleştirilmesi (S3)
+- 2020-2026 plan yılı zinciri üretimi + mevcut verinin dağıtımı (S10, S11, T4)
+- Mühür mimarisi: `plan_year_writable_required` + `date_sovereign` sinyali +
+  denetim tablosu + gerekçe alanı (S13, S15, T1)
+- Migration kapsamı ve sırası (S2, T5, T6)
+
+> **Kullanıcı ek istekler bildirecek — migration kapsamı genişleyebilir (S2).**
+> Mimari belge, o istekler alındıktan sonra yazılacak.
