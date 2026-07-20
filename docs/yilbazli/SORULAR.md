@@ -418,3 +418,57 @@ sebebi bu görünmezlik.
 
 **İlke:** Yönetici Paneli **görür**, Dönemler sayfası **yönetir**.
 İzleme/eylem ayrımı korunur.
+
+---
+
+## L. SÜREÇ KARNESİ — ÇİFT YIL SEÇİCİ (T8, 2026-07-20)
+
+> Kullanıcı: *"Süreç Karnesinde iki tane yıl var, bunlar ne işe yarıyor?"*
+> → Tespit yapıldı, karar verildi.
+
+### Tespit — iki seçici, tek işlev
+
+| | Üstteki (Döküman No altı) | PK04 kartındaki |
+|---|---|---|
+| id | `#year-select` | `#pg-karne-yil-select` |
+| Kaynak | `karne.html:100` | `karne.html:294` |
+| Etiket | "Yıl:" | "Yıl" |
+| Aria | *"Rapor yılı"* | *"Performans göstergeleri rapor yılı"* |
+| Kapsam | **Sayfanın tamamı** | Sadece PG tablosu |
+| Yıl listesi | `plan_years_for_karne` — **gerçek plan yılları**, durum işaretli (`✓` kapalı, `●` taslak) | `range(current_year+1, current_year-5)` — **hesaplanmış** |
+
+**Üstteki değişince** (`surec.js:2933`):
+1. `POST /plan-years/set-active` → **oturumun aktif yılını** değiştirir (`sp_active_year`)
+2. Sürecin o yıldaki klonuna gider (`resolve_for_year`)
+3. Karne yeniden yüklenir
+
+**İkisi çift yönlü bağlı:**
+- `surec.js:3138` — PK04 değişince `yearSelect.value` da güncelleniyor
+- `surec.js:205` `syncPgKarneYilFromBanner()` — üstten PK04'e senkron
+
+### Üç sorun
+
+| # | Sorun |
+|---|---|
+| **S-1** | **Gereksiz ikilik** — aynı değeri gösteren, birbirini güncelleyen iki kutu. Kullanıcı hangisini kullanacağını bilemiyor |
+| **S-2** | **Yıl listeleri farklı üretiliyor** — PK04 plan yıllarını bilmiyor. KMF'de 2020-2026 plan yılı var ama PK04 `2027…2022` gösteriyor: **2020-2021 yok, olmayan 2027 var** |
+| **S-3** | Üstteki de `plan_year_enabled` flag'ine bağlı; kapalıysa hesaplanmış listeye düşüyor (`karne.html:108-110`) — **K5 ile bu dal ölecek** |
+
+### T8 — Karar (kullanıcı onayı)
+
+> *"Sadece bir tane olsun, başlığı da **Plan Yılı** olsun, üstteki kalsın,
+> o değişince her şey değişsin."*
+
+| # | İş |
+|---|---|
+| A | **PK04'teki seçici kaldırılacak** (`karne.html:293-298`) — kendi işlevi yok, üsttekinin aynası |
+| B | Üstteki kalacak, etiketi **"Plan Yılı"** olacak (`karne.html:99`) |
+| C | Senkronizasyon kodu temizlenecek — `surec.js:205` `syncPgKarneYilFromBanner()`, `surec.js:3138` listener |
+| D | Yıl listesi **her zaman gerçek plan yıllarından** gelecek; hesaplanmış `range(...)` dalı silinecek (K5 ile flag zaten kalkıyor) |
+| E | `.po` güncellenecek — yeni msgid "Plan Yılı" |
+
+**İlke doğrulandı:** Yıl **tek yerden** seçilir, değişince **her şey** ona göre
+gelir. Bu, yıl bazlı programın ana ilkesinin karne sayfasındaki karşılığıdır.
+
+> Not: Aynı desen başka sayfalarda da olabilir — çoklu yıl seçici taraması
+> uygulama fazında yapılacak.
