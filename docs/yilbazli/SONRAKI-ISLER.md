@@ -227,13 +227,34 @@ açıp kaydeder → **0 verisi kalıcı olarak silinir.**
 kademe kullanmak zorunda kalmadığı için `"-"` yazmış. 0 eklenince bu desen
 6 kademeye yayılacak; boş slot semantiği netleştirilmeli.
 
-### Açık soru
-0 puanın anlamı ne — **"puan elde edilemedi"** (veri var, performans sıfır) mı,
-yoksa **"ölçülemedi"** (veri yok) mu? İkisi farklı şeyler; renk, ortalama
-hesabı ve `None` ayrımı buna göre kurgulanmalı.
+### ✅ Semantik karar (kullanıcı, 2026-07-20)
 
-Şu an `None` = "hesaplanamadı". 0 eklenince `0` ve `None` ayrımı **her okuma
-noktasında** korunmalı (#10, #11 bu yüzden var).
+**İki durum kesin olarak ayrılır:**
+
+| Değer | Anlam | Koşul | Ortalama |
+|---|---|---|---|
+| **`0`** | **Puan elde edilemedi** | Veri **var**, ama beklenen değere ulaşılmamış — PGV 1 puanlık aralığın da altında | ✅ **Katılır** |
+| **`None`** | **Ölçülmedi** | Hiç veri girilmemiş | ❌ Katılmaz |
+
+> Kullanıcı ifadesi: *"Veri var fakat beklenen değeri karşılamamış, 1 puandan
+> düşük PGV girilmiş — o zaman veri var, performans sıfır, ortalamaya katılır.
+> Ama gerçekten hiç veri girilmediyse: ölçülmedi."*
+
+### Bu kararın uygulamaya etkisi
+
+1. **`0` ve `None` ayrımı her okuma noktasında korunmalı** — bu yüzden #10 ve
+   #11'deki falsy-0 hataları (`pg.basari_puani ?`, `or 0`) zorunlu düzeltme.
+   `0` bir değerdir, yokluk değildir.
+2. **Fallback mantığı (#6):** Değer tanımlı en düşük aralığın da altına düşerse
+   `return 1` **yanlış** — 0 dönmeli. Bugün 1'e sıkıştırıyor.
+3. **Ortalama hesabı:** `0` toplama dahil edilir ve bölene sayılır; `None`
+   ikisine de girmez. Mevcut `micro/modules/bireysel/routes.py:620`
+   (`is not None`) **doğru desen** — diğer noktalar buna hizalanmalı.
+4. **Renk:** `0` için ayrı kademe gerekir (#8). "Ölçülmedi" ise renksiz/nötr
+   kalmalı — ikisi görsel olarak **ayırt edilebilmeli**.
+5. **`v2/routes.py:142`** `total_score += (k.basari_puani or 0)` — `None`'ları
+   0 sayıyor, yani "ölçülmedi"yi "performans sıfır" gibi işliyor. Karar gereği
+   **hatalı**, düzeltilecek.
 
 ---
 
