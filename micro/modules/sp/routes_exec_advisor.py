@@ -34,10 +34,17 @@ def sp_exec_dashboard():
     from app.services.plan_year_service import list_plan_years, get_active_plan_year_for_user
     plan_years = list_plan_years(current_user.tenant_id) if current_user.tenant_id else []
     active_py = get_active_plan_year_for_user(current_user)
+    # T7/C: Yönetici Paneli mühür durumunu GÖRÜR ama YÖNETMEZ.
+    # İzleme/eylem ayrımı: yönetim Plan Dönemleri sayfasındadır.
+    muhursuz_yillar = [
+        py.year for py in plan_years
+        if py.status not in ("closed", "archived") and py.year < (active_py.year if active_py else 0)
+    ]
     return render_template(
         "platform/sp/exec_dashboard.html",
         plan_years=plan_years,
         active_year=(active_py.year if active_py else None),
+        muhursuz_yillar=sorted(muhursuz_yillar, reverse=True),
     )
 
 

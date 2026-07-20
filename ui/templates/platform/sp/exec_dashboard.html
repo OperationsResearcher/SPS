@@ -16,6 +16,26 @@
      data-snapshot-url="{{ url_for('app_bp.sp_api_exec_snapshot') }}"
      data-pivot-url="{{ url_for('app_bp.sp_api_ai_pivot') }}">
 
+  {# ── T7/C: Mühür durumu göstergesi — GÖRÜR ama YÖNETMEZ ──────────────────
+     Geçmiş yıllar mühürlenmemişse hatırlatır; eylem Plan Dönemleri'nde. #}
+  {% if muhursuz_yillar %}
+  <div class="no-print" style="margin-bottom:14px; border-radius:12px; border:1px solid #fde68a; border-left:4px solid #f59e0b; background:#fffbeb;">
+    <div style="display:flex; align-items:center; gap:12px; padding:12px 18px; flex-wrap:wrap;">
+      <span style="flex:0 0 auto; width:30px; height:30px; border-radius:9px; background:#f59e0b; color:#fff; display:flex; align-items:center; justify-content:center;">
+        <i class="fas fa-lock-open"></i>
+      </span>
+      <div style="flex:1; min-width:200px; font-size:13.5px; color:#78350f;">
+        <strong>{{ muhursuz_yillar|join(', ') }}</strong>
+        {{ _("dönemi henüz mühürlenmedi.") }}
+        <span style="color:#92400e;">{{ _("Mühürlenmemiş dönemlere veri girişi açık kalır.") }}</span>
+      </div>
+      <a href="{{ url_for('app_bp.sp_donemler') }}" class="mc-btn mc-btn-sm mc-btn-secondary">
+        {{ _("Dönemleri Yönet") }} <i class="fas fa-arrow-right" style="margin-left:4px;"></i>
+      </a>
+    </div>
+  </div>
+  {% endif %}
+
   {# ── Inline AI Yönetici Özeti (tenant geneli) ── #}
   <div id="ai-ozet-serit" data-card-code="sp_exec_dashboard.ai_yonetici_ozeti" data-ozet-url="{{ url_for('app_bp.sp_api_exec_ai_ozet') }}" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
     <div style="display:flex; align-items:flex-start; gap:12px; padding:13px 18px;">

@@ -40,23 +40,132 @@
     });
   });
 
+  // ── MÜHÜRLEME (T7/E) ──────────────────────────────────────────────────────
+  // Onay metni yeniden yazıldı. Eski hali iki söz veriyordu, ikisi de yanlıştı:
+  //   "Kapalı dönemler artık düzenlenemez" → kodda karşılığı YOKTU (§13.3)
+  //   "Bu işlem geri alınamaz"             → K9 ile artık açılabiliyor
+  // İkisi de düzeltildi: kilit artık gerçek, açma yolu da var.
+  async function muhurle(url, year) {
+    const result = await Swal.fire({
+      icon: "warning",
+      title: `${year} ${t("dönemini mühürle")}`,
+      html: `<p>${year} ${t("dönemine artık veri girilemez, değiştirilemez veya silinemez.")}</p>
+             <p style="font-size:13px;color:#64748b">${t("Gerekirse kurum üst yönetimi mührü gerekçesiyle yeniden açabilir.")}</p>`,
+      input: "textarea",
+      inputLabel: t("Gerekçe (denetim kaydına yazılır)"),
+      inputPlaceholder: t("Örn: 2024 verileri tamamlandı ve onaylandı"),
+      showCancelButton: true,
+      confirmButtonText: t("Mühürle"),
+      cancelButtonText: t("Vazgeç"),
+      confirmButtonColor: "#dc2626",
+    });
+    if (!result.isConfirmed) return;
+    try {
+      const data = await postJson(url, { reason: result.value || "" });
+      if (data.success) { toastOk(data.message); setTimeout(() => window.location.reload(), 1200); }
+      else { toastErr(data.message || t("Dönem mühürlenemedi.")); }
+    } catch (e) { toastErr(t("Bağlantı hatası.")); }
+  }
+
+  // ── MÜHÜR AÇMA (K9 + S13: gerekçe ZORUNLU) ────────────────────────────────
+  async function muhruAc(url, year) {
+    const result = await Swal.fire({
+      icon: "question",
+      title: `${year} ${t("döneminin mührünü aç")}`,
+      html: `<p>${t("Dönem yeniden düzenlenebilir hale gelecek.")}</p>
+             <p style="font-size:13px;color:#64748b">${t("Bu işlem kim/ne zaman/neden bilgisiyle kaydedilir.")}</p>`,
+      input: "textarea",
+      inputLabel: t("Gerekçe (zorunlu)"),
+      inputPlaceholder: t("Örn: Aralık ayı PGV girişi unutulmuş, tamamlanacak"),
+      inputValidator: (v) => (!v || !v.trim()) ? t("Mühür açma gerekçesi zorunludur.") : undefined,
+      showCancelButton: true,
+      confirmButtonText: t("Mührü Aç"),
+      cancelButtonText: t("Vazgeç"),
+      confirmButtonColor: "#f59e0b",
+    });
+    if (!result.isConfirmed) return;
+    try {
+      const data = await postJson(url, { reason: (result.value || "").trim() });
+      if (data.success) { toastOk(data.message); setTimeout(() => window.location.reload(), 1200); }
+      else { toastErr(data.message || t("Mühür açılamadı.")); }
+    } catch (e) { toastErr(t("Bağlantı hatası.")); }
+  }
+
+  // Üstteki aktif dönem kartındaki buton
   const btnClose = document.getElementById("dpy-btn-close");
   if (btnClose && CAN_MANAGE) {
-    btnClose.addEventListener("click", async function () {
-      const closeUrl = this.dataset.closeUrl;
-      const year = parseInt(this.dataset.year, 10);
-      const result = await Swal.fire({
-        icon: "warning", title: `${year} ${t("Dönemini Kapat")}`,
-        html: `<p>${year} ${t("stratejik plan dönemi kapatılacak. Kapalı dönemler artık düzenlenemez.")}</p><p><strong>${t("Bu işlem geri alınamaz.")}</strong></p>`,
-        showCancelButton: true, confirmButtonText: t("Evet, Kapat"), cancelButtonText: t("Vazgeç"), confirmButtonColor: "#dc2626",
-      });
-      if (!result.isConfirmed) return;
-      try {
-        const data = await postJson(closeUrl, {});
-        if (data.success) { toastOk(data.message || `${year} ${t("dönemi kapatıldı.")}`); setTimeout(() => window.location.reload(), 1200); }
-        else { toastErr(data.message || t("Dönem kapatılamadı.")); }
-      } catch (e) { toastErr(t("Bağlantı hatası.")); }
+    btnClose.addEventListener("click", function () {
+      muhurle(this.dataset.closeUrl, parseInt(this.dataset.year, 10));
     });
+  }
+  // Tablodaki satır butonları
+  document.querySelectorAll(".dpy-btn-seal").forEach(function (b) {
+    b.addEventListener("click", function () {
+      muhurle(this.dataset.url, parseInt(this.dataset.year, 10));
+    });
+  });
+  document.querySelectorAll(".dpy-btn-reopen").forEach(function (b) {
+    b.addEventListener("click", function () {
+      muhruAc(this.dataset.url, parseInt(this.dataset.year, 10));
+    });
+  });
+
+  // ── MÜHÜR GEÇMİŞİ (S13 — kim, ne zaman, neden) ────────────────────────────
+  const modalHistory = document.getElementById("dpy-modal-history");
+  function kapatGecmis() { if (modalHistory) modalHistory.classList.remove("open"); }
+  if (modalHistory) {
+    modalHistory.querySelectorAll(".mc-modal-close").forEach(function (el) {
+      el.addEventListener("click", kapatGecmis);
+    });
+    modalHistory.addEventListener("click", function (e) {
+      if (e.target === modalHistory) kapatGecmis();
+    });
+  }
+  document.querySelectorAll(".dpy-btn-history").forEach(function (b) {
+    b.addEventListener("click", async function () {
+      const url = this.dataset.url;
+      const year = this.dataset.year;
+      const govde = document.getElementById("dpy-history-body");
+      const baslik = document.getElementById("dpy-history-year");
+      if (baslik) baslik.textContent = year;
+      if (govde) govde.innerHTML = `<p class="mc-empty-text">${t("Yükleniyor…")}</p>`;
+      if (modalHistory) modalHistory.classList.add("open");
+      try {
+        const r = await fetch(url, { headers: { "Accept": "application/json" } });
+        const data = await r.json();
+        const kayitlar = (data && data.kayitlar) || [];
+        if (!govde) return;
+        if (!kayitlar.length) {
+          govde.innerHTML = `<p class="mc-empty-text">${t("Bu dönem için mühür işlemi kaydı yok.")}</p>`;
+          return;
+        }
+        const satirlar = kayitlar.map(function (k) {
+          const tarih = k.tarih ? new Date(k.tarih).toLocaleString("tr-TR") : "—";
+          const renk = k.islem === "close" ? "#dc2626" : "#f59e0b";
+          const ikon = k.islem === "close" ? "fa-lock" : "fa-lock-open";
+          return `<div style="border-left:3px solid ${renk}; padding:10px 14px; margin-bottom:10px; background:#f8fafc;">
+            <div style="font-weight:600; color:${renk};">
+              <i class="fas ${ikon}" style="margin-right:6px;"></i>${escapeHtml(k.islem_adi)}
+            </div>
+            <div style="font-size:13px; color:#475569; margin-top:4px;">
+              ${escapeHtml(k.kisi)} · ${escapeHtml(tarih)}
+            </div>
+            <div style="font-size:13px; color:#334155; margin-top:6px;">
+              <strong>${t("Gerekçe")}:</strong> ${escapeHtml(k.gerekce)}
+            </div>
+          </div>`;
+        }).join("");
+        govde.innerHTML = satirlar;
+      } catch (e) {
+        if (govde) govde.innerHTML = `<p class="mc-empty-text">${t("Geçmiş yüklenemedi.")}</p>`;
+      }
+    });
+  });
+
+  function escapeHtml(s) {
+    const d = document.createElement("div");
+    d.textContent = s == null ? "" : String(s);
+    return d.innerHTML;
   }
 
   const modalNew = document.getElementById("dpy-modal-new");
