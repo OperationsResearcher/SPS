@@ -472,3 +472,126 @@ gelir. Bu, yıl bazlı programın ana ilkesinin karne sayfasındaki karşılığ
 
 > Not: Aynı desen başka sayfalarda da olabilir — çoklu yıl seçici taraması
 > uygulama fazında yapılacak.
+
+---
+
+## M. MİMARİ KARARLAR — 2026-07-20 (T9-T13, BAĞLAYICI)
+
+> Uygulama planı yazılmadan önce netleştirilmesi gereken 5 nokta.
+> Claude sordu, kullanıcı cevapladı. **S4'ün "doğru mimariyi Claude belirleyecek"
+> maddesi bu bölümle kapanır.**
+
+### T9 — Yıl mekanizması: FULL-CLONE tek mekanizma
+
+**Karar:** Her varlık kendi `plan_year_id`'sini taşır. Override tabloları
+(`*_year_configs`) **kaldırılır**.
+
+| | |
+|---|---|
+| Kalan | `plan_year_id` kolonu varlığın kendisinde |
+| Kaldırılacak | `kpi_year_configs` (3224) · `strategy_year_configs` (550) · `sub_strategy_year_configs` (1405) · `process_year_configs` (1035) · `individual_kpi_year_configs` (1575) |
+| Toplam taşınacak override satırı | **7.789** |
+
+**Gerekçe:**
+- T2 (yıl devrinde her şey kopyalanır) ve T3 (agnostik varlıklara gerçek
+  `plan_year_id`) zaten bu yöne işaret ediyordu — override ile ikisi de zorlama olurdu
+- Mühür **tek kolondan** uygulanır: `plan_year_id` → `plan_years.status`.
+  Override'da her tablo için ayrı kilit kontrolü gerekirdi (bugün 15+ yazma
+  yolunun korumasız olmasının sebebi tam olarak bu dağınıklık)
+- S4'ün sorduğu çakışma riski kökten biter: tek yıl kaynağı kalır
+
+**Bedel (kabul edildi):** Migration ağır. Varlık satır sayısı yıl sayısıyla çarpılır.
+
+### T10 — Proje birleşmesi: `PlanProject` ana model
+
+**Karar:** İki proje sistemi `PlanProject` altında birleşir. Portföy `Project`/`Task`
+verisi oraya taşınır, proje modülü `PlanProject` okur.
+
+**Gerekçe:** `PlanProject` zaten `plan_year_id` NOT NULL + `source_project_id`
+(yıl devri) taşıyor — yıl bazlı altyapısı hazır. Ters yön seçilse yıl devri
+mekanizması sıfırdan yazılacaktı.
+
+**Ölçüm — bu karar sanıldığından çok hafif:**
+
+| Tablo | Satır |
+|---|---|
+| `project` | **1** |
+| `task` | **0** |
+| `plan_projects` | 21 |
+| `plan_project_tasks` | 63 |
+
+> Veri taşıma pratikte yok. İş, **kod bağlama** işi: `micro/modules/proje/` CRUD'ı
+> `PlanProject`'e yönlendirilecek. 2026-06-04'teki `0bb0ad64` hotfix'i
+> (`plan_year_id` kaldırma) bu kararla anlamını yitirir.
+
+### T11 — Mühür devreye alma: mevcut kapalı yıllar TASLAĞA çevrilir
+
+**Karar:** Migration sırasında tüm `closed` plan yılları **draft/active** yapılır.
+Kurum verisini gözden geçirip hazır olduğunda **kendisi mühürler**.
+
+**Mevcut durum (ölçüm 2026-07-20):**
+
+| Durum | Satır |
+|---|---|
+| `closed` | **35** |
+| `active` | 22 |
+| `draft` | 1 |
+
+**Gerekçe:** Bugünkü `closed` etiketi **hiçbir koruma sağlamıyordu** (§13) — kurum
+onu bilinçli bir mühür kararı olarak vermedi, sadece bir durum string'iydi. Kilit
+gerçek olunca kurum bilinçli karar versin. Aksi halde 35 yıl bir gecede kilitlenir
+ve ilk iş mühür açma talebi olur.
+
+**Not:** T1 (tolerans yok) bozulmaz — T1 kilit *yürürlükteyken* geçerli; bu madde
+kilidin *ilk devreye alınışını* düzenler, tek seferlik.
+
+### T12 — `kpi_data` bağı: yılın PG kopyasına bağlanır
+
+**Karar:** Migration 366.604 `kpi_data` satırını **yeniden bağlar**. `year=2024`
+olan satır, o PG'nin **2024 kopyasının** id'sine işaret eder.
+
+```
+ÖNCE                                    SONRA
+kpi_data(process_kpi_id=417, year=2024) kpi_data(process_kpi_id=417) → PG 2024 kopyası
+kpi_data(process_kpi_id=417, year=2025) kpi_data(process_kpi_id=982) → PG 2025 kopyası
+```
+
+**Neden şart:** T9 full-clone dediği için PG'ler yıl başına çoğalıyor. Veri taban
+PG'de kalırsa **iki yıl kaynağı** yaşamaya devam eder (`PG.plan_year_id` +
+`kpi_data.year`) — T9'un çözmek istediği sorunun aynısı.
+
+**Sonuç:** Yıl **tek kaynaktan** okunur. Mühür `JOIN process_kpis → plan_years.status`
+ile tek noktadan işler.
+
+**Ölçüm — remap boyutu beklenenden küçük:**
+
+| PG'nin yayıldığı yıl sayısı | PG adedi |
+|---|---|
+| 1 yıl | **913** |
+| 2 yıl | 40 |
+| 3 yıl | 10 |
+| 4 yıl | 16 |
+| 5 yıl | 44 |
+
+> 1023 PG'nin **%89'u tek yıllık** — onlar için remap kimlik dönüşümü (kopya sayısı 1).
+> Gerçek çoklu-yıl remap'i yalnızca **110 PG**'yi ilgilendiriyor.
+
+**⚠️ Ek bulgu — `kpi_data`'da `tenant_id` YOK.** Tenant'a yalnızca
+`kpi_data → process_kpis → processes.tenant_id` zinciriyle bağlanıyor.
+Migration ve mühür sorguları bu JOIN'i kullanmak zorunda; doğrudan `tenant_id`
+filtresi yazılamaz.
+
+**Geri alınamaz nitelikte:** Migration öncesi tam DB yedeği **zorunlu**.
+
+### T13 — Çalışma biçimi: plan bir kez onaylanır, kesintisiz uygulanır
+
+**Karar:** Üç faz (T6: model → mühür → yıl akışı) arka arkaya yerelde uygulanır,
+sonunda toplu doğrulama. Faz aralarında onay beklenmez.
+
+**Bu kararın gerektirdiği güvenceler** (Claude'un sorumluluğu):
+1. Her faz kendi commit'inde — geri dönüş noktası korunur
+2. Migration öncesi tam DB yedeği (T12 geri alınamaz)
+3. Toplu doğrulama betiği önceden yazılır, sonda koşar
+4. Faz sonlarında **durulmaz ama rapor edilir** — hata çıkarsa orada durulur
+
+---

@@ -29,7 +29,8 @@ program. Bu klasör o programın tek gerçek kaynağıdır.
 |---|---|
 | [`HASAR-TESPITI.md`](HASAR-TESPITI.md) | **Ana belge.** Katman katman ne çalışıyor, ne bozuk, kök neden |
 | [`OLCUMLER.md`](OLCUMLER.md) | Ham sayısal ölçümler — KMF veri kıyası, hardcoded yıl dağılımı |
-| [`SORULAR.md`](SORULAR.md) | Sorular + kararlar — S1-S15, K5-K9, T1-T6 · **tümü kapandı** |
+| [`SORULAR.md`](SORULAR.md) | Sorular + kararlar — S1-S15, K5-K9, T1-T13 · **tümü kapandı** |
+| [`UYGULAMA-PLANI.md`](UYGULAMA-PLANI.md) | **Uygulama planı** — 3 faz, dosya/satır/migration/doğrulama · onay bekliyor |
 | [`SONRAKI-ISLER.md`](SONRAKI-ISLER.md) | Kapsam dışı işler — **yıl bazlı iş bitince** yapılacak, birikiyor |
 
 Kıyas script'i: [`scripts/ops/pg_yil_hedef_kiyas.py`](../../scripts/ops/pg_yil_hedef_kiyas.py)
@@ -56,6 +57,12 @@ Hatanın sessiz olmasının sebebi bu: ekran yanlış veriyi hatasız gösteriyo
 
 ## Sonraki adım
 
-Hasar tespiti sürüyor. Kullanıcının ek soruları ve istekleri
-[`SORULAR.md`](SORULAR.md)'de toplanıyor. Uygulama planı, kapsam kapandıktan
-sonra ayrı bir belgede çıkarılacak.
+**Hasar tespiti kapandı. Kapsam kapandı. Uygulama planı yazıldı.**
+
+Tüm sorular cevaplandı (S1-S15, K5-K9, T1-T13). Mimari kararlar
+[`SORULAR.md` §M](SORULAR.md)'de: full-clone tek mekanizma (T9), `PlanProject`
+ana model (T10), kapalı yıllar taslağa (T11), `kpi_data` yılın PG kopyasına (T12),
+kesintisiz uygulama (T13).
+
+Plan → [`UYGULAMA-PLANI.md`](UYGULAMA-PLANI.md). **Kullanıcı onayı bekliyor** —
+onay gelene kadar kod değişikliği yok (K3).
