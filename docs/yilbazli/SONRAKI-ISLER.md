@@ -169,7 +169,75 @@ bekliyor**. Düzeltmeden önce/sonra birkaç göstergenin yüzdesi elle doğrula
 
 ---
 
-## İ4 — _(bekleniyor)_
+---
+
+## İ4 — Başarı Puanı: 0 puan eklenmesi
+
+**Bildiren:** Kullanıcı, 2026-07-20 · **Tür:** Özellik + hata düzeltme
+**Boyut:** Orta (11 nokta) · **Risk:** **ORTA-YÜKSEK — veri kaybı riski**
+
+### İstek
+PG düzenle modalı → "Başarı Puanı Yapılandırması (Opsiyonel)" bugün **1-5**
+puan üretiyor. Kullanıcı **0** eklenmesini istiyor:
+> *"Puan elde edilemeyen durumlar var, gerçek hayatta."*
+
+### Etki analizi — 11 zorunlu değişiklik
+
+| # | Dosya:satır | Değişiklik |
+|---|---|---|
+| 1 | `ui/templates/platform/surec/karne.html:647,653,656` | `range(1,6)` → `range(0,6)` + placeholder/etiket kaydırma, 0 için yeni etiket (örn. "Puan Elde Edilemedi") |
+| 2 | `ui/static/platform/js/surec.js:1486` | `i=1` → `i=0` — **⚠️ yoksa VERİ KAYBI** (aşağıya bak) |
+| 3 | `ui/static/platform/js/surec.js:1604` | `i=1` → `i=0` (kaydetme) |
+| 4 | `ui/static/platform/js/surec.js:869` | `puan=1` → `puan=0` (frontend fallback) |
+| 5 | `ui/static/platform/js/pg_tablo_modal.js:21` | `puan=1` → `puan=0` |
+| 6 | `app/utils/karne_hesaplamalar.py:207,209,215,217,219` **+ ikizi** `utils/karne_hesaplamalar.py` | Fallback `return 1/5/3` sabitleri dinamik min/max puana çevrilmeli — **yoksa 0 asla üretilmez** |
+| 7 | `app/utils/karne_hesaplamalar.py:40-46` | Liste formatı `out[i+1]` → 0-tabanlı |
+| 8 | `ui/static/platform/js/bireysel.js:76` | `SCORE_COLORS`'a `0:` ekle (örn. gri `#6b7280`) |
+| 9 | `ui/static/platform/js/bireysel.js:361` | `Math.max(1,…)` → `Math.max(0,…)` |
+| 10 | `ui/static/platform/js/bireysel.js:393,452` | `pg.basari_puani ?` → `!= null ?` (falsy-0) |
+| 11 | `v2/routes.py:97,142` | `or 0` → `is not None` |
+
+**Etkilenmeyen:** `score_engine_service.py` (her iki kopya) — hedef/gerçekleşen
+oranıyla çalışır, `basari_puani_araliklari`'na dokunmaz. Vizyon/süreç skoru güvende.
+DB şeması/migration da gerekmiyor (alan `Text`, kısıt yok).
+
+### ⚠️ En kritik risk — sessiz veri kaybı
+
+`surec.js:1486` (`fillBasariFromKpi`) düzenleme modalını doldururken `i=1`'den
+başlıyor. **DB'deki `"0"` anahtarı okunmaz.** Kullanıcı 0 tanımlar → modalı tekrar
+açıp kaydeder → **0 verisi kalıcı olarak silinir.**
+
+> Bu döngü (#2 + #3) **aynı commit'te** düzeltilmeli, yoksa özellik kendi
+> verisini yer.
+
+### Bu analizde bulunan İKİ AYRI MEVCUT HATA
+
+**H1 — `kpi_year_configs` başarı puanı formatı parser'a uymuyor**
+- `process_kpis` formatı: `{"1":"29-34","2":"35-39",…}` (1237/1399 dolu)
+- `kpi_year_configs` formatı: `[{"min":77.7,"max":null,"puan":100},…]` (**3145/3224 dolu**)
+- `parse_basari_puani_araliklari` (`karne_hesaplamalar.py:40-46`) ikinci formatı
+  **hiç anlamıyor** → `v.get("aralik")`/`v.get("range")` arıyor → `None` →
+  **3145 kaydın tamamı için `{}` dönüyor**
+
+> Yıl bazlı başarı puanı yapılandırması **hiç çalışmıyor.** 0 eklemekle ilgisi
+> yok, zaten kırık.
+
+**H2 — Boş slotlar `"-"` ile dolduruluyor**
+`{"1":"60% - 79%","2":"%80-89","3":"%90-100","4":"-","5":"-"}` — kullanıcı 5
+kademe kullanmak zorunda kalmadığı için `"-"` yazmış. 0 eklenince bu desen
+6 kademeye yayılacak; boş slot semantiği netleştirilmeli.
+
+### Açık soru
+0 puanın anlamı ne — **"puan elde edilemedi"** (veri var, performans sıfır) mı,
+yoksa **"ölçülemedi"** (veri yok) mu? İkisi farklı şeyler; renk, ortalama
+hesabı ve `None` ayrımı buna göre kurgulanmalı.
+
+Şu an `None` = "hesaplanamadı". 0 eklenince `0` ve `None` ayrımı **her okuma
+noktasında** korunmalı (#10, #11 bu yüzden var).
+
+---
+
+## İ5 — _(bekleniyor)_
 
 <!--
 Her yeni madde bu formatta eklenir:
