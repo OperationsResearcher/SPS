@@ -81,7 +81,10 @@ class SystemCard(db.Model):
         nullable=True, index=True,
     )
     sira = db.Column(db.Integer, default=0)  # yer değiştirme (gösterim sırası)
-    description = db.Column(db.String(512), nullable=True)
+    # Text: zenginleştirilmiş kart açıklamaları 512 karaktere sığmıyor (hesap
+    # yöntemi + yorum + sınır + literatür dayanağı bölümleri). PostgreSQL'de
+    # Text ile varchar arasında performans farkı yoktur.
+    description = db.Column(db.Text, nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
 
     data_sources = db.relationship(
