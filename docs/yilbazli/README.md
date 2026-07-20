@@ -29,7 +29,8 @@ program. Bu klasör o programın tek gerçek kaynağıdır.
 |---|---|
 | [`HASAR-TESPITI.md`](HASAR-TESPITI.md) | **Ana belge.** Katman katman ne çalışıyor, ne bozuk, kök neden |
 | [`OLCUMLER.md`](OLCUMLER.md) | Ham sayısal ölçümler — KMF veri kıyası, hardcoded yıl dağılımı |
-| [`SORULAR.md`](SORULAR.md) | Açık sorular ve kullanıcı istekleri — **birikiyor, kapanmadı** |
+| [`SORULAR.md`](SORULAR.md) | Sorular + kararlar — S1-S15, K5-K9, T1-T6 · **tümü kapandı** |
+| [`SONRAKI-ISLER.md`](SONRAKI-ISLER.md) | Kapsam dışı işler — **yıl bazlı iş bitince** yapılacak, birikiyor |
 
 Kıyas script'i: [`scripts/ops/pg_yil_hedef_kiyas.py`](../../scripts/ops/pg_yil_hedef_kiyas.py)
 — salt okunur, hiçbir yazma yapmaz.
