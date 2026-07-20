@@ -53,7 +53,21 @@ class Project(TenantScopedMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey('tenants.id'), nullable=False, index=True)
     kurum_id = synonym('tenant_id')
-    
+
+    # Yıl bazlı Faz 1.6 (T10 tersine / K16): portföy Project ANA MODEL oldu.
+    # 2026-06-04'teki 0bb0ad64 hotfix'i plan_year_id'yi kaldırmıştı çünkü
+    # model/DB'de kolon yoktu (TypeError -> 500); migration yb16b3d8f4a2 kolonu
+    # gerçekten açtı, hotfix'in gerekçesi ortadan kalktı.
+    # Task'a ayrı plan_year_id EKLENMEZ — yıl, task.project_id üzerinden çözülür.
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'),
+        nullable=True, index=True
+    )
+    source_project_id = db.Column(
+        db.Integer, db.ForeignKey('project.id', ondelete='SET NULL'),
+        nullable=True
+    )
+
     # Temel Bilgiler
     name = db.Column(db.String(200), nullable=False, index=True)
     description = db.Column(db.Text)
