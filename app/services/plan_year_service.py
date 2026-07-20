@@ -586,6 +586,7 @@ def clone_full_plan_year(
     new_year: int,
     name: Optional[str] = None,
     as_scenario_label: Optional[str] = None,
+    into_existing: Optional[PlanYear] = None,
 ) -> PlanYear:
     """
     Kaynak SP döneminin TÜM yapısını yeni yıla klonlar (Full Clone sistemi).
@@ -601,7 +602,15 @@ def clone_full_plan_year(
       8. TenantYearIdentity → misyon/vizyon/değerler kopyalanır
       9. SwotAnalysis + TowsAnalysis → boş kayıtlar oluşturulur
 
-    Dönüş: yeni PlanYear nesnesi (status="draft")
+    into_existing (yıl bazlı Faz 1.2, 2026-07-20):
+        Hedef yılın PlanYear kaydı ZATEN VARSA ve içi boşsa, yeni kayıt açmak
+        yerine o kayda klonlar. Neden gerekli: göç sırasında boş yıllar mevcut
+        (Faz 1.3'te üretildi) ve onlara `individual_performance_indicators` gibi
+        tablolar bağlanmış durumda. Kaydı silip yeniden yaratmak o satırları
+        YETİM bırakırdı (ölçüm: KMF'de 13 bireysel PG).
+        Kullanan: scripts/ops/yilbazli_faz1_2_clone_zinciri.py
+
+    Dönüş: hedef PlanYear nesnesi (yeni açıldıysa status="draft")
     """
     from app.models.process import (
         ProcessActivity, ProcessActivityAssignee, ProcessSubStrategyLink, KpiData,
@@ -611,26 +620,35 @@ def clone_full_plan_year(
 
     tenant_id = source.tenant_id
 
-    # Sprint 56: scenario mode aynı yıla ikinci kayıt açabilir (partial unique index)
-    if not as_scenario_label:
-        existing = get_plan_year(tenant_id, new_year)
-        if existing:
-            raise ValueError(f"{new_year} yılı için tenant {tenant_id}'de zaten plan mevcut (id={existing.id})")
+    if into_existing is not None:
+        if into_existing.tenant_id != tenant_id:
+            raise ValueError(
+                f"into_existing tenant uyuşmuyor: {into_existing.tenant_id} != {tenant_id}"
+            )
+        new_py = into_existing
+        new_py.template_source_id = source.id
+        db.session.flush()
+    else:
+        # Sprint 56: scenario mode aynı yıla ikinci kayıt açabilir (partial unique index)
+        if not as_scenario_label:
+            existing = get_plan_year(tenant_id, new_year)
+            if existing:
+                raise ValueError(f"{new_year} yılı için tenant {tenant_id}'de zaten plan mevcut (id={existing.id})")
 
-    new_py = PlanYear(
-        tenant_id=tenant_id,
-        year=new_year,
-        name=name or (
-            f"{new_year} — {as_scenario_label.title()} Senaryosu"
-            if as_scenario_label else f"{new_year} Stratejik Planı"
-        ),
-        status="draft",
-        template_source_id=source.id,
-        scenario_of_id=source.id if as_scenario_label else None,
-        scenario_label=as_scenario_label,
-    )
-    db.session.add(new_py)
-    db.session.flush()  # new_py.id için
+        new_py = PlanYear(
+            tenant_id=tenant_id,
+            year=new_year,
+            name=name or (
+                f"{new_year} — {as_scenario_label.title()} Senaryosu"
+                if as_scenario_label else f"{new_year} Stratejik Planı"
+            ),
+            status="draft",
+            template_source_id=source.id,
+            scenario_of_id=source.id if as_scenario_label else None,
+            scenario_label=as_scenario_label,
+        )
+        db.session.add(new_py)
+        db.session.flush()  # new_py.id için
 
     # ── 1. Strategy klonlama ──────────────────────────────────────────────────
     strategy_id_map: Dict[int, int] = {}   # old_id → new_id
