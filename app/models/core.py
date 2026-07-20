@@ -220,6 +220,10 @@ class Strategy(TenantScopedMixin, db.Model):
     
     # Meta Data
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
+    # Yıl bazlı Faz 1.4 (T9/K15): "bu YIL karneye dahil mi?"
+    # is_active ile karıştırma — o "kayıt silinmiş mi?" demek.
+    # *_year_configs.is_included yerine geçer (override tabloları kalkıyor).
+    is_included = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     
@@ -252,6 +256,10 @@ class SubStrategy(db.Model):
     
     # Meta Data
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
+    # Yıl bazlı Faz 1.4 (T9/K15): "bu YIL karneye dahil mi?"
+    # is_active ile karıştırma — o "kayıt silinmiş mi?" demek.
+    # *_year_configs.is_included yerine geçer (override tabloları kalkıyor).
+    is_included = db.Column(db.Boolean, default=True, nullable=False)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), onupdate=lambda: datetime.now(timezone.utc), nullable=False)
     
