@@ -26,6 +26,7 @@ from app.models.plan_year import (
     SubStrategyYearConfig,
     ProcessYearConfig,
     IndividualKpiYearConfig,
+    PlanYearSealAudit,
 )
 from app.models.process import ProcessKpi, Process, IndividualPerformanceIndicator
 from app.models.core import Strategy, SubStrategy
@@ -337,21 +338,95 @@ def get_kpi_configs_bulk(
 
 # ── Plan Year Yaşam Döngüsü ────────────────────────────────────────────────────
 
-def close_plan_year(plan_year: PlanYear, actor_id: Optional[int] = None) -> PlanYear:
-    """
-    Plan yılını kapatır (status=closed).
-    Kapalı bir yıl artık düzenlenemez; arşivlenmiş geçmiş olarak korunur.
+def close_plan_year(
+    plan_year: PlanYear,
+    actor_id: Optional[int] = None,
+    reason: Optional[str] = None,
+    actor_label: Optional[str] = None,
+) -> PlanYear:
+    """Plan yılını MÜHÜRLER (status=closed).
+
+    Yıl bazlı Faz 2 (K7/K8/S13, 2026-07-20) — DAVRANIŞ DEĞİŞTİ:
+
+      ESKİ: yalnız `status` + `closed_at` yazıyordu. Docstring "kapalı bir yıl
+            artık düzenlenemez" diyordu ama KODDA KARŞILIĞI YOKTU — kapalı yıla
+            serbestçe veri girilip silinebiliyordu (HASAR-TESPITI-2.md §13).
+      YENİ: mühür gerçekten uygulanır (yazma yollarındaki `plan_year_writable`
+            kontrolü) ve olay denetim tablosuna işlenir (S13).
+
+    K8 gereği mühür mutlaktır: kapalı yıla veri girişi/düzenlemesi/silmesi
+    yapılamaz. Geri dönüş yalnızca `reopen_plan_year` ile, kurum üst yönetimi
+    tarafından ve gerekçeyle mümkündür (K9).
     """
     plan_year.status = "closed"
     plan_year.closed_at = datetime.now(timezone.utc)
     try:
+        db.session.add(PlanYearSealAudit(
+            plan_year_id=plan_year.id,
+            tenant_id=plan_year.tenant_id,
+            action="close",
+            reason=(reason or "").strip() or "(gerekçe belirtilmedi)",
+            actor_id=actor_id,
+            actor_label=actor_label,
+        ))
         db.session.commit()
         current_app.logger.info(
-            f"[plan_year_service] PlanYear {plan_year.year} kapatıldı (actor={actor_id})"
+            f"[plan_year_service] PlanYear {plan_year.year} MÜHÜRLENDİ "
+            f"(tenant={plan_year.tenant_id} actor={actor_id})"
         )
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[plan_year_service] close_plan_year hata: {e}")
+        raise
+    return plan_year
+
+
+def reopen_plan_year(
+    plan_year: PlanYear,
+    reason: str,
+    actor_id: Optional[int] = None,
+    actor_label: Optional[str] = None,
+) -> PlanYear:
+    """Mührü AÇAR — plan yılını yeniden yazılabilir yapar (K9).
+
+    Bu fonksiyon yıl bazlı Faz 2'de YENİ eklendi. Öncesinde sistemde
+    `status="active"` atayan hiçbir route/servis yoktu: yanlışlıkla kapatılan
+    bir yılı kurtarmanın tek yolu doğrudan DB müdahalesiydi
+    (HASAR-TESPITI-2.md §13.1).
+
+    K9: yetki kurum üst yönetimindedir — kontrol route katmanında.
+    S13: `reason` ZORUNLU. Gerekçesiz açma kabul edilmez; mühür açma geri
+         alınamaz bir güvenlik kapısıdır, izlenebilir olmalıdır.
+    T1:  gecikmeli veri için tolerans yoktur; unutulan veriyi girmenin tek
+         yolu budur — mühür aç, veriyi gir, yılı tekrar mühürle.
+
+    Yıl `draft` durumuna döner (`active` değil): kurumun aktif çalışma yılı
+    genellikle başkasıdır, açılan yıl düzeltme için geçici olarak yazılabilir
+    hale gelir.
+    """
+    temiz = (reason or "").strip()
+    if not temiz:
+        raise ValueError("Mühür açma gerekçesi zorunludur (S13).")
+
+    plan_year.status = "draft"
+    plan_year.closed_at = None
+    try:
+        db.session.add(PlanYearSealAudit(
+            plan_year_id=plan_year.id,
+            tenant_id=plan_year.tenant_id,
+            action="reopen",
+            reason=temiz,
+            actor_id=actor_id,
+            actor_label=actor_label,
+        ))
+        db.session.commit()
+        current_app.logger.info(
+            f"[plan_year_service] PlanYear {plan_year.year} MÜHRÜ AÇILDI "
+            f"(tenant={plan_year.tenant_id} actor={actor_id}) gerekçe={temiz[:80]!r}"
+        )
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[plan_year_service] reopen_plan_year hata: {e}")
         raise
     return plan_year
 
