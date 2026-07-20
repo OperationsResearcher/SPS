@@ -20,6 +20,11 @@ class BlueOceanCanvas(TenantScopedMixin, db.Model):
         db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
+    # Yıl bazlı Faz 1.1 (T3): Blue Ocean artık yıl-agnostik değil.
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"),
+        nullable=True, index=True,
+    )
     name = db.Column(db.String(200), nullable=False)
     industry = db.Column(db.String(120), nullable=True)
     description = db.Column(db.Text, nullable=True)
@@ -65,6 +70,12 @@ class BlueOceanFactor(db.Model):
         db.Integer, db.ForeignKey("blue_ocean_canvases.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
+    # Yıl bazlı Faz 1.1 (T3): canvas'tan miras alınır, sorgu kolaylığı için
+    # denormalize tutulur (canvas JOIN'i olmadan yıl filtresi).
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"),
+        nullable=True, index=True,
+    )
     name = db.Column(db.String(150), nullable=False)
     order_index = db.Column(db.Integer, nullable=False, default=0)
     self_score = db.Column(db.Float, nullable=False, default=5.0)
@@ -99,6 +110,11 @@ class BlueOceanERRC(db.Model):
         db.Integer, db.ForeignKey("blue_ocean_canvases.id", ondelete="CASCADE"),
         nullable=False, index=True,
     )
+    # Yıl bazlı Faz 1.1 (T3): canvas'tan miras alınır (bkz. BlueOceanFactor notu).
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"),
+        nullable=True, index=True,
+    )
     action = db.Column(db.String(20), nullable=False)
     # eliminate / reduce / raise / create
     text = db.Column(db.Text, nullable=False)
@@ -131,6 +147,11 @@ class VRIOResource(TenantScopedMixin, db.Model):
     tenant_id = db.Column(
         db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"),
         nullable=False, index=True,
+    )
+    # Yıl bazlı Faz 1.1 (T3): VRIO değerlendirmesi yıl bazlıdır.
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"),
+        nullable=True, index=True,
     )
     name = db.Column(db.String(200), nullable=False)
     category = db.Column(db.String(80), nullable=True)

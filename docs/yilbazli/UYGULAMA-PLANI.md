@@ -4,7 +4,8 @@
 > Dayanak: [`HASAR-TESPITI.md`](HASAR-TESPITI.md) · [`HASAR-TESPITI-2.md`](HASAR-TESPITI-2.md)
 > · [`OLCUMLER.md`](OLCUMLER.md) · [`SORULAR.md`](SORULAR.md) (K5-K9, S1-S15, T1-T13)
 >
-> **Durum: onay bekliyor.** Onay gelene kadar kod değişikliği yok.
+> **Durum: ✅ ONAYLANDI — 2026-07-20.** Uygulama başladı.
+> Kullanıcı kararı: İ3 (D0 ters hesaplama) **Faz 3'e dahil edildi**.
 
 ---
 
@@ -318,7 +319,35 @@ T9 sonrası bu kendiliğinden çözülür (yazma aktif yılın kopyasına gider)
 `surec_api_kpi_get` (`:143-173`) da `?year` okumadığı için düzenleme modalı ham
 değeri gösteriyor — **ikisi aynı commit'te** düzeltilir.
 
-### 3.7 Çoklu yıl seçici temizliği (T8)
+### 3.7 D0 — 438 gösterge ters hesaplanıyor (İ3, kullanıcı onayı 2026-07-20)
+
+> Kapsam dışıydı, **kullanıcı kararıyla Faz 3'e dahil edildi.** Gerekçe: 3 satırlık
+> düzeltme ve Faz 3 zaten aynı dosyaya dokunuyor.
+
+`micro/modules/k_rapor/routes.py` satır **991, 1901, 2161**:
+
+```python
+if kpi.direction == "lower_is_better":   # ← DB'de bu değer HİÇ YOK
+```
+
+**Ölçüm:** `Increasing`=956 · `Decreasing`=**438** · `lower_is_better`=**0**
+
+Koşul hiçbir zaman doğru olmuyor → **438 "azalması iyi" gösterge, artması iyiymiş
+gibi hesaplanıyor.** Hedefi 5 olan hata oranı 2 ölçüldüğünde %40 görünüyor;
+doğrusu %100. **İyi performans kötü raporlanıyor.**
+
+Skor motoru (`compute_pg_score`) doğru değeri kullandığı için aynı gösterge
+Kurumsal sekmesinde farklı, PG Dağılım sekmesinde farklı yüzde gösteriyor.
+
+**Düzeltme:** koşul `Decreasing` değerini tanıyacak şekilde düzeltilir.
+
+**⚠️ Doğrulama zorunlu:** Rapor rakamları değişecek. Düzeltmeden önce/sonra
+birkaç göstergenin yüzdesi **elle doğrulanır** ve iki sekme arasındaki tutarsızlığın
+kapandığı teyit edilir. → Doğrulama maddesi #11.
+
+Tam liste: `docs/kontrol/KART-VERI-TUTARSIZLIKLARI.md`
+
+### 3.8 Çoklu yıl seçici temizliği (T8)
 
 | # | İş |
 |---|---|
@@ -348,6 +377,7 @@ Betik: `scripts/ops/yilbazli_dogrulama.py` — salt okunur.
 | 8 | Mühür açma → denetim kaydı + gerekçe **zorunlu** |
 | 9 | Tenant başına: seçilen yıl değişince K-Radar/K-Rapor/Karne **farklı veri** döndürür |
 | 10 | 602 mevcut test + `test_statik_dosya_varligi.py` yeşil |
+| 11 | **D0:** `Decreasing` göstergelerde yüzde tersine dönmüş; Kurumsal ↔ PG Dağılım sekmeleri **aynı** yüzdeyi gösteriyor (elle örnekleme) |
 
 **Tenant kapsamı (T5):** 12 tenant, 4 Tomofil klonu (58/60/61 + 27) **dahil**.
 Kullanıcı: *"hepsini yapalım, gerekirse uzun sürsün"* — bütünlük performanstan önce.
@@ -360,12 +390,9 @@ Kullanıcı: *"hepsini yapalım, gerekirse uzun sürsün"* — bütünlük perfo
 |---|---|---|
 | İ1 | "Kurum Paneli" isim karmaşası | `SONRAKI-ISLER.md` |
 | İ2 | Kart açıklama zenginleştirme (405 kart) | `docs/kontrol/KART-ACIKLAMA-DEVIR.md` |
-| İ3 | **D0 — 438 gösterge ters hesaplanıyor** | `KART-VERI-TUTARSIZLIKLARI.md` |
 | İ4 | Başarı puanı 0 ekleme (11 nokta) | `SONRAKI-ISLER.md` |
 
-**İ3 istisnası:** D0 (`lower_is_better` ölü koşulu, `k_rapor/routes.py:991,1901,2161`)
-3 satırlık düzeltme ve Faz 3 zaten aynı dosyalara dokunuyor. **Kullanıcı isterse**
-Faz 3 içinde birlikte düzeltilebilir — ayrı karar.
+**İ3 artık kapsam DIŞI değil:** D0 kullanıcı kararıyla **Faz 3'e alındı** → §3.7.
 
 **İ4 kesişimi:** H1 (yıl bazlı başarı puanı formatı hiç çalışmıyor) Faz 1.4'te
 override göçüyle **zorunlu olarak** ele alınır — 0 puan özelliği değil, format
@@ -387,14 +414,24 @@ tekleştirmesi olarak.
 
 ---
 
-## 8. Onay noktası
+## 8. Onay — ✅ ALINDI (2026-07-20)
 
-Bu plan onaylanınca (T13) üç faz **kesintisiz** uygulanır:
+Plan onaylandı. İ3 (D0 ters hesaplama) **Faz 3'e dahil edildi** (§3.7).
+
+T13 gereği üç faz **kesintisiz** uygulanır:
 
 ```
-Faz 1 (model+migration) → Faz 2 (mühür) → Faz 3 (yıl akışı) → toplu doğrulama
+Faz 1 (model+migration) → Faz 2 (mühür) → Faz 3 (yıl akışı + D0) → toplu doğrulama
 ```
 
 Her faz kendi commit'inde. Hata çıkarsa orada durulur ve rapor edilir.
 
-**Onay bekleyen ek karar:** İ3 (D0 ters hesaplama) Faz 3'e dahil edilsin mi?
+### İlerleme
+
+| Faz | Durum |
+|---|---|
+| 1.0 Yedek | ⏳ |
+| 1.1-1.8 Model + migration | ⏳ |
+| 2 Mühür | ⏳ |
+| 3 Yıl akışı + D0 | ⏳ |
+| Doğrulama | ⏳ |

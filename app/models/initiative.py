@@ -35,6 +35,15 @@ class Initiative(TenantScopedMixin, db.Model):
         nullable=True,
     )
 
+    # Yıl bazlı Faz 1.1 (T3/T9): girişimin ait olduğu plan yılı.
+    # start_year/end_year KALDIRILMADI — halen okuyan route'lar var
+    # (routes_initiative.py:35-37). Faz 3'te okuma yolları plan_year_id'ye
+    # geçince ayrı migration'da düşürülecek (migration a1f2c3d4e5b6 docstring).
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"),
+        nullable=True, index=True,
+    )
+
     # Çok yıllık zaman aralığı
     start_year = db.Column(db.Integer, nullable=False)
     end_year = db.Column(db.Integer, nullable=False)

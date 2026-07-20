@@ -24,6 +24,13 @@ class ProcessSubStrategyLink(db.Model):
     process_id = db.Column(db.Integer, db.ForeignKey('processes.id', ondelete='CASCADE'), primary_key=True)
     sub_strategy_id = db.Column(db.Integer, db.ForeignKey('sub_strategies.id', ondelete='CASCADE'), primary_key=True)
     contribution_pct = db.Column(db.Float, nullable=True)  # 0–100
+    # Yıl bazlı Faz 1.1 (T3): süreç–strateji bağı da yıl bazlıdır.
+    # PK'ye henüz dahil değil — Faz 1.3'te plan yılları üretilince genişletilecek
+    # (migration a1f2c3d4e5b6 §4).
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'),
+        nullable=True, index=True
+    )
 
     process = db.relationship('Process', backref=db.backref('process_sub_strategy_links', cascade='all, delete-orphan', lazy=True))
     sub_strategy = db.relationship('SubStrategy', backref=db.backref('process_sub_strategy_links', lazy=True))
