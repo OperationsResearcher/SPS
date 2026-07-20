@@ -360,3 +360,61 @@ Tüm sorular kapandı (S1-S15 + T1-T6). Sıradaki iş: **mimari karar belgesi**
 
 > **Kullanıcı ek istekler bildirecek — migration kapsamı genişleyebilir (S2).**
 > Mimari belge, o istekler alındıktan sonra yazılacak.
+
+---
+
+## K. MÜHÜR ARAYÜZÜ — YER KARARI (T7, 2026-07-20)
+
+> Kullanıcı sordu: "Hangi sayfada yapılacağı da önemli. İlk fikrim Yönetici
+> Paneli, ama senin fikrine de açığım." → Claude'un önerisi **onaylandı**.
+
+### Mevcut durum — mühürleme bugün nasıl yapılıyor
+
+**Yol:** SP → Dönemler sayfası (`/k-plan/strategy/periods`)
+
+| Katman | Durum | Kaynak |
+|---|---|---|
+| Buton | ✅ `🔒 Bu Dönemi Kapat` — yalnız `sp_can_manage` rollerine | `sp/donemler.html:70` |
+| Onay | ✅ SweetAlert2 uyarısı | `sp_donemler.js:48` |
+| API | ✅ `POST .../plan-years/<id>/close` | `sp/routes_plan_year.py:171` |
+| Servis | ⚠️ Sadece `status="closed"` + `closed_at` | `plan_year_service.py:297` |
+| Denetim | ❌ `actor_id` sadece **log satırına** yazılıyor, tablo yok | `plan_year_service.py:305` |
+
+**Onay metni gerçeği yansıtmıyor** — kullanıcıya iki söz veriliyor, ikisi de tutulmuyor:
+
+| Ekranda yazan | Gerçek |
+|---|---|
+| "Kapalı dönemler artık düzenlenemez" | ❌ Düzenlenebiliyor (bkz. §13.3) |
+| "Bu işlem geri alınamaz" | ⚠️ Doğru ama istenmeyen şekilde — açma yolu yok |
+
+`close_plan_year` docstring'i de aynı yanlışı tekrarlıyor.
+
+### T7 — Karar: Dönemler sayfası kalır, görünür hale getirilir
+
+**Reddedilen alternatif:** Yönetici Paneli (`/exec-dashboard`).
+Gerekçe: o sayfanın **her** bileşeni "durum nasıl?" sorusunu cevaplıyor (sağlık
+skoru, K-Vektör, trendler, AI özet, uyarı kutucukları) — **izleme** ekranı.
+Mühürleme ise dönem **yaşam döngüsü eylemi**. Farklı zihinsel mod.
+
+**Kritik bulgu — asıl sorun sayfa seçimi değildi:**
+
+> **Dönemler sayfası hiçbir menüde yok.** SP menüsünde 17 madde var, Dönemler
+> yok. Sidebar'da yok. Yalnızca launcher, çeyreklik değerlendirme ve sihirbazdan
+> dolaylı link var. URL de `/periods`.
+
+Kullanıcının mühürlemeyi Yönetici Paneli'ne taşımak istemesinin muhtemel asıl
+sebebi bu görünmezlik.
+
+### Uygulanacaklar
+
+| # | İş |
+|---|---|
+| **A** | Dönemler sayfası **SP menüsüne eklenecek** — ad: "Plan Dönemleri", ikon: takvim/kilit |
+| **B** | Mühür işlemleri orada toplanacak: **kapat + aç + gerekçe modalı + denetim geçmişi** (örn. *"2024 — kapatıldı 15.01.2025 Ahmet Y. · açıldı 03.02.2025, gerekçe: …"*) |
+| **C** | **Yönetici Paneli'ne durum göstergesi + kısayol**: `🔒 2025 dönemi açık — kapatılmadı [Dönemleri Yönet →]`. Görür ama yönetmez |
+| **D** | Sidebar'a ekleme **ertelendi** — İ1 (Kurum Paneli karmaşası) çözülmeden menü kalabalığı artırılmayacak |
+| **E** | Onay metni **yeniden yazılacak** — K9 ile açma mümkün olacağı için "geri alınamaz" ifadesi geçersiz; "düzenlenemez" ifadesi ancak kilit gerçekten uygulandığında doğru olacak |
+| **F** | `close_plan_year` docstring'i gerçeğe uydurulacak |
+
+**İlke:** Yönetici Paneli **görür**, Dönemler sayfası **yönetir**.
+İzleme/eylem ayrımı korunur.
