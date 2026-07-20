@@ -13,6 +13,7 @@ from sqlalchemy.orm import joinedload, selectinload
 
 from platform_core import app_bp
 from app.models import db
+from app.services.date_sovereign import resolve_request_year
 from sqlalchemy import or_, func as _sqla_func
 from app.models.process import (
     Process,
@@ -209,7 +210,7 @@ def surec_api_karne(process_id):
         abort(404)
     if not user_can_access_process(current_user, p):
         abort(403)
-    year = request.args.get("year", datetime.now().year, type=int)
+    year = resolve_request_year()
 
     # Seçili yıla ait plan_year'ı çöz (varsa) — PG'leri buna göre filtrele
     _py_for_year = None
@@ -579,7 +580,7 @@ def surec_api_karne_ai_ozet(process_id):
         abort(404)
     if not user_can_access_process(current_user, p):
         abort(403)
-    year = request.args.get("year", datetime.now().year, type=int)
+    year = resolve_request_year()
 
     # 1) Hazır hesaplama servislerinden metrikleri topla
     skor = durum = None

@@ -44,6 +44,62 @@ def get_view_year(user) -> int:
     return date.today().year
 
 
+def resolve_request_year(user=None, default_year: Optional[int] = None) -> int:
+    """İsteğin hangi yıla ait olduğunu çözer — S8'in tek giriş noktası.
+
+    Öncelik:
+      1. `?year=` query parametresi (frontend açıkça gönderdiyse)
+      2. `session["sp_active_year"]` — kullanıcının yıl seçicideki tercihi
+      3. `default_year` (çağıran özel bir varsayılan verdiyse)
+      4. bugünün takvim yılı
+
+    NEDEN VAR (S8 — onaylı karar):
+        Denetim (HASAR-TESPITI-2.md §9.2) K-Radar'ın ~37 API çağrısının
+        HİÇBİRİNİN `?year` göndermediğini, backend'in de session'a bakmadığını
+        buldu. Sonuç: yıl seçici görsel olarak çalışıyor gibi görünüp veriyi
+        filtrelemiyordu.
+
+        İki seçenek vardı: (a) 40+ fetch çağrısını tek tek düzeltmek —
+        geniş ve kırılgan; (b) backend'de `?year` yokken session'a düşmek.
+        Kullanıcı (b)'yi seçti: tek nokta, çok daha güvenli.
+
+        Bu fonksiyon `date.today().year` yerine çağrıldığında, o route
+        kullanıcının yıl seçimini otomatik olarak onurlandırır.
+
+    Not: `user` parametresi geriye uyumluluk için opsiyonel; yıl session'dan
+    okunduğu için kullanılmıyor.
+    """
+    try:
+        from flask import request, has_request_context
+        if has_request_context():
+            ham = request.args.get("year")
+            if ham:
+                try:
+                    y = int(ham)
+                    if 1900 < y < 3000:
+                        return y
+                except (TypeError, ValueError):
+                    pass
+    except Exception:
+        pass
+
+    # Arka plan görevlerinde (zamanlayıcı) request/session yoktur — S6 gereği
+    # oralarda tenant'ın aktif PlanYear'ı kullanılır, bu fonksiyon değil.
+    try:
+        sel = session.get("sp_active_year")
+    except Exception:
+        sel = None
+    if sel:
+        try:
+            return int(sel)
+        except (TypeError, ValueError):
+            pass
+
+    if default_year:
+        return int(default_year)
+    return date.today().year
+
+
 def get_view_plan_year(tenant_id: int, user) -> Optional[PlanYear]:
     """Görüntü bağlamına karşılık gelen PlanYear — yoksa None."""
     y = get_view_year(user)

@@ -10,6 +10,7 @@ kayıtları hesaplamaya dahil edilir.
 Cache: Vision score ve ara hesaplamalar cache'lenir.
 """
 from datetime import date
+from app.services.date_sovereign import resolve_request_year
 from typing import Optional, Dict, Any
 
 from flask import current_app
@@ -111,7 +112,9 @@ def get_pg_scores_from_kpi_data(
     yoksa ProcessKpi'ın orijinal değerlerine fallback yapılır.
     """
     if year is None:
-        year = date.today().year
+        # S8: çağıran yıl vermediyse kullanıcının seçtiği yıl (request
+        # yoksa takvim yılı). Eskiden session'ı hiç bilmiyordu.
+        year = resolve_request_year()
     as_of = as_of_date or date.today()
 
     if plan_year is not None:
@@ -319,7 +322,7 @@ def compute_vision_score(
     plan_year: PlanYear instance; verilmezse tenant+year için otomatik çözümlenir.
     """
     if year is None:
-        year = plan_year.year if plan_year is not None else date.today().year
+        year = plan_year.year if plan_year is not None else resolve_request_year()
     as_of = as_of_date or date.today()
 
     # plan_year otomatik çözümle
@@ -451,7 +454,7 @@ def recalc_on_pg_data_change(
         }
     return compute_vision_score(
         tenant_id,
-        year or date.today().year,
+        year or resolve_request_year(),
         as_of_date or date.today(),
         persist_pg_scores=True
     )

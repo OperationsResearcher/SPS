@@ -28,6 +28,7 @@ from app.utils.karne_hesaplamalar import (
 )
 from app.services.plan_year_service import get_active_plan_year_for_user
 from app.services.date_sovereign import (
+    resolve_request_year,
     resolve_plan_year_for_date,
     entity_exists_in_year,
     build_existence_error,
@@ -480,7 +481,7 @@ def bireysel_api_favori_toggle(kpi_id):
 @login_required
 def bireysel_api_karne():
     """Yıl bazlı bireysel PG + faaliyet takip verisi."""
-    year = request.args.get("year", datetime.now().year, type=int)
+    year = resolve_request_year()
     uid  = current_user.id
     active_py = get_active_plan_year_for_user(current_user)
 
@@ -657,7 +658,7 @@ def bireysel_api_karne():
 @login_required
 def bireysel_api_pg_series(pg_id):
     """Seçilen PG için yıllık veri serisi (modal / sparkline)."""
-    year = request.args.get("year", datetime.now().year, type=int)
+    year = resolve_request_year()
     pg = IndividualPerformanceIndicator.query.filter_by(
         id=pg_id, user_id=current_user.id, is_active=True
     ).first_or_404()
@@ -741,7 +742,7 @@ def bireysel_api_karne_export_pdf():
     import datetime as _dt
 
     try:
-        year = request.args.get("year", _dt.date.today().year, type=int)
+        year = resolve_request_year()
         tenant = Tenant.query.get(current_user.tenant_id) if current_user.tenant_id else None
 
         pgs = (
@@ -827,7 +828,7 @@ def bireysel_api_ai_ozet():
     """Bireysel karne üstü 2 cümlelik Türkçe AI özet (heuristik + opsiyonel LLM)."""
     from datetime import date as _date
     uid = current_user.id
-    year = request.args.get("year", datetime.now().year, type=int)
+    year = resolve_request_year()
     today = _date.today()
 
     pg_ids = [r[0] for r in db.session.query(IndividualPerformanceIndicator.id)

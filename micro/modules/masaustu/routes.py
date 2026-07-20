@@ -17,6 +17,7 @@ from flask import session as flask_session
 
 from platform_core import app_bp
 from app.models import db
+from app.services.date_sovereign import resolve_request_year
 from app.utils.process_utils import data_date_to_period_keys
 from app.models.process import (
     IndividualPerformanceIndicator,
@@ -230,7 +231,8 @@ def masaustu():
     plan_year_feature = False
     plan_years_list = []
     active_plan_year_obj = None
-    active_plan_year_val = date.today().year
+    # S8: yıl seçimi session'dan gelir; eskiden takvim yılına sabitti
+    active_plan_year_val = resolve_request_year()
 
     tenant = current_user.tenant
     if tenant and tenant_id:  # K5: yıl bazlılık koşulsuz
@@ -239,7 +241,7 @@ def masaustu():
             from app.models.plan_year import PlanYear
             from app.services.plan_year_service import list_plan_years, get_plan_year
             plan_years_list = list_plan_years(tenant_id)
-            active_plan_year_val = flask_session.get("sp_active_year", date.today().year)
+            active_plan_year_val = resolve_request_year()
             available_years = [py.year for py in plan_years_list]
             if available_years and active_plan_year_val not in available_years:
                 active_plan_year_val = available_years[0]

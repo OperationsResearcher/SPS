@@ -7,6 +7,7 @@ from flask_login import login_required, current_user
 
 from platform_core import app_bp
 from app.models.process import Process, ProcessKpi
+from app.services.date_sovereign import resolve_request_year
 from flask_babel import gettext as _
 
 
@@ -37,8 +38,19 @@ def analiz_api_trend(process_id):
         start_str = request.args.get("start_date")
         end_str   = request.args.get("end_date")
         frequency = request.args.get("frequency", "monthly")
-        end_date   = datetime.fromisoformat(end_str) if end_str else datetime.now()
-        start_date = datetime.fromisoformat(start_str) if start_str else (end_date - timedelta(days=365))
+        # Yıl bazlı Faz 3.3 (S8): tarih aralığı verilmediyse SEÇİLİ PLAN YILI
+        # esas alınır. Eskiden "son 365 gün" idi — kullanıcı 2022'yi seçse bile
+        # trend bugünden geriye bakıyordu, yani yıl seçici bu grafiği hiç
+        # etkilemiyordu (HASAR-TESPITI §3.2).
+        _yil = resolve_request_year()
+        if end_str:
+            end_date = datetime.fromisoformat(end_str)
+        else:
+            end_date = datetime(_yil, 12, 31, 23, 59, 59)
+        if start_str:
+            start_date = datetime.fromisoformat(start_str)
+        else:
+            start_date = datetime(_yil, 1, 1)
 
         kpis = ProcessKpi.query.filter_by(process_id=process_id, is_active=True).all()
         series = []
@@ -90,7 +102,7 @@ def analiz_api_health(process_id):
     ).first_or_404()
     try:
         from app.services.analytics_service import AnalyticsService
-        result = AnalyticsService.get_process_health_score(process_id)
+        result = AnalyticsService.get_process_health_score(process_id, year=resolve_request_year())
         # Frontend `data.score` bekliyor — service `overall_score` döndürür
         result["score"] = result.get("overall_score", 0)
         return jsonify({"success": True, "data": result})
@@ -160,7 +172,8 @@ def analiz_api_report(process_id):
         from app.services.report_service import ReportService
         end_str = request.args.get("end_date")
         start_str = request.args.get("start_date")
-        end_date   = datetime.fromisoformat(end_str) if end_str else datetime.now()
+        # S8: rapor aralığı da seçili plan yılına oturur
+        end_date   = datetime.fromisoformat(end_str) if end_str else datetime(resolve_request_year(), 12, 31)
         start_date = datetime.fromisoformat(start_str) if start_str else (end_date - timedelta(days=365))
         result = ReportService.generate_performance_report(
             process_id, start_date=start_date, end_date=end_date, format=fmt

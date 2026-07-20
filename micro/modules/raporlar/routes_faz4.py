@@ -7,6 +7,7 @@ from datetime import datetime, timedelta, timezone, date as _date
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
 from app.utils.decorators import require_module
+from app.services.date_sovereign import resolve_request_year
 from sqlalchemy import func, and_, or_, text, select
 from sqlalchemy.orm import joinedload
 
@@ -195,7 +196,7 @@ def raporlar_api_nlp_query():
         ).filter(
             Process.tenant_id == tid, Process.is_active.is_(True),
             ProcessKpi.is_active.is_(True), KpiData.is_active.is_(True),
-            KpiData.year == _date.today().year,
+            KpiData.year == resolve_request_year(),
         ).group_by(ProcessKpi.code, ProcessKpi.name
         ).having(func.count(KpiData.id) >= 3
         ).order_by(func.avg(KpiData.status_percentage).desc().nullslast()
@@ -204,7 +205,7 @@ def raporlar_api_nlp_query():
         return jsonify({"success": True, "type": "table",
                         "columns": [_("Kod"), _("PG Adı"), _("Ort. Başarı %"), _("Ölçüm")],
                         "rows": [[r["code"], r["name"], r["avg_score"], r["count"]] for r in result],
-                        "summary": f"{_date.today().year} {_('yılı en yüksek 5 PG')}"})
+                        "summary": f"{resolve_request_year()} {_('yılı en yüksek 5 PG')}"})
 
     if pattern_id == "bottom5_kpi_score":
         rows = db.session.query(
@@ -216,7 +217,7 @@ def raporlar_api_nlp_query():
         ).filter(
             Process.tenant_id == tid, Process.is_active.is_(True),
             ProcessKpi.is_active.is_(True), KpiData.is_active.is_(True),
-            KpiData.year == _date.today().year,
+            KpiData.year == resolve_request_year(),
         ).group_by(ProcessKpi.code, ProcessKpi.name
         ).having(func.count(KpiData.id) >= 3
         ).order_by(func.avg(KpiData.status_percentage).asc().nullslast()
@@ -224,7 +225,7 @@ def raporlar_api_nlp_query():
         return jsonify({"success": True, "type": "table",
                         "columns": [_("Kod"), _("PG Adı"), _("Ort. Başarı %"), _("Ölçüm")],
                         "rows": [[r[0] or "—", r[1], round(r[2] or 0, 1), r[3]] for r in rows],
-                        "summary": f"{_date.today().year} {_('yılı en düşük 5 PG')}"})
+                        "summary": f"{resolve_request_year()} {_('yılı en düşük 5 PG')}"})
 
     if pattern_id == "process_health":
         active_py = get_active_plan_year_for_user(current_user)

@@ -5,6 +5,7 @@ Gelişmiş analitik ve raporlama servisi
 """
 
 from extensions import db
+from app.services.date_sovereign import resolve_request_year
 from app.models.process import Process, ProcessKpi, KpiData
 from datetime import datetime, timedelta
 from typing import List, Dict, Optional
@@ -132,7 +133,8 @@ class AnalyticsService:
             }
         """
         if year is None:
-            year = datetime.now().year
+            # S8: K-Radar/Analiz artık yıl seçimini onurlandırır
+            year = resolve_request_year()
         
         # Süreç KPI'larını çek
         kpis = ProcessKpi.query.filter_by(

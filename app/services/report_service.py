@@ -5,6 +5,7 @@ Rapor oluşturma ve export servisi
 """
 
 from extensions import db
+from app.services.date_sovereign import resolve_request_year
 from app.models.process import Process, ProcessKpi, KpiData
 from app.services.analytics_service import AnalyticsService
 from app.utils.numeric import safe_float
@@ -183,7 +184,7 @@ class ReportService:
             Dashboard verisi
         """
         if year is None:
-            year = datetime.now().year
+            year = resolve_request_year()
         
         # Tenant süreçleri
         processes = Process.query.filter_by(
