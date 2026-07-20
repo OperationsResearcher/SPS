@@ -595,3 +595,60 @@ sonunda toplu doğrulama. Faz aralarında onay beklenmez.
 4. Faz sonlarında **durulmaz ama rapor edilir** — hata çıkarsa orada durulur
 
 ---
+
+---
+
+## N. UYGULAMA SIRASINDA ALINAN KARARLAR — K10-K16 (BAĞLAYICI)
+
+> Faz 1 uygulanırken ölçüm plandan sapma gösterdiğinde alınan kararlar.
+> Hepsi kullanıcı onayıyla; script/migration docstring'lerinde de kayıtlı.
+
+### K10 — Boş geçmiş plan yılları silinir, gelecek yıl kalır
+Tomofil #27 ve 4 klonunda 2018-2019 vardı ama `kpi_data` = **0**. Silindi.
+**2027 KALDI** — gelecek yıl planlaması meşru ihtiyaç. Sonuç: 2020-2027.
+
+> ⚠ Silme öncesi FK taraması 2018/2019'a **6.066 satır bağlı** buldu. Ayrıştırıldı:
+> 936'sı Faz 1.1'in T3 doldurması (gerçek veri → **2020'ye taşındı**),
+> 5.130'u override config (T9 kaldırıyor + UNIQUE çakışması → silindi).
+> Tarama yapılmasaydı Blue Ocean/olgunluk verisi sessizce kaybolacaktı.
+
+### K11 — Eskişehir #28'e 2025 üretilir
+Kurumun en eski verisi 2025'ti ama tek plan yılı 2026'ydı (T4 ihlali).
+2025 üretildi; yapısı 2026'dan **geriye klonlandı**, 204 satır veri bağlandı.
+
+### K12 — Verisi olana gerçek zincir, boş kuruma 2026
+Default Corp #1 → 2021-2026 (ilk verisi 2021). #29/#31/#56/#57 → yalnız 2026 (K5).
+
+### K13 — Yılsız kurumlar: ilk yıla bağla, sonra zincirle klonla
+KMF #16 (11 süreç + 146 PG **tamamen yılsız**) önce 2020'ye bağlandı, sonra
+2021→2026 zinciri klonlandı. Tomofil'deki düzgün yapının aynısı elde edildi.
+
+### K14 — Pasif PG'nin verisi olduğu gibi bırakılır
+T12 remap'inde hedefi bulunamayan **273 satırın tamamının PG'si `is_active=False`**
+(silinmiş gösterge; "Deneme PG" vb.). Pasif oldukları için hiçbir yıl bazlı
+ekranda görünmüyor, rapor rakamlarını etkilemiyorlar. Dokunulmadı.
+
+### K15 — Varlıklara `is_included` kolonu eklenir
+Override tablolarındaki 18 satır `is_included=FALSE` taşıyordu (KMF'nin gerçek
+verisi): *"gösterge aktif ama bu yıl karneye dahil değil"*. Varlıkta karşılığı
+yoktu — `is_active` farklı şey (kayıt silinmiş mi). Kolon açıldı
+(migration `yb14a7c2e9f1`), bilgi kaybı olmadan taşındı.
+
+### K16 — Proje birleşmesinde YÖN TERSİNE ÇEVRİLDİ
+T10 "PlanProject ana model" diyordu. Ölçüm maliyeti gösterdi:
+
+| | portföy `Project` | SP `PlanProject` |
+|---|---|---|
+| Veri | 1 proje, 0 görev | 21 proje, 63 görev |
+| Kod | **2719 satır, 25 route, 20 dosya, 10 şablon** | 6 route |
+| Eksik alan | — | Project +9, Task +16 |
+
+`PlanProject`'i ana model yapmak gantt/kanban/RAID/kapasite/takvim ekranlarını
+yeniden bağlamayı gerektiriyordu. **Portföy `Project` ana model oldu**, ona
+`plan_year_id` + `source_project_id` eklendi; 21 proje + 63 görev taşındı.
+
+> `manager_id`/`reporter_id` (NOT NULL) **uydurulmadı** — görevlerin
+> atananından türetildi. `status`/`progress` karşılıksızdı; sessizce
+> düşürülmeyip açıklamaya not olarak yazıldı.
+
+---

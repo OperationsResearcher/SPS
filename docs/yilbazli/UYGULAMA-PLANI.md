@@ -428,10 +428,40 @@ Her faz kendi commit'inde. Hata çıkarsa orada durulur ve rapor edilir.
 
 ### İlerleme
 
-| Faz | Durum |
+| Faz | Durum | Not |
+|---|---|---|
+| 1.0 Yedek | ✅ | `oncesi_` + `faz1_2_sonrasi_` dump |
+| 1.1 Eksik `plan_year_id` | ✅ | 9 tablo · migration `a1f2c3d4e5b6` |
+| 1.2 Clone zinciri | ✅ | yılsız kayıt **0** · K13 |
+| 1.3 Plan yılı zinciri | ✅ | 10 sil / 11 üret / 35 draft · K10-K12 |
+| 1.4 Override → clone | ✅ | 88 taşındı · `is_included` · K15 · migration `yb14a7c2e9f1` |
+| 1.5 `kpi_data` remap (T12) | ✅ | 555 remap · 366.604 sabit · K14 |
+| 1.6 Proje birleşmesi | ✅ | **yön tersine** · K16 · migration `yb16b3d8f4a2` |
+| 1.7 `plan_year_enabled` | ✅ | 13/13 kurum · 12 kapı · T8/B+D |
+| 1.8 Seed garantisi (S9) | ✅ | clone ile doğar · 4 ham INSERT arşivlendi |
+| **FAZ 1 KAPANIŞ** | ✅ | **13/13 doğrulama geçti** (2026-07-20) |
+| 2 Mühür | ⏳ | sırada |
+| 3 Yıl akışı + D0 | ⏳ | |
+| Toplu doğrulama | ⏳ | |
+
+### Faz 1 kapanış ölçümü (2026-07-20)
+
+| Kontrol | Sonuç |
 |---|---|
-| 1.0 Yedek | ⏳ |
-| 1.1-1.8 Model + migration | ⏳ |
-| 2 Mühür | ⏳ |
-| 3 Yıl akışı + D0 | ⏳ |
-| Doğrulama | ⏳ |
+| Yılsız süreç / PG / strateji | **0 / 0 / 0** |
+| 2020 öncesi plan yılı | 0 |
+| Plan yılı olmayan aktif kurum | 0 |
+| `status='closed'` plan yılı (T11) | 0 |
+| `is_included=FALSE` korunan | 18 |
+| `kpi_data` toplam | **366.604** (sabit) |
+| Yetim `kpi_data` | 0 |
+| Yılsız proje | 0 |
+| Flag kapalı kurum | 0 |
+
+### Planın sapma verdiği 3 nokta
+
+| Plan diyordu | Gerçek |
+|---|---|
+| T12: 366.604 satırlık geri alınamaz remap | **555 satır** — Faz 1.2 clone zinciri %99,8'ini zaten doğru bağlamıştı |
+| 1.4: 7.789 override satırı taşınacak | **88 satır** gerçek değer taşıyordu; 2571'i varlığıyla birebir aynıydı |
+| T10: PlanProject ana model | **Ters çevrildi (K16)** — portföy tarafı 2719 satır + 10 şablon taşıyordu |
