@@ -55,6 +55,24 @@ def run_early_warning(app) -> dict:
                 result["tenants_scanned"] += 1
                 tid = tenant.id
 
+                # S6 (yıl bazlı Faz 3.5): arka plan görevlerinde session YOK,
+                # dolayısıyla get_view_year/resolve_request_year kullanılamaz.
+                # Karar: zamanlayıcılar TENANT'IN AKTİF PlanYear'ını esas alır.
+                # Eskiden takvim yılına sabitti ve dashboard API'si plan yılına
+                # bakıyordu — aynı uyarı iki farklı yıl bağlamında üretiliyordu
+                # (HASAR-TESPITI-2 §8, "iki uç çelişik").
+                try:
+                    from app.models.plan_year import PlanYear
+                    _aktif_py = (
+                        PlanYear.query
+                        .filter_by(tenant_id=tid, status="active")
+                        .order_by(PlanYear.year.desc())
+                        .first()
+                    )
+                    tenant_year = _aktif_py.year if _aktif_py else current_year
+                except Exception:
+                    tenant_year = current_year
+
                 # Yöneticileri bul (tenant_admin + executive_manager)
                 managers = User.query.filter(
                     User.tenant_id == tid,
@@ -87,7 +105,7 @@ def run_early_warning(app) -> dict:
                             KpiData.query
                             .filter(
                                 KpiData.process_kpi_id == kpi.id,
-                                KpiData.year == current_year,
+                                KpiData.year == tenant_year,
                                 KpiData.data_date >= three_months_ago,
                                 KpiData.is_active == True,
                             )
