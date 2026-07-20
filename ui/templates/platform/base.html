@@ -396,6 +396,29 @@
 
             <span class="topbar-title">{% block page_title %}Kokpitim{% endblock %}</span>
 
+            {# ── GLOBAL YIL SEÇİCİ ────────────────────────────────────────────
+               Yıl bazlılık sistemin temel çalışma biçimi (K5), o yüzden seçici
+               tek bir sayfaya değil ÜST BARA ait: her ekranda aynı yerde.
+               Seçim anında session'a yazılır ve sayfa yenilenir — böylece
+               bütün ekran o yıla döner (mevcut plan yılı çubuklarıyla aynı desen).
+               Mühürlü yıllar kilit simgesiyle görünür; seçilebilir (veri okunur)
+               ama o yıla yazma engellidir (K8). #}
+            {% if current_user.is_authenticated and global_plan_years %}
+            <div class="topbar-year-picker" title="{{ _('Plan Yılı') }}">
+              <i class="fas fa-calendar-alt topbar-year-icon" aria-hidden="true"></i>
+              <select id="topbar-year-select"
+                      class="topbar-year-select"
+                      aria-label="{{ _('Plan Yılı') }}"
+                      data-set-active-url="{{ url_for('app_bp.api_set_view_year') }}">
+                {% for py in global_plan_years %}
+                <option value="{{ py.year }}" {% if py.year == global_active_year %}selected{% endif %}>
+                  {{ py.year }}{% if py.muhurlu %} 🔒{% endif %}
+                </option>
+                {% endfor %}
+              </select>
+            </div>
+            {% endif %}
+
             {# Topbar Küresel Arama — Ctrl+K paletini açar #}
             {% if current_user.is_authenticated %}
             <button type="button" class="topbar-search-btn" title="{{ _('Ara — Ctrl+K') }}">
@@ -853,6 +876,8 @@
     <script src="{{ url_for('app_bp.static', filename='platform/js/app.js') }}?v={{ config['VERSION'] }}"></script>
     <!-- Sprint 32: Dark mode -->
     <script src="{{ url_for('app_bp.static', filename='platform/js/dark_mode.js') }}?v={{ config['VERSION'] }}"></script>
+    {# Global yıl seçici — üst bar (yıl bazlı program) #}
+    <script src="{{ url_for('app_bp.static', filename='platform/js/topbar_year.js') }}?v={{ config['VERSION'] }}" defer></script>
 
     {# Kule yardımcı sistemi — ERTELENDİ (2026-05-26). docs/ERTELENEN-ISLER.md > E1
        UI stabilleşince yeniden devreye alınacak. Tüm dosyalar korunuyor. #}

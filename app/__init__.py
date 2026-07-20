@@ -171,6 +171,43 @@ def create_app(config_class=None):
         return {"safe_url_for": safe_url_for}
 
     @app.context_processor
+    def _inject_global_plan_years():
+        """Üst bardaki GLOBAL YIL SEÇİCİ için plan yılı listesi.
+
+        Yıl bazlı program (K5): yıl bazlılık sistemin temel çalışma biçimi,
+        dolayısıyla yıl seçici de tek bir sayfaya değil ÜST BARA ait — her
+        ekranda aynı yerde, aynı davranışta.
+
+        Neden context processor: her route'a tek tek eklemek 800+ route'ta
+        kaçırılmaya açıktı (aynı hata `?year` taşımada yaşandı — S8).
+        Tek nokta, tüm sayfalar.
+
+        Hata durumunda sessizce boş liste döner — yıl seçici görünmez ama
+        hiçbir sayfa kırılmaz.
+        """
+        from flask_login import current_user
+        from flask import session as _sess
+
+        try:
+            if not current_user.is_authenticated or not current_user.tenant_id:
+                return {"global_plan_years": [], "global_active_year": None}
+            from app.services.plan_year_service import list_plan_years
+            from app.services.date_sovereign import resolve_request_year, KAPALI_DURUMLAR
+
+            yillar = list_plan_years(current_user.tenant_id) or []
+            aktif = resolve_request_year()
+            return {
+                "global_plan_years": [
+                    {"year": py.year, "muhurlu": py.status in KAPALI_DURUMLAR}
+                    for py in yillar
+                ],
+                "global_active_year": aktif,
+            }
+        except Exception as e:
+            app.logger.error(f"[global_plan_years] {e}")
+            return {"global_plan_years": [], "global_active_year": None}
+
+    @app.context_processor
     def _inject_role_labels():
         """Kanonik rol etiketleri — tek kaynak (app.constants.roles).
 

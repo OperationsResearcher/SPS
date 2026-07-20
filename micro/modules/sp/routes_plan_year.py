@@ -170,6 +170,41 @@ def sp_api_plan_years_set_active():
     return jsonify({"success": True, "active_year": year})
 
 
+@app_bp.route("/api/view-year", methods=["POST"])
+@login_required
+def api_set_view_year():
+    """Üst bardaki GLOBAL YIL SEÇİCİ — görüntüleme yılını değiştirir.
+
+    NEDEN AYRI UÇ (yıl bazlı program, 2026-07-21):
+      Mevcut `.../plan-years/set-active` ucu `@sp_manage_required` ile korunuyor
+      — yalnız 6 yönetici rolü. Ama YIL SEÇMEK bir görüntüleme eylemidir:
+      normal kullanıcı da kendi karnesini geçmiş yılda görebilmeli. Üst bardaki
+      seçici herkese görüneceği için o uca bağlansa standart kullanıcı 403 alırdı.
+
+      Bu uç yalnızca session'a yazar; VERİ DEĞİŞTİRMEZ. Yeni plan yılı da
+      OLUŞTURMAZ (set-active oluşturabiliyor) — yalnız var olan bir yıla geçer.
+      Mühür (K8) etkilenmez: kapalı yıla geçilebilir, veri okunur, ama yazma
+      yolları `plan_year_writable` ile korunmaya devam eder.
+    """
+    data = request.get_json(silent=True) or {}
+    try:
+        year = int(data.get("year"))
+    except (TypeError, ValueError):
+        return jsonify({"success": False, "message": _("Geçersiz yıl.")}), 400
+
+    tid = current_user.tenant_id
+    if not tid:
+        return jsonify({"success": False, "message": _("Kurum bulunamadı.")}), 403
+
+    # Yalnız kurumun GERÇEKTEN sahip olduğu bir yıla geçilebilir.
+    py = PlanYear.query.filter_by(tenant_id=tid, year=year).first()
+    if not py:
+        return jsonify({"success": False, "message": _("Bu yıl için plan dönemi yok.")}), 404
+
+    session["sp_active_year"] = year
+    return jsonify({"success": True, "year": year})
+
+
 def _actor_label() -> str:
     """Denetim kaydı için okunabilir aktör etiketi (kullanıcı silinse de kalır)."""
     ad = (getattr(current_user, "full_name", None)
