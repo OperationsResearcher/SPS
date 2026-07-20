@@ -247,9 +247,9 @@ def surec_api_karne(process_id):
         for f in FavoriteKpi.query.filter_by(user_id=current_user.id).all()
     }
 
-    # Yıllık KPI config: bulk çek (N+1 önlemi) — sadece plan_year_enabled ise
+    # Yıllık KPI config: bulk çek (N+1 önlemi) — K5: her kurumda
     _plan_year_obj = None
-    if current_user.tenant_id and getattr(current_user.tenant, "plan_year_enabled", False):
+    if current_user.tenant_id:  # K5: yıl bazlılık koşulsuz
         _plan_year_obj = get_plan_year(current_user.tenant_id, year)
     _kpi_cfg_map = get_kpi_configs_bulk(kpis, _plan_year_obj) if kpis else {}
 

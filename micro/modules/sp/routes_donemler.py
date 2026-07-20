@@ -62,7 +62,7 @@ def sp_donemler():
     import datetime as _dt
     tenant = current_user.tenant
     tenant_id = current_user.tenant_id
-    plan_year_feature = bool(getattr(tenant, "plan_year_enabled", False)) if tenant else False
+    plan_year_feature = bool(tenant)  # K5: yıl bazlılık koşulsuz
     current_cal_year = _dt.date.today().year
 
     if plan_year_feature and tenant_id:

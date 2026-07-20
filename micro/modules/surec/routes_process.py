@@ -278,7 +278,7 @@ def surec_karne(process_id):
 
     tenant_row = Tenant.query.get(tid) if tid else None
     k_vektor_enabled = bool(tenant_row and getattr(tenant_row, "k_vektor_enabled", False))
-    plan_year_enabled = bool(tenant_row and getattr(tenant_row, "plan_year_enabled", False))
+    plan_year_enabled = bool(tenant_row)  # K5: yıl bazlılık koşulsuz
 
     # Plan year aktifse tüm dönemleri karne year selector'a ver
     plan_years_for_karne = []

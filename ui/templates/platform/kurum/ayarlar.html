@@ -121,28 +121,14 @@
       </span>
     </div>
     <div class="mc-card-body">
+      {# Yıl bazlı Faz 1.7 (K5): açma/kapama anahtarı KALDIRILDI.
+         Yıl bazlılık artık sistemin temel çalışma biçimi; kapatılamaz.
+         Backend gelen toggle isteğini yok sayıyor (kurum/routes.py). #}
       <p class="mc-empty-text kv-settings-intro">
-        {{ _("Açıldığında Stratejik Planlama sayfasında yıl seçici çubuğu görünür. Her plan yılı için KPI hedefleri, ağırlıklar ve metodlar ayrı ayrı tanımlanabilir. Kapalı olduğunda tüm KPI hesapları mevcut <strong>ProcessKpi</strong> değerlerine göre yapılır.") }}
+        {{ _("Tüm veriler yıl bazlı tutulur. Her plan yılı için performans göstergesi hedefleri, ağırlıklar ve metodlar ayrı ayrı tanımlanabilir; seçtiğiniz yıl değiştiğinde tüm ekranlar o yıla göre gelir.") }}
       </p>
-      <div class="kv-enable-panel">
-        <label class="kv-enable-toggle" for="plan_year_enabled">
-          <input type="checkbox" id="plan_year_enabled" class="kv-enable-toggle-input" {% if tenant.plan_year_enabled %}checked{% endif %} />
-          <span class="kv-enable-toggle-ui" aria-hidden="true">
-            <span class="kv-enable-toggle-track"></span>
-            <span class="kv-enable-toggle-thumb"></span>
-          </span>
-          <span class="kv-enable-toggle-copy">
-            <span class="kv-enable-toggle-title">{{ _("Yıllık dönem planlamasını etkinleştir") }}</span>
-            <span class="kv-enable-toggle-sub">{{ _("SP sayfasına yıl seçici eklenir; KPI hedefleri yıl bazında ayrı tutulur.") }}</span>
-            <span class="kv-enable-badges" aria-live="polite">
-              <span class="kv-enable-badge kv-enable-badge--off"><i class="fas fa-toggle-off" aria-hidden="true"></i> {{ _("Kapalı") }}</span>
-              <span class="kv-enable-badge kv-enable-badge--on"><i class="fas fa-toggle-on" aria-hidden="true"></i> {{ _("Açık") }}</span>
-            </span>
-          </span>
-        </label>
-      </div>
 
-      <div id="plan-year-start-panel" style="margin-top:16px;" {% if not tenant.plan_year_enabled %}hidden{% endif %}>
+      <div id="plan-year-start-panel" style="margin-top:16px;">
         <label class="mc-label" for="plan_year_start" style="font-weight:600; margin-bottom:6px; display:block;">
           <i class="fas fa-history" style="margin-right:6px; color:var(--mc-primary,#3b82f6);"></i>{{ _("Geçmiş yılları dahil et") }}
         </label>

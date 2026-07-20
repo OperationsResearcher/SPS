@@ -233,7 +233,7 @@ def masaustu():
     active_plan_year_val = date.today().year
 
     tenant = current_user.tenant
-    if tenant and getattr(tenant, "plan_year_enabled", False) and tenant_id:
+    if tenant and tenant_id:  # K5: yıl bazlılık koşulsuz
         plan_year_feature = True
         try:
             from app.models.plan_year import PlanYear

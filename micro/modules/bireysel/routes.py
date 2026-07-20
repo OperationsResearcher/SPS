@@ -292,7 +292,7 @@ def bireysel_api_veri_add():
         # Tarih egemen plan year kontrolü (Faz 2)
         cross_year_notice = None
         tenant_obj = db.session.get(_Tenant, current_user.tenant_id)
-        if tenant_obj and getattr(tenant_obj, "plan_year_enabled", False):
+        if tenant_obj:  # K5: yıl bazlılık koşulsuz
             target_py = resolve_plan_year_for_date(current_user.tenant_id, data_date_val)
             if not entity_exists_in_year(pg, target_py):
                 return jsonify(build_existence_error(

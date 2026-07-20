@@ -904,7 +904,6 @@ def get_active_plan_year_for_user(user) -> Optional[PlanYear]:
     Kullanıcının aktif SPDönemini döner.
 
     Tarih egemen doktrin (Faz 1):
-    - Tenant'ta plan_year_enabled=False ise None döner.
     - Session'da sp_active_year varsa o yılın PlanYear'ı (kullanıcı seçimi).
     - Yoksa **bugünün takvim yılı** için PlanYear (UI default'ları ile tutarlı).
     - O da yoksa tenant'ın status='active' PlanYear'ı (legacy fallback).
@@ -918,8 +917,9 @@ def get_active_plan_year_for_user(user) -> Optional[PlanYear]:
     tenant = Tenant.query.get(user.tenant_id)
     if tenant is None:
         return None
-    if not getattr(tenant, "plan_year_enabled", False):
-        return None
+    # Yıl bazlı Faz 1.7 (K5): plan_year_enabled kontrolü KALDIRILDI.
+    # Yıl bazlılık artık zorunlu; flag'e bakmak, kapalı kurumlarda tüm yıl
+    # filtrelerini sessizce devre dışı bırakıyordu (HASAR-TESPITI.md §1).
 
     year = session.get("sp_active_year")
     if year:

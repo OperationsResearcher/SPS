@@ -97,14 +97,15 @@ def kurum_ayarlar():
                 {"k_vektor_enabled": tenant.k_vektor_enabled},
             )
 
+        # Yıl bazlı Faz 1.7 (K5): plan_year_enabled artık AÇILIP KAPANMAZ.
+        # Yıl bazlılık sistemin temel çalışma biçimi; kapatmak tüm yıl
+        # filtrelerini devre dışı bırakıyordu. Gelen istek sessizce yok
+        # sayılır — eski istemciler hata almasın diye 400 döndürülmüyor.
         if "plan_year_enabled" in data:
-            pye = data.get("plan_year_enabled")
-            if isinstance(pye, bool):
-                tenant.plan_year_enabled = pye
-            elif isinstance(pye, str):
-                tenant.plan_year_enabled = pye.strip().lower() in ("1", "true", "yes", "on")
-            elif isinstance(pye, (int, float)):
-                tenant.plan_year_enabled = bool(pye)
+            current_app.logger.info(
+                "[kurum] plan_year_enabled toggle ignored (K5: always on) "
+                f"tenant={tenant.id} requested={data.get('plan_year_enabled')!r}"
+            )
 
         if "plan_year_start" in data:
             raw_pys = data.get("plan_year_start")

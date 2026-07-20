@@ -109,7 +109,7 @@ def sp_api_plan_years_create():
     from_year = data.get("from_year")
     name = (data.get("name") or "").strip() or None
 
-    plan_year_feature = bool(getattr(Tenant.query.get(tid), "plan_year_enabled", False))
+    plan_year_feature = True  # K5: yıl bazlılık koşulsuz
 
     try:
         if from_year:

@@ -118,7 +118,7 @@ def surec_api_kpi_data_add():
 
         # Plan year toggle açıksa kontrolleri yap (yoksa eski davranış)
         tenant_obj = db.session.get(Tenant, current_user.tenant_id)
-        if tenant_obj and getattr(tenant_obj, "plan_year_enabled", False):
+        if tenant_obj:  # K5: yıl bazlılık koşulsuz
             target_py = resolve_plan_year_for_date(current_user.tenant_id, data_date_val)
             if not entity_exists_in_year(kpi, target_py):
                 return jsonify(build_existence_error(

@@ -247,7 +247,7 @@ def surec_api_kpi_delete(kpi_id):
     try:
         data = request.get_json(silent=True) or {}
         tenant = current_user.tenant
-        plan_year_enabled = bool(tenant and getattr(tenant, "plan_year_enabled", False))
+        plan_year_enabled = bool(tenant)  # K5: yıl bazlılık koşulsuz
         try:
             target_year = int(data.get("year")) if data.get("year") is not None else None
         except (TypeError, ValueError):
@@ -287,7 +287,7 @@ def surec_api_kpi_list(process_id):
 
     # Opsiyonel yıl parametresi: yıllık config varsa override değerler döner
     year_param = request.args.get("year", type=int)
-    _py_enabled = year_param and current_user.tenant_id and getattr(current_user.tenant, "plan_year_enabled", False)
+    _py_enabled = year_param and current_user.tenant_id  # K5: yıl bazlılık koşulsuz
     _py_obj = get_plan_year(current_user.tenant_id, year_param) if _py_enabled else None
     _cfg_map = get_kpi_configs_bulk(kpis, _py_obj) if kpis else {}
 

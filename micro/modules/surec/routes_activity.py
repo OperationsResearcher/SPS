@@ -94,7 +94,7 @@ def surec_api_activity_add():
     # Faaliyetin start_at'ı hangi yıla düşüyorsa, süreç o yılda var olmalı.
     tenant_obj = db.session.get(Tenant, current_user.tenant_id)
     cross_year_notice = None
-    if tenant_obj and getattr(tenant_obj, "plan_year_enabled", False):
+    if tenant_obj:  # K5: yıl bazlılık koşulsuz
         raw_start = data.get("start_at") or data.get("start_date")
         target_date_for_check = None
         if raw_start:

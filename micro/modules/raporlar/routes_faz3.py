@@ -802,7 +802,7 @@ def raporlar_api_audit_paketi_generate():
         if tenant.short_name: info_rows.append([_("Kısa Ad"), tenant.short_name])
         if tenant.sector: info_rows.append([_("Sektör"), tenant.sector])
         if tenant.employee_count: info_rows.append([_("Çalışan"), str(tenant.employee_count)])
-        info_rows.append([_("Plan Year Aktif"), _("Evet") if tenant.plan_year_enabled else _("Hayır")])
+        # K5: yıl bazlılık her kurumda zorunlu — satır bilgi vermiyordu, kaldırıldı
         info_rows.append([_("Tenant ID"), str(tid)])
     tbl = h["Table"](info_rows, colWidths=[5*h["cm"], 11*h["cm"]])
     tbl.setStyle(h["TableStyle"]([

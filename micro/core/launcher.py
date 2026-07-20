@@ -18,7 +18,7 @@ def _get_plan_year_context():
     tenant_id = current_user.tenant_id
     current_cal_year = datetime.date.today().year
 
-    if not (tenant and getattr(tenant, "plan_year_enabled", False) and tenant_id):
+    if not (tenant and tenant_id):  # K5: yıl bazlılık koşulsuz
         return dict(
             plan_year_feature=False,
             plan_years=[],

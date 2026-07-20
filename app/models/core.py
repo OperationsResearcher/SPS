@@ -49,7 +49,11 @@ class Tenant(db.Model):
 
     k_vektor_enabled = db.Column(db.Boolean, default=False, nullable=False)
     k_radar_enabled = db.Column(db.Boolean, default=False, nullable=False)
-    plan_year_enabled = db.Column(db.Boolean, default=False, nullable=False)
+    # Yıl bazlı Faz 1.7 (K5): yıl bazlılık artık ZORUNLU, opsiyonel özellik değil.
+    # Kolon henüz DÜŞÜRÜLMEDİ (22 dosyada okunuyor) ama varsayılan TRUE oldu ve
+    # tüm kurumlarda TRUE'ya çekildi. Okuma noktaları temizlendikçe kolon da
+    # kalkacak. Yeni kod bu alanı OKUMASIN — yıl bazlılık koşulsuzdur.
+    plan_year_enabled = db.Column(db.Boolean, default=True, nullable=False)
     plan_year_start = db.Column(db.Integer, nullable=True)  # Geçmiş yıl başlangıcı (ör. 2021)
 
     # ─── Bayi/Holding Hiyerarşisi (Sprint A) ──────────────────────────────────
