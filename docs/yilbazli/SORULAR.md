@@ -70,7 +70,7 @@ override tabloları (`*_year_configs`). Strateji katmanında **ikisi de** var.
 
 **Soru:** Hedef mimari hangisi olacak? Karışık kalırsa çakışma riski sürer.
 
-### S5 — `plan_year_enabled` flag'i (açık)
+### S5 — `plan_year_enabled` flag'i ✅ CEVAPLANDI (K5)
 Bu flag false olan tenant'ta **hiçbir yıl filtresi çalışmıyor**; sistem tamamen
 yıl-bağımsız.
 
@@ -125,3 +125,119 @@ Flag açık 3 tenant'ın **2'sinde** (KMF #16, Eskişehir #28) hedefli
 
 **Soru:** Yeni plan yılı açılışında seed'in garanti çalışması için
 `vm_apply_plan_years.py` gibi ham INSERT yolları kapatılsın mı?
+
+---
+
+## E. KULLANICI KARARLARI — 2026-07-20 (BAĞLAYICI)
+
+> Kullanıcının doğrudan ifadesi. Bu kararlar önceki soruların bir kısmını kapatır,
+> yeni gereksinimler getirir.
+
+### K5 — Yıl bazlılık ZORUNLU, istisnasız
+> "Tüm kullanıcılarımız artık yıl bazlı olmalı."
+
+**Sonuç:** `plan_year_enabled` flag'i **kalkar**. Yıl bazlılık opsiyonel özellik
+değil, sistemin temel çalışma biçimi. → **S5 kapandı.**
+
+Etki: Şu an 12 kurumun **9'unda flag kapalı** (bkz `HASAR-TESPITI-2.md` §11).
+Hepsi yıl bazlı hale gelecek → veri göçü gerekir.
+
+### K6 — Sistem başlangıcı 2020
+> "Sistem 2020 yılından itibaren olmalı."
+
+Plan yılı ekseni **2020'de başlar**. Her kurum için 2020'den itibaren plan yılı
+zinciri kurulmalı.
+
+### K7 — Yıl yaşam döngüsü: veri girişi → kapatma (mühür)
+> "Kurum 2022 verilerini girer (SP, vizyon, stratejiler, süreçler, PG, PGV),
+> işi biter. Kurum üst yönetimi artık bu plan yılını **kapatabilmeli**."
+
+Bir plan yılı, o yıla ait **tüm** girdileri kapsar: SP verileri (vizyon, strateji),
+süreç tanımları, PG'ler, PG verileri (PGV).
+
+### K8 — Kapalı yıl MUTLAK korumalı
+> "Kapanmış bir yıla **asla** bir veri girişi, düzenlemesi, silmesi olmamalı."
+
+Mutlak kural. İstisna yok.
+
+### K9 — Mühür açma yetkisi: kurum üst yönetimi
+> "Çok özel bir durum olursa, major bir eksiklik yakalanırsa, kurum üst yönetimi
+> **mührü açıp** plan yılını tekrar aktif hale getirebilmeli."
+
+Açma yolu **var olmalı**, ama yetki kurum üst yönetiminde.
+
+---
+
+## F. K7-K9'un DENETİM SONUCU — mühür yok
+
+> Tam denetim: [`HASAR-TESPITI-2.md`](HASAR-TESPITI-2.md) §13
+
+Kullanıcı "belki sorular değişir, bir kontrol et" dedi. Kontrol edildi —
+**gereksinimlerin hiçbiri karşılanmıyor:**
+
+| Gereksinim | Durum |
+|---|---|
+| K7 — Yıl kapatma | ⚠️ Var (`routes_plan_year.py:176`) ama sadece `status` string'i yazıyor |
+| K8 — Kapalı yıl korumalı | ❌ **YOK** — kapalı yıla serbestçe veri girilip silinebiliyor |
+| K9 — Üst yönetim mührü açabilmeli | ❌ **YOK** — açma route'u hiç yok, DB müdahalesi şart |
+
+**En kötü kombinasyon:** Sistem mührü hem uygulamıyor, hem de yanlışlıkla
+kapatılan bir yılı kurtarma yolu bırakmıyor.
+
+Koruma sadece 2 endpoint'te var (ikisi de KPI hedef config'i). **Veri giriş
+yollarının hiçbirinde yok** — `kpi-data/add`, `bulk-import`, `update`, `delete`,
+harici API, bireysel veri girişi, SP yazma, proje CRUD: hepsi korumasız.
+
+---
+
+## G. YENİ SORULAR (K5-K9'dan doğan)
+
+### S10 — `plan_year_enabled` kaldırma göçü
+K5 gereği flag kalkacak. Şu an 9 kurumda kapalı, 2'sinde (KMF #16, Eskişehir #28)
+plan yılı var ama **hedefli config sıfır**.
+
+**Soru:** Flag kalkınca bu kurumlar ne olacak — 2020'den itibaren plan yılları
+otomatik üretilip mevcut veriler yıllara mı dağıtılacak? Dağıtım kuralı ne
+(`kpi_data.year` zaten var, ondan mı türetilecek)?
+
+### S11 — Mevcut yılsız verinin 2020 eksenine oturtulması
+K6 gereği sistem 2020'de başlıyor. Ama mevcut `ProcessKpi.target_value` yılsız —
+hangi yıla ait olduğu bilinmiyor.
+
+**Soru:** Mevcut yılsız hedefler hangi yıla yazılacak? Öneri: aktif yıla kopyala,
+geçmiş yıllar `kpi_data` snapshot'ından türetilsin — **ama** KMF örneğinde
+snapshot'ların bir kısmı üretilmiş veri çıktı (bkz `OLCUMLER.md` §4).
+
+### S12 — Mühür kapsamı: neler kilitlenecek?
+K8 "asla veri girişi/düzenlemesi/silmesi olmamalı" diyor.
+
+**Soru:** Kilit hangi varlıkları kapsayacak?
+- (a) Sadece o yıla ait veri (`KpiData.year`, `ActivityTrack.year`)
+- (b) + O yıla ait tanımlar (PG hedefi, süreç, strateji, SWOT…)
+- (c) + Yıl-agnostik varlıklar da (Proje, Blue Ocean, VRIO — bunların yılı yok)
+
+(c) şu an teknik olarak imkânsız — o varlıkların yıl kolonu yok.
+
+### S13 — Mühür açma: denetim izi
+K9 açma yetkisi veriyor. Bu geri alınamaz bir güvenlik kapısı.
+
+**Soru:** Açma işlemi loglanacak mı — kim, ne zaman, **neden** açtı? Yeniden
+kapatma zorunlu mu, yoksa açık kalabilir mi? Öneri: gerekçe alanı zorunlu +
+denetim tablosu.
+
+### S14 — Kapatma route'unda CSRF muafiyeti
+`routes_plan_year.py:172` `@csrf.exempt`. Kapatma tek yönlü ve (şu an) geri
+alınamaz bir işlem.
+
+**Soru:** CSRF muafiyeti kaldırılsın mı? (Öneri: evet.)
+
+### S15 — Kilit nerede uygulanacak — mimari
+Denetimin önerisi: endpoint başına elle `if` eklemek **tekrar kaçırılmaya açık**
+(bugün 15+ yazma yolu korumasız).
+
+**Öneri:**
+1. `date_sovereign.resolve_plan_year_for_date` kapalı yıl sinyali versin
+2. Ortak **`plan_year_writable_required`** dekoratörü tüm yazma route'larını sarsın
+3. Ek güvenlik: DB seviyesinde trigger
+
+**Soru:** Bu yaklaşım onaylanıyor mu?

@@ -196,3 +196,108 @@ Bu, seed açığının KMF'ye özgü olmadığını, **sistemik** olduğunu gös
 | 6 | **Frontend'de yıl taşıma mimarisi yok** | K-Rapor hariç 40+ çağrı yılsız |
 | 7 | **Seed açığı sistemik** | 3 flag-açık tenant'ın 2'sinde hedefli cfg = 0 |
 | 8 | **Arka plan görevlerinde yıl kaynağı tanımsız** | Session yok → `today.year` |
+
+---
+
+## 13. MÜHÜR DENETİMİ — kapalı yıl korumasız (2026-07-20, kullanıcı gereksinimi üzerine)
+
+**Kullanıcı gereksinimi:** Kapanmış bir yıla **asla** veri girişi/düzenleme/silme
+olmamalı. Sadece kurum üst yönetimi mührü açıp yılı tekrar aktif yapabilmeli.
+
+**Denetim sonucu: mühür isim düzeyinde var, uygulama düzeyinde YOK.**
+
+### 13.1 Açma (mühür kaldırma) route'u: **YOK**
+
+Tüm kod tabanında `status = "active"` ataması yapan **hiçbir route yok**.
+`reopen` / `unseal` / "mühür kaldır" anlamına gelen hiçbir endpoint, servis
+fonksiyonu veya UI aksiyonu bulunmuyor.
+
+> Bir yıl kapatıldığında uygulama arayüzünden **geri açmanın hiçbir yolu yok** —
+> kurum üst yönetimi dahil. Geri dönüş sadece doğrudan DB müdahalesiyle mümkün.
+
+Gereksinimin ikinci yarısı **hiç uygulanmamış**.
+
+### 13.2 Koruma OLAN yerler — sadece 2 endpoint
+
+| Dosya:satır | Route | Not |
+|---|---|---|
+| `sp/routes_plan_year.py:179` | `.../close` | Idempotency, koruma değil |
+| `sp/routes_plan_year.py:231` | `.../kpi-configs/<kpi_id>` | ✅ gerçek koruma |
+| `sp/routes_plan_year.py:264` | `.../kpi-configs/bulk` | ✅ gerçek koruma |
+
+İkisi de yalnızca **yıllık KPI hedef konfigürasyonu**. Veri girişinin hiçbirinde yok.
+
+### 13.3 Koruma OLMAYAN yazma yolları — KRİTİK
+
+`micro/**/*.py` altında `"closed"` geçen tek route dosyası `routes_plan_year.py`.
+Diğer tüm yazma yolları korumasız:
+
+| Dosya:satır | Yazma yolu |
+|---|---|
+| `surec/routes_kpi_data.py:79` | **KpiData girişi** |
+| `surec/routes_kpi_data.py:217` | Excel toplu içe aktarım |
+| `surec/routes_kpi_data.py:378` | Veri düzenleme |
+| `surec/routes_kpi_data.py:472` | **Veri silme** |
+| `api/routes.py:59,131,157` | **Harici API** — POST/PATCH/DELETE `kpi-data` |
+| `surec/routes_kpi.py` (tamamı) | ProcessKpi CRUD |
+| `surec/routes_activity.py` | Faaliyet takip |
+| `surec/routes_process.py` | Süreç CRUD (sadece rol kontrolü `:452`) |
+| `bireysel/routes.py:~226,~251,~270-310` | Bireysel PG düzenle/sil + veri girişi |
+| `sp/routes_analysis.py` | SWOT/TOWS/PESTEL/Porter/BSC/OKR (sadece rol) |
+| `sp/routes_strategy.py` | Strateji CRUD |
+| `proje/*` | Proje/görev CRUD (`closed` hiç geçmiyor) |
+
+> **Sonuç: Kapalı bir yıla serbestçe veri girilebiliyor, düzenlenebiliyor ve
+> silinebiliyor.**
+
+### 13.4 Yanıltıcı "koruma" — tarih egemen kontrol yıl durumuna bakmıyor
+
+`routes_kpi_data.py:121-136` ve `bireysel/routes.py:~292-305`'te
+`plan_year_enabled` açık tenant'lar için bir kontrol var, **ama yılın kapalı olup
+olmadığına bakmıyor**:
+
+- [`date_sovereign.py:55`](../../app/services/date_sovereign.py#L55)
+  `resolve_plan_year_for_date` → `filter_by(tenant_id=..., year=y).first()` —
+  **status filtresi yok**, kapalı yılı normalce döndürüyor
+- [`date_sovereign.py:87`](../../app/services/date_sovereign.py#L87)
+  `entity_exists_in_year` → yalnızca `plan_year_id` eşleşmesi; `plan_year_id`
+  None ise koşulsuz `True` (`:99`)
+
+> `data_date="2024-06-30"` ile yapılan giriş, kapalı 2024 PlanYear'ını çözer,
+> varlık kontrolünü geçer ve **kaydı kapalı yıla yazar**.
+
+### 13.5 `close_plan_year` ne yapıyor
+
+[`plan_year_service.py:297-313`](../../app/services/plan_year_service.py#L297) —
+sadece iki alan:
+
+```python
+plan_year.status = "closed"
+plan_year.closed_at = datetime.now(timezone.utc)
+```
+
+**Başka hiçbir kilit yok:** DB trigger yok, ilgili kayıtlara `is_locked`/`frozen`
+bayrağı basılmıyor, snapshot/checksum alınmıyor, `Process`/`ProcessKpi`/`KpiData`
+salt-okunur hale gelmiyor.
+
+Docstring'in iddiası ("Kapalı bir yıl artık düzenlenemez") **kodda karşılığı
+olmayan bir yorum**.
+
+### 13.6 Kapatma yetkisi
+
+`sp/routes_plan_year.py:171-190` → `@sp_manage_required` → roller:
+`Admin`, `admin`, `tenant_admin`, `executive_manager`, `kurum_yoneticisi`, `ust_yonetim`
+
+⚠️ Route `@csrf.exempt` (`:172`) — kapatma tek yönlü ve **geri alınamaz** bir işlem
+olduğu için CSRF muafiyeti ayrıca riskli.
+
+### 13.7 Önerilen yapısal düzeltme
+
+Endpoint başına elle `if` eklemek bu kadar çok yazma yolunda **tekrar kaçırılmaya
+açık**. Doğal nokta:
+
+1. `date_sovereign.resolve_plan_year_for_date` — kapalı yıl döndüğünde çağıranı
+   zorlayacak bir sinyal
+2. Tüm yazma route'larını saran ortak bir **`plan_year_writable_required`
+   dekoratörü**
+3. Açma route'u + yetki (üst yönetim) + denetim izi (kim, ne zaman, neden açtı)
