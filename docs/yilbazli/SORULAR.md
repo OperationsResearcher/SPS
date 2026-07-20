@@ -241,3 +241,55 @@ Denetimin önerisi: endpoint başına elle `if` eklemek **tekrar kaçırılmaya 
 3. Ek güvenlik: DB seviyesinde trigger
 
 **Soru:** Bu yaklaşım onaylanıyor mu?
+
+---
+
+## H. KULLANICI CEVAPLARI — 2026-07-20 (TÜM SORULAR KAPANDI)
+
+> Kullanıcı S1-S15'in tamamını cevapladı. Bu bölüm bağlayıcıdır.
+
+| Soru | Karar |
+|---|---|
+| **S1** | ✅ **Yerelde silindi**, Yayın'a dokunulmadı. Gerekçe: iş bitince yerelden Yayın'a tüm DB taşınacak — ayrı iş çıkmasın |
+| **S2** | ✅ Model değişikliği + migration **dahil**. Uyarı: yeni değişiklik istekleri gelecek, migration **genişleyebilir** |
+| **S3** | ✅ **İki proje sistemi birleştirilecek** (portföy `Project` + SP `PlanProject`) |
+| **S4** | ✅ Doğru mimariyi Claude belirleyecek. Kullanıcı yönü: **tek yerde yıl bazlı yönetim** |
+| **S5** | ✅ Tüm kurumlar için **zorunlu**. Yeni kurum 2026'dan başlar; geçmiş yıla veri girmek isteyen **yılı değiştirmek zorunda** |
+| **S6** | ✅ Arka plan görevleri **tenant'ın aktif yılını** kullanacak |
+| **S7** | ✅ Bireysel de yıl bazlı olacak — kişinin hedefleri yıllara göre değişebilir |
+| **S8** | ✅ **Güvenli yol**: backend'de `?year` yokken session'a düş (40+ fetch düzeltmek yerine) |
+| **S9** | ✅ Karar Claude'a bırakıldı — seed garantisi sağlanacak |
+| **S10** | ✅ Plan yılları **otomatik üretilecek**, mevcut veri `kpi_data.year`'a göre yıllara dağıtılacak |
+| **S11** | ✅ **Tek hedef varsa tüm yıllara yazılır** |
+| **S12** | ✅ **(c)** — yıl-agnostik varlıkların verisi **her yıla yazılır** (teknik engel böyle çözülür) |
+| **S13** | ✅ **Gerekçe alanı zorunlu + denetim tablosu** |
+| **S14** | ✅ CSRF muafiyeti **kaldırılacak** |
+| **S15** | ✅ Önerilen mimari onaylandı: `date_sovereign` sinyali + `plan_year_writable_required` dekoratörü |
+
+### S1 uygulama kaydı (tamamlandı)
+
+**Yerelde silindi** — 2026-07-20:
+
+| | |
+|---|---|
+| Silinen | `kpi_data` **202** satır + `kpi_data_audits` **8** satır |
+| İmza | `created_at = 2026-03-26 19:08:23` (202/202 tam eşleşme) |
+| KMF toplam | 587 → **385** |
+| Yedek | `backups/yerel_temizlik/kmf_uretilmis_kpi_data_2026-07-20_1558.json` + `kmf_uretilmis_audits.json` |
+
+**Doğrulama:** kalan şüpheli **0** · ay-tutarsızlık **189 → 0** · gelecek tarihli 38 → **5**
+
+Kalan 5 satır **meşru**: hepsi `2026-12-31` tarihli yıllık dönem kaydı
+(`period_month = None`), farklı zamanlarda girilmiş gerçek kullanıcı verisi.
+Yıllık PG'de dönem sonu tarihi normaldir — dokunulmadı.
+
+**Yayın'a dokunulmadı.** Yayın'daki 202 satır duruyor; iş bitince yerelden
+Yayın'a tam DB taşıması yapılacağı için ayrıca temizlenmeyecek.
+
+### S3/S4'ten doğan tasarım görevi (Claude'a)
+
+Kullanıcı yönü net: **"tek bir yerde yıl bazlı sistemi yönetmek"**.
+Bugün iki mekanizma bir arada (full-clone `plan_year_id` + override `*_year_configs`)
+ve iki proje sistemi var. Doğru hedef mimariyi Claude önerecek, kullanıcı onaylayacak.
+
+Bu, uygulama planının **ilk maddesi**: mimari karar belgesi.
