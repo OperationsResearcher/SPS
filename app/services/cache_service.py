@@ -3,6 +3,7 @@
 Cache Service - Centralized caching logic for business operations
 """
 from app.extensions import cache
+from app.services.date_sovereign import resolve_request_year
 from app.utils.cache_utils import CACHE_KEYS, get_cached_or_compute, invalidate_tenant_cache
 
 
@@ -30,7 +31,7 @@ class CacheService:
         else:
             # Invalidate all years
             from datetime import datetime
-            current_year = datetime.now().year
+            current_year = resolve_request_year()
             for y in range(current_year - 2, current_year + 2):
                 cache.delete(CACHE_KEYS['vision_score'](tenant_id, y))
     

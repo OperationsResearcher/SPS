@@ -60,6 +60,17 @@ def import_kpi_data_from_excel(
     _duplicate_codes = {code for code, cnt in _code_counts.items() if cnt > 1}
     kpi_map = {k.code: k.id for k in _kpis if k.code and k.code not in _duplicate_codes}
 
+    # MÜHÜR (K8, yıl bazlı Faz 2): kurumun mühürlü yılları — tek sorguda,
+    # döngü içinde sorgulamak N+1 olurdu.
+    from app.models.plan_year import PlanYear
+    from app.services.date_sovereign import KAPALI_DURUMLAR
+    _muhurlu_yillar = {
+        py.year for py in PlanYear.query
+        .filter(PlanYear.tenant_id == tenant_id,
+                PlanYear.status.in_(KAPALI_DURUMLAR))
+        .all()
+    }
+
     valid: list[dict] = []
     errors: list[dict] = []
     row_iter = ws.iter_rows(values_only=True)
@@ -111,6 +122,13 @@ def import_kpi_data_from_excel(
                 raise ValueError(f"Geçersiz period_no: {period_no}")
             if actual in (None, ""):
                 raise ValueError("actual_value boş")
+            # MÜHÜR (K8, yıl bazlı Faz 2): mühürlü yıla toplu içe aktarım da
+            # yapılamaz. Satır bazında reddedilir ki kullanıcı hangi yılın
+            # kapalı olduğunu görsün — dosyanın tamamı sessizce düşmesin.
+            if year_int in _muhurlu_yillar:
+                raise ValueError(
+                    f"{year_int} plan dönemi mühürlü — bu yıla veri aktarılamaz"
+                )
 
             # Veri tarihi: yıl + period_no → tahmini date
             month = period_no_int if period_type == "Aylık" else (period_no_int * 3 if period_type == "Çeyreklik" else 12)

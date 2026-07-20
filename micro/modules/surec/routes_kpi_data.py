@@ -37,6 +37,8 @@ from app.services.date_sovereign import (
     build_existence_error,
     build_cross_year_notice,
     get_view_year,
+    plan_year_writable,
+    build_sealed_error,
 )
 from app.services.score_engine_service import compute_process_scores_internal
 from app.utils.audit_logger import AuditLogger
@@ -70,6 +72,7 @@ from micro.modules.surec.helpers import (
     _latest_update_audit_by_kpi_data_ids,
     _parent_options_with_depth,
     _process_for_user,
+    muhur_engeli,
     _user_can_add_activity,
     _user_can_manage_activity,
     _user_display_name,
@@ -118,8 +121,13 @@ def surec_api_kpi_data_add():
 
         # Plan year toggle açıksa kontrolleri yap (yoksa eski davranış)
         tenant_obj = db.session.get(Tenant, current_user.tenant_id)
-        if tenant_obj and getattr(tenant_obj, "plan_year_enabled", False):
+        if tenant_obj:  # K5: yıl bazlılık koşulsuz
             target_py = resolve_plan_year_for_date(current_user.tenant_id, data_date_val)
+            # MÜHÜR (K8): kapalı yıla veri girilemez. Mutlak kural, istisna yok.
+            # target_py None ise buraya girilmez — o durumu aşağıdaki
+            # entity_exists_in_year zaten 409 + açıklayıcı mesajla yakalıyor.
+            if target_py is not None and not plan_year_writable(target_py):
+                return jsonify(build_sealed_error(target_py)), 423
             if not entity_exists_in_year(kpi, target_py):
                 return jsonify(build_existence_error(
                     entity=kpi,
@@ -388,6 +396,10 @@ def surec_api_kpi_data_update(data_id):
     proc = _process_for_user(entry.process_kpi.process_id)
     if not proc or not user_can_edit_kpi_data_row(current_user, entry, proc):
         return jsonify({"success": False, "message": _("Bu veriyi güncelleme yetkiniz yok.")}), 403
+    # MÜHÜR (K8): mühürlü yılın verisi düzenlenemez
+    engel = muhur_engeli(entry.process_kpi)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     data = request.get_json() or {}
     old_actual = entry.actual_value or ""
     old_desc = entry.description or ""
@@ -482,6 +494,10 @@ def surec_api_kpi_data_delete(data_id):
     proc = _process_for_user(entry.process_kpi.process_id)
     if not proc or not user_can_edit_kpi_data_row(current_user, entry, proc):
         return jsonify({"success": False, "message": "Bu veriyi silme yetkiniz yok."}), 403
+    # MÜHÜR (K8): mühürlü yılın verisi silinemez
+    engel = muhur_engeli(entry.process_kpi)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     try:
         now = datetime.now(timezone.utc)
         for attempt in (1, 2):

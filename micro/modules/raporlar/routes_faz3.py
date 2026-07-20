@@ -8,6 +8,7 @@ from datetime import datetime, timedelta, timezone, date as _date
 from flask import render_template, jsonify, request, current_app, send_file
 from flask_login import login_required, current_user
 from app.utils.decorators import require_module
+from app.services.date_sovereign import resolve_request_year
 from sqlalchemy import func, and_, or_, text, select
 
 from platform_core import app_bp
@@ -117,7 +118,7 @@ def raporlar_api_stratejik_yillik_generate():
     h = _pdf_helpers()
     tenant = db.session.get(Tenant, tid)
     active_py = get_active_plan_year_for_user(current_user)
-    year_label = active_py.year if active_py else _date.today().year
+    year_label = active_py.year if active_py else resolve_request_year()
     from html import escape as _he
     import re as _re
     _raw_name = tenant.name if tenant else "Kurum"
@@ -391,7 +392,7 @@ def raporlar_api_yatirimci_sunum_generate():
         return jsonify({"success": False, "message": "Tenant yok"}), 400
     tenant = db.session.get(Tenant, tid)
     active_py = get_active_plan_year_for_user(current_user)
-    year_label = str(active_py.year) if active_py else str(_date.today().year)
+    year_label = str(active_py.year) if active_py else str(resolve_request_year())
     tname = tenant.name if tenant else "Kurum"
 
     strategies = Strategy.query.filter_by(tenant_id=tid, is_active=True,
@@ -554,7 +555,9 @@ def raporlar_api_esg_rapor_generate():
         return jsonify({"success": False, "message": "Tenant yok"}), 400
     tenant = db.session.get(Tenant, tid)
     tname = tenant.name if tenant else "Kurum"
-    year = _date.today().year
+    # S8: kullanıcının seçtiği yıl (yoksa takvim yılı) — eskiden
+    # takvim yılına sabitti, yıl seçici bu raporları etkilemiyordu.
+    year = resolve_request_year()
 
     h = _pdf_helpers()
     buf = io.BytesIO()
@@ -765,7 +768,9 @@ def raporlar_api_audit_paketi_generate():
         return jsonify({"success": False, "message": "Tenant yok"}), 400
     tenant = db.session.get(Tenant, tid)
     tname = tenant.name if tenant else "Kurum"
-    year = _date.today().year
+    # S8: kullanıcının seçtiği yıl (yoksa takvim yılı) — eskiden
+    # takvim yılına sabitti, yıl seçici bu raporları etkilemiyordu.
+    year = resolve_request_year()
 
     h = _pdf_helpers()
     buf = io.BytesIO()
@@ -802,7 +807,7 @@ def raporlar_api_audit_paketi_generate():
         if tenant.short_name: info_rows.append([_("Kısa Ad"), tenant.short_name])
         if tenant.sector: info_rows.append([_("Sektör"), tenant.sector])
         if tenant.employee_count: info_rows.append([_("Çalışan"), str(tenant.employee_count)])
-        info_rows.append([_("Plan Year Aktif"), _("Evet") if tenant.plan_year_enabled else _("Hayır")])
+        # K5: yıl bazlılık her kurumda zorunlu — satır bilgi vermiyordu, kaldırıldı
         info_rows.append([_("Tenant ID"), str(tid)])
     tbl = h["Table"](info_rows, colWidths=[5*h["cm"], 11*h["cm"]])
     tbl.setStyle(h["TableStyle"]([

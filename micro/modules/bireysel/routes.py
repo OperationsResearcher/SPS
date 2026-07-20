@@ -28,12 +28,16 @@ from app.utils.karne_hesaplamalar import (
 )
 from app.services.plan_year_service import get_active_plan_year_for_user
 from app.services.date_sovereign import (
+    resolve_request_year,
     resolve_plan_year_for_date,
     entity_exists_in_year,
     build_existence_error,
     build_cross_year_notice,
     get_view_year,
+    plan_year_writable,
+    build_sealed_error,
 )
+from micro.modules.surec.helpers import muhur_engeli
 from app.models.core import Tenant as _Tenant
 from flask_babel import gettext as _
 
@@ -227,6 +231,10 @@ def bireysel_api_pg_update(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
         id=pg_id, user_id=current_user.id, is_active=True
     ).first_or_404()
+    # MÜHÜR (K8): mühürlü yılın bireysel PG tanımı değiştirilemez
+    engel = muhur_engeli(pg)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     data = request.get_json() or {}
     try:
         pg.name        = data.get("name", pg.name)
@@ -253,6 +261,10 @@ def bireysel_api_pg_delete(pg_id):
     pg = IndividualPerformanceIndicator.query.filter_by(
         id=pg_id, user_id=current_user.id
     ).first_or_404()
+    # MÜHÜR (K8): mühürlü yılın bireysel PG'si silinemez
+    engel = muhur_engeli(pg)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     try:
         pg.is_active = False
         db.session.commit()
@@ -292,8 +304,12 @@ def bireysel_api_veri_add():
         # Tarih egemen plan year kontrolü (Faz 2)
         cross_year_notice = None
         tenant_obj = db.session.get(_Tenant, current_user.tenant_id)
-        if tenant_obj and getattr(tenant_obj, "plan_year_enabled", False):
+        if tenant_obj:  # K5: yıl bazlılık koşulsuz
             target_py = resolve_plan_year_for_date(current_user.tenant_id, data_date_val)
+            # MÜHÜR (K8): mühürlü yıla bireysel veri de girilemez.
+            # target_py None ise aşağıdaki entity_exists_in_year 409 ile yakalar.
+            if target_py is not None and not plan_year_writable(target_py):
+                return jsonify(build_sealed_error(target_py)), 423
             if not entity_exists_in_year(pg, target_py):
                 return jsonify(build_existence_error(
                     entity=pg,
@@ -465,7 +481,7 @@ def bireysel_api_favori_toggle(kpi_id):
 @login_required
 def bireysel_api_karne():
     """Yıl bazlı bireysel PG + faaliyet takip verisi."""
-    year = request.args.get("year", datetime.now().year, type=int)
+    year = resolve_request_year()
     uid  = current_user.id
     active_py = get_active_plan_year_for_user(current_user)
 
@@ -642,7 +658,7 @@ def bireysel_api_karne():
 @login_required
 def bireysel_api_pg_series(pg_id):
     """Seçilen PG için yıllık veri serisi (modal / sparkline)."""
-    year = request.args.get("year", datetime.now().year, type=int)
+    year = resolve_request_year()
     pg = IndividualPerformanceIndicator.query.filter_by(
         id=pg_id, user_id=current_user.id, is_active=True
     ).first_or_404()
@@ -726,7 +742,7 @@ def bireysel_api_karne_export_pdf():
     import datetime as _dt
 
     try:
-        year = request.args.get("year", _dt.date.today().year, type=int)
+        year = resolve_request_year()
         tenant = Tenant.query.get(current_user.tenant_id) if current_user.tenant_id else None
 
         pgs = (
@@ -812,7 +828,7 @@ def bireysel_api_ai_ozet():
     """Bireysel karne üstü 2 cümlelik Türkçe AI özet (heuristik + opsiyonel LLM)."""
     from datetime import date as _date
     uid = current_user.id
-    year = request.args.get("year", datetime.now().year, type=int)
+    year = resolve_request_year()
     today = _date.today()
 
     pg_ids = [r[0] for r in db.session.query(IndividualPerformanceIndicator.id)

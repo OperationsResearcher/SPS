@@ -21,9 +21,13 @@
     </p>
   </div>
 
+  {# T7/A: "Plan Dönemleri" bu menüye eklendi — sayfa hiçbir menüde yoktu,
+     kullanıcı mühürlemeyi bulamıyordu.
+     İlke: Yönetici Paneli GÖRÜR, Plan Dönemleri YÖNETİR. #}
   {% set items = [
     {'url': url_for('app_bp.sp'),                         'icon': 'fa-bullseye',        'color': '#4f46e5', 'bg': '#eef2ff', 'name': _('Genel Bakış'),                       'desc': _('Vizyon, misyon, stratejiler ve K-Vektör paneli')},
     {'url': url_for('app_bp.sp_exec_dashboard'),          'icon': 'fa-tachometer-alt',  'color': '#0ea5e9', 'bg': '#ecfeff', 'name': _('Yönetici Paneli'),                   'desc': _('Stratejik sağlık göstergeleri ve özet panel')},
+    {'url': url_for('app_bp.sp_donemler'),                'icon': 'fa-calendar-alt',    'color': '#dc2626', 'bg': '#fef2f2', 'name': _('Plan Dönemleri'),                    'desc': _('Yıl açma, mühürleme ve mühür geçmişi')},
     {'url': url_for('app_bp.sp_quarterly_review_page'),   'icon': 'fa-calendar-check',  'color': '#16a34a', 'bg': '#f0fdf4', 'name': _('Çeyreklik Değerlendirme'),           'desc': _('Üç aylık strateji değerlendirme döngüsü')},
     {'url': url_for('app_bp.sp_initiatives_page'),        'icon': 'fa-rocket',          'color': '#db2777', 'bg': '#fdf2f8', 'name': _('Girişimler'),                        'desc': _('Çok yıllık stratejik girişim listesi')},
     {'url': url_for('app_bp.sp_scenarios_page'),          'icon': 'fa-code-branch',     'color': '#7c3aed', 'bg': '#f5f3ff', 'name': _('Senaryolar'),                        'desc': _('İyimser, kötümser, temel senaryo varyasyonları')},

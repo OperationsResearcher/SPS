@@ -26,6 +26,7 @@ from app.models.plan_year import (
     SubStrategyYearConfig,
     ProcessYearConfig,
     IndividualKpiYearConfig,
+    PlanYearSealAudit,
 )
 from app.models.process import ProcessKpi, Process, IndividualPerformanceIndicator
 from app.models.core import Strategy, SubStrategy
@@ -72,13 +73,50 @@ def get_active_plan_year(tenant_id: int) -> Optional[PlanYear]:
 def get_or_create_plan_year(tenant_id: int, year: int) -> PlanYear:
     """
     Tenant + yıl için PlanYear döner; yoksa oluşturur.
-    Yeni oluşturulursa mevcut tüm KPI, strateji, süreç ve bireysel PGler
-    o yılın config tablosuna kopyalanır (başlangıç değerleri = orijinal).
+
+    Yıl bazlı Faz 1.8 (T9/T2, 2026-07-20) — DAVRANIŞ DEĞİŞTİ:
+      ESKİ: yeni yıl açılınca *_year_configs (override) tabloları seed edilirdi;
+            varlık kopyası ÜRETİLMEZDİ. Yani yeni yılda süreç/PG yoktu, yalnız
+            config satırları vardı.
+      YENİ: T9 full-clone tek mekanizma. Yeni yıl, bir önceki DOLU yıldan
+            clone_full_plan_year ile klonlanır — süreçler, PG'ler, stratejiler
+            ve hedefleriyle birlikte (T2: "yıl devrinde her şey kopyalanır").
+            Klonlanacak önceki yıl yoksa boş plan yılı açılır.
+
+    S9 (seed açığı) bu değişiklikle kökten kapanır: seed ayrı bir adım değil,
+    yıl oluşturmanın kendisidir. Ham INSERT ile açılan yıllarda seed'in
+    atlanması sorunu (KMF #16 ve Eskişehir #28'de hedefli config = 0) artık
+    doğmaz.
     """
     py = get_plan_year(tenant_id, year)
     if py:
         return py
 
+    # Klonlanacak kaynak: bu yıldan önceki EN YAKIN dolu yıl; yoksa sonraki
+    # en yakın dolu yıl (Faz 1.2'deki geriye klonlama ile aynı mantık —
+    # kurumun yapısı ileri bir yılda olabilir).
+    kaynak = (
+        PlanYear.query
+        .filter(PlanYear.tenant_id == tenant_id, PlanYear.year < year)
+        .filter(Process.query.filter(
+            Process.plan_year_id == PlanYear.id).exists())
+        .order_by(PlanYear.year.desc())
+        .first()
+    )
+    if kaynak is None:
+        kaynak = (
+            PlanYear.query
+            .filter(PlanYear.tenant_id == tenant_id, PlanYear.year > year)
+            .filter(Process.query.filter(
+                Process.plan_year_id == PlanYear.id).exists())
+            .order_by(PlanYear.year.asc())
+            .first()
+        )
+
+    if kaynak is not None:
+        return clone_full_plan_year(kaynak, year)
+
+    # Klonlanacak yapı yok — boş plan yılı aç (yeni kurumun ilk yılı)
     py = PlanYear(
         tenant_id=tenant_id,
         year=year,
@@ -86,19 +124,25 @@ def get_or_create_plan_year(tenant_id: int, year: int) -> PlanYear:
         status="active",
     )
     db.session.add(py)
-    db.session.flush()  # id al
-
-    _seed_kpi_year_configs(py, tenant_id)
-    _seed_strategy_year_configs(py, tenant_id)
-    _seed_process_year_configs(py, tenant_id)
-    _seed_individual_kpi_year_configs(py, tenant_id)
-
     db.session.commit()
     return py
 
 
+# ── ÖLÜ KOD (yıl bazlı Faz 1.8, 2026-07-20) ──────────────────────────────────
+# Aşağıdaki dört _seed_* fonksiyonu ARTIK ÇAĞRILMIYOR.
+#
+# T9 (full-clone tek mekanizma) override tablolarını kaldırıyor; yeni yıl
+# artık clone_full_plan_year ile gerçek varlık kopyaları üreterek doğuyor.
+# Bu fonksiyonlar ise *_year_configs satırı yazıyordu — Faz 1.4'te "artık veri"
+# olarak temizlediğimiz 2570 satırın kaynağı tam olarak buydu.
+#
+# SİLİNMEDİLER çünkü override tabloları henüz DROP edilmedi (bilinçli: göç
+# doğrulanana kadar geri dönüş yolu açık). Tablolar düşürüldüğünde bu blok da
+# silinecek. Yeni kod bunları ÇAĞIRMASIN.
+# ─────────────────────────────────────────────────────────────────────────────
+
 def _seed_kpi_year_configs(plan_year: PlanYear, tenant_id: int) -> None:
-    """Mevcut tüm aktif ProcessKpileri bu yılın kpi_year_configs tablosuna ekler."""
+    """[ÖLÜ KOD — bkz. yukarıdaki not] Aktif ProcessKpi'leri kpi_year_configs'e ekler."""
     kpis = (
         ProcessKpi.query
         .join(Process)
@@ -294,21 +338,95 @@ def get_kpi_configs_bulk(
 
 # ── Plan Year Yaşam Döngüsü ────────────────────────────────────────────────────
 
-def close_plan_year(plan_year: PlanYear, actor_id: Optional[int] = None) -> PlanYear:
-    """
-    Plan yılını kapatır (status=closed).
-    Kapalı bir yıl artık düzenlenemez; arşivlenmiş geçmiş olarak korunur.
+def close_plan_year(
+    plan_year: PlanYear,
+    actor_id: Optional[int] = None,
+    reason: Optional[str] = None,
+    actor_label: Optional[str] = None,
+) -> PlanYear:
+    """Plan yılını MÜHÜRLER (status=closed).
+
+    Yıl bazlı Faz 2 (K7/K8/S13, 2026-07-20) — DAVRANIŞ DEĞİŞTİ:
+
+      ESKİ: yalnız `status` + `closed_at` yazıyordu. Docstring "kapalı bir yıl
+            artık düzenlenemez" diyordu ama KODDA KARŞILIĞI YOKTU — kapalı yıla
+            serbestçe veri girilip silinebiliyordu (HASAR-TESPITI-2.md §13).
+      YENİ: mühür gerçekten uygulanır (yazma yollarındaki `plan_year_writable`
+            kontrolü) ve olay denetim tablosuna işlenir (S13).
+
+    K8 gereği mühür mutlaktır: kapalı yıla veri girişi/düzenlemesi/silmesi
+    yapılamaz. Geri dönüş yalnızca `reopen_plan_year` ile, kurum üst yönetimi
+    tarafından ve gerekçeyle mümkündür (K9).
     """
     plan_year.status = "closed"
     plan_year.closed_at = datetime.now(timezone.utc)
     try:
+        db.session.add(PlanYearSealAudit(
+            plan_year_id=plan_year.id,
+            tenant_id=plan_year.tenant_id,
+            action="close",
+            reason=(reason or "").strip() or "(gerekçe belirtilmedi)",
+            actor_id=actor_id,
+            actor_label=actor_label,
+        ))
         db.session.commit()
         current_app.logger.info(
-            f"[plan_year_service] PlanYear {plan_year.year} kapatıldı (actor={actor_id})"
+            f"[plan_year_service] PlanYear {plan_year.year} MÜHÜRLENDİ "
+            f"(tenant={plan_year.tenant_id} actor={actor_id})"
         )
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[plan_year_service] close_plan_year hata: {e}")
+        raise
+    return plan_year
+
+
+def reopen_plan_year(
+    plan_year: PlanYear,
+    reason: str,
+    actor_id: Optional[int] = None,
+    actor_label: Optional[str] = None,
+) -> PlanYear:
+    """Mührü AÇAR — plan yılını yeniden yazılabilir yapar (K9).
+
+    Bu fonksiyon yıl bazlı Faz 2'de YENİ eklendi. Öncesinde sistemde
+    `status="active"` atayan hiçbir route/servis yoktu: yanlışlıkla kapatılan
+    bir yılı kurtarmanın tek yolu doğrudan DB müdahalesiydi
+    (HASAR-TESPITI-2.md §13.1).
+
+    K9: yetki kurum üst yönetimindedir — kontrol route katmanında.
+    S13: `reason` ZORUNLU. Gerekçesiz açma kabul edilmez; mühür açma geri
+         alınamaz bir güvenlik kapısıdır, izlenebilir olmalıdır.
+    T1:  gecikmeli veri için tolerans yoktur; unutulan veriyi girmenin tek
+         yolu budur — mühür aç, veriyi gir, yılı tekrar mühürle.
+
+    Yıl `draft` durumuna döner (`active` değil): kurumun aktif çalışma yılı
+    genellikle başkasıdır, açılan yıl düzeltme için geçici olarak yazılabilir
+    hale gelir.
+    """
+    temiz = (reason or "").strip()
+    if not temiz:
+        raise ValueError("Mühür açma gerekçesi zorunludur (S13).")
+
+    plan_year.status = "draft"
+    plan_year.closed_at = None
+    try:
+        db.session.add(PlanYearSealAudit(
+            plan_year_id=plan_year.id,
+            tenant_id=plan_year.tenant_id,
+            action="reopen",
+            reason=temiz,
+            actor_id=actor_id,
+            actor_label=actor_label,
+        ))
+        db.session.commit()
+        current_app.logger.info(
+            f"[plan_year_service] PlanYear {plan_year.year} MÜHRÜ AÇILDI "
+            f"(tenant={plan_year.tenant_id} actor={actor_id}) gerekçe={temiz[:80]!r}"
+        )
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[plan_year_service] reopen_plan_year hata: {e}")
         raise
     return plan_year
 
@@ -493,10 +611,21 @@ def initialize_plan_years(tenant_id: int, start_year: int) -> List[PlanYear]:
     """
     start_year'dan bugüne kadar olan tüm yıllar için plan_year kayıtları oluşturur.
     - Zaten var olan yıllar atlanır.
-    - Geçmiş yıllar status=closed, aktif yıl (en büyük) status=active olarak oluşturulur.
-    - Her yeni yıl, mevcut KPI/strateji/süreç fallback değerleriyle seed edilir.
     - Zaten aktif bir plan_year varsa onun status'u değiştirilmez.
     Döner: oluşturulan veya mevcut PlanYear listesi (start_year→bugün).
+
+    Yıl bazlı Faz 1.8 (2026-07-20) — İKİ DAVRANIŞ DEĞİŞTİ:
+
+    1) T11 — geçmiş yıllar artık `closed` DEĞİL, `draft` açılır.
+       Mühür (kilit) gerçek olduğu için "kapalı" bilinçli bir kurum kararıdır;
+       sistem kendiliğinden yıl mühürlemez. Eskiden geçmiş yıllar otomatik
+       closed açılıyordu ve o etiket hiçbir koruma sağlamıyordu.
+
+    2) T9/S9 — override seed'i yerine full-clone.
+       Yıllar get_or_create_plan_year üzerinden üretilir; o da bir önceki dolu
+       yıldan clone_full_plan_year ile klonlar (T2). Böylece yeni yılda gerçek
+       süreç/PG kopyaları doğar. Eski davranış yalnız *_year_configs satırı
+       yazıyordu — yapı üretmiyordu, S9'daki seed açığının kaynağı buydu.
     """
     from datetime import date
     current_year = date.today().year
@@ -512,25 +641,13 @@ def initialize_plan_years(tenant_id: int, start_year: int) -> List[PlanYear]:
             result.append(existing)
             continue
 
-        # Yeni plan_year oluştur
-        if yr == current_year:
-            status = "active"
-        else:
-            status = "closed"
+        # T9/S9: yapıyı da üreten tek giriş noktası. get_or_create_plan_year
+        # bir önceki dolu yıldan klonlar; yoksa boş yıl açar.
+        py = get_or_create_plan_year(tenant_id, yr)
 
-        py = PlanYear(
-            tenant_id=tenant_id,
-            year=yr,
-            name=f"{yr} Stratejik Planı",
-            status=status,
-        )
-        db.session.add(py)
-        db.session.flush()
-
-        _seed_kpi_year_configs(py, tenant_id)
-        _seed_strategy_year_configs(py, tenant_id)
-        _seed_process_year_configs(py, tenant_id)
-        _seed_individual_kpi_year_configs(py, tenant_id)
+        # T11: sistem kendiliğinden yıl mühürlemez. Yalnız içinde bulunulan
+        # yıl 'active', geçmiş yıllar 'draft' kalır — kapatma kurum kararıdır.
+        py.status = "active" if yr == current_year else "draft"
 
         result.append(py)
 
@@ -586,6 +703,7 @@ def clone_full_plan_year(
     new_year: int,
     name: Optional[str] = None,
     as_scenario_label: Optional[str] = None,
+    into_existing: Optional[PlanYear] = None,
 ) -> PlanYear:
     """
     Kaynak SP döneminin TÜM yapısını yeni yıla klonlar (Full Clone sistemi).
@@ -601,7 +719,15 @@ def clone_full_plan_year(
       8. TenantYearIdentity → misyon/vizyon/değerler kopyalanır
       9. SwotAnalysis + TowsAnalysis → boş kayıtlar oluşturulur
 
-    Dönüş: yeni PlanYear nesnesi (status="draft")
+    into_existing (yıl bazlı Faz 1.2, 2026-07-20):
+        Hedef yılın PlanYear kaydı ZATEN VARSA ve içi boşsa, yeni kayıt açmak
+        yerine o kayda klonlar. Neden gerekli: göç sırasında boş yıllar mevcut
+        (Faz 1.3'te üretildi) ve onlara `individual_performance_indicators` gibi
+        tablolar bağlanmış durumda. Kaydı silip yeniden yaratmak o satırları
+        YETİM bırakırdı (ölçüm: KMF'de 13 bireysel PG).
+        Kullanan: scripts/ops/yilbazli_faz1_2_clone_zinciri.py
+
+    Dönüş: hedef PlanYear nesnesi (yeni açıldıysa status="draft")
     """
     from app.models.process import (
         ProcessActivity, ProcessActivityAssignee, ProcessSubStrategyLink, KpiData,
@@ -611,26 +737,35 @@ def clone_full_plan_year(
 
     tenant_id = source.tenant_id
 
-    # Sprint 56: scenario mode aynı yıla ikinci kayıt açabilir (partial unique index)
-    if not as_scenario_label:
-        existing = get_plan_year(tenant_id, new_year)
-        if existing:
-            raise ValueError(f"{new_year} yılı için tenant {tenant_id}'de zaten plan mevcut (id={existing.id})")
+    if into_existing is not None:
+        if into_existing.tenant_id != tenant_id:
+            raise ValueError(
+                f"into_existing tenant uyuşmuyor: {into_existing.tenant_id} != {tenant_id}"
+            )
+        new_py = into_existing
+        new_py.template_source_id = source.id
+        db.session.flush()
+    else:
+        # Sprint 56: scenario mode aynı yıla ikinci kayıt açabilir (partial unique index)
+        if not as_scenario_label:
+            existing = get_plan_year(tenant_id, new_year)
+            if existing:
+                raise ValueError(f"{new_year} yılı için tenant {tenant_id}'de zaten plan mevcut (id={existing.id})")
 
-    new_py = PlanYear(
-        tenant_id=tenant_id,
-        year=new_year,
-        name=name or (
-            f"{new_year} — {as_scenario_label.title()} Senaryosu"
-            if as_scenario_label else f"{new_year} Stratejik Planı"
-        ),
-        status="draft",
-        template_source_id=source.id,
-        scenario_of_id=source.id if as_scenario_label else None,
-        scenario_label=as_scenario_label,
-    )
-    db.session.add(new_py)
-    db.session.flush()  # new_py.id için
+        new_py = PlanYear(
+            tenant_id=tenant_id,
+            year=new_year,
+            name=name or (
+                f"{new_year} — {as_scenario_label.title()} Senaryosu"
+                if as_scenario_label else f"{new_year} Stratejik Planı"
+            ),
+            status="draft",
+            template_source_id=source.id,
+            scenario_of_id=source.id if as_scenario_label else None,
+            scenario_label=as_scenario_label,
+        )
+        db.session.add(new_py)
+        db.session.flush()  # new_py.id için
 
     # ── 1. Strategy klonlama ──────────────────────────────────────────────────
     strategy_id_map: Dict[int, int] = {}   # old_id → new_id
@@ -886,7 +1021,6 @@ def get_active_plan_year_for_user(user) -> Optional[PlanYear]:
     Kullanıcının aktif SPDönemini döner.
 
     Tarih egemen doktrin (Faz 1):
-    - Tenant'ta plan_year_enabled=False ise None döner.
     - Session'da sp_active_year varsa o yılın PlanYear'ı (kullanıcı seçimi).
     - Yoksa **bugünün takvim yılı** için PlanYear (UI default'ları ile tutarlı).
     - O da yoksa tenant'ın status='active' PlanYear'ı (legacy fallback).
@@ -900,8 +1034,9 @@ def get_active_plan_year_for_user(user) -> Optional[PlanYear]:
     tenant = Tenant.query.get(user.tenant_id)
     if tenant is None:
         return None
-    if not getattr(tenant, "plan_year_enabled", False):
-        return None
+    # Yıl bazlı Faz 1.7 (K5): plan_year_enabled kontrolü KALDIRILDI.
+    # Yıl bazlılık artık zorunlu; flag'e bakmak, kapalı kurumlarda tüm yıl
+    # filtrelerini sessizce devre dışı bırakıyordu (HASAR-TESPITI.md §1).
 
     year = session.get("sp_active_year")
     if year:

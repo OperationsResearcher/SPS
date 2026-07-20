@@ -44,6 +44,62 @@ def get_view_year(user) -> int:
     return date.today().year
 
 
+def resolve_request_year(user=None, default_year: Optional[int] = None) -> int:
+    """İsteğin hangi yıla ait olduğunu çözer — S8'in tek giriş noktası.
+
+    Öncelik:
+      1. `?year=` query parametresi (frontend açıkça gönderdiyse)
+      2. `session["sp_active_year"]` — kullanıcının yıl seçicideki tercihi
+      3. `default_year` (çağıran özel bir varsayılan verdiyse)
+      4. bugünün takvim yılı
+
+    NEDEN VAR (S8 — onaylı karar):
+        Denetim (HASAR-TESPITI-2.md §9.2) K-Radar'ın ~37 API çağrısının
+        HİÇBİRİNİN `?year` göndermediğini, backend'in de session'a bakmadığını
+        buldu. Sonuç: yıl seçici görsel olarak çalışıyor gibi görünüp veriyi
+        filtrelemiyordu.
+
+        İki seçenek vardı: (a) 40+ fetch çağrısını tek tek düzeltmek —
+        geniş ve kırılgan; (b) backend'de `?year` yokken session'a düşmek.
+        Kullanıcı (b)'yi seçti: tek nokta, çok daha güvenli.
+
+        Bu fonksiyon `date.today().year` yerine çağrıldığında, o route
+        kullanıcının yıl seçimini otomatik olarak onurlandırır.
+
+    Not: `user` parametresi geriye uyumluluk için opsiyonel; yıl session'dan
+    okunduğu için kullanılmıyor.
+    """
+    try:
+        from flask import request, has_request_context
+        if has_request_context():
+            ham = request.args.get("year")
+            if ham:
+                try:
+                    y = int(ham)
+                    if 1900 < y < 3000:
+                        return y
+                except (TypeError, ValueError):
+                    pass
+    except Exception:
+        pass
+
+    # Arka plan görevlerinde (zamanlayıcı) request/session yoktur — S6 gereği
+    # oralarda tenant'ın aktif PlanYear'ı kullanılır, bu fonksiyon değil.
+    try:
+        sel = session.get("sp_active_year")
+    except Exception:
+        sel = None
+    if sel:
+        try:
+            return int(sel)
+        except (TypeError, ValueError):
+            pass
+
+    if default_year:
+        return int(default_year)
+    return date.today().year
+
+
 def get_view_plan_year(tenant_id: int, user) -> Optional[PlanYear]:
     """Görüntü bağlamına karşılık gelen PlanYear — yoksa None."""
     y = get_view_year(user)
@@ -57,11 +113,62 @@ def resolve_plan_year_for_date(tenant_id: int, when: Any) -> Optional[PlanYear]:
 
     `when` str ('YYYY-MM-DD' veya 'YYYY-MM-DDTHH:MM:SS'), date veya datetime olabilir.
     O yıl için PlanYear yoksa None döner — çağıran açık hata vermeli.
+
+    ⚠ Bu fonksiyon KAPALI yılı da döndürür — bilinçli. Görevi "hangi yıl?"
+    sorusunu cevaplamak; "yazılabilir mi?" ayrı bir sorudur ve
+    `plan_year_writable()` / `plan_year_writable_required` ile sorulur.
+    İkisini birleştirmek, okuma yollarını da kilitlerdi.
     """
     year = _year_of(when)
     if year is None:
         return None
     return PlanYear.query.filter_by(tenant_id=tenant_id, year=year).first()
+
+
+# ── 2b. MÜHÜR (yıl bazlı Faz 2 — K8/K9/S15) ──────────────────────────────────
+#
+# HASAR TESPİTİ (HASAR-TESPITI-2.md §13): mühür isim düzeyinde vardı, uygulama
+# düzeyinde YOKTU. `close_plan_year` yalnız status string'i yazıyordu; 12 yazma
+# yolunun hiçbirinde kontrol yoktu; açma route'u hiç yoktu.
+#
+# S15 onaylı mimari: endpoint başına elle `if` yazmak tekrar kaçırılmaya açık.
+# Bunun yerine tek kaynak burada, sarmalayıcı dekoratör routes katmanında.
+
+#: Yazmaya kapalı sayılan plan yılı durumları
+KAPALI_DURUMLAR = ("closed", "archived")
+
+
+def plan_year_writable(plan_year: Optional[PlanYear]) -> bool:
+    """Bu plan yılına veri yazılabilir mi? (K8)
+
+    K8 mutlaktır: "Kapanmış bir yıla asla veri girişi, düzenlemesi, silmesi
+    olmamalı." İstisna yok — T1 gereği gecikmeli veri için tolerans da yok;
+    tek yol kurum üst yönetiminin mührü açmasıdır (K9).
+
+    plan_year None ise False döner: yılı çözülemeyen kayıt yazılamaz.
+    """
+    if plan_year is None:
+        return False
+    return getattr(plan_year, "status", None) not in KAPALI_DURUMLAR
+
+
+def build_sealed_error(plan_year: PlanYear) -> Dict[str, Any]:
+    """Kapalı yıla yazma denemesinde dönecek standart hata gövdesi.
+
+    Kullanıcıya ne olduğunu ve ne yapabileceğini söyler — soyut "izin yok"
+    demez (KURALLAR §2: kullanıcıya görünen metin Türkçe).
+    """
+    yil = getattr(plan_year, "year", "?")
+    return {
+        "success": False,
+        "error": "plan_year_sealed",
+        "yil": yil,
+        "mesaj": (
+            f"{yil} plan dönemi mühürlü. Mühürlü döneme veri girilemez, "
+            f"değiştirilemez veya silinemez. Değişiklik gerekiyorsa kurum üst "
+            f"yönetimi Plan Dönemleri sayfasından mührü gerekçesiyle açmalıdır."
+        ),
+    }
 
 
 def _year_of(when: Any) -> Optional[int]:
@@ -87,16 +194,25 @@ def _year_of(when: Any) -> Optional[int]:
 def entity_exists_in_year(entity: Any, plan_year: PlanYear) -> bool:
     """Varlığın belirtilen plan yılında **fiziksel olarak** var olup olmadığı.
 
-    Doktrin (Faz 0): clone birincil. Varlığın `plan_year_id`'si yoksa
-    (yıllı sisteme dahil değil, global varlık) → True döner — yıl-agnostik kabul.
+    Doktrin (Faz 0): clone birincil — `entity.plan_year_id == plan_year.id`.
 
-    plan_year_id varsa → o yıla eşit olmalı.
+    ⚠ YIL BAZLI FAZ 2 NOTU (2026-07-20):
+      `plan_year_id is None` dalı hâlâ True döner ama artık bir GEÇİŞ
+      ARTIĞIDIR, kural değil. Faz 1'den sonra yılsız varlık kalmadı
+      (doğrulama: süreç/PG/strateji/proje → 0). Bu dal yalnızca
+      migration'dan kaçmış bir kayıt olursa sistemi kilitlememek için duruyor.
+
+      Eskiden bu dal gerçek bir güvenlik açığıydı: yılsız varlık her yıl
+      "var" sayıldığı için kapalı yıla veri yazılmasını engelleyen tek
+      kontrolü de geçersiz kılıyordu (HASAR-TESPITI-2.md §13.4).
+      Kapalı yıl koruması artık bu fonksiyona değil, `plan_year_writable()`
+      + `plan_year_writable_required` dekoratörüne bağlı.
     """
     if entity is None or plan_year is None:
         return False
     pyid = getattr(entity, "plan_year_id", None)
     if pyid is None:
-        return True   # global varlık, her yıl geçerli
+        return True   # geçiş artığı — bkz. yukarıdaki not
     return int(pyid) == int(plan_year.id)
 
 

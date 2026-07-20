@@ -10,6 +10,7 @@ from sqlalchemy.orm import joinedload, selectinload
 from platform_core import app_bp
 from extensions import db
 from app.constants.roles import PLATFORM_ADMIN_ROLES, PRIVILEGED_ROLES as _PRIVILEGED_ROLES
+from app.services.date_sovereign import resolve_request_year
 import re as _re
 import ipaddress as _ipaddress
 from flask_babel import gettext as _
@@ -34,6 +35,23 @@ def _check_webhook_url(url: str):
 
 
 # ── Sprint 50: Custom Dashboard Builder — Widget Registry ────────────────────
+
+# ── D0 DÜZELTMESİ (İ3, yıl bazlı Faz 3.7) ────────────────────────────────────
+# ÖLÇÜM (2026-07-20): process_kpis.direction değerleri `Increasing` / `Decreasing`.
+# `lower_is_better` DB'de HİÇ YOK — koşul hiçbir zaman doğru olmuyordu.
+# Sonuç: "azalması iyi" göstergeler artması iyiymiş gibi hesaplanıyordu.
+#   Hedefi 5 olan hata oranı 2 ölçüldüğünde %40 görünüyordu; doğrusu %100.
+#   İyi performans KÖTÜ raporlanıyordu.
+# Skor motoru (compute_pg_score) doğru değeri kullandığı için aynı gösterge
+# Kurumsal sekmesinde başka, PG Dağılım sekmesinde başka yüzde gösteriyordu.
+# Eski yazım da kabul ediliyor: veri karışıksa kırılmasın.
+_AZALMASI_IYI = ("Decreasing", "decreasing", "lower_is_better")
+
+
+def _azalmasi_iyi(kpi) -> bool:
+    """Göstergede 'azalması iyi' yönü var mı? (D0)"""
+    return getattr(kpi, "direction", None) in _AZALMASI_IYI
+
 
 @app_bp.route("/k-report/api/dashboard/widgets")
 @login_required
@@ -134,7 +152,7 @@ def k_rapor():
 def k_rapor_api_kurumsal():
     """Vizyon skoru + strateji bazlı başarı + en iyi/kötü süreçler."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.services.score_engine_service import compute_vision_score
         from app.services.plan_year_service import get_plan_year
@@ -201,7 +219,7 @@ def k_rapor_api_kurumsal():
 def k_rapor_api_surec_pg():
     """Süreçler × dönemler ısı haritası verisi."""
     tid    = current_user.tenant_id
-    year   = request.args.get("year", _dt.date.today().year, type=int)
+    year   = resolve_request_year()
     period = request.args.get("period", "ceyrek")  # aylik / ceyrek / yillik
     try:
         from app.models.process import Process, ProcessKpi, KpiData
@@ -388,7 +406,7 @@ def k_rapor_api_trend(kpi_id):
 def k_rapor_api_uyum():
     """Strateji → Alt Strateji → Süreç katkı ağacı."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.core import Strategy, SubStrategy
         from app.models.process import Process, ProcessKpi, ProcessSubStrategyLink
@@ -467,7 +485,7 @@ def k_rapor_api_uyum():
 def k_rapor_api_faaliyet():
     """Faaliyet tamamlanma oranı, geciken ve tamamlanan."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.process import Process, ProcessActivity
         today = _dt.date.today()
@@ -582,7 +600,7 @@ def k_rapor_api_faaliyet():
 def k_rapor_api_bireysel():
     """Kullanıcı bazlı bireysel PG — özet + detay + sağlık."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.process import IndividualPerformanceIndicator as IPI, IndividualKpiData
         from app.models.core import User
@@ -703,7 +721,7 @@ def k_rapor_api_bireysel():
 def k_rapor_api_veri_durumu():
     """Aktif plan yılında cari döneme ait PG veri giriş durumu."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.process import Process, ProcessKpi, KpiData
         from app.models.core import User
@@ -942,7 +960,7 @@ def k_rapor_api_denetim():
 def k_rapor_api_uyari():
     """Uyarı merkezi — kritik PG'ler, geciken faaliyetler, yüksek riskler."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.process import Process, ProcessKpi, KpiData, ProcessActivity
         try:
@@ -988,7 +1006,7 @@ def k_rapor_api_uyari():
                 actual = float(d.actual_value)
                 if target <= 0:
                     continue
-                if kpi.direction == "lower_is_better":
+                if _azalmasi_iyi(kpi):
                     pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
                 else:
                     pct = round(min(100.0, actual / target * 100), 1)
@@ -1075,7 +1093,7 @@ def k_rapor_api_uyari():
 def k_rapor_api_k_vektor():
     """K-Vektör kota dağılımı ve strateji skorları (compute_k_vektor_bundle)."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         try:
             from app.services.k_vektor_engine import compute_k_vektor_bundle
@@ -1204,7 +1222,7 @@ def k_rapor_api_evm():
 def k_rapor_api_stratejik_analiz():
     """SWOT / TOWS / PESTEL / Porter özet — yıl yoksa en son analizi döner."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         import json as _json
         from app.models.swot import SwotAnalysis, TowsAnalysis, PestelAnalysis, PorterFiveForcesAnalysis
@@ -1304,7 +1322,7 @@ def k_rapor_api_stratejik_analiz():
 def k_rapor_api_paydas():
     """Paydaş haritası + anket özeti."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.k_radar_domain import StakeholderMap, StakeholderSurvey
         from app.models.plan_year import PlanYear
@@ -1356,7 +1374,7 @@ def k_rapor_api_paydas():
 def k_rapor_api_rekabet():
     """Rekabetçi analiz + A3 raporları özeti."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.k_radar_domain import CompetitorAnalysis, A3Report
         from app.models.plan_year import PlanYear
@@ -1413,7 +1431,7 @@ def k_rapor_api_rekabet():
 def k_rapor_api_export_excel():
     """Seçili tab verisini Excel olarak indir."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     tab  = request.args.get("tab", "kurumsal")
     try:
         import io
@@ -1792,7 +1810,7 @@ def k_rapor_api_export_pdf():
     import io
 
     tid = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
 
     try:
         tenant = Tenant.query.get(tid)
@@ -1858,7 +1876,7 @@ def k_rapor_api_export_pdf():
 def k_rapor_api_pg_dagilim():
     """Tüm PG'lerin başarı yüzdesi dağılımı — histogram + özet."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.process import Process, ProcessKpi, KpiData
 
@@ -1898,7 +1916,7 @@ def k_rapor_api_pg_dagilim():
                 actual = float(d.actual_value)
                 if target <= 0:
                     continue
-                if getattr(kpi, 'direction', None) == 'lower_is_better':
+                if _azalmasi_iyi(kpi):
                     pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
                 else:
                     pct = round(min(100.0, actual / target * 100), 1)
@@ -2014,7 +2032,7 @@ def k_rapor_api_faaliyet_matris():
 def k_rapor_api_aktivite_takvim():
     """Son 365 günde günlük veri giriş sayısı — GitHub heatmap tarzı."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.process import Process, ProcessKpi, KpiData
         from sqlalchemy import func
@@ -2091,7 +2109,7 @@ def k_rapor_api_kurum_karsilastirma():
     """Kurumları ortalama PG başarısına göre karşılaştır (yalnız Admin)."""
     from app.models.core import User
     role_name = current_user.role.name if current_user.role else ""
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.process import Process, ProcessKpi, KpiData
         from app.models.core import Tenant
@@ -2158,7 +2176,7 @@ def k_rapor_api_kurum_karsilastirma():
                     actual = float(d.actual_value)
                     if target <= 0:
                         continue
-                    if getattr(kpi, 'direction', None) == 'lower_is_better':
+                    if _azalmasi_iyi(kpi):
                         pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
                     else:
                         pct = round(min(100.0, actual / target * 100), 1)
@@ -2191,7 +2209,7 @@ def k_rapor_api_kurum_karsilastirma():
 def k_rapor_api_strateji_kapsama():
     """Hangi stratejilerin altında süreç yok, hangi süreçler stratejisiz."""
     tid  = current_user.tenant_id
-    year = request.args.get("year", _dt.date.today().year, type=int)
+    year = resolve_request_year()
     try:
         from app.models.core import Strategy, SubStrategy
         from app.models.process import Process, ProcessSubStrategyLink

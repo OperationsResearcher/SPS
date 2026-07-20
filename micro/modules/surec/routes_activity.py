@@ -37,6 +37,8 @@ from app.services.date_sovereign import (
     build_existence_error,
     build_cross_year_notice,
     get_view_year,
+    plan_year_writable,
+    build_sealed_error,
 )
 from app.services.score_engine_service import compute_process_scores_internal
 from app.utils.audit_logger import AuditLogger
@@ -70,6 +72,7 @@ from micro.modules.surec.helpers import (
     _latest_update_audit_by_kpi_data_ids,
     _parent_options_with_depth,
     _process_for_user,
+    muhur_engeli,
     _user_can_add_activity,
     _user_can_manage_activity,
     _user_display_name,
@@ -94,7 +97,7 @@ def surec_api_activity_add():
     # Faaliyetin start_at'ı hangi yıla düşüyorsa, süreç o yılda var olmalı.
     tenant_obj = db.session.get(Tenant, current_user.tenant_id)
     cross_year_notice = None
-    if tenant_obj and getattr(tenant_obj, "plan_year_enabled", False):
+    if tenant_obj:  # K5: yıl bazlılık koşulsuz
         raw_start = data.get("start_at") or data.get("start_date")
         target_date_for_check = None
         if raw_start:
@@ -316,6 +319,10 @@ def surec_api_activity_update(act_id):
     proc = _process_for_user(act.process_id)
     if not proc or not _user_can_manage_activity(current_user, proc, act):
         return jsonify({"success": False, "message": _("Faaliyet güncelleme yetkiniz yok.")}), 403
+    # MÜHÜR (K8): mühürlü yılın faaliyeti değiştirilemez
+    engel = muhur_engeli(act)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     data = request.get_json() or {}
     try:
         def _parse_dt(v):
@@ -441,6 +448,10 @@ def surec_api_activity_delete(act_id):
     proc = _process_for_user(act.process_id)
     if not proc or not _user_can_manage_activity(current_user, proc, act):
         return jsonify({"success": False, "message": "Faaliyet silme yetkiniz yok."}), 403
+    # MÜHÜR (K8): mühürlü yılın faaliyeti silinemez
+    engel = muhur_engeli(act)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     try:
         act.is_active = False
         db.session.commit()
@@ -556,6 +567,12 @@ def surec_api_activity_track(act_id):
     year = int(data.get("year", datetime.now().year))
     month = int(data.get("month", 1))
     completed = bool(data.get("completed", False))
+    # MÜHÜR (K8): faaliyet takibi yıl bazlı veridir. Kontrol, faaliyetin
+    # kendi yılına DEĞİL, kaydın yazılacağı `year`'a göre yapılır — kullanıcı
+    # 2026'daki faaliyetten mühürlü 2024'e işaret koyamamalı.
+    _takip_py = resolve_plan_year_for_date(current_user.tenant_id, year)
+    if _takip_py is not None and not plan_year_writable(_takip_py):
+        return jsonify(build_sealed_error(_takip_py)), 423
     try:
         track = ActivityTrack.query.filter_by(
             activity_id=act.id, year=year, month=month

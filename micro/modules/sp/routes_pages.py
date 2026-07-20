@@ -164,10 +164,10 @@ def sp():
         except Exception as e:
             current_app.logger.warning(f"[sp] K-Vektör skor verisi alınamadı: {e}")
 
-    # Plan Year: sadece tenant plan_year_enabled ise aktif
+    # Plan Year: K5 gereği her kurumda aktif (flag kaldırıldı)
     import datetime as _dt
     current_cal_year = _dt.date.today().year
-    plan_year_feature = bool(getattr(tenant, "plan_year_enabled", False)) if tenant else False
+    plan_year_feature = bool(tenant)  # K5: yıl bazlılık koşulsuz
     if plan_year_feature and tenant_id:
         plan_years_list = list_plan_years(tenant_id)
         active_plan_year_val = session.get("sp_active_year", current_cal_year)

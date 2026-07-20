@@ -7,6 +7,7 @@ RESTful API endpoints
 from flask import Blueprint, request, jsonify
 from flask_login import login_required, current_user
 from app.models import db
+from app.services.date_sovereign import resolve_request_year
 from app.models.process import Process, ProcessKpi, KpiData
 from app.services.analytics_service import AnalyticsService
 from app.services.report_service import ReportService
@@ -274,7 +275,7 @@ def get_health(process_id):
     Query Parameters:
         - year: Yıl (default: current year)
     """
-    year = request.args.get('year', datetime.now().year, type=int)
+    year = resolve_request_year()
     Process.query.filter_by(id=process_id, tenant_id=current_user.tenant_id).first_or_404()
 
     health = AnalyticsService.get_process_health_score(process_id, year)
@@ -381,7 +382,7 @@ def get_performance_report(process_id):
 @login_required
 def get_dashboard_report():
     """Dashboard özet raporu"""
-    year = request.args.get('year', datetime.now().year, type=int)
+    year = resolve_request_year()
     
     dashboard = ReportService.generate_dashboard_report(
         tenant_id=current_user.tenant_id,

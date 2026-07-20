@@ -4,6 +4,7 @@ from flask import jsonify, request, render_template, current_app, make_response
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
+from micro.modules.surec.helpers import muhur_engeli
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData, KpiDataAudit
 from app.utils.audit_logger import AuditLogger
@@ -68,6 +69,10 @@ def api_kpi_data_create():
     ).first()
     if not kpi:
         return jsonify({"success": False, "message": _("PG bulunamadı.")}), 404
+    # MÜHÜR (K8): mühürlü yıla harici API üzerinden veri girilemez
+    engel = muhur_engeli(kpi)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     try:
         from datetime import date
         entry = None
@@ -136,6 +141,11 @@ def api_kpi_data_update(entry_id):
         Process.tenant_id == current_user.tenant_id,
         KpiData.is_active.is_(True),
     ).first_or_404()
+    # MÜHÜR (K8): mühürlü yıla harici API üzerinden de yazılamaz. Kural
+    # veriye bağlıdır — aksi halde UI'da kapalı kapı API'de açık kalırdı.
+    engel = muhur_engeli(entry.process_kpi)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     data = request.get_json() or {}
     try:
         old_val = entry.actual_value
@@ -162,6 +172,10 @@ def api_kpi_data_delete(entry_id):
         Process.tenant_id == current_user.tenant_id,
         KpiData.is_active.is_(True),
     ).first_or_404()
+    # MÜHÜR (K8): mühürlü yılın verisi API üzerinden de silinemez
+    engel = muhur_engeli(entry.process_kpi)
+    if engel:
+        return jsonify(engel[0]), engel[1]
     try:
         entry.is_active = False
         db.session.add(KpiDataAudit(

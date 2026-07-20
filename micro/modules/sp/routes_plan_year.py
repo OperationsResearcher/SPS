@@ -24,6 +24,7 @@ from app.models.process import Process, ProcessKpi
 from app.models.plan_year import (
     PlanYear, KpiYearConfig,
     StrategyYearConfig, SubStrategyYearConfig, ProcessYearConfig,
+    PlanYearSealAudit,
 )
 from app.models.project import PlanProject, PlanProjectTask, PlanProjectActivity
 from app.services.score_engine_service import compute_vision_score
@@ -32,6 +33,7 @@ from app.services.plan_year_service import (
     get_plan_year,
     get_or_create_plan_year,
     close_plan_year,
+    reopen_plan_year,
     clone_plan_year,
     clone_full_plan_year,
     upsert_kpi_year_config,
@@ -109,7 +111,7 @@ def sp_api_plan_years_create():
     from_year = data.get("from_year")
     name = (data.get("name") or "").strip() or None
 
-    plan_year_feature = bool(getattr(Tenant.query.get(tid), "plan_year_enabled", False))
+    plan_year_feature = True  # K5: yıl bazlılık koşulsuz
 
     try:
         if from_year:
@@ -168,26 +170,119 @@ def sp_api_plan_years_set_active():
     return jsonify({"success": True, "active_year": year})
 
 
+def _actor_label() -> str:
+    """Denetim kaydı için okunabilir aktör etiketi (kullanıcı silinse de kalır)."""
+    ad = (getattr(current_user, "full_name", None)
+          or getattr(current_user, "name", None)
+          or getattr(current_user, "email", None)
+          or f"user#{current_user.id}")
+    return str(ad)[:200]
+
+
 @app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/close", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_year_close(year_id):
-    """Plan yılını kapatır (status=closed)."""
+    """Plan yılını MÜHÜRLER (status=closed).
+
+    Yıl bazlı Faz 2:
+      - S14: `@csrf.exempt` KALDIRILDI. Mühürleme tek yönlü ve etkisi büyük bir
+        işlem; CSRF muafiyeti ayrıca risklidir.
+      - S13: gerekçe alınır ve denetim tablosuna yazılır.
+    """
     tid = current_user.tenant_id
     py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
     if py.status == "closed":
-        return jsonify({"success": False, "message": _("Bu yıl zaten kapalı.")}), 400
+        return jsonify({"success": False, "message": _("Bu dönem zaten mühürlü.")}), 400
+    data = request.get_json(silent=True) or {}
     try:
-        close_plan_year(py, actor_id=current_user.id)
+        close_plan_year(
+            py,
+            actor_id=current_user.id,
+            reason=data.get("reason") or data.get("gerekce"),
+            actor_label=_actor_label(),
+        )
         return jsonify({
             "success": True,
-            "message": f"{py.year} yılı kapatıldı.",
+            "message": f"{py.year} dönemi mühürlendi.",
             "plan_year": _plan_year_to_dict(py),
         })
     except Exception as e:
         current_app.logger.error(f"[sp_api_plan_year_close] {e}")
-        return jsonify({"success": False, "message": _("Yıl kapatılırken hata oluştu.")}), 500
+        return jsonify({"success": False, "message": _("Dönem mühürlenirken hata oluştu.")}), 500
+
+
+@app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/reopen", methods=["POST"])
+@login_required
+@sp_manage_required
+def sp_api_plan_year_reopen(year_id):
+    """Mührü AÇAR — plan yılını yeniden yazılabilir yapar (K9).
+
+    Yıl bazlı Faz 2'de EKLENDİ. Öncesinde sistemde mührü açan hiçbir yol yoktu;
+    yanlışlıkla kapatılan yılı kurtarmak DB müdahalesi gerektiriyordu
+    (HASAR-TESPITI-2.md §13.1).
+
+    K9: yetki kurum üst yönetiminde — `@sp_manage_required` (tenant_admin,
+        executive_manager, kurum_yoneticisi, ust_yonetim...).
+    S13: gerekçe ZORUNLU; boş gelirse 400 döner.
+    """
+    tid = current_user.tenant_id
+    py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
+    if py.status not in ("closed", "archived"):
+        return jsonify({"success": False, "message": _("Bu dönem mühürlü değil.")}), 400
+
+    data = request.get_json(silent=True) or {}
+    gerekce = (data.get("reason") or data.get("gerekce") or "").strip()
+    if not gerekce:
+        return jsonify({
+            "success": False,
+            "message": _("Mühür açma gerekçesi zorunludur."),
+        }), 400
+
+    try:
+        reopen_plan_year(
+            py, reason=gerekce,
+            actor_id=current_user.id, actor_label=_actor_label(),
+        )
+        return jsonify({
+            "success": True,
+            "message": f"{py.year} döneminin mührü açıldı.",
+            "plan_year": _plan_year_to_dict(py),
+        })
+    except ValueError as e:
+        return jsonify({"success": False, "message": str(e)}), 400
+    except Exception as e:
+        current_app.logger.error(f"[sp_api_plan_year_reopen] {e}")
+        return jsonify({"success": False, "message": _("Mühür açılırken hata oluştu.")}), 500
+
+
+@app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/seal-history", methods=["GET"])
+@login_required
+def sp_api_plan_year_seal_history(year_id):
+    """Dönemin mühür geçmişi — kim, ne zaman, neden (S13).
+
+    T7/B: Plan Dönemleri sayfasında denetim geçmişi gösterilecek.
+    """
+    tid = current_user.tenant_id
+    py = PlanYear.query.filter_by(id=year_id, tenant_id=tid).first_or_404()
+    kayitlar = (
+        PlanYearSealAudit.query
+        .filter_by(plan_year_id=py.id)
+        .order_by(PlanYearSealAudit.created_at.desc())
+        .all()
+    )
+    return jsonify({
+        "success": True,
+        "year": py.year,
+        "status": py.status,
+        "kayitlar": [{
+            "islem": k.action,
+            "islem_adi": "Mühürlendi" if k.action == "close" else "Mühür açıldı",
+            "gerekce": k.reason,
+            "kisi": k.actor_label or (f"user#{k.actor_id}" if k.actor_id else "—"),
+            "tarih": k.created_at.isoformat() if k.created_at else None,
+        } for k in kayitlar],
+    })
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/kpi-configs", methods=["GET"])

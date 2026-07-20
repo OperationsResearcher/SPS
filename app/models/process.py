@@ -24,6 +24,13 @@ class ProcessSubStrategyLink(db.Model):
     process_id = db.Column(db.Integer, db.ForeignKey('processes.id', ondelete='CASCADE'), primary_key=True)
     sub_strategy_id = db.Column(db.Integer, db.ForeignKey('sub_strategies.id', ondelete='CASCADE'), primary_key=True)
     contribution_pct = db.Column(db.Float, nullable=True)  # 0–100
+    # Yıl bazlı Faz 1.1 (T3): süreç–strateji bağı da yıl bazlıdır.
+    # PK'ye henüz dahil değil — Faz 1.3'te plan yılları üretilince genişletilecek
+    # (migration a1f2c3d4e5b6 §4).
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey('plan_years.id', ondelete='CASCADE'),
+        nullable=True, index=True
+    )
 
     process = db.relationship('Process', backref=db.backref('process_sub_strategy_links', cascade='all, delete-orphan', lazy=True))
     sub_strategy = db.relationship('SubStrategy', backref=db.backref('process_sub_strategy_links', lazy=True))
@@ -92,6 +99,10 @@ class Process(TenantScopedMixin, db.Model):
 
     # Auditing / Soft Delete
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
+    # Yıl bazlı Faz 1.4 (T9/K15): "bu YIL karneye dahil mi?"
+    # is_active ile karıştırma — o "kayıt silinmiş mi?" demek.
+    # *_year_configs.is_included yerine geçer (override tabloları kalkıyor).
+    is_included = db.Column(db.Boolean, default=True, nullable=False)
     deleted_at = db.Column(db.DateTime, nullable=True)
     deleted_by = db.Column(db.Integer, db.ForeignKey('users.id'), nullable=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
@@ -173,6 +184,10 @@ class ProcessKpi(db.Model):
     
     calculated_score = db.Column(db.Float, nullable=True)
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
+    # Yıl bazlı Faz 1.4 (T9/K15): "bu YIL karneye dahil mi?"
+    # is_active ile karıştırma — o "kayıt silinmiş mi?" demek.
+    # *_year_configs.is_included yerine geçer (override tabloları kalkıyor).
+    is_included = db.Column(db.Boolean, default=True, nullable=False)
 
     # Linking
     sub_strategy_id = db.Column(db.Integer, db.ForeignKey('sub_strategies.id', ondelete='SET NULL'), nullable=True, index=True)

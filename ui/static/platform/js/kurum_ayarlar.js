@@ -21,7 +21,8 @@ document.addEventListener('DOMContentLoaded', function () {
     var btnSave = document.getElementById('btn-save');
     var btnLogoUpload = document.getElementById('btn-logo-upload');
     var elKvToggle = document.getElementById('k_vektor_enabled');
-    var elPlanYearToggle = document.getElementById('plan_year_enabled');
+    // Yıl bazlı Faz 1.7 (K5): plan_year_enabled anahtarı kaldırıldı —
+    // yıl bazlılık artık koşulsuz, açılıp kapanmıyor.
     var elPlanYearStart = document.getElementById('plan_year_start');
     var planYearStartPanel = document.getElementById('plan-year-start-panel');
 
@@ -42,25 +43,14 @@ document.addEventListener('DOMContentLoaded', function () {
         if (elKvToggle) {
             o.k_vektor_enabled = !!elKvToggle.checked;
         }
-        if (elPlanYearToggle) {
-            o.plan_year_enabled = !!elPlanYearToggle.checked;
-        }
         if (elPlanYearStart) {
             o.plan_year_start = elPlanYearStart.value || null;
         }
         return o;
     }
 
-    // Plan yıl toggle → start panel göster/gizle
-    if (elPlanYearToggle && planYearStartPanel) {
-        elPlanYearToggle.addEventListener('change', function () {
-            if (elPlanYearToggle.checked) {
-                planYearStartPanel.removeAttribute('hidden');
-            } else {
-                planYearStartPanel.setAttribute('hidden', '');
-            }
-        });
-    }
+    // Yıl bazlı Faz 1.7 (K5): toggle → panel göster/gizle mantığı kaldırıldı.
+    // Panel artık her zaman görünür; yıl bazlılık kapatılamıyor.
 
     if (btnSave) {
         btnSave.addEventListener('click', function () {

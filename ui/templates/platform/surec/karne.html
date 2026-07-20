@@ -96,20 +96,19 @@
           <div class="karne-banner-meta-line">{{ _("Rev. tarihi") }}: <strong>{{ process.revision_date.strftime('%d.%m.%Y') }}</strong></div>
           {% endif %}
           <div class="karne-banner-meta-line karne-banner-year-line">
-            <label for="year-select">{{ _("Yıl") }}:</label>
-            <select id="year-select" class="karne-banner-year-select" aria-label="{{ _('Rapor yılı') }}">
-              {% if plan_year_enabled and plan_years_for_karne %}
-                {% for py in plan_years_for_karne %}
-                <option value="{{ py.year }}"
-                  {% if py.year == current_year %}selected{% endif %}>
-                  {{ py.year }}{% if py.status == 'closed' %} ✓{% elif py.status == 'draft' %} ●{% endif %}
-                </option>
-                {% endfor %}
-              {% else %}
-                {% for y in range(current_year + 1, current_year - 5, -1) %}
-                <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
-                {% endfor %}
-              {% endif %}
+            {# T8: tek yıl seçici, etiket "Plan Yılı".
+               Faz 1.7 (K5): hesaplanmış range(...) dalı SİLİNDİ — liste her
+               zaman gerçek plan yıllarından gelir. Eski dal, plan yılı
+               bilmediği için olmayan yılları gösteriyordu (KMF'de 2027 vardı,
+               2020-2021 yoktu). #}
+            <label for="year-select">{{ _("Plan Yılı") }}:</label>
+            <select id="year-select" class="karne-banner-year-select" aria-label="{{ _('Plan yılı') }}">
+              {% for py in plan_years_for_karne %}
+              <option value="{{ py.year }}"
+                {% if py.year == current_year %}selected{% endif %}>
+                {{ py.year }}{% if py.status == 'closed' %} ✓{% elif py.status == 'draft' %} ●{% endif %}
+              </option>
+              {% endfor %}
             </select>
           </div>
         </div>
@@ -289,14 +288,20 @@
         {# PG kartı: modal ile aynı gösterim mantığı (yıl, gösterim, önceki/sonraki + rozet) #}
         <div class="karne-pg-toolbar-unified">
           <div class="karne-pg-toolbar-start">
-            <div class="karne-pg-filter-group">
-              <label class="karne-pg-filter-label" for="pg-karne-yil-select">{{ _("Yıl") }}</label>
-              <select id="pg-karne-yil-select" class="mc-select karne-pg-select-yil" aria-label="{{ _('Performans göstergeleri rapor yılı') }}">
-                {% for y in range(current_year + 1, current_year - 5, -1) %}
-                <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
-                {% endfor %}
-              </select>
-            </div>
+            {# T8/A: PK04'teki yıl seçici KALDIRILDI — üsttekinin aynasıydı,
+               kendi işlevi yoktu. Üstelik plan yıllarını bilmediği için
+               hesaplanmış liste gösteriyordu: KMF'de 2020-2021 yokken
+               olmayan 2027 vardı (T8/S-2).
+               Karar: "Sadece bir tane olsun, üstteki kalsın, o değişince
+               her şey değişsin."
+               Eleman GİZLİ olarak korunuyor: mevcut JS okuma/yazma yapıyor
+               (surec.js:3138 ve karne render mantığı). Kaldırmak yerine
+               üstteki seçicinin değeriyle beslenir — tek kaynak korunur. #}
+            <select id="pg-karne-yil-select" hidden aria-hidden="true" tabindex="-1">
+              {% for py in plan_years_for_karne %}
+              <option value="{{ py.year }}" {% if py.year == current_year %}selected{% endif %}>{{ py.year }}</option>
+              {% endfor %}
+            </select>
             <div class="karne-pg-filter-group">
               <label class="karne-pg-filter-label" for="pg-periyot-select">{{ _("Gösterim") }}</label>
               <select id="pg-periyot-select" class="mc-select karne-pg-periyot-select" aria-label="{{ _('Görünüm periyodu') }}">

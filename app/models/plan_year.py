@@ -313,3 +313,57 @@ class IndividualKpiYearConfig(db.Model):
             f"<IndividualKpiYearConfig plan_year={self.plan_year_id} "
             f"ind={self.individual_performance_id}>"
         )
+
+
+class PlanYearSealAudit(db.Model):
+    """Mühür denetim izi — plan yılı kapatma/açma olayları (K9/S13/T1).
+
+    NEDEN VAR:
+      Mühür açma (K9) geri alınamaz bir güvenlik kapısıdır: kapalı bir yılın
+      verisi yeniden düzenlenebilir hale gelir. S13 gereği bu olay "kim, ne
+      zaman, NEDEN" sorularını cevaplayacak şekilde kayıt altına alınır.
+      T1 (gecikmeli veri için tolerans yok) mührü açmayı TEK yol yaptığı için
+      bu iz olmadan mühür anlamını yitirir.
+
+    Kapatma da kaydedilir — yalnız açmayı kaydetmek "ne zaman kapandı"
+    sorusunu cevapsız bırakırdı.
+    """
+    __tablename__ = "plan_year_seal_audits"
+
+    id = db.Column(db.Integer, primary_key=True)
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey("plan_years.id", ondelete="CASCADE"),
+        nullable=False, index=True,
+    )
+    tenant_id = db.Column(db.Integer, nullable=False, index=True)
+
+    action = db.Column(db.String(20), nullable=False)   # close | reopen
+    reason = db.Column(db.Text, nullable=False)          # S13: zorunlu
+
+    actor_id = db.Column(
+        db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"),
+        nullable=True, index=True,
+    )
+    # Kullanıcı silinse bile kimin yaptığı okunabilsin diye ad/e-posta kopyası.
+    # actor_id SET NULL olur, bu alan kalır.
+    actor_label = db.Column(db.String(200), nullable=True)
+
+    created_at = db.Column(
+        db.DateTime, nullable=False, server_default=db.func.now(),
+    )
+
+    plan_year = db.relationship(
+        "PlanYear",
+        backref=db.backref("seal_audits", lazy="dynamic",
+                           cascade="all, delete-orphan",
+                           order_by="PlanYearSealAudit.created_at.desc()"),
+    )
+
+    __table_args__ = (
+        db.Index("ix_plan_year_seal_audits_py_created",
+                 "plan_year_id", "created_at"),
+    )
+
+    def __repr__(self):
+        return (f"<PlanYearSealAudit py={self.plan_year_id} "
+                f"{self.action} actor={self.actor_id}>")

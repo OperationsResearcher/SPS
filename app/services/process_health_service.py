@@ -6,6 +6,7 @@ Proje modülü olmadan PG hedef ulaşma oranına dayalı basit skor.
 Proje/Task entegrasyonu eklendiğinde genişletilebilir.
 """
 from datetime import datetime
+from app.services.date_sovereign import resolve_request_year
 from typing import Optional, Dict, Any
 
 from app.models import db
@@ -50,7 +51,7 @@ def calculate_process_health_score(
         }
     """
     if year is None:
-        year = datetime.now().year
+        year = resolve_request_year()
 
     process = Process.query.filter_by(
         id=process_id,

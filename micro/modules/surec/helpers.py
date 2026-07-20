@@ -187,6 +187,36 @@ def _process_for_user(process_id: int) -> Process | None:
     )
 
 
+def muhur_engeli(entity) -> tuple[dict, int] | None:
+    """Varlığın ait olduğu plan yılı mühürlüyse (kapalıysa) hata gövdesi döner.
+
+    Yıl bazlı Faz 2 (K8/S15). Kullanım:
+
+        engel = muhur_engeli(entry.process_kpi)
+        if engel:
+            return jsonify(engel[0]), engel[1]
+
+    NEDEN VARLIK ÜZERİNDEN: Faz 1.5 remap'inden sonra her kayıt, yılının PG
+    kopyasına bağlı. Yani "bu kaydın yılı" sorusunun cevabı zincirde:
+        KpiData -> ProcessKpi.plan_year_id -> PlanYear.status
+    Ayrı bir yıl parametresi almaya gerek yok; iki kaynak olmasın (T9).
+
+    Yılı çözülemeyen (plan_year_id boş) varlıkta None döner — engellemez.
+    Faz 1 sonrası böyle kayıt kalmadı; bu dal migration'dan kaçan bir kayıt
+    olursa sistemi kilitlememek için duruyor.
+    """
+    from app.models.plan_year import PlanYear
+    from app.services.date_sovereign import plan_year_writable, build_sealed_error
+
+    pyid = getattr(entity, "plan_year_id", None) if entity is not None else None
+    if pyid is None:
+        return None
+    py = db.session.get(PlanYear, pyid)
+    if py is None or plan_year_writable(py):
+        return None
+    return build_sealed_error(py), 423
+
+
 def _parent_options_with_depth(tenant_id: int, plan_year_id: int | None = None):
     """Üst süreç seçici — tenant’taki tüm aktif süreçler (hiyerarşi ile)."""
     q = Process.query.filter_by(tenant_id=tenant_id, is_active=True)
