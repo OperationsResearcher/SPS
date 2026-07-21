@@ -201,11 +201,6 @@
     return base;
   }
 
-  function syncPgKarneYilFromBanner() {
-    const pgY = document.getElementById("pg-karne-yil-select");
-    if (pgY && yearSelect && yearSelect.value) pgY.value = yearSelect.value;
-  }
-
   function syncPgGunlukAyHiddenSelect() {
     const aySel = document.getElementById("pg-gunluk-ay-select");
     if (!aySel) return;
@@ -2177,7 +2172,6 @@
     if ([...yearSelect.options].some((o) => o.value === String(y))) {
       yearSelect.value = String(y);
     }
-    syncPgKarneYilFromBanner();
   }
 
   function ensureKarneNavCursorFromDefault() {
@@ -2935,14 +2929,30 @@
 
     // Plan year sistemi aktifse: seçilen yılı kullanıcının aktif yılı yap, sonra hedef yıldaki klonuna git
     if (PLAN_YEAR_ENABLED && RESOLVE_YEAR_URL) {
+      // F1 (2026-07-21): burada `.../plan-years/set-active` çağrılıyordu.
+      // O uç @sp_manage_required ile korunuyor → STANDART KULLANICI 403 alır.
+      // Üstelik fetch 403'te REDDEDİLMEZ, çözümlenir; catch hiç tetiklenmez.
+      // Sonuç: akış devam eder, sayfa yeni yıl URL'sine gider ama
+      // session["sp_active_year"] ESKİ YILDA KALIR → aynı ekranda iki farklı
+      // yıl (karne 2025, üst bar 2026). Test yöneticiyle yapıldığı için
+      // görünmüyordu.
+      //
+      // /api/view-year yalnız @login_required — bu iş için zaten yazılmıştı
+      // (topbar_year.js:11 tuzağı belgeliyor), surec.js güncellenmemişti.
       try {
         const csrf = document.querySelector('meta[name="csrf-token"]')?.content || "";
-        await fetch("/k-plan/strategy/api/plan-years/set-active", {
+        const r = await fetch("/api/view-year", {
           method: "POST",
           headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },
           body: JSON.stringify({ year: newYear }),
         });
-      } catch (e) { /* aktif yıl yazılamadıysa devam et — resolve yine çalışır */ }
+        // fetch HTTP hatasında reddetmez — durumu ELLE kontrol et.
+        if (!r.ok) {
+          console.warn("[surec] aktif yıl yazılamadı:", r.status);
+        }
+      } catch (e) {
+        console.warn("[surec] aktif yıl isteği başarısız:", e);
+      }
 
       const pid = viewRoot.dataset.processId;
       try {
@@ -2981,7 +2991,6 @@
       karneGunlukViewMonth = newYear === cy ? cm : 1;
       karneGunlukViewDay = newYear === cy && karneGunlukViewMonth === cm ? cd : 1;
     }
-    syncPgKarneYilFromBanner();
     syncPgGunlukAyHiddenSelect();
     updateKarneKanbanNavLabel();
     loadKarne();
@@ -3135,24 +3144,6 @@
     URL.revokeObjectURL(url);
   }
 
-  document.getElementById("pg-karne-yil-select")?.addEventListener("change", (e) => {
-    if (!yearSelect || PAGE_MODE !== "karne") return;
-    yearSelect.value = e.target.value;
-    karneNavPeriodKey = null;
-    karneNavDataYear = null;
-    if (getPgKarneView() === "gunluk") {
-      const y = parseInt(yearSelect.value, 10) || new Date().getFullYear();
-      const cy = new Date().getFullYear();
-      const cm = new Date().getMonth() + 1;
-      const cd = new Date().getDate();
-      karneGunlukViewYear = y;
-      karneGunlukViewMonth = y === cy ? cm : 1;
-      karneGunlukViewDay = y === cy && karneGunlukViewMonth === cm ? cd : 1;
-    }
-    syncPgGunlukAyHiddenSelect();
-    updateKarneKanbanNavLabel();
-    loadKarne();
-  });
 
   activityViewModeSelect?.addEventListener("change", () => {
     applyActivityViewUi();
@@ -3212,7 +3203,6 @@
     const sel = document.getElementById("pg-gunluk-ay-select");
     if (sel) sel.value = String(new Date().getMonth() + 1);
     if (PAGE_MODE === "karne") {
-      syncPgKarneYilFromBanner();
       resetKarneKanbanNavForViewChange(getPgKarneView());
       updateKarneKanbanNavLabel();
     }

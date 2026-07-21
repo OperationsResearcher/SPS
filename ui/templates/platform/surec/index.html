@@ -688,8 +688,12 @@
     var year = parseInt(sel.value, 10);
     if (!year) return;
     try {
+      // F1/F3: `.../plan-years/set-active` @sp_manage_required — standart
+      // kullanıcı 403 alıyordu. Ayrıca o uç, yıl yoksa YENİ PLAN YILI
+      // OLUŞTURUYOR; sadece görüntülemek isteyen kullanıcı için yanlış.
+      // /api/view-year yalnız session'a yazar (@login_required).
       var csrf = (document.querySelector('meta[name="csrf-token"]') || {}).content || "";
-      var res = await fetch("/k-plan/strategy/api/plan-years/set-active", {
+      var res = await fetch("/api/view-year", {
         method: "POST",
         credentials: "same-origin",
         headers: { "Content-Type": "application/json", "X-CSRFToken": csrf },

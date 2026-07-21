@@ -289,19 +289,17 @@
         <div class="karne-pg-toolbar-unified">
           <div class="karne-pg-toolbar-start">
             {# T8/A: PK04'teki yıl seçici KALDIRILDI — üsttekinin aynasıydı,
-               kendi işlevi yoktu. Üstelik plan yıllarını bilmediği için
-               hesaplanmış liste gösteriyordu: KMF'de 2020-2021 yokken
-               olmayan 2027 vardı (T8/S-2).
-               Karar: "Sadece bir tane olsun, üstteki kalsın, o değişince
-               her şey değişsin."
-               Eleman GİZLİ olarak korunuyor: mevcut JS okuma/yazma yapıyor
-               (surec.js:3138 ve karne render mantığı). Kaldırmak yerine
-               üstteki seçicinin değeriyle beslenir — tek kaynak korunur. #}
-            <select id="pg-karne-yil-select" hidden aria-hidden="true" tabindex="-1">
-              {% for py in plan_years_for_karne %}
-              <option value="{{ py.year }}" {% if py.year == current_year %}selected{% endif %}>{{ py.year }}</option>
-              {% endfor %}
-            </select>
+               kendi işlevi yoktu. Karar: "Sadece bir tane olsun, üstteki
+               kalsın, o değişince her şey değişsin."
+
+               F5 (2026-07-21): Eleman o zaman GİZLİ olarak bırakılmıştı
+               ("mevcut JS okuma/yazma yapıyor" gerekçesiyle). Ama `hidden`
+               + `tabindex="-1"` bir <select>'e `change` olayı ASLA
+               ateşlenemez; bağlı 20 satırlık dinleyici ve onu besleyen
+               syncPgKarneYilFromBanner() ölü koddu (26 satır, surec.js).
+               Ölçüm: elemanın id'si kendi ölü kodu dışında hiçbir yerde
+               okunmuyordu. Hem eleman hem JS kaldırıldı — kodu okuyan bir
+               sonraki geliştirici çalışan mekanizma sanmasın. #}
             <div class="karne-pg-filter-group">
               <label class="karne-pg-filter-label" for="pg-periyot-select">{{ _("Gösterim") }}</label>
               <select id="pg-periyot-select" class="mc-select karne-pg-periyot-select" aria-label="{{ _('Görünüm periyodu') }}">

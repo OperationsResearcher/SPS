@@ -65,7 +65,13 @@ def holding_api_snapshot():
 def _validate_holding_access(sub_tenant_id: int):
     """Holding yetkili kullanıcı bu alt-tenant'a erişebilir mi? (tenant, err_response)"""
     if not (is_holding_user(current_user) or is_platform_admin(current_user)):
-        return None, (_403(), 403)
+        # K6 (2026-07-21): burada `(_403(), 403)` yazıyordu. `_403()` ZATEN
+        # `(response, 403)` tuple'ı döndürüyor → sonuç `((resp, 403), 403)`
+        # → route `err[0], err[1]` yapınca Flask tuple'ı çözemiyor → 500.
+        # Güvenlik kontrolü ÇALIŞIYORDU (erişim engelleniyordu) ama kullanıcı
+        # "yetkiniz yok" yerine "sunucu hatası" görüyordu.
+        # Aşağıdaki 404/400 dalları zaten doğru kalıpta.
+        return None, _403()
     sub = Tenant.query.get(sub_tenant_id)
     if not sub:
         return None, (jsonify({"success": False, "message": _("Alt kurum bulunamadı.")}), 404)

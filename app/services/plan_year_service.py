@@ -358,13 +358,20 @@ def close_plan_year(
     yapılamaz. Geri dönüş yalnızca `reopen_plan_year` ile, kurum üst yönetimi
     tarafından ve gerekçeyle mümkündür (K9).
     """
+    # K9 (2026-07-21): mühürlenen yıl kurumun AKTİF yılı mıydı? Bu bilgi
+    # `reopen` sırasında statüyü doğru geri yüklemek için gerekli — aksi
+    # halde aktif yılın kendisi mühürlenip açıldığında kurum aktif yılsız
+    # kalıyordu. Ayrı kolon eklemek yerine denetim kaydının `action`
+    # alanında taşınıyor (migration gerektirmez, geçmiş kayıtlar bozulmaz).
+    aktif_miydi = (plan_year.status or "").strip().lower() == "active"
+
     plan_year.status = "closed"
     plan_year.closed_at = datetime.now(timezone.utc)
     try:
         db.session.add(PlanYearSealAudit(
             plan_year_id=plan_year.id,
             tenant_id=plan_year.tenant_id,
-            action="close",
+            action="close_active" if aktif_miydi else "close",
             reason=(reason or "").strip() or "(gerekçe belirtilmedi)",
             actor_id=actor_id,
             actor_label=actor_label,
@@ -400,15 +407,53 @@ def reopen_plan_year(
     T1:  gecikmeli veri için tolerans yoktur; unutulan veriyi girmenin tek
          yolu budur — mühür aç, veriyi gir, yılı tekrar mühürle.
 
-    Yıl `draft` durumuna döner (`active` değil): kurumun aktif çalışma yılı
-    genellikle başkasıdır, açılan yıl düzeltme için geçici olarak yazılabilir
-    hale gelir.
+    STATÜ GERİ YÜKLEME (K9 düzeltmesi, 2026-07-21):
+        İlk sürüm koşulsuz `draft` yazıyordu; gerekçe "kurumun aktif çalışma
+        yılı genellikle başkasıdır" idi. "Genellikle" yeterli değilmiş:
+        AKTİF YILIN KENDİSİ mühürlenip açıldığında kurum aktif yılsız
+        kalıyordu (Tomofil 2026 `active` → mühürle → aç → `draft`).
+
+        Artık mühürleme anındaki statü denetim kaydından okunur
+        (`action="close_active"`) ve geri yüklenir. Kurumda o sırada başka
+        bir `active` yıl varsa çakışmayı önlemek için `draft` verilir —
+        `get_active_plan_year` tek aktif yıl varsayıyor.
     """
     temiz = (reason or "").strip()
     if not temiz:
         raise ValueError("Mühür açma gerekçesi zorunludur (S13).")
 
-    plan_year.status = "draft"
+    hedef_statu = "draft"
+    try:
+        son_kapatma = (
+            PlanYearSealAudit.query
+            .filter(
+                PlanYearSealAudit.plan_year_id == plan_year.id,
+                PlanYearSealAudit.action.in_(("close", "close_active")),
+            )
+            .order_by(PlanYearSealAudit.created_at.desc())
+            .first()
+        )
+        if son_kapatma is not None and son_kapatma.action == "close_active":
+            baska_aktif = PlanYear.query.filter(
+                PlanYear.tenant_id == plan_year.tenant_id,
+                PlanYear.status == "active",
+                PlanYear.id != plan_year.id,
+            ).first()
+            if baska_aktif is None:
+                hedef_statu = "active"
+            else:
+                current_app.logger.info(
+                    "[plan_year_service] PlanYear %s mühürlenirken aktifti ama "
+                    "kurumda artık %s aktif — draft olarak açılıyor.",
+                    plan_year.year, baska_aktif.year,
+                )
+    except Exception as e:
+        # Denetim kaydı okunamazsa güvenli tarafta kal: draft.
+        current_app.logger.error(
+            "[plan_year_service] reopen statü çözümlenemedi (draft'a düşüldü): %s", e
+        )
+
+    plan_year.status = hedef_statu
     plan_year.closed_at = None
     try:
         db.session.add(PlanYearSealAudit(

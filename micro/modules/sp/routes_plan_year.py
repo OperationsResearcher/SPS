@@ -310,9 +310,13 @@ def sp_api_plan_year_seal_history(year_id):
         "success": True,
         "year": py.year,
         "status": py.status,
+        # K9: `close_active` da bir MÜHÜRLEME işlemidir — mühürlenen yılın o
+        # sırada kurumun aktif yılı olduğunu işaretler (reopen'da statüyü geri
+        # yüklemek için). `== "close"` kontrolü bunu "Mühür açıldı" diye
+        # gösterirdi; startswith ile iki kapatma türü de doğru etiketlenir.
         "kayitlar": [{
             "islem": k.action,
-            "islem_adi": "Mühürlendi" if k.action == "close" else "Mühür açıldı",
+            "islem_adi": "Mühürlendi" if (k.action or "").startswith("close") else "Mühür açıldı",
             "gerekce": k.reason,
             "kisi": k.actor_label or (f"user#{k.actor_id}" if k.actor_id else "—"),
             "tarih": k.created_at.isoformat() if k.created_at else None,
