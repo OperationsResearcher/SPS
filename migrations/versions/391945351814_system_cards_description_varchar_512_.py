@@ -1,8 +1,12 @@
 """system_cards.description varchar(512) -> Text (zengin kart aciklamalari)
 
 Revision ID: 391945351814
-Revises: b7d3e1f4a920
+Revises: yb20c5e1a8d3
 Create Date: 2026-07-20 11:29:11.621030
+
+NOT (2026-07-21): down_revision b7d3e1f4a920 -> yb20c5e1a8d3 guncellendi.
+Dal main'den 4 migration geride kalmisti; oldugu gibi merge edilseydi
+2 head olusur, deploy patlardi (REHBER §6.1 tek-head disiplini).
 
 """
 from alembic import op
@@ -11,7 +15,7 @@ import sqlalchemy as sa
 
 # revision identifiers, used by Alembic.
 revision = '391945351814'
-down_revision = 'b7d3e1f4a920'
+down_revision = 'yb20c5e1a8d3'
 branch_labels = None
 depends_on = None
 
