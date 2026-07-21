@@ -54,11 +54,15 @@ def profil():
             current_user.email = new_email
 
         # Profil alanları
-        current_user.first_name   = data.get("first_name",   current_user.first_name  or "").strip()
-        current_user.last_name    = data.get("last_name",    current_user.last_name   or "").strip()
-        current_user.phone_number = data.get("phone_number", current_user.phone_number or "").strip() or None
-        current_user.job_title    = data.get("job_title",    current_user.job_title   or "").strip() or None
-        current_user.department   = data.get("department",   current_user.department  or "").strip() or None
+        # F2: eskiden yalnız .strip() vardı → ada yazılan <script> denetim
+        # tablosunda yöneticinin oturumunda çalışıyordu. sanitize_plain_text
+        # tüm HTML'i söker; ad alanında hiçbir etiket meşru değil.
+        from app.utils.security import sanitize_plain_text as _temiz
+        current_user.first_name   = _temiz(data.get("first_name",   current_user.first_name  or ""), 64)
+        current_user.last_name    = _temiz(data.get("last_name",    current_user.last_name   or ""), 64)
+        current_user.phone_number = _temiz(data.get("phone_number", current_user.phone_number or "")) or None
+        current_user.job_title    = _temiz(data.get("job_title",    current_user.job_title   or "")) or None
+        current_user.department   = _temiz(data.get("department",   current_user.department  or "")) or None
         # profile_picture yalnızca /profil/foto-yukle endpoint'i üzerinden güncellenir.
 
         db.session.commit()

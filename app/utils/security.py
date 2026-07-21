@@ -94,6 +94,27 @@ def sanitize_html(html_content):
     )
 
 
+def sanitize_plain_text(value, max_length=None):
+    """Düz metin alanlarından (ad, unvan, departman) TÜM HTML'i söker.
+
+    `sanitize_html`'den farkı: orada <span>/<div> gibi etiketler serbest
+    (zengin metin içindir). Ad alanında hiçbir etiket meşru değildir.
+
+    F2 (2026-07-21): `first_name` kullanıcının kendi profilinden
+    değiştirdiği bir alan ve sunucuda YALNIZ `.strip()` uygulanıyordu.
+    Yönetim panelindeki denetim tablosu bu adı innerHTML ile bastığı için
+    düşük yetkili kullanıcı, paneli açan yöneticinin oturumunda script
+    çalıştırabiliyordu. JS tarafı düzeltildi (window.esc) ama savunmanın
+    tek katmanda olması yeterli değil — burası ikinci katman.
+    """
+    if value is None:
+        return value
+    cleaned = bleach.clean(str(value), tags=[], attributes={}, strip=True).strip()
+    if max_length:
+        cleaned = cleaned[:max_length]
+    return cleaned
+
+
 def validate_file_upload(file, allowed_extensions=None, max_size_mb=5):
     """
     Validate uploaded file

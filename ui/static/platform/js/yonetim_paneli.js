@@ -90,9 +90,15 @@
     });
   }
 
+  // F10/F11: merkezî window.esc'e devredildi (base.html). Yerel kopya tek
+  // tırnağı kaçırmıyordu ve bu dosya tek tırnaklı öznitelik yazıyor (satır 84).
+  // Yedek yalnız base.html yüklenmemiş bir bağlam için — o da ' kaçırır.
   function _esc(str) {
-    if (!str) return "";
-    return String(str).replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    if (window.esc) return window.esc(str);
+    if (str === null || str === undefined) return "";
+    return String(str)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
   }
 
   function _shortDate(isoDate) {
@@ -160,12 +166,17 @@
     tbody.innerHTML = "";
     items.forEach(function (item) {
       var tr = document.createElement("tr");
+      // F2: bu dört alan _esc()'ten geçmiyordu (aynı dosyada satır 79/84
+      // doğru yapıyor). user_name kullanıcının kendi profilinden
+      // değiştirdiği alan ve sunucuda HTML temizliği yok — düşük yetkili
+      // kullanıcı adına script yazıp paneli açan YÖNETİCİNİN oturumunda
+      // çalıştırabiliyordu. Saklı XSS + yetki yükseltme.
       var userName = item.user_name || t("Bilinmiyor");
       tr.innerHTML =
-        "<td>" + (item.resource_icon || "📌") + "</td>" +
-        "<td>" + (item.resource_type || "-") + "</td>" +
-        "<td>" + userName + "</td>" +
-        "<td>" + (item.action_label || item.action || "-") + "</td>" +
+        "<td>" + _esc(item.resource_icon || "📌") + "</td>" +
+        "<td>" + _esc(item.resource_type || "-") + "</td>" +
+        "<td>" + _esc(userName) + "</td>" +
+        "<td>" + _esc(item.action_label || item.action || "-") + "</td>" +
         "<td>" + formatTimeAgo(item.created_at) + "</td>";
       tbody.appendChild(tr);
     });
