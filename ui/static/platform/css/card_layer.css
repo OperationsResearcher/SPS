@@ -61,10 +61,14 @@
   background: #eef2ff; padding: 3px 7px; border-radius: 5px;
 }
 
+/* Govde JS tarafinda yapilandirilmis dugumlerle (p/ul/li) kurulur — bkz.
+   base.html::renderInfoBody. pre-wrap KULLANILMAZ: paragraf ayrimi zaten
+   dugum bazli; pre-wrap ile birleserek cift bosluk olustururdu. */
 #kk-card-info-modal .kk-b {
   padding: 18px; overflow-y: auto; font-size: 13.5px; line-height: 1.6;
-  color: #334155; white-space: pre-wrap;
+  color: #334155;
 }
+#kk-card-info-modal .kk-b p:last-child { margin-bottom: 0; }
 
 #kk-card-info-modal .kk-x {
   border: none; background: none; font-size: 20px; color: #94a3b8;

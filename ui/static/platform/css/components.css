@@ -619,6 +619,38 @@ body {
 .mc-progress-fill.warning { background: linear-gradient(90deg, #f59e0b, #d97706); }
 .mc-progress-fill.danger  { background: linear-gradient(90deg, #ef4444, #dc2626); }
 
+/* ── Gauge (conic) — K-Radar KP OEE / verimlilik gostergeleri ── */
+.mc-gauge {
+    position: relative;
+    width: 140px;
+    height: 140px;
+    border-radius: 50%;
+    /* JS conic-gradient ile deger yuzdesini boyar; boyanmadan once notr halka */
+    background: conic-gradient(#e2e8f0 0deg, #e2e8f0 0deg);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin: 0 auto;
+}
+.mc-gauge::after {
+    content: "";
+    position: absolute;
+    inset: 14px;
+    border-radius: 50%;
+    background: white;
+}
+.dark .mc-gauge { --mc-gauge-track: #334155; }
+.dark .mc-gauge::after { background: #1e293b; }
+.mc-gauge-inner {
+    position: relative;
+    z-index: 1;
+    text-align: center;
+    line-height: 1.1;
+}
+.mc-gauge-value { font-size: var(--text-2xl); font-weight: 700; color: #1e293b; }
+.dark .mc-gauge-value { color: #f1f5f9; }
+.mc-gauge-label { font-size: var(--text-xs); color: #94a3b8; text-transform: uppercase; letter-spacing: .05em; }
+
 /* ── Modal ── */
 .mc-modal-backdrop {
     position: fixed;

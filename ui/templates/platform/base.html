@@ -774,6 +774,50 @@
           .catch(function () {});
       }
 
+      // Zengin kart aciklamasini yapilandirilmis olarak basar.
+      // DB'de duz metin durur (i18n/.po uyumlu kalsin diye); burada bicimlenir:
+      //   - bos satir  -> paragraf ayraci
+      //   - "Baslik:" ile baslayan satir -> bolum basligi + govde
+      //   - "- " / "• " ile baslayan satir -> madde
+      // Guvenlik: innerHTML YOK, her dugum createElement + textContent ile kurulur.
+      function renderInfoBody(bodyEl, text) {
+        bodyEl.textContent = "";
+        var blocks = String(text).split(/\n\s*\n/);
+        blocks.forEach(function (block) {
+          var lines = block.split("\n").map(function (s) { return s.trim(); }).filter(Boolean);
+          if (!lines.length) return;
+          var bullets = lines.filter(function (l) { return /^[-•]\s+/.test(l); });
+          if (bullets.length === lines.length) {
+            var ul = document.createElement("ul");
+            ul.style.margin = "8px 0"; ul.style.paddingLeft = "20px";
+            lines.forEach(function (l) {
+              var li = document.createElement("li");
+              li.style.marginBottom = "4px";
+              li.textContent = l.replace(/^[-•]\s+/, "");
+              ul.appendChild(li);
+            });
+            bodyEl.appendChild(ul);
+            return;
+          }
+          lines.forEach(function (line) {
+            var m = line.match(/^([A-Za-zÇĞİÖŞÜçğıöşü0-9 ()\/&']{2,40}):\s*(.*)$/);
+            var p = document.createElement("p");
+            p.style.margin = "0 0 10px";
+            p.style.lineHeight = "1.6";
+            if (m && m[2]) {
+              var strong = document.createElement("strong");
+              strong.textContent = m[1] + ": ";
+              strong.style.color = "var(--text-default, #0f172a)";
+              p.appendChild(strong);
+              p.appendChild(document.createTextNode(m[2]));
+            } else {
+              p.textContent = line;
+            }
+            bodyEl.appendChild(p);
+          });
+        });
+      }
+
       function openInfo(code, titleText) {
         var ov = document.getElementById("kk-card-info-modal-overlay");
         var codeEl = document.getElementById("kk-card-info-code");
@@ -795,7 +839,7 @@
             } else if (!j.description) {
               bodyEl.textContent = t("Bu kart için henüz açıklama girilmemiş.");
             } else {
-              bodyEl.textContent = j.description;
+              renderInfoBody(bodyEl, j.description);
             }
           })
           .catch(function () { bodyEl.textContent = t("Bilgi alınamadı (ağ hatası)."); });

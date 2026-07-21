@@ -2,13 +2,48 @@
 {% block title %}K-Radar KP Darboğaz{% endblock %}
 {% block page_title %}KP-Radar Darboğaz{% endblock %}
 {% block content %}
-<div id="k-radar-kp-darbogaz-root" data-url="{{ url_for('app_bp.k_radar_api_kp_darbogaz') }}" style="max-width:900px; margin:0 auto;">
-  <div class="mc-card" data-card-code="k_radar_kp_darbogaz.ozet"><div class="mc-card-body">
-    <h3 class="mc-card-title" style="margin-top:0;">{{ _("Darboğaz Özeti") }}</h3>
-    <div><strong>{{ _("Kritik PG:") }}</strong> <span id="kp-darbogaz-critical">-</span></div>
-    <div><strong>{{ _("Şiddet Endeksi:") }}</strong> <span id="kp-darbogaz-severity">-</span></div>
-    <div><strong>{{ _("30g Trend:") }}</strong> <span id="kp-darbogaz-trend">-</span></div>
-  </div></div>
+<div id="k-radar-kp-darbogaz-root" data-url="{{ url_for('app_bp.k_radar_api_kp_darbogaz') }}" style="max-width:1000px; margin:0 auto;">
+
+  <div class="mc-card mc-card--accent-danger" data-card-code="k_radar_kp_darbogaz.ozet">
+    <div class="mc-card-body">
+      <h3 class="mc-card-title" style="margin-top:0;">
+        <i class="fas fa-bottle-water" style="color:#ef4444; margin-right:6px;"></i>{{ _("Darboğaz Analizi") }}
+      </h3>
+      <p style="margin:4px 0 18px; font-size:13px; color:var(--text-muted);">
+        {{ _("Açık darboğazların şiddeti ve süreç akışındaki kısıtların yoğunluğu.") }}
+      </p>
+
+      <div class="mc-grid-3" style="margin-bottom:18px;">
+        <div class="mc-stat-card mc-stat-red">
+          <div class="mc-stat-icon"><i class="fas fa-triangle-exclamation"></i></div>
+          <div class="mc-stat-label">{{ _("Kritik Darboğaz") }}</div>
+          <div class="mc-stat-value"><span id="kp-darbogaz-critical">-</span></div>
+          <div class="mc-stat-sub">{{ _("açık kayıt") }}</div>
+        </div>
+        <div class="mc-stat-card mc-stat-amber">
+          <div class="mc-stat-icon"><i class="fas fa-gauge-high"></i></div>
+          <div class="mc-stat-label">{{ _("Şiddet Endeksi") }}</div>
+          <div class="mc-stat-value"><span id="kp-darbogaz-severity">-</span><span style="font-size:16px;color:#94a3b8;">/100</span></div>
+          <div class="mc-progress" style="margin-top:10px;">
+            <div class="mc-progress-fill" data-fill-for="kp-darbogaz-severity" data-invert="1" style="width:0"></div>
+          </div>
+        </div>
+        <div class="mc-stat-card mc-stat-blue">
+          <div class="mc-stat-icon"><i class="fas fa-list-check"></i></div>
+          <div class="mc-stat-label">{{ _("Toplam Kayıt") }}</div>
+          <div class="mc-stat-value"><span id="kp-darbogaz-total">-</span></div>
+          <div class="mc-stat-sub">{{ _("çözülen + açık") }}</div>
+        </div>
+      </div>
+
+      <div style="display:flex; align-items:center; gap:10px; flex-wrap:wrap;">
+        <span style="font-size:13px; color:var(--text-muted);">{{ _("Son 30 gün eğilimi:") }}</span>
+        <span data-trend-badge class="mc-badge mc-badge-gray"><i class="fas fa-minus"></i> -</span>
+        <span id="kp-darbogaz-trend" style="font-size:12px; color:#94a3b8;">-</span>
+      </div>
+    </div>
+  </div>
+
 </div>
 {% endblock %}
-{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}"></script>{% endblock %}
+{% block extra_js %}<script src="{{ url_for('app_bp.static', filename='platform/js/k_radar.js') }}?v={{ config['VERSION'] }}"></script>{% endblock %}

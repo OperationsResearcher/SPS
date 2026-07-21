@@ -87,6 +87,73 @@
     return label + " (" + sign + delta.toFixed(1) + " " + t("puan, son30=") + cur + ", " + t("onceki30=") + prev + ")";
   }
 
+  // ── KP alt-modul gorsel zenginlestirme (TASK: kp sayfa tasarim) ─────────────
+  // HTML'de deger tasiyan span'ler zaten text() ile dolar. Buradaki fonksiyonlar
+  // AYNI degerleri okuyup dolan bar / gauge / trend rozeti gorselini uretir.
+  // Tasarim: template'e [data-fill="<value>"] tasiyan .mc-progress-fill koy; bu
+  // fonksiyon yuzdeyi width'e cevirir ve esik'e gore renk (success/warning/danger) verir.
+
+  function _num(v) { const n = Number(v); return isFinite(n) ? n : 0; }
+
+  // 0-100 deger -> bar width + renk. invert=true ise dusuk-iyi (risk/israf) demek:
+  // yuksek deger kirmizi olur. invert=false ise yuksek-iyi (verimlilik) yesil olur.
+  function fillBar(el, value, invert) {
+    if (!el) return;
+    const v = Math.max(0, Math.min(100, _num(value)));
+    el.style.width = v + "%";
+    el.classList.remove("success", "warning", "danger");
+    let cls;
+    if (invert) {
+      cls = v >= 66 ? "danger" : v >= 33 ? "warning" : "success";
+    } else {
+      cls = v >= 66 ? "success" : v >= 33 ? "warning" : "danger";
+    }
+    el.classList.add(cls);
+  }
+
+  // root icindeki tum [data-fill-for] barlarini doldurur.
+  // data-fill-for = deger span id'si · data-invert="1" -> dusuk-iyi metrik
+  function fillBarsIn(root, dataObj) {
+    root.querySelectorAll("[data-fill-for]").forEach(function (bar) {
+      const srcId = bar.getAttribute("data-fill-for");
+      const invert = bar.getAttribute("data-invert") === "1";
+      const srcEl = document.getElementById(srcId);
+      const raw = srcEl ? parseFloat(String(srcEl.textContent).replace(",", ".")) : 0;
+      fillBar(bar, raw, invert);
+    });
+  }
+
+  // Trend meta -> rozet (mc-badge). root icinde [data-trend-badge] elemanina yazar.
+  function renderTrendBadge(root, tr) {
+    const host = root.querySelector("[data-trend-badge]");
+    if (!host) return;
+    const delta = tr && typeof tr === "object" ? _num(tr.delta) : 0;
+    const label = (tr && tr.label) || "stabil";
+    let cls = "mc-badge-gray", icon = "fa-minus";
+    if (delta > 1) { cls = "mc-badge-success"; icon = "fa-arrow-trend-up"; }
+    else if (delta < -1) { cls = "mc-badge-danger"; icon = "fa-arrow-trend-down"; }
+    const sign = delta > 0 ? "+" : "";
+    host.className = "mc-badge " + cls;
+    host.innerHTML = '<i class="fas ' + icon + '"></i> ' + t(label) +
+      ' <span style="opacity:.75">(' + sign + delta.toFixed(1) + ')</span>';
+  }
+
+  // Bir modul icin: barlari doldur + trend rozetini bas. loadKp* sonunda cagirilir.
+  function enrichKp(root, d) {
+    fillBarsIn(root, d);
+    renderTrendBadge(root, d.trend);
+    // Gauge (conic-gradient) — [data-gauge-for] varsa deger yuzdesini ac
+    root.querySelectorAll("[data-gauge-for]").forEach(function (g) {
+      const srcEl = document.getElementById(g.getAttribute("data-gauge-for"));
+      const raw = srcEl ? Math.max(0, Math.min(100, parseFloat(String(srcEl.textContent).replace(",", ".")) || 0)) : 0;
+      const invert = g.getAttribute("data-invert") === "1";
+      const color = invert
+        ? (raw >= 66 ? "#ef4444" : raw >= 33 ? "#f59e0b" : "#10b981")
+        : (raw >= 66 ? "#10b981" : raw >= 33 ? "#f59e0b" : "#ef4444");
+      g.style.background = "conic-gradient(" + color + " " + (raw * 3.6) + "deg, var(--mc-gauge-track,#e2e8f0) 0deg)";
+    });
+  }
+
   async function loadHub(root) {
     const url = root.dataset.hubUrl;
     const payload = await getJson(url);
@@ -442,12 +509,42 @@
     }
   }
 
+  // Pareto: API tek "top_impact_slice" (ilk dilimin toplam etkiye orani) verir.
+  // Gercek per-kategori dagilim yok; 80/20 ilkesini donut ile durustce gosteririz.
+  var _paretoChart = null;
+  function renderParetoChart(root, d) {
+    var canvas = root.querySelector("#kp-pareto-canvas");
+    if (!canvas || typeof Chart === "undefined") return;
+    var slice = Math.max(0, Math.min(100, _num(d.top_impact_slice)));
+    if (_paretoChart) { _paretoChart.destroy(); _paretoChart = null; }
+    _paretoChart = new Chart(canvas, {
+      type: "doughnut",
+      data: {
+        labels: [t("Ilk dilim etkisi"), t("Kalan")],
+        datasets: [{
+          data: [slice, Math.max(0, 100 - slice)],
+          backgroundColor: ["#6366f1", "#e2e8f0"],
+          borderWidth: 0,
+        }],
+      },
+      options: {
+        cutout: "68%",
+        plugins: {
+          legend: { position: "bottom", labels: { boxWidth: 12, padding: 12 } },
+          tooltip: { callbacks: { label: function (c) { return c.label + ": " + c.parsed.toFixed(1) + "%"; } } },
+        },
+      },
+    });
+  }
+
   async function loadKpDarbogaz(root) {
     const payload = await getJson(root.dataset.url);
     const d = payload.data || {};
     text("kp-darbogaz-critical", d.critical_kpi_count ?? 0);
     text("kp-darbogaz-severity", d.severity_index ?? 0);
+    text("kp-darbogaz-total", d.total_log_count ?? 0);
     text("kp-darbogaz-trend", trendText(d.trend));
+    enrichKp(root, d);
   }
 
   async function loadKpDegerZinciri(root) {
@@ -455,7 +552,9 @@
     const d = payload.data || {};
     text("kp-dz-mapped", d.mapped_process_count ?? 0);
     text("kp-dz-muda", d.muda_risk ?? 0);
+    text("kp-dz-items", d.item_count ?? 0);
     text("kp-dz-trend", trendText(d.trend));
+    enrichKp(root, d);
   }
 
   async function loadKpPareto(root) {
@@ -464,6 +563,8 @@
     text("kp-pareto-impact", d.top_impact_slice ?? 0);
     text("kp-pareto-kpi", d.kpi_count ?? 0);
     text("kp-pareto-trend", trendText(d.trend));
+    enrichKp(root, d);
+    renderParetoChart(root, d);
   }
 
   async function loadKpSla(root) {
@@ -472,6 +573,7 @@
     text("kp-sla-risk", d.breach_risk ?? 0);
     text("kp-sla-rows", d.observed_rows ?? 0);
     text("kp-sla-trend", trendText(d.trend));
+    enrichKp(root, d);
   }
 
   async function loadKpBenchmark(root) {
@@ -480,6 +582,7 @@
     text("kp-benchmark-score", d.comparability_score ?? 0);
     text("kp-benchmark-rows", d.period_row_count ?? 0);
     text("kp-benchmark-trend", trendText(d.trend));
+    enrichKp(root, d);
   }
 
   async function loadKpOee(root) {
@@ -490,6 +593,7 @@
     text("kp-oee-p", d.performance ?? 0);
     text("kp-oee-q", d.quality ?? 0);
     text("kp-oee-trend", trendText(d.trend));
+    enrichKp(root, d);
   }
 
   async function loadKpVsm(root) {
@@ -498,6 +602,7 @@
     text("kp-vsm-flow", d.flow_efficiency_estimate ?? 0);
     text("kp-vsm-waste", d.waste_pressure ?? 0);
     text("kp-vsm-trend", trendText(d.trend));
+    enrichKp(root, d);
   }
 
   async function loadKpKapasite(root) {
@@ -506,6 +611,7 @@
     text("kp-kapasite-util", d.utilization_estimate ?? 0);
     text("kp-kapasite-pressure", d.resource_pressure ?? 0);
     text("kp-kapasite-trend", trendText(d.trend));
+    enrichKp(root, d);
   }
 
   async function loadKprEvm(root) {
@@ -573,28 +679,44 @@
     if (sortVal === "updated_asc") view.sort((a, b) => String(a.updated_at || "").localeCompare(String(b.updated_at || "")));
     if (sortVal === "updated_desc") view.sort((a, b) => String(b.updated_at || "").localeCompare(String(a.updated_at || "")));
     if (tbody) {
+      const rootEl = document.getElementById("k-radar-kp-olgunluk-root");
+      const canManage = rootEl && rootEl.dataset.canManage === "1";
+      let procMap = {};
+      try { procMap = JSON.parse((rootEl && rootEl.dataset.procMap) || "{}"); } catch (e) { procMap = {}; }
+      const lvlClass = { 1: "danger", 2: "danger", 3: "warning", 4: "success", 5: "success" };
+      const colspan = canManage ? 5 : 4;
+
+      function levelCell(lvl) {
+        const cls = lvlClass[lvl] || "gray";
+        const pct = Math.max(0, Math.min(100, (Number(lvl) || 0) / 5 * 100));
+        return '<div style="display:flex;align-items:center;gap:10px;min-width:180px;">' +
+          '<span class="mc-badge mc-badge-' + cls + '">' + t("Seviye") + " " + (lvl || 0) + "</span>" +
+          '<div class="mc-progress" style="flex:1;max-width:120px;">' +
+          '<div class="mc-progress-fill ' + (lvlClass[lvl] || "") + '" style="width:' + pct + '%;"></div></div></div>';
+      }
+
       tbody.innerHTML = view.length
         ? view
-            .map(
-              (r) =>
-                "<tr><td style=\"border-bottom:1px solid #f1f5f9; padding:6px;\">" +
-                r.process_id +
-                "</td><td style=\"border-bottom:1px solid #f1f5f9; padding:6px;\">" +
-                r.maturity_level +
-                "</td><td style=\"border-bottom:1px solid #f1f5f9; padding:6px;\">" +
-                (r.dimension || "-") +
-                "</td><td style=\"border-bottom:1px solid #f1f5f9; padding:6px;\">" +
-                ((r.updated_at || "").replace("T", " ").slice(0, 16) || "-") +
-                "</td>" +
-                ((document.getElementById("k-radar-kp-olgunluk-root")?.dataset.canManage === "1")
-                  ? ("<td style=\"border-bottom:1px solid #f1f5f9; padding:6px;\">" +
-                    "<button class=\"mc-btn mc-btn-sm kp-edit\" data-id=\"" + r.id + "\" data-level=\"" + r.maturity_level + "\" data-dimension=\"" + encodeURIComponent(r.dimension || "") + "\">" + t("Düzenle") + "</button> " +
-                    "<button class=\"mc-btn mc-btn-sm kp-del\" data-id=\"" + r.id + "\">" + t("Sil") + "</button></td>")
+            .map(function (r) {
+              const pid = r.process_id;
+              const pname = procMap[pid] || ("#" + pid);
+              const upd = (r.updated_at || "").replace("T", " ").slice(0, 16) || "-";
+              return "<tr><td>" + pname + "</td>" +
+                "<td>" + levelCell(r.maturity_level || 0) + "</td>" +
+                "<td>" + (r.dimension || "-") + "</td>" +
+                '<td style="color:var(--text-muted);font-size:12px;">' + upd + "</td>" +
+                (canManage
+                  ? ("<td>" +
+                    '<button class="mc-btn mc-btn-sm kp-edit" data-id="' + r.id + '" data-level="' + r.maturity_level + '" data-dimension="' + encodeURIComponent(r.dimension || "") + '">' + t("Düzenle") + "</button> " +
+                    '<button class="mc-btn mc-btn-sm kp-del" data-id="' + r.id + '">' + t("Sil") + "</button></td>")
                   : "") +
-                "</tr>"
-            )
+                "</tr>";
+            })
             .join("")
-        : "<tr><td colspan=\"5\" style=\"padding:8px; color:#64748b;\">" + t("Kayıt bulunamadı.") + "</td></tr>";
+        : '<tr><td colspan="' + colspan + '">' +
+          '<div class="mc-empty" style="padding:32px 16px;">' +
+          '<div class="mc-empty-icon"><i class="fas fa-layer-group"></i></div>' +
+          '<div class="mc-empty-title">' + t("Kayıt bulunamadı") + "</div></div></td></tr>";
       const root = document.getElementById("k-radar-kp-olgunluk-root");
       if (root && root.dataset.canManage === "1") {
         tbody.querySelectorAll(".kp-edit").forEach((btn) => {
