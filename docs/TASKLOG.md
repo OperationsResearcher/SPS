@@ -2,6 +2,69 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-279 | 2026-07-21 | ✅ Tamamlandı
+
+**Görev:** Büyük keşif raporundaki 40+ bulgunun düzeltilmesi + KMF veri mutabakatı
+**Modül:** tüm sistem (skor motoru, K-Radar, i18n, güvenlik, model katmanı, ops)
+**Durum:** ✅ Tamamlandı — 760 test yeşil, 13 commit
+
+### Kapsam
+Kullanıcı kararı: **bulgu S1 (Yayın DB parolası public GitHub'da) HARİÇ** hepsi.
+S1'e hiç dokunulmadı — kullanıcı ayrıca ele alacak.
+
+### En yüksek etkili düzeltmeler
+
+| Kod | Sorun | Ölçülen sonuç |
+|---|---|---|
+| **K1** | `status_percentage` 8 yerde okunuyor, **0 yerde yazılıyordu** | Merkezî servis + 5 yazma noktası; **515 satır** geriye dönük dolduruldu |
+| **B2** | İki `karne_hesaplamalar` kopyası, üretim hatalı olanı kullanıyordu | `"4,5-9,5"` → `(45.0,95.0)` idi, artık `(4.5,9.5)`. 9 dosya tek satır değişmeden düzeldi |
+| **B1/M4** | "Ölçülmedi" 0 sayılıyordu (4 katman) | Tomofil vizyon `55.78→93.62`, KMF `6.48→85.60` + yeni `kapsam` alanı |
+| **S2** | Tenant guard **kapalı değil, BOZUKTU** | `enforce`'ta bile 503 süreç sızıyordu (kurumun kendi verisi 77) → **77** |
+| **M1** | Başarı bantlarının %64,6'sı okunamıyordu | 1240 kayıtlık JS formatı tanınıyor + parse boş dönerse **log** |
+| **B6** | Hedef sayıya çevrilemiyordu | **126 → 42** (kalan 42 bilinçli `'-'`) |
+| **B8** | Erken uyarı taraması kördü | kör PG **455 → 70**; 385 gösterge artık görülüyor |
+| **B5** | Karışık ağırlıkta payda 100 etmiyordu | rapor örneği `47.37 → 60.00` |
+| **S6** | 112 noktada `str(e)` istemciye (SQL/parametre sızıntısı) | **112 → 1** (kalan bilinçli: bağlantı testi) |
+| **I6** | JS çevirisi: "benimsenme yarım" **değil**, `-k t` olmadan **çıkarım hiç çalışmamış** | POT 3617 → 4075 msgid (JS'ten 867 kayıt) |
+
+### Raporda olmayan, yol boyunca bulunanlar
+- **Yutulan DB hatası + rollback yokluğu** → 7 uç birden 500 (`k_radar_kp_olgunluk` tablosu hiç yokmuş)
+- **Olgunluk verisi yanlış tablodan okunuyordu** → `process_maturity`'e yöneltildi (340 kayıt); radar'ın Olgunluk boyutu performansın kopyasıydı, artık gerçek (t27: 50.0 → 56.8)
+- **5 kurumda çift aktif plan yılı** (2026+2027) → 2027'ler draft'a çekildi
+- **`extensions.cache` ve `app.extensions.cache` iki ayrı nesneydi**, init yalnız birine uygulanıyordu → tekilleştirildi
+- **33 kırık `url_for` endpoint'i, 92 referans** → canlı olanlar düzeltildi
+- **B3'ün dördüncü kopyası** (`performance_service.hesapla_durum`) — `direction` okumuyordu
+
+### Çürütülen rapor iddiaları
+Hiçbir bulgu ölçülmeden düzeltilmedi; üçü yanlış çıktı:
+- F15 "kaçışsız `innerHTML`" → zaten `escHtml()` kullanıyor
+- B7 "iki dosyada ölü koşul" → biri farklı bir hataydı
+- `auth.py:35` "kimlik doğrulama olayı kayboluyor" → dıştaki except zaten log yazıyor
+
+### KMF veri mutabakatı (ayrı iş)
+Kullanıcı Excel üzerinden karar verdi; **hard delete** açık talebiyle uygulandı
+(KURALLAR §3 soft delete ister — bilinçli istisna, iki ortam da önce yedeklendi).
+
+- silinen: yerel **122**, Yayın **122** (110 karar + 12 adet 2020 test verisi)
+- çekilen (Yayın→Yerel): **89**
+- atlanan **113**: silinmiş PG'lerin verisi (`is_active=false`), çöp taşımanın anlamı yoktu
+- 2020 PGV'leri temizlendi; **yapı korundu** (plan_year=2020 ana yapının sahibi)
+
+**"Dünkü full dump neden eksik kaldı?"** → Dump eksik değildi (587 PGV'nin tamamı vardı,
+dosyadan sayıldı). Kayıp **restore sonrası yıl klonlamasında** oldu: 11 süreç/151 PG →
+77 süreç/895 PG klonlanırken eşleşemeyen 202 PGV düştü. Kanıt: 14 PGV hâlâ yanlış yıla bağlı.
+
+### Yeni ops araçları (hepsi varsayılan KONTROL modunda)
+`sequence_drift_onar.py` · `kpi_data_skor_doldur.py` · `cift_aktif_plan_yili_onar.py` ·
+`kurum_kiyas.py` · `pgv_excel_uret.py` · `pgv_sorunlu_excel.py` · `pgv_cekilecek_excel.py` ·
+`pgv_karar_uygula.py` · `pgv_eksik_cek.py` · `pgv_yil_sil.py`
+
+### Notlar
+- **458 JS msgid çevrilmeyi bekliyor** — `babel.cfg`'ye `-k t` uyarısı yazıldı, çeviri sonraya bırakıldı (kullanıcı kararı)
+- **Test'e (test.kokpitim.com) deploy YAPILMADI** — kullanıcı sonraya bıraktı
+- Yerel ile Yayın hâlâ ayrışık: yapı yerelde 7 kat (yıl klonu), veri Yayın'da 113 PGV fazla
+- Yayın'da `audit_logs` son 24 saatte boş — ayrı inceleme konusu
+
 ## TASK-278 | 2026-07-17 | ✅ Tamamlandı
 
 **Görev:** 36 rapor sayfası sonsuz spinner — JS klasörü taşınmamış (`js/raporlar` → `js/reports`)
