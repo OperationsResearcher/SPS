@@ -149,8 +149,13 @@ def create_task_reminder_notification(task_id, user_id):
         try:
             from services.background_tasks import execute_async
             execute_async(send_task_reminder_email, user_id, task_id)
-        except:
-            pass  # Background task servisi yoksa sadece bildirim oluştur
+        except Exception as e:  # S10: ciplak except yasak
+            # Background task servisi yoksa bildirim yine olusur — ama iz kalsin.
+            try:
+                from flask import current_app
+                current_app.logger.warning('[notification] e-posta kuyruga alinamadi: %s', e)
+            except Exception:
+                pass
         
         return notification
     except Exception as e:

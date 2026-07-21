@@ -20,8 +20,21 @@ except ImportError:
             current_app.logger.warning(
                 "python-magic not available. MIME type validation will be limited to extension check."
             )
-    except:
-        pass  # Context yoksa sessizce geç
+    except Exception:
+        # S10 (2026-07-21): burada ÇIPLAK `except:` vardı (KURALLAR §3 ihlali —
+        # KeyboardInterrupt/SystemExit'i bile yutar).
+        #
+        # ⚠ Bu blok bir GÜVENLİK DEĞİŞİKLİĞİ anlamına gelir: python-magic
+        # yoksa TÜM yüklemeler sihirli-bayt doğrulamasından UZANTI TAHMİNİNE
+        # düşer. Uyarı yalnız app context varsa log'a yazılabiliyor; import
+        # zamanında context olmadığı için çoğu zaman hiç görünmüyordu.
+        # stderr'e de yazılıyor ki kurulum sırasında fark edilsin.
+        import sys as _sys
+        print(
+            "[file_validation] UYARI: python-magic yüklü değil — dosya "
+            "doğrulaması yalnız uzantıya bakacak (sihirli bayt kontrolü YOK).",
+            file=_sys.stderr,
+        )
 
 
 # İzin verilen dosya uzantıları ve MIME tipleri

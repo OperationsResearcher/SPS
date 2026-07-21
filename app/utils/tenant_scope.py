@@ -247,8 +247,21 @@ def default_landing_endpoint(user=None) -> str:
         # Kurum üst yönetimi ve kurum yöneticisi (platform Admin değil).
         if role_name in ("executive_manager", "tenant_admin"):
             return "app_bp.yonetim_ozeti"
-    except Exception:
-        pass
+    except Exception as e:
+        # S10 (2026-07-21): burada `pass` vardı — rol çözümlemesi patlarsa
+        # kullanıcı SESSİZCE düşük yetkili görünüme düşüyor ve hiçbir iz
+        # kalmıyordu. Yönlendirme hedefi bir güvenlik kararı değil (asıl
+        # yetki kontrolü route'larda) ama "yöneticiye yönetici ekranı
+        # gelmiyor" şikâyetinin sebebi burada gizli kalırdı.
+        # KURALLAR §3: her except'te app.logger.error zorunlu.
+        try:
+            from flask import current_app
+            current_app.logger.error(
+                "[tenant_scope] rol çözümlenemedi (varsayılan panele düşüldü) "
+                "user=%s: %s", getattr(u, "id", None), e,
+            )
+        except Exception:
+            pass
     return "app_bp.launcher"
 
 

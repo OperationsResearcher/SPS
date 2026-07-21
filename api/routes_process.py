@@ -64,6 +64,7 @@ from api.helpers import (
     _notify_project_team_changes_api,
     _parse_date_safe,
 )
+from app.utils.error_handlers import json_error  # S6
 
 
 @api_bp.route('/surec/<int:surec_id>/uyeler', methods=['GET'])
@@ -111,7 +112,7 @@ def api_surec_uyeler(surec_id: int):
         return jsonify({'success': True, 'uyeler': uyeler})
     except Exception as e:
         current_app.logger.error(f'Süreç üyeleri getirme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_surec_uyeler]", 500)
 
 
 @api_bp.route('/surec/<int:surec_id>/performans-gostergesi/<int:pg_id>/dagit', methods=['POST'])
@@ -200,7 +201,7 @@ def api_surec_pg_hedef_dagit(surec_id: int, pg_id: int):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Hedef dağıtma hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_surec_pg_hedef_dagit]", 500)
 @api_bp.route('/surec/<int:surec_id>/saglik-skoru', methods=['GET'])
 @login_required
 def api_surec_saglik_skoru(surec_id):
@@ -244,7 +245,7 @@ def api_surec_saglik_skoru(surec_id):
         })
     except Exception as e:
         current_app.logger.error(f'Süreç sağlık skoru API hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_surec_saglik_skoru]", 500)
 
 
 # Risk Yönetimi API Endpoint'leri
@@ -264,7 +265,7 @@ def api_pg_veri_sil(veri_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"PG veri silme hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_pg_veri_sil]", 500)
 
 
 @api_bp.route('/pg-veri/proje-gorevleri', methods=['GET'])

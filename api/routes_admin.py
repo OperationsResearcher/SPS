@@ -64,6 +64,7 @@ from api.helpers import (
     _notify_project_team_changes_api,
     _parse_date_safe,
 )
+from app.utils.error_handlers import json_error  # S6
 
 
 @api_bp.route('/activities', methods=['GET'])
@@ -336,7 +337,7 @@ def api_user_layout():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Layout tercihi kaydetme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_user_layout]", 500)
 
 
 @api_bp.route('/user/theme', methods=['POST'])
@@ -355,7 +356,8 @@ def api_user_theme():
         if current_user.theme_preferences:
             try:
                 prefs = json.loads(current_user.theme_preferences)
-            except:
+            except (ValueError, TypeError) as e:  # S10: ciplak except yasak
+                current_app.logger.warning('[theme_prefs] JSON cozulemedi: %s', e)
                 prefs = {}
         else:
             prefs = {}
@@ -371,7 +373,7 @@ def api_user_theme():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Tema tercihi kaydetme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_user_theme]", 500)
 @api_bp.route('/notifications', methods=['GET'])
 @csrf.exempt
 @login_required
@@ -414,7 +416,7 @@ def api_notifications():
         })
     except Exception as e:
         current_app.logger.error(f'Bildirimler getirme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_notifications]", 500)
 
 
 @api_bp.route('/notifications/<int:notification_id>/mark-read', methods=['POST'])
@@ -435,7 +437,7 @@ def api_notification_mark_read(notification_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Bildirim işaretleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_notification_mark_read]", 500)
 
 
 @api_bp.route('/notifications/count', methods=['GET'])
@@ -456,7 +458,7 @@ def api_notifications_count():
         })
     except Exception as e:
         current_app.logger.error(f'Bildirim sayısı getirme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_notifications_count]", 500)
 
 
 @api_bp.route('/notifications/mark-all-read', methods=['POST'])
@@ -479,7 +481,7 @@ def api_notifications_mark_all_read():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Bildirimler okundu işaretleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_notifications_mark_all_read]", 500)
 
 
 # What-If Simülasyon API (V2.0.0)
@@ -519,7 +521,8 @@ def api_admin_users():
                 kurum_adi = user.kurum.ticari_unvan if user.kurum else None
                 if kurum_adi:
                     kurum_adi = kurum_adi.encode('utf-8', errors='ignore').decode('utf-8')
-            except:
+            except Exception as e:  # S10: ciplak except yasak
+                current_app.logger.warning('[user_list] kurum adi okunamadi: %s', e)
                 kurum_adi = None
             
             user_dict = {
@@ -611,7 +614,7 @@ def api_admin_delete_user(user_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kullanıcı silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_admin_delete_user]", 500)
 
 
 @api_bp.route('/admin/users/<int:user_id>')
@@ -685,7 +688,7 @@ def api_admin_user_detail(user_id):
         current_app.logger.error(f'Kullanıcı detay hatası: {e}', exc_info=True)
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': _('İşlem tamamlanamadı.'),  # S6: str(e) sızdırıyordu
         }), 500
 
 
@@ -766,7 +769,7 @@ def api_rol_matrisi():
         current_app.logger.error(f'Rol matrisi hatası: {e}', exc_info=True)
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': _('İşlem tamamlanamadı.'),  # S6: str(e) sızdırıyordu
         }), 500
 
 
@@ -1068,4 +1071,4 @@ def api_admin_add_user():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kullanıcı ekleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_admin_add_user]", 500)

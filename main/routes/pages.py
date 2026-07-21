@@ -3,6 +3,7 @@
 from main.routes._common import *  # noqa: F401,F403
 from main.routes import main_bp
 from main.deprecated import legacy_html_to_platform
+from app.utils.error_handlers import json_error  # S6
 
 
 # 2026-06-17: /dashboard kaldırıldı — redirect-ölü (GET 301 → /masaustu).
@@ -88,7 +89,7 @@ def debug_surec_data():
         import traceback
         current_app.logger.error(f'Debug surec data hatası: {e}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[debug_surec_data]", 500)
 
 
 @main_bp.route('/api/kullanici/sureclerim')
@@ -165,7 +166,7 @@ def api_kullanici_surecleri():
         })
     except Exception as e:
         current_app.logger.error(f'Süreçler getirilemedi: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_kullanici_surecleri]", 500)
 
 
 @main_bp.route('/surec/<int:surec_id>/performans-gostergesi/add', methods=['POST'])
@@ -602,7 +603,7 @@ def get_surec(surec_id):
         import traceback
         current_app.logger.error(f'Süreç detay hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[get_surec]", 500)
 
 
 @main_bp.route('/surec/<int:surec_id>/faaliyetler')
@@ -644,7 +645,7 @@ def get_surec_faaliyetler(surec_id):
         import traceback
         current_app.logger.error(f'Süreç faaliyetleri hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[get_surec_faaliyetler]", 500)
 
 
 @main_bp.route('/surec/update/<int:surec_id>', methods=['POST'])
@@ -737,13 +738,13 @@ def update_surec(surec_id):
         })
     except ValueError as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return json_error(e, "[update_surec]", 400)
     except Exception as e:
         db.session.rollback()
         import traceback
         current_app.logger.error(f'Süreç güncelleme hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[update_surec]", 500)
 
 
 def _parse_optional_date(value: object):
@@ -789,7 +790,7 @@ def get_surec_faaliyet_detay(surec_id: int, faaliyet_id: int):
         })
     except Exception as e:
         current_app.logger.error(f'Faaliyet detay hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[get_surec_faaliyet_detay]", 500)
 
 
 @main_bp.route('/surec/<int:surec_id>/faaliyet/add', methods=['POST'])
@@ -832,7 +833,7 @@ def add_surec_faaliyet(surec_id: int):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Faaliyet ekleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[add_surec_faaliyet]", 500)
 
 
 @main_bp.route('/surec/<int:surec_id>/faaliyet/<int:faaliyet_id>/update', methods=['POST'])
@@ -885,7 +886,7 @@ def update_surec_faaliyet(surec_id: int, faaliyet_id: int):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Faaliyet güncelleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[update_surec_faaliyet]", 500)
 
 
 @main_bp.route('/surec/<int:surec_id>/faaliyet/<int:faaliyet_id>/delete', methods=['DELETE'])
@@ -915,7 +916,7 @@ def delete_surec_faaliyet(surec_id: int, faaliyet_id: int):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Faaliyet silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[delete_surec_faaliyet]", 500)
 
 
 def _ensure_int_list(value: object) -> list[int]:
@@ -1047,7 +1048,7 @@ def surec_get_for_edit(surec_id):
         })
     except Exception as e:
         current_app.logger.error(f'Süreç getirme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[surec_get_for_edit]", 500)
 
 
 @main_bp.route('/surec/add-simple', methods=['POST'])
@@ -1125,11 +1126,11 @@ def surec_add_simple():
         return jsonify({'success': True, 'message': 'Süreç başarıyla oluşturuldu', 'surec_id': surec.id})
     except ValueError as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 400
+        return json_error(e, "[surec_add_simple]", 400)
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Süreç oluşturma hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[surec_add_simple]", 500)
 
 
 @main_bp.route('/surec/delete/<int:surec_id>', methods=['DELETE'])
@@ -1167,7 +1168,7 @@ def surec_delete(surec_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Süreç silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[surec_delete]", 500)
 
 
 # 2026-06-17: /performans-kartim kaldırıldı — redirect-ölü (GET 301 → /bireysel/karne).

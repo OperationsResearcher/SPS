@@ -3,6 +3,7 @@
 from main.routes._common import *  # noqa: F401,F403
 from main.routes import main_bp
 from main.deprecated import legacy_html_to_platform
+from app.utils.error_handlers import json_error  # S6
 
 
 @main_bp.route('/admin/seed_db')
@@ -369,7 +370,7 @@ def api_strategic_planning_graph():
         import traceback
         current_app.logger.error(f'SP graph API hatası: {e}')
         current_app.logger.error(traceback.format_exc())
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[_label_with_score]", 500)
 
 
 @main_bp.route('/api/ai/insights')

@@ -63,6 +63,7 @@ from api.helpers import (
     _notify_project_team_changes_api,
     _parse_date_safe,
 )
+from app.utils.error_handlers import json_error  # S6
 
 
 @api_bp.route('/ai/insights', methods=['GET'])
@@ -185,7 +186,7 @@ def api_vision_score():
         })
     except Exception as e:
         current_app.logger.exception('Vision score hesaplanamadı: %s', e)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_vision_score]", 500)
 
 
 @api_bp.route('/vision-score/recalc', methods=['POST'])
@@ -207,7 +208,7 @@ def api_vision_score_recalc():
         })
     except Exception as e:
         current_app.logger.exception('Vision score recalc hatası: %s', e)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_vision_score_recalc]", 500)
 
 
 def _build_vision_score_payload_for_ai(kurum_id, as_of_date=None):
@@ -307,7 +308,12 @@ def api_ai_coach_analyze():
         })
     except Exception as e:
         current_app.logger.exception('AI Coach analyze hatası: %s', e)
-        return jsonify({'success': False, 'message': str(e), 'analysis_markdown': None}), 500
+        # S6: str(e) SQL cümlesi/parametre sızdırabiliyordu; log yukarıda zaten var.
+        return jsonify({
+            'success': False,
+            'message': _('Analiz tamamlanamadı.'),
+            'analysis_markdown': None,
+        }), 500
 @api_bp.route('/dashboard/ai-advisor', methods=['GET'])
 @login_required
 def api_ai_advisor():
@@ -329,7 +335,7 @@ def api_ai_advisor():
     
     except Exception as e:
         current_app.logger.error(f'AI danışman API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_ai_advisor]", 500)
 
 
 @api_bp.route('/dashboard/ai-advisor/notify', methods=['POST'])
@@ -361,7 +367,7 @@ def api_ai_advisor_notify():
     
     except Exception as e:
         current_app.logger.error(f'AI tavsiye bildirimi hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_ai_advisor_notify]", 500)
 
 
 @api_bp.route('/dashboard/executive', methods=['GET'])
@@ -433,7 +439,7 @@ def api_executive_dashboard():
     
     except Exception as e:
         current_app.logger.error(f'Executive dashboard API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_executive_dashboard]", 500)
 @api_bp.route('/kurum/<int:kurum_id>/stratejik-profil', methods=['GET', 'POST'])
 @csrf.exempt
 @login_required
@@ -455,7 +461,7 @@ def api_kurum_stratejik_profil(kurum_id):
         return jsonify({'success': True, 'data': data})
     except Exception as e:
         current_app.logger.error(f"Stratejik profil hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_kurum_stratejik_profil]", 500)
 
 
 @api_bp.route('/ai/stratejik-oneri', methods=['POST'])
@@ -474,7 +480,7 @@ def api_ai_stratejik_oneri():
         return jsonify({'success': True, 'mock': api_key is None, 'suggestions': suggestions})
     except Exception as e:
         current_app.logger.error(f"AI stratejik öneri hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_ai_stratejik_oneri]", 500)
 
 
 @api_bp.route('/ai/yeni-oneri', methods=['POST'])
@@ -492,7 +498,7 @@ def api_ai_yeni_oneri():
         return jsonify({'success': True, 'suggestions': suggestions})
     except Exception as e:
         current_app.logger.error(f"AI yeni öneri hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_ai_yeni_oneri]", 500)
 
 
 @api_bp.route('/ai/kabul-et', methods=['POST'])
@@ -506,7 +512,7 @@ def api_ai_kabul_et():
         return jsonify({'success': True, 'accepted': True, 'data': payload})
     except Exception as e:
         current_app.logger.error(f"AI kabul hatası: {e}", exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_ai_kabul_et]", 500)
 @api_bp.route('/simulation/what-if', methods=['POST'])
 @csrf.exempt
 @login_required
@@ -549,7 +555,7 @@ def api_what_if_simulation():
         current_app.logger.error(f'What-If simülasyon hatası: {e}', exc_info=True)
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': _('İşlem tamamlanamadı.'),  # S6: str(e) sızdırıyordu
         }), 500
 
 
@@ -628,5 +634,5 @@ def simulate_project(project_id):
         current_app.logger.error(f'Proje simülasyon hatası: {e}', exc_info=True)
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': _('İşlem tamamlanamadı.'),  # S6: str(e) sızdırıyordu
         }), 500

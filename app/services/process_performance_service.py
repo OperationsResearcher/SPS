@@ -461,7 +461,9 @@ class ProcessPerformanceService:
                 if pg_veri.hedef_deger and pg_veri.gerceklesen_deger:
                     durum, durum_yuzdesi = hesapla_durum(
                         float(pg_veri.hedef_deger) if pg_veri.hedef_deger else None,
-                        float(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger else None
+                        float(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger else None,
+                        # B3: azalan gostergelerde oran ters cikiyordu.
+                        direction=getattr(pg_veri.individual_pg, 'direction', 'Increasing'),
                     )
                     pg_veri.durum = durum
                     pg_veri.durum_yuzdesi = durum_yuzdesi
@@ -783,7 +785,7 @@ class ProcessPerformanceService:
             return tuple([output, filename])
         except Exception as e:
             current_app.logger.error(f'Excel export hatası: {e}')
-            return dict({"success": False, "message": str(e)}), 500
+            return dict({"success": False, "message": _("İşlem tamamlanamadı.")}), 500  # S6
 
 
 ################################################################################
@@ -945,7 +947,7 @@ class ProcessPerformanceService:
             current_app.logger.error(f'PG veri detay hatası: {e}')
             import traceback
             current_app.logger.error(traceback.format_exc())
-            return dict({'success': False, 'message': str(e)}), 500
+            return dict({"success": False, "message": _("İşlem tamamlanamadı.")}), 500  # S6
 
 
 ################################################################################
@@ -1163,7 +1165,7 @@ class ProcessPerformanceService:
             current_app.logger.error(f'Toplu PG veri detay hatası: {e}')
             import traceback
             current_app.logger.error(traceback.format_exc())
-            return dict({'success': False, 'message': str(e)}), 500
+            return dict({"success": False, "message": _("İşlem tamamlanamadı.")}), 500  # S6
 
 
 ################################################################################
@@ -1237,7 +1239,9 @@ class ProcessPerformanceService:
             if pg_veri.hedef_deger and pg_veri.gerceklesen_deger is not None:
                 durum, durum_yuzdesi = hesapla_durum(
                     float(pg_veri.hedef_deger) if pg_veri.hedef_deger else None,
-                    float(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger else None
+                    float(pg_veri.gerceklesen_deger) if pg_veri.gerceklesen_deger else None,
+                    # B3: azalan gostergelerde oran ters cikiyordu.
+                    direction=getattr(pg_veri.individual_pg, 'direction', 'Increasing'),
                 )
                 pg_veri.durum = durum
                 pg_veri.durum_yuzdesi = durum_yuzdesi
@@ -1284,7 +1288,7 @@ class ProcessPerformanceService:
             current_app.logger.error(f'PG veri güncelleme hatası: %s', e)
             import traceback
             current_app.logger.error(traceback.format_exc())
-            return dict({'success': False, 'message': str(e)}), 500
+            return dict({"success": False, "message": _("İşlem tamamlanamadı.")}), 500  # S6
 
 
 ################################################################################

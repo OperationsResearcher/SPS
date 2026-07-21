@@ -21,6 +21,7 @@ from platform_core import app_bp
 from app.extensions import csrf
 from app.constants.roles import PLATFORM_ADMIN_ROLES
 from flask_babel import gettext as _
+from app.utils.error_handlers import json_error  # S6
 
 
 def _is_admin() -> bool:
@@ -228,7 +229,7 @@ def admin_tools_yedekleme_otomatik_calistir():
         return jsonify({"success": not res.get("errors"), "result": res})
     except Exception as e:
         current_app.logger.error(f"[admin_tools] otomatik calistir: {e}", exc_info=True)
-        return jsonify({"success": False, "message": str(e)}), 500
+        return json_error(e, "[admin_tools_yedekleme_otomatik_calistir]", 500)
 
 
 @app_bp.route("/admin/araclar/yedekleme/geri-yukle/db", methods=["POST"])

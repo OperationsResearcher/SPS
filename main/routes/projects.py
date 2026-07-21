@@ -2,6 +2,7 @@
 # Otomatik bölüm — `python scripts/dev/split_main_routes.py`
 from main.routes._common import *  # noqa: F401,F403
 from main.routes import main_bp
+from app.utils.error_handlers import json_error  # S6
 
 # ============================================================================
 # PROJE YÖNETİMİ ROTALARI
@@ -59,7 +60,7 @@ def muda_analyze(surec_id):
     
     except Exception as e:
         current_app.logger.error(f'Muda analiz hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[muda_analyze]", 500)
 
 
 @main_bp.route('/api/muda-hunter/efficiency-score', methods=['GET'])
@@ -77,7 +78,7 @@ def muda_efficiency_score():
     
     except Exception as e:
         current_app.logger.error(f'Efficiency score hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[muda_efficiency_score]", 500)
 
 
 # ============================================
@@ -121,7 +122,7 @@ def admin_get_organization(kisa_ad):
         })
     except Exception as e:
         current_app.logger.error(f'Kurum getirme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_get_organization]", 500)
 
 
 @main_bp.route('/admin/add-organization', methods=['POST'])
@@ -176,7 +177,7 @@ def admin_add_organization():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurum ekleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_add_organization]", 500)
 
 
 @main_bp.route('/admin/update-organization', methods=['POST'])
@@ -247,7 +248,7 @@ def admin_update_organization():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurum güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_update_organization]", 500)
 
 
 @main_bp.route('/admin/delete-organization/<int:org_id>', methods=['DELETE'])
@@ -296,7 +297,7 @@ def admin_delete_organization(org_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurum silme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_delete_organization]", 500)
 
 
 @main_bp.route('/admin/restore-organization/<int:org_id>', methods=['POST'])
@@ -361,7 +362,7 @@ def admin_restore_organization(org_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurum restore hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_restore_organization]", 500)
 
 
 @main_bp.route('/api/guide/update-preferences', methods=['POST'])
@@ -395,7 +396,7 @@ def update_guide_preferences():
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Guide preferences güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[update_guide_preferences]", 500)
 
 
 @main_bp.route('/api/guide/update-settings', methods=['POST'])
@@ -419,7 +420,7 @@ def update_guide_settings():
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Guide settings güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[update_guide_settings]", 500)
 
 
 @main_bp.route('/api/guide/reset-walkthroughs', methods=['POST'])
@@ -433,7 +434,7 @@ def reset_walkthroughs():
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Walkthrough sıfırlama hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[reset_walkthroughs]", 500)
 
 
 @main_bp.route('/admin/feedback/<int:feedback_id>/detail', methods=['GET'])

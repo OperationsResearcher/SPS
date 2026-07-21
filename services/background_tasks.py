@@ -41,7 +41,10 @@ class BackgroundTaskExecutor:
                 # Queue'dan task al (timeout ile)
                 try:
                     task_func, args, kwargs = task_queue.get(timeout=1)
-                except:
+                except Exception:
+                    # S10: Queue.Empty beklenen durum (timeout=1) — log'a
+                    # yazmak her saniye gurultu uretirdi. Ciplak except
+                    # yerine Exception: KeyboardInterrupt yutulmasin.
                     continue
                 
                 # Task'ı çalıştır
