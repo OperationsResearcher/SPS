@@ -331,27 +331,52 @@ def compute_process_scores_internal(
         n = len(kpis)
         total = 0.0
         w_sum = 0.0
+        # B1/M4 (2026-07-21): PG skoru None ise (o dönemde veri girilmemiş ya
+        # da hedef sayıya çevrilemiyor) eskiden 0.0 sayılıyordu — yani "veri
+        # yok" ile "tamamen başarısız" aynı muamele görüyordu.
+        #
+        # Ölçüm: KMF'nin 11 aktif sürecinin yalnız 2'sinde 2026 verisi var;
+        # kalan 9'u veri olmadığı hâlde 0.0 alıp süreç/alt strateji/vizyon
+        # ortalamasını dibe çekiyordu (vizyon 6.48 görünüyor).
+        #
+        # Ölçülemeyen PG artık hem paydan hem paydadan düşer. Hiçbiri
+        # ölçülemiyorsa süreç None döner — KPI'sız süreçle aynı muamele
+        # (satır 327-330'daki mevcut desen).
         for kpi in kpis:
-            w = _default_weight(kpi.weight, n)
             sc = pg_scores.get(kpi.id)
             if sc is None:
-                sc = 0.0
+                continue  # ölçülmedi → ağırlıklı ortalamaya girmez
+            w = _default_weight(kpi.weight, n)
             total += sc * w
             w_sum += w
             if persist_pg_scores:
                 kpi.calculated_score = sc
-        process_scores[process_id] = round(total / w_sum, 2) if (w_sum and w_sum > 0) else 0.0
+        if not w_sum or w_sum <= 0:
+            process_scores[process_id] = None
+            return None
+        process_scores[process_id] = round(total / w_sum, 2)
         return process_scores[process_id]
 
     for p in processes:
         if p.id not in process_scores:
             calc_process_score(p.id)
 
-    # C2: KPI'sız leaf süreçler recursion sırasında None taşır (hiyerarşik ağırlıklı
-    # ortalamadan dışlanmak için — bkz. yukarıdaki `if child_score is None`). Ancak dönüş
-    # dict'i ~10 farklı tüketici (faz0-5, surec, k-vektör, k_rapor) tarafından sayısal kabul
-    # edildiğinden None → 0.0 normalize edilir; aksi halde sum()/float()/sorted() TypeError → 500.
-    process_scores = {k: (0.0 if v is None else v) for k, v in process_scores.items()}
+    # C2 + B1/M4: Ölçülemeyen süreç None taşır (hiyerarşik ağırlıklı
+    # ortalamadan dışlanmak için — bkz. `if child_score is None`).
+    #
+    # ESKİDEN burada None → 0.0 normalizasyonu vardı: ~10 tüketici
+    # (faz0-5, surec, k-vektör, k_rapor) sayısal değer bekliyordu ve
+    # None sum()/sorted()'ta TypeError → 500 veriyordu.
+    #
+    # Ama bu normalizasyon B1'in kök nedeniydi: "ölçülmedi" tam da bu
+    # satırda "sıfır başarı"ya dönüşüyor ve üst katmanlardaki hiçbir
+    # düzeltme etkili olamıyordu.
+    #
+    # ÇÖZÜM: None İÇERİDE korunur (üst katmanlar artık doğru işliyor),
+    # dışarıya SÜZÜLEREK verilir — compute_vision_score / k_vektor_engine
+    # dönüş sözlüklerinde `if v is not None` filtresi var. Tüketici None
+    # görmez; ölçülmemiş süreç anahtarı hiç bulunmaz (0.0 görmekten iyidir,
+    # çünkü "0 puan aldı" ile "ölçülmedi" ayırt edilebilir).
     return process_scores, pg_scores
 
 
@@ -419,16 +444,38 @@ def compute_vision_score(
                 .filter(SubStrategy.is_active.is_(True))
                 .all()
             )
+        # B1/M4 (2026-07-21): "ölçülmedi" ile "başarısız" ayrımı.
+        #
+        # Eskiden bağlantısız alt strateji 0.0 alıp ortalamaya giriyordu.
+        # Ölçüm: 754 aktif alt stratejinin 230'u hiç aktif sürece bağlı değil.
+        #   Tomofil 2026 : vizyon 55.78 görünüyordu, sıfırlar dışlanınca 80.02
+        #                  (16 alt stratejinin 6'sı 0.0; sıfır olmayanların
+        #                   ortalaması 93.75) → 24.24 puan sapma
+        #   KMF          : 21 alt stratejinin 18'i 0.0 → vizyon 6.48 görünüyor,
+        #                  ölçülenlerin gerçek ortalaması 27.73
+        #
+        # Süreç katmanında bu ZATEN doğru yapılmıştı (satır 327-330: KPI'sız
+        # süreç None döner, ağırlıklı ortalamaya girmez) — mantık üst
+        # katmanlara taşınmamıştı. Şimdi taşındı.
+        #
+        # Eksik veriyi sıfır saymak kurumu YAPILANDIRMA EKSİKLİĞİ için
+        # cezalandırır ve skoru yorumlanamaz kılar.
         sub_strategy_scores = {}
         for ss in sub_strategies:
             linked_processes = list(ss.processes) if hasattr(ss, 'processes') else []
             linked_processes = [p for p in linked_processes if p.is_active]
             if not linked_processes:
-                sub_strategy_scores[ss.id] = 0.0
+                sub_strategy_scores[ss.id] = None  # ölçülmedi ≠ 0
                 continue
-            total = sum(process_scores.get(p.id, 0.0) for p in linked_processes)
-            n_linked = len(linked_processes)
-            sub_strategy_scores[ss.id] = round(total / n_linked, 2) if n_linked > 0 else 0.0
+            # Süreç skoru None olanlar (KPI'sız süreçler) da dışlanır.
+            olculen = [
+                process_scores.get(p.id) for p in linked_processes
+                if process_scores.get(p.id) is not None
+            ]
+            if not olculen:
+                sub_strategy_scores[ss.id] = None
+                continue
+            sub_strategy_scores[ss.id] = round(sum(olculen) / len(olculen), 2)
 
         # N+1 önlemi: st.sub_strategies aşağıda iterate edildiği için selectinload
         if plan_year is not None:
@@ -443,24 +490,52 @@ def compute_vision_score(
             strategies = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(
                 tenant_id=tenant_id, is_active=True
             ).all()
+        # B1/M4: aynı None semantiği ana strateji katmanında.
         strategy_scores = {}
         for st in strategies:
             alts = [a for a in st.sub_strategies if a.is_active]
-            if not alts:
-                strategy_scores[st.id] = 0.0
+            olculen = [
+                sub_strategy_scores.get(a.id) for a in alts
+                if sub_strategy_scores.get(a.id) is not None
+            ]
+            if not olculen:
+                strategy_scores[st.id] = None
                 continue
-            total = sum(sub_strategy_scores.get(a.id, 0.0) for a in alts)
-            n_alts = len(alts)
-            strategy_scores[st.id] = round(total / n_alts, 2) if n_alts > 0 else 0.0
+            strategy_scores[st.id] = round(sum(olculen) / len(olculen), 2)
 
-        if not strategies:
-            vision = 0.0
-        else:
-            total = sum(strategy_scores.get(s.id, 0.0) for s in strategies)
-            n_strat = len(strategies)
-            vision = round(total / n_strat, 2) if n_strat > 0 else 0.0
+        # B1/M4: vizyon katmanı. Hiçbir strateji ölçülemiyorsa vizyon 0 değil
+        # None'dır — ama dışarıya 0.0 döneriz (API sözleşmesi float bekliyor),
+        # kapsam bilgisi `kapsam` alanında ayrıca taşınır.
+        _olculen_strat = [
+            strategy_scores.get(s.id) for s in strategies
+            if strategy_scores.get(s.id) is not None
+        ]
+        vision = (
+            round(sum(_olculen_strat) / len(_olculen_strat), 2)
+            if _olculen_strat else 0.0
+        )
 
         vision = min(100.0, max(0.0, vision))
+
+        # M4/B1 — KAPSAM: skorun ne kadarlık bir tabana dayandığı.
+        # Bu olmadan "vizyon 80.02" ile "vizyon 80.02 ama stratejilerin
+        # %70'i ölçülmemiş" ayırt edilemez. Sessiz hatanın panzehiri.
+        _kapsam_alt_toplam = len(sub_strategies)
+        _kapsam_alt_olculen = len(
+            [v for v in sub_strategy_scores.values() if v is not None]
+        )
+        _kapsam_strat_toplam = len(strategies)
+        _kapsam_strat_olculen = len(_olculen_strat)
+        kapsam = {
+            "alt_strateji_toplam": _kapsam_alt_toplam,
+            "alt_strateji_olculen": _kapsam_alt_olculen,
+            "ana_strateji_toplam": _kapsam_strat_toplam,
+            "ana_strateji_olculen": _kapsam_strat_olculen,
+            "yuzde": (
+                round(_kapsam_alt_olculen / _kapsam_alt_toplam * 100, 1)
+                if _kapsam_alt_toplam else 0.0
+            ),
+        }
 
         if persist_pg_scores:
             try:
@@ -474,10 +549,17 @@ def compute_vision_score(
             'as_of_date': as_of.isoformat(),
             'tenant_id': tenant_id,
             'year': year,
-            'strategy_scores': strategy_scores,
-            'sub_strategy_scores': sub_strategy_scores,
-            'process_scores': process_scores,
+            # B1/M4: ölçülmemiş (None) girdiler dışarıya sızdırılmaz —
+            # `pg_scores` zaten bu deseni kullanıyordu, üst katmanlar da
+            # aynı sözleşmeye uyuyor. Tüketiciler float bekliyor; None
+            # göndermek onların tarafında sessizce 0'a dönerdi ki bu tam
+            # olarak kaçındığımız hata.
+            'strategy_scores': {k: v for k, v in strategy_scores.items() if v is not None},
+            'sub_strategy_scores': {k: v for k, v in sub_strategy_scores.items() if v is not None},
+            'process_scores': {k: v for k, v in process_scores.items() if v is not None},
             'pg_scores': {k: v for k, v in pg_scores.items() if v is not None},
+            # Skorun ne kadarlık tabana dayandığı (M4 önerisi).
+            'kapsam': kapsam,
         }
     except Exception as e:
         current_app.logger.error(

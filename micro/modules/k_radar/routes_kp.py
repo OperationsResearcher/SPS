@@ -233,7 +233,12 @@ def k_radar_api_kp_radar():
                 FROM risk_heatmap_items WHERE tenant_id=:t AND is_active=true
             """), {"t": tid}).fetchone()
             open_risks = int(r3.open_c or 0) if r3 else 0
-        except Exception:
+        except Exception as _e:
+            # Aynı tuzak (bkz. aşağıdaki olgunluk bloğu): yutulan DB hatası
+            # transaction'ı abort bırakır. Ayrıca KURALLAR §3 her except'te
+            # app.logger.error zorunlu kılıyor — burada sessizdi.
+            db.session.rollback()
+            current_app.logger.error("[k_radar_kp] risk sayımı yapılamadı: %s", _e)
             open_risks = 0
         risk_score = max(0, 100 - open_risks * 10)
 
@@ -248,6 +253,17 @@ def k_radar_api_kp_radar():
             if r4 and r4.avg_skor is not None:
                 maturity = round(float(r4.avg_skor) * 20, 1)  # 1-5 → 20-100
         except Exception as _e:
+            # ⚠ ROLLBACK ZORUNLU: PostgreSQL'de başarısız bir sorgu
+            # transaction'ı ABORT eder. `except` hatayı yutsa bile sonraki
+            # HER sorgu "current transaction is aborted" ile düşer.
+            #
+            # Ölçüm 2026-07-21: `k_radar_kp_olgunluk` tablosu DB'de HİÇ YOK
+            # (kodda 3 yerde geçiyor, migration'ı yazılmamış). Bu tek yutulan
+            # hata yüzünden 7 uç birden 500 veriyordu:
+            #   /k-radar/api/{ks,kp/maturity,kpr/evm,kpr/gantt,kpr/risk,
+            #                 kpr/resource-capacity} + /k-report/api/pi-dagilim
+            # Hatanın kendisi zararsızdı; zarar ROLLBACK'in yokluğundandı.
+            db.session.rollback()
             current_app.logger.error("[k_radar_kp] olgunluk skoru hesaplanamadı: %s", _e)
 
         return jsonify({"success": True, "data": {

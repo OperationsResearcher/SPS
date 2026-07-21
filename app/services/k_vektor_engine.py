@@ -96,7 +96,16 @@ def compute_k_vektor_bundle(
     den: Dict[int, float] = defaultdict(float)
 
     for proc in processes:
-        sc = float(process_scores.get(proc.id, 0.0))
+        # B1/M4: ölçülemeyen süreç (skor None — o dönemde veri yok veya
+        # hedefi sayısal değil) alt stratejinin PAYDASINA da girmez.
+        # Eskiden `or 0.0` ile sıfır sayılıyordu → veri girilmemiş süreç
+        # alt strateji skorunu dibe çekiyordu. Paydaya girmeyince, alt
+        # strateji "ölçtüğü süreçlerin ağırlıklı ortalaması" olur; hiçbiri
+        # ölçülemiyorsa payda 0 kalır ve aşağıda None'a düşer.
+        raw = process_scores.get(proc.id)
+        if raw is None:
+            continue
+        sc = float(raw)
         for sid, frac in _link_fractions_for_process(proc):
             num[sid] += sc * frac
             den[sid] += frac
@@ -122,11 +131,16 @@ def compute_k_vektor_bundle(
             .all()
         )
 
-    sub_strategy_scores: Dict[int, float] = {}
+    # B1/M4 (2026-07-21): payda sıfırsa (= alt stratejiye bağlı ölçülebilir
+    # süreç yok) skor 0.0 değil None'dır. Ölçüm: 754 aktif alt stratejinin
+    # 230'u hiç aktif sürece bağlı değil; bunları "tamamen başarısız" saymak
+    # Tomofil'de vizyonu 55.78 gösteriyordu (ölçülenlerin ortalaması 93.75),
+    # KMF'de 6.48 (gerçek 27.73).
+    sub_strategy_scores: Dict[int, Optional[float]] = {}
     for ss in sub_strategies:
         d = den.get(ss.id, 0.0)
         if d <= 1e-12:
-            sub_strategy_scores[ss.id] = 0.0
+            sub_strategy_scores[ss.id] = None  # ölçülmedi ≠ 0
         else:
             t = min(100.0, max(0.0, num[ss.id] / d))
             sub_strategy_scores[ss.id] = round(t, 2)
@@ -169,22 +183,31 @@ def compute_k_vektor_bundle(
     contrib_main: Dict[int, float] = {}
 
     vision_accum = 0.0
+    kapsam_olculen_quota = 0.0   # ölçülebilen alt stratejilerin kota toplamı
+    kapsam_toplam_quota = 0.0    # dağıtılan tüm kota
     for st in strategies:
         V_m = quotas_main.get(st.id, 0.0)
+        kapsam_toplam_quota += V_m
         alts = [a for a in st.sub_strategies if a.is_active]
-        if not alts:
-            strategy_scores[st.id] = 0.0
+        # B1/M4: ölçülemeyen alt strateji ana strateji ortalamasını aşağı
+        # çekmemeli. Kotası ÖLÇÜLENLERE YENİDEN DAĞITILIR — böylece ana
+        # stratejinin skoru "ölçtüklerinin ağırlıklı ortalaması" olur.
+        olculen_alts = [
+            a for a in alts if sub_strategy_scores.get(a.id) is not None
+        ]
+        if not olculen_alts:
+            strategy_scores[st.id] = None
             contrib_main[st.id] = 0.0
             continue
-        sub_ids = [a.id for a in alts]
+        sub_ids = [a.id for a in olculen_alts]
         sub_raw = {sid: raw_sub.get(sid) for sid in sub_ids}
         U = _allocate_quotas(sub_ids, sub_raw, V_m)
 
         s_m = 0.0
         if V_m > 1e-12:
-            for a in alts:
+            for a in olculen_alts:
                 Uj = U.get(a.id, 0.0)
-                tj = sub_strategy_scores.get(a.id, 0.0)
+                tj = sub_strategy_scores.get(a.id) or 0.0
                 s_m += Uj * tj
             s_m = s_m / V_m
         s_m = min(100.0, max(0.0, s_m))
@@ -192,13 +215,37 @@ def compute_k_vektor_bundle(
         c_m = V_m * (s_m / 100.0)
         contrib_main[st.id] = round(c_m, 6)
         vision_accum += c_m
+        kapsam_olculen_quota += V_m
 
-    vision_1000 = min(1000.0, max(0.0, round(vision_accum, 4)))
-    # Son düzeltme: çok küçük kaydırma
-    if vision_1000 > 1000.0:
-        vision_1000 = 1000.0
+    # B1/M4: `vision_accum` yalnız ÖLÇÜLEBİLEN ana stratejilerin katkısını
+    # taşır. 1000'lik tam kotaya bölmek, ölçülmemiş stratejinin kotasını
+    # "sıfır puan" saymak demektir — düzeltmek istediğimiz hatanın ta kendisi.
+    # Bu yüzden ölçülen kota tabanına göre ölçeklenir:
+    #     vizyon = (ölçülen katkı / ölçülen kota) × 1000
+    # Kapsam bilgisi ayrıca `kapsam` alanında döner; kullanıcı skorun ne
+    # kadarlık bir tabana dayandığını görebilir.
+    if kapsam_olculen_quota > 1e-12:
+        vision_1000 = round(vision_accum / kapsam_olculen_quota * 1000.0, 4)
+    else:
+        vision_1000 = 0.0
+    vision_1000 = min(1000.0, max(0.0, vision_1000))
 
     vision_legacy = min(100.0, vision_1000 / 10.0)
+
+    _alt_toplam = len(sub_strategies)
+    _alt_olculen = len([v for v in sub_strategy_scores.values() if v is not None])
+    _ana_toplam = len(strategies)
+    _ana_olculen = len([v for v in strategy_scores.values() if v is not None])
+    kapsam = {
+        "alt_strateji_toplam": _alt_toplam,
+        "alt_strateji_olculen": _alt_olculen,
+        "ana_strateji_toplam": _ana_toplam,
+        "ana_strateji_olculen": _ana_olculen,
+        "yuzde": round(_alt_olculen / _alt_toplam * 100, 1) if _alt_toplam else 0.0,
+        # Skorun dayandığı ağırlık tabanı (1000 üzerinden).
+        "olculen_kota": round(kapsam_olculen_quota, 2),
+        "toplam_kota": round(kapsam_toplam_quota, 2),
+    }
 
     if persist_pg_scores:
         try:
@@ -214,10 +261,13 @@ def compute_k_vektor_bundle(
         "as_of_date": as_of.isoformat(),
         "tenant_id": tenant_id,
         "year": year,
-        "strategy_scores": strategy_scores,
-        "sub_strategy_scores": sub_strategy_scores,
-        "process_scores": process_scores,
+        # B1/M4: ölçülmemiş (None) girdiler dışarıya sızdırılmaz — tüketiciler
+        # float bekliyor, None onların tarafında sessizce 0'a dönerdi.
+        "strategy_scores": {k: v for k, v in strategy_scores.items() if v is not None},
+        "sub_strategy_scores": {k: v for k, v in sub_strategy_scores.items() if v is not None},
+        "process_scores": {k: v for k, v in process_scores.items() if v is not None},
         "pg_scores": {k: v for k, v in pg_scores.items() if v is not None},
         "k_vektor_quotas_main": {str(k): round(v, 4) for k, v in quotas_main.items()},
         "k_vektor_contrib_main": {str(k): v for k, v in contrib_main.items()},
+        "kapsam": kapsam,
     }
