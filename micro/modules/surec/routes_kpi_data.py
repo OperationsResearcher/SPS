@@ -41,6 +41,7 @@ from app.services.date_sovereign import (
     build_sealed_error,
 )
 from app.services.score_engine_service import compute_process_scores_internal
+from app.services.kpi_data_score_service import uygula_kpi_data_skoru
 from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences, sync_pg_sequence_if_needed
 from app.utils.process_utils import (
@@ -169,6 +170,9 @@ def surec_api_kpi_data_add():
                         description=data.get("description"),
                         user_id=current_user.id,
                     )
+                    # K1: satırın kendi skoru burada üretilir. Eskiden hiç
+                    # yazılmıyordu → elle veri giren her kurum skorsuzdu.
+                    uygula_kpi_data_skoru(entry, kpi)
                     db.session.add(entry)
                     db.session.flush()
                     db.session.add(KpiDataAudit(
@@ -411,6 +415,11 @@ def surec_api_kpi_data_update(data_id):
         entry.description = data["description"]
     if "target_value" in data:
         entry.target_value = data["target_value"]
+
+    # K1: hedef veya gerçekleşen değiştiyse skor da yeniden üretilmeli —
+    # aksi halde satırda eski (artık yanlış) skor kalırdı.
+    if "actual_value" in data or "target_value" in data:
+        uygula_kpi_data_skoru(entry, entry.process_kpi)
 
     new_actual = entry.actual_value or ""
     new_desc = entry.description or ""

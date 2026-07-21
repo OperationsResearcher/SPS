@@ -194,7 +194,7 @@
     function fillProjectFormFromMeta(m) {
       const tf = (m && m.task_form) || { kpis: [], users: [] };
       const selP = document.getElementById("cal-select-project");
-      selP.innerHTML = `<option value="">ÔÇö ${t("Proje seçin")} ÔÇö</option>`;
+      selP.innerHTML = `<option value="">— ${t("Proje seçin")} —</option>`;
       (m.projects || []).forEach((p) => {
         const o = document.createElement("option");
         o.value = String(p.id);
@@ -202,7 +202,7 @@
         selP.appendChild(o);
       });
       const selKpi = document.getElementById("cal-proj-kpi");
-      selKpi.innerHTML = `<option value="">ÔÇö ${t("PG seçilmedi")} ÔÇö</option>`;
+      selKpi.innerHTML = `<option value="">— ${t("PG seçilmedi")} —</option>`;
       (tf.kpis || []).forEach((k) => {
         const o = document.createElement("option");
         o.value = String(k.id);
@@ -211,7 +211,7 @@
       });
       document.getElementById("cal-proj-kpi-empty").classList.toggle("hidden", (tf.kpis || []).length > 0);
       const selU = document.getElementById("cal-proj-assignee");
-      selU.innerHTML = '<option value="">ÔÇö</option>';
+      selU.innerHTML = '<option value="">—</option>';
       (tf.users || []).forEach((u) => {
         const o = document.createElement("option");
         o.value = String(u.id);
@@ -332,7 +332,7 @@
         modalBadge.classList.remove("hidden");
         modalBadge.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400">${t("Süreç karnesi ile aynı form")}</span>`;
         resetProcessActivityForm();
-        selectProcess.innerHTML = `<option value="">ÔÇö ${t("Süreç seçin")} ÔÇö</option>`;
+        selectProcess.innerHTML = `<option value="">— ${t("Süreç seçin")} —</option>`;
         (metaCache.processes || []).forEach((p) => {
           const o = document.createElement("option");
           o.value = String(p.id);
@@ -386,7 +386,7 @@
           const te = (document.getElementById("cal-self-t-end").value || "").trim();
           const note = (document.getElementById("cal-self-desc").value || "").trim();
           const parts = [];
-          if (ts || te) parts.push(t("Planlanan saat:") + " " + (ts || "ÔÇö") + " ÔÇô " + (te || "ÔÇö"));
+          if (ts || te) parts.push(t("Planlanan saat:") + " " + (ts || "—") + " ÔÇô " + (te || "—"));
           if (note) parts.push(note);
           const description = parts.length ? parts.join("\n\n") : "";
           const body = { name: title, status: "Planlandı", start_date: sd, end_date: ed };

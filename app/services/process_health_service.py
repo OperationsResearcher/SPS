@@ -13,19 +13,15 @@ from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData
 
 
-def _parse_float(val) -> Optional[float]:
-    """String veya sayıyı float'a çevirir."""
-    if val is None:
-        return None
-    if isinstance(val, (int, float)):
-        return float(val)
-    text = str(val).strip().replace(',', '.')
-    if not text:
-        return None
-    try:
-        return float(text)
-    except (ValueError, TypeError):
-        return None
+# B6/D2 (2026-07-21): bu dosyanın kendi `_parse_float` kopyası vardı ve
+# yalnız virgülü noktaya çeviriyordu — '%90', '1.234,5', '₺100.070' gibi
+# gerçek girdileri çözemiyordu. Skor motorunun kopyası bunları tanıyor.
+# Üçüncü bir kopya tutmak B2'deki ayrışma hatasının aynısı olurdu.
+from app.services.score_engine_service import (  # noqa: E402
+    _parse_float,
+    _resolve_target_for_calculation,
+    normalize_aggregation_method,
+)
 
 
 def calculate_process_health_score(
@@ -79,10 +75,17 @@ def calculate_process_health_score(
 
     pg_scores = []
     for kpi in kpis:
-        target = _parse_float(kpi.target_value)
+        # B6: aralık/yüzde hedefleri de çözülsün ('90-100', '%85').
+        target = _resolve_target_for_calculation(
+            kpi.target_value, kpi.direction or 'Increasing'
+        )
         if target is None or target <= 0:
             if kpi.calculated_score is not None:
-                pg_scores.append(min(100.0, float(kpi.calculated_score)))
+                # B10: burada yalnız `min(100, …)` vardı, `max(0, …)` YOKTU —
+                # ana dal (aşağıda) iki sınırı da uyguluyor. DB'de şu an
+                # negatif calculated_score yok (0/565), yani hata tetiklenmiyor;
+                # koruma eksikliği latent kalmasın diye simetrik yapıldı.
+                pg_scores.append(min(100.0, max(0.0, float(kpi.calculated_score))))
             continue
 
         entries = entries_by_kpi.get(kpi.id, [])
@@ -95,11 +98,16 @@ def calculate_process_health_score(
         if not actual_values:
             continue
 
-        if kpi.data_collection_method in ('Toplama', 'Toplam'):
+        # D1/D2/M2: iki dilli yöntem etiketleri tek noktadan çözülür.
+        # Eskiden yalnız Türkçe etiketler tanınıyordu; `AVG` (35 satır)
+        # tesadüfen doğru dala düşüyordu ama `SUM` sessizce ortalamaya
+        # dönerdi.
+        _yontem = normalize_aggregation_method(kpi.data_collection_method)
+        if _yontem == 'SUM':
             actual = sum(actual_values)
-        elif kpi.data_collection_method == 'Son Değer':
+        elif _yontem == 'LAST':
             actual = actual_values[0]
-        else:
+        else:  # AVG
             actual = sum(actual_values) / len(actual_values)
 
         if kpi.direction == 'Decreasing':

@@ -22,7 +22,7 @@
           <div style="font-size:10.5px;color:#64748b;margin-top:2px;">${esc(label)}</div>
         </div>`;
       document.getElementById('metrics').innerHTML = [
-        tile('Bugün Bitiş', m.today_due, '#f59e0b', 'fa-flag-checkered'),
+        tile(t('Bugün Bitiş'), m.today_due, '#f59e0b', 'fa-flag-checkered'),
         tile('Geciken', m.overdue, '#dc2626', 'fa-exclamation-circle'),
         tile('7 Gün İçinde', m.upcoming_7d, '#0ea5e9', 'fa-calendar-week'),
         tile('Hedeflerim', m.my_pgs, '#8b5cf6', 'fa-bullseye'),

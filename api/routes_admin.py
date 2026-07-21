@@ -64,6 +64,7 @@ from api.helpers import (
     _notify_project_team_changes_api,
     _parse_date_safe,
 )
+from app.utils.error_handlers import json_error  # S6
 
 
 @api_bp.route('/activities', methods=['GET'])
@@ -137,7 +138,7 @@ def api_kurum_upload_logo():
         file.save(file_path)
         
         # Eski logo dosyasını sil (varsa ve static klasöründeyse)
-        kurum = current_user.kurum
+        kurum = current_user.tenant
         if kurum.logo_url:
             old_logo = kurum.logo_url
             if old_logo.startswith('/static/') or old_logo.startswith('static/'):
@@ -163,7 +164,7 @@ def api_kurum_upload_logo():
         
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f'Logo yükleme hatası: {str(e)} - Kullanıcı: {current_user.username}')
+        current_app.logger.error(f'Logo yükleme hatası: {str(e)} - Kullanıcı: {current_user.email}')
         return jsonify({'success': False, 'message': f'Logo yüklenirken hata oluştu: {str(e)}'}), 500, {'Content-Type': 'application/json'}
 
 
@@ -178,11 +179,11 @@ def api_kurum_alt_stratejiler(kurum_id):
     """
     try:
         surec_id = request.args.get('surec_id', type=int)
-        current_app.logger.info(f'Kurum alt stratejileri isteği: kurum_id={kurum_id}, surec_id={surec_id}, kullanıcı_kurum_id={current_user.kurum_id}')
+        current_app.logger.info(f'Kurum alt stratejileri isteği: kurum_id={kurum_id}, surec_id={surec_id}, kullanıcı_kurum_id={current_user.tenant_id}')
         
         # Yetki kontrolü - kullanıcı aynı kurumda olmalı
-        if kurum_id != current_user.kurum_id:
-            current_app.logger.warning(f'Yetki hatası: kurum_id={kurum_id}, kullanıcı_kurum_id={current_user.kurum_id}')
+        if kurum_id != current_user.tenant_id:
+            current_app.logger.warning(f'Yetki hatası: kurum_id={kurum_id}, kullanıcı_kurum_id={current_user.tenant_id}')
             return jsonify({'success': False, 'message': 'Bu kuruma erişim yetkiniz yok'}), 403
         
         # Süreçle ilgili olanları filtrele
@@ -259,7 +260,7 @@ def api_kurum_update_logo():
         if not logo_url:
             return jsonify({'success': False, 'message': 'Logo URL\'si boş olamaz!'}), 400
         
-        kurum = current_user.kurum
+        kurum = current_user.tenant
         kurum.logo_url = logo_url
         db.session.commit()
         
@@ -273,7 +274,7 @@ def api_kurum_update_logo():
         
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f'Logo URL güncelleme hatası: {str(e)} - Kullanıcı: {current_user.username}')
+        current_app.logger.error(f'Logo URL güncelleme hatası: {str(e)} - Kullanıcı: {current_user.email}')
         return jsonify({'success': False, 'message': f'Logo URL\'si güncellenirken hata oluştu: {str(e)}'}), 500, {'Content-Type': 'application/json'}
 
 
@@ -290,7 +291,7 @@ def api_kurum_toggle_guide_system():
         data = request.get_json()
         show_guide_system = data.get('show_guide_system', True)
         
-        kurum = current_user.kurum
+        kurum = current_user.tenant
         if not kurum:
             return jsonify({'success': False, 'message': 'Kurum bulunamadı'}), 404
         
@@ -307,7 +308,7 @@ def api_kurum_toggle_guide_system():
         
     except Exception as e:
         db.session.rollback()
-        current_app.logger.error(f'Rehber sistemi güncelleme hatası: {str(e)} - Kullanıcı: {current_user.username}')
+        current_app.logger.error(f'Rehber sistemi güncelleme hatası: {str(e)} - Kullanıcı: {current_user.email}')
         return jsonify({'success': False, 'message': f'Rehber sistemi güncellenirken hata oluştu: {str(e)}'}), 500, {'Content-Type': 'application/json'}
 
 
@@ -336,7 +337,7 @@ def api_user_layout():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Layout tercihi kaydetme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_user_layout]", 500)
 
 
 @api_bp.route('/user/theme', methods=['POST'])
@@ -355,7 +356,8 @@ def api_user_theme():
         if current_user.theme_preferences:
             try:
                 prefs = json.loads(current_user.theme_preferences)
-            except:
+            except (ValueError, TypeError) as e:  # S10: ciplak except yasak
+                current_app.logger.warning('[theme_prefs] JSON cozulemedi: %s', e)
                 prefs = {}
         else:
             prefs = {}
@@ -371,7 +373,7 @@ def api_user_theme():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Tema tercihi kaydetme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_user_theme]", 500)
 @api_bp.route('/notifications', methods=['GET'])
 @csrf.exempt
 @login_required
@@ -414,7 +416,7 @@ def api_notifications():
         })
     except Exception as e:
         current_app.logger.error(f'Bildirimler getirme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_notifications]", 500)
 
 
 @api_bp.route('/notifications/<int:notification_id>/mark-read', methods=['POST'])
@@ -435,7 +437,7 @@ def api_notification_mark_read(notification_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Bildirim işaretleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_notification_mark_read]", 500)
 
 
 @api_bp.route('/notifications/count', methods=['GET'])
@@ -456,7 +458,7 @@ def api_notifications_count():
         })
     except Exception as e:
         current_app.logger.error(f'Bildirim sayısı getirme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_notifications_count]", 500)
 
 
 @api_bp.route('/notifications/mark-all-read', methods=['POST'])
@@ -479,7 +481,7 @@ def api_notifications_mark_all_read():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Bildirimler okundu işaretleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_notifications_mark_all_read]", 500)
 
 
 # What-If Simülasyon API (V2.0.0)
@@ -493,7 +495,7 @@ def api_admin_users():
             return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
         
         # Sistem admini kontrolü (kurum_id=1)
-        is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+        is_system_admin = current_user.sistem_rol == 'admin' and current_user.tenant_id == 1
         
         # Kullanıcıları filtrele (sadece aktif kayıtlar)
         if is_system_admin:
@@ -503,9 +505,9 @@ def api_admin_users():
             surecler = Surec.query.filter_by(silindi=False).all()
         else:
             # Kurum yöneticisi: Sadece kendi kurumundaki kullanıcıları görür
-            users = User.query.options(db.joinedload(User.kurum)).filter_by(kurum_id=current_user.kurum_id, silindi=False).all()
-            kurumlar = Kurum.query.filter_by(id=current_user.kurum_id, silindi=False).all()
-            surecler = Surec.query.filter_by(kurum_id=current_user.kurum_id, silindi=False).all()
+            users = User.query.options(db.joinedload(User.kurum)).filter_by(kurum_id=current_user.tenant_id, silindi=False).all()
+            kurumlar = Kurum.query.filter_by(id=current_user.tenant_id, silindi=False).all()
+            surecler = Surec.query.filter_by(kurum_id=current_user.tenant_id, silindi=False).all()
         
         users_data = []
         for user in users:
@@ -519,7 +521,8 @@ def api_admin_users():
                 kurum_adi = user.kurum.ticari_unvan if user.kurum else None
                 if kurum_adi:
                     kurum_adi = kurum_adi.encode('utf-8', errors='ignore').decode('utf-8')
-            except:
+            except Exception as e:  # S10: ciplak except yasak
+                current_app.logger.warning('[user_list] kurum adi okunamadi: %s', e)
                 kurum_adi = None
             
             user_dict = {
@@ -590,8 +593,8 @@ def api_admin_delete_user(user_id):
             return jsonify({'success': False, 'message': 'Kendi hesabınızı silemezsiniz'}), 400
         
         # Kurum yöneticisi sadece kendi kurumundaki kullanıcıları silebilir
-        is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
-        if not is_system_admin and user.kurum_id != current_user.kurum_id:
+        is_system_admin = current_user.sistem_rol == 'admin' and current_user.tenant_id == 1
+        if not is_system_admin and user.kurum_id != current_user.tenant_id:
             return jsonify({'success': False, 'message': 'Bu kullanıcıyı silme yetkiniz yok'}), 403
         
         if user.silindi:
@@ -611,7 +614,7 @@ def api_admin_delete_user(user_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kullanıcı silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_admin_delete_user]", 500)
 
 
 @api_bp.route('/admin/users/<int:user_id>')
@@ -623,14 +626,14 @@ def api_admin_user_detail(user_id):
             return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
 
         # Sistem admini kontrolü (kurum_id=1)
-        is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+        is_system_admin = current_user.sistem_rol == 'admin' and current_user.tenant_id == 1
         
         user = User.query.get(user_id)
         if not user:
             return jsonify({'success': False, 'message': 'Kullanıcı bulunamadı'}), 404
 
         # Kurum yöneticisi / üst yönetim sadece kendi kurumundaki kullanıcıları görebilir
-        if not is_system_admin and user.kurum_id != current_user.kurum_id:
+        if not is_system_admin and user.kurum_id != current_user.tenant_id:
             return jsonify({'success': False, 'message': 'Bu kullanıcıya erişim yetkiniz yok'}), 403
         
         # Süreç rolleri bilgilerini topla
@@ -642,7 +645,7 @@ def api_admin_user_detail(user_id):
         for lider_surec in lider_surecler:
             surec = Surec.query.get(lider_surec.surec_id)
             if surec:
-                if not is_system_admin and surec.kurum_id != current_user.kurum_id:
+                if not is_system_admin and surec.kurum_id != current_user.tenant_id:
                     continue
                 process_roles.append({
                     'id': surec.id,
@@ -654,7 +657,7 @@ def api_admin_user_detail(user_id):
         for uye_surec in uye_surecler:
             surec = Surec.query.get(uye_surec.surec_id)
             if surec:
-                if not is_system_admin and surec.kurum_id != current_user.kurum_id:
+                if not is_system_admin and surec.kurum_id != current_user.tenant_id:
                     continue
                 process_roles.append({
                     'id': surec.id,
@@ -685,7 +688,7 @@ def api_admin_user_detail(user_id):
         current_app.logger.error(f'Kullanıcı detay hatası: {e}', exc_info=True)
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': _('İşlem tamamlanamadı.'),  # S6: str(e) sızdırıyordu
         }), 500
 
 
@@ -698,7 +701,7 @@ def api_rol_matrisi():
             return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
         
         # Kullanıcıları getir (sadece kendi kurumundaki kullanıcılar)
-        users = User.query.filter_by(kurum_id=current_user.kurum_id).options(
+        users = User.query.filter_by(kurum_id=current_user.tenant_id).options(
             db.joinedload(User.kurum)
         ).all()
         
@@ -766,7 +769,7 @@ def api_rol_matrisi():
         current_app.logger.error(f'Rol matrisi hatası: {e}', exc_info=True)
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': _('İşlem tamamlanamadı.'),  # S6: str(e) sızdırıyordu
         }), 500
 
 
@@ -783,7 +786,7 @@ def api_rol_matrisi2():
 
         user_query = User.query.options(db.joinedload(User.kurum))
         if not is_admin:
-            user_query = user_query.filter_by(kurum_id=current_user.kurum_id)
+            user_query = user_query.filter_by(kurum_id=current_user.tenant_id)
 
         users = user_query.order_by(User.first_name, User.last_name, User.username).all()
 
@@ -885,7 +888,7 @@ def api_rol_matrisi2_update():
             return jsonify({'success': False, 'message': 'Kullanıcı bulunamadı'}), 404
 
         # Admin tüm kullanıcılara müdahale edebilir; diğer roller sadece kendi kurumundakilere
-        if current_user.sistem_rol != 'admin' and hedef_kullanici.kurum_id != current_user.kurum_id:
+        if current_user.sistem_rol != 'admin' and hedef_kullanici.kurum_id != current_user.tenant_id:
             return jsonify({'success': False, 'message': 'Bu kullanıcı için yetkiniz yok'}), 403
 
         kayit = KullaniciYetki.query.filter_by(user_id=hedef_kullanici.id, yetki_kodu=yetki_kodu).first()
@@ -928,7 +931,7 @@ def api_admin_update_user(user_id):
             return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
 
         # Sistem admini kontrolü (kurum_id=1)
-        is_system_admin = current_user.sistem_rol == 'admin' and current_user.kurum_id == 1
+        is_system_admin = current_user.sistem_rol == 'admin' and current_user.tenant_id == 1
         
         # Kullanıcıyı bul
         user = User.query.get(user_id)
@@ -936,7 +939,7 @@ def api_admin_update_user(user_id):
             return jsonify({'success': False, 'message': 'Kullanıcı bulunamadı'}), 404
 
         # Kurum yöneticisi / üst yönetim sadece kendi kurumundaki kullanıcıları güncelleyebilir
-        if not is_system_admin and user.kurum_id != current_user.kurum_id:
+        if not is_system_admin and user.kurum_id != current_user.tenant_id:
             return jsonify({'success': False, 'message': 'Bu kullanıcıyı güncelleme yetkiniz yok'}), 403
         
         # Güncelleme verilerini al
@@ -967,7 +970,7 @@ def api_admin_update_user(user_id):
             return jsonify({'success': False, 'message': 'Geçersiz kurum seçimi'}), 400
 
         # Admin olmayanlar kurum değiştiremez
-        if not is_system_admin and int(kurum_id) != int(current_user.kurum_id):
+        if not is_system_admin and int(kurum_id) != int(current_user.tenant_id):
             return jsonify({'success': False, 'message': 'Sadece kendi kurumunuzda işlem yapabilirsiniz'}), 403
 
         # Rol kontrolü: Admin olmayanlar admin rolü veremez
@@ -997,7 +1000,7 @@ def api_admin_update_user(user_id):
         # Veritabanına kaydet
         db.session.commit()
         
-        current_app.logger.info(f'Admin {current_user.username} tarafından kullanıcı güncellenmiş: {user.username}')
+        current_app.logger.info(f'Admin {current_user.email} tarafından kullanıcı güncellenmiş: {user.username}')
         
         return jsonify({
             'success': True,
@@ -1043,7 +1046,7 @@ def api_admin_add_user():
 
         # Kurum kontrolü
         kurum_id = int(data.get('kurum_id'))
-        if current_user.sistem_rol != 'admin' and current_user.kurum_id != kurum_id:
+        if current_user.sistem_rol != 'admin' and current_user.tenant_id != kurum_id:
             return jsonify({'success': False, 'message': 'Sadece kendi kurumunuza kullanıcı ekleyebilirsiniz'}), 403
 
         if User.query.filter_by(username=data['username']).first():
@@ -1068,4 +1071,4 @@ def api_admin_add_user():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kullanıcı ekleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_admin_add_user]", 500)

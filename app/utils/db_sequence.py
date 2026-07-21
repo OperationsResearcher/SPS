@@ -135,3 +135,84 @@ def sync_many_sequences(pairs: list[tuple[str, str]] | None = None) -> dict[str,
             db.session.rollback()
             result[key] = False
     return result
+
+
+# Sequence'in bir sonraki üreteceği değeri ve tablodaki max id'yi karşılaştıran
+# tarama. LİSTE TUTULMAZ (KURALLAR-MASTER §8.6 ile aynı gerekçe): elle tutulan
+# liste bakılmadığı gün yalan söyler, yeni tablo sessizce kapsam dışı kalır.
+# pg_depend üzerinden her sequence kendi tablosuna/kolonuna bağlanır.
+_DRIFT_TARAMA_SQL = """
+SELECT s.relname AS seq, t.relname AS tbl, a.attname AS col
+FROM pg_class s
+JOIN pg_depend d ON d.objid = s.oid AND d.classid = 'pg_class'::regclass
+                AND d.refclassid = 'pg_class'::regclass AND d.deptype IN ('a','i')
+JOIN pg_class t ON t.oid = d.refobjid
+JOIN pg_attribute a ON a.attrelid = t.oid AND a.attnum = d.refobjsubid
+JOIN pg_namespace n ON n.oid = s.relnamespace AND n.nspname = 'public'
+WHERE s.relkind = 'S'
+ORDER BY t.relname
+"""
+
+
+def scan_sequence_drift() -> list[dict]:
+    """Bir sonraki INSERT'te PK çakışması yaratacak sequence'leri bulur.
+
+    S5 (2026-07-21): Yerel DB'de 155 sequence'in 6'sı `last_value=1,
+    is_called=false` durumundaydı — yani `nextval` 1 DÖNDÜRÜR (artırmaz) ve
+    o tablolarda id=1 zaten doluydu. Sonraki rol/bileşen ekleme denemesi
+    `duplicate key value violates unique constraint` ile patlayacaktı.
+
+    Muhtemel kaynak: Yayın→Yerel veri çekiminde `setval` adımının atlanması
+    (CLAUDE.md'de bilinen tuzak olarak kayıtlı).
+
+    Returns:
+        [{'table','column','sequence','last_value','is_called','max_id','next_id'}]
+    """
+    bulgular: list[dict] = []
+    for r in db.session.execute(text(_DRIFT_TARAMA_SQL)).fetchall():
+        tbl = _validate_identifier(r.tbl, "table")
+        col = _validate_identifier(r.col, "column")
+        seq = _validate_identifier(r.seq, "sequence")
+        try:
+            max_id = db.session.execute(
+                text(f'SELECT COALESCE(MAX("{col}"), 0) FROM "{tbl}"')
+            ).scalar() or 0
+            last_value, is_called = db.session.execute(
+                text(f'SELECT last_value, is_called FROM "{seq}"')
+            ).fetchone()
+        except Exception:
+            db.session.rollback()
+            continue
+        # is_called=false ise nextval last_value'yi AYNEN döndürür, artırmaz.
+        next_id = last_value if not is_called else last_value + 1
+        if next_id <= max_id:
+            bulgular.append({
+                "table": tbl, "column": col, "sequence": seq,
+                "last_value": last_value, "is_called": is_called,
+                "max_id": max_id, "next_id": next_id,
+            })
+    return bulgular
+
+
+def repair_sequence_drift(dry_run: bool = True) -> dict:
+    """`scan_sequence_drift` bulgularını setval ile onarır.
+
+    Args:
+        dry_run: True (varsayılan) hiçbir şey yazmaz, yalnız raporlar.
+    """
+    bulgular = scan_sequence_drift()
+    onarilan: list[str] = []
+    if not dry_run:
+        for b in bulgular:
+            try:
+                db.session.execute(
+                    text("SELECT setval(:seq, :val, true)"),
+                    {"seq": b["sequence"], "val": b["max_id"]},
+                )
+                onarilan.append(b["table"])
+            except Exception:
+                db.session.rollback()
+                continue
+        if onarilan:
+            db.session.commit()
+    return {"bulunan": bulgular, "onarilan": onarilan, "dry_run": dry_run}

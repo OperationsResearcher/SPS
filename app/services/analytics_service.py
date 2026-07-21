@@ -6,8 +6,9 @@ Gelişmiş analitik ve raporlama servisi
 
 from extensions import db
 from app.services.date_sovereign import resolve_request_year
+from app.services.score_engine_service import compute_pg_score
 from app.models.process import Process, ProcessKpi, KpiData
-from datetime import datetime, timedelta
+from datetime import date, datetime, timedelta
 from typing import List, Dict, Optional
 from sqlalchemy import func, and_, or_
 from collections import defaultdict
@@ -151,13 +152,28 @@ class AnalyticsService:
             }
         
         # Tüm KPI'ların en son verisini tek sorguda topla (N+1 önlemi)
+        #
+        # B4 (2026-07-21): `year` yukarıda resolve_request_year() ile çözülüyor
+        # ama BU SORGUDA HİÇ KULLANILMIYORDU — değişken kullanılmadan ölüyordu.
+        # Ölçüm: yıl filtresiz "en son veri" seçiminde 118 KPI hâlâ 2020
+        # verisiyle puanlanıyordu; KPI'ların yalnız %12'si 2026'ya bakıyordu.
+        # Kullanıcı 2026'yı seçse bile aynı skoru görüyordu.
+        #
+        # Ayrıca `data_date <= bugün` sınırı yoktu → DB'deki 22.579 gelecek
+        # tarihli aktif satır "en son" seçiliyordu.
         _kpi_ids = [k.id for k in kpis]
         _latest_by_kid = {}
         if _kpi_ids:
-            for d in KpiData.query.filter(
+            _q = KpiData.query.filter(
                 KpiData.process_kpi_id.in_(_kpi_ids),
                 KpiData.is_active.is_(True),
-            ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+                KpiData.data_date <= date.today(),
+            )
+            if year:
+                _q = _q.filter(KpiData.year == year)
+            for d in _q.order_by(
+                KpiData.process_kpi_id, KpiData.data_date.desc()
+            ).all():
                 if d.process_kpi_id not in _latest_by_kid:
                     _latest_by_kid[d.process_kpi_id] = d
 
@@ -175,7 +191,19 @@ class AnalyticsService:
             act = safe_float(latest_data.actual_value)
             if tgt is None or act is None or tgt <= 0:
                 continue
-            performance = (act / tgt) * 100
+            # B3 (2026-07-21): `kpi.direction` HİÇ OKUNMUYORDU → 604 aktif
+            # `Decreasing` PG tam ters puanlanıyordu:
+            #   hedef=10, gerçekleşen=50 (KÖTÜ) → 500.0 → 'excellent'
+            #   hedef=10, gerçekleşen=2  (İYİ)  →  20.0 → 'critical'
+            # Maliyet/hata/şikâyet göstergeleri tersine okunuyordu. Kardeş
+            # motorlar (compute_pg_score, process_health_service) doğru
+            # yapıyordu; bu motora yazılmamıştı.
+            #
+            # Üst sınır kırpması da yoktu → tek sapan KPI ağırlıklı ortalamayı
+            # 500'e taşıyabiliyordu. compute_pg_score her ikisini de halleder.
+            performance = compute_pg_score(tgt, act, kpi.direction or 'Increasing')
+            if performance is None:
+                continue
             weight = kpi.weight or 1
 
             kpi_scores.append({
@@ -242,12 +270,21 @@ class AnalyticsService:
     @staticmethod
     def get_comparative_analysis(
         process_ids: List[int],
-        start_date: datetime,
-        end_date: datetime
+        start_date: Optional[datetime] = None,
+        end_date: Optional[datetime] = None,
+        tenant_id: Optional[int] = None,
     ) -> Dict:
         """
         Süreçler arası karşılaştırmalı analiz
-        
+
+        Args:
+            tenant_id: Verilirse yalnız o kuruma ait süreçler döner.
+            start_date / end_date: ŞU AN KULLANILMIYOR (gövdede hiç okunmuyor).
+                Zorunluyken iki çağıran (`micro/modules/analiz/routes.py:155`
+                ve `micro/modules/api/routes.py:244`) bunları geçirmiyordu →
+                `TypeError` → dıştaki except → sessizce 500. Opsiyonel
+                yapıldı; imza korunuyor ki mevcut 2 çağrı da bozulmasın.
+
         Returns:
             {
                 'processes': [...],
@@ -255,9 +292,16 @@ class AnalyticsService:
             }
         """
         # Toplu süreç çekimi (N+1 önlemi)
-        # tenant_id filtresi: comparation endpoint'i API'den tenant-scoped ID'ler geçirmeli
-        # Burada ek güvence olarak tenant_id sorguya dahil edilmez (caller sorumluluğu)
-        _procs_by_id = {p.id: p for p in Process.query.filter(Process.id.in_(process_ids)).all()} if process_ids else {}
+        #
+        # B13 (2026-07-21): Burada tenant filtresi yoktu ve kod yorumu bunu
+        # açıkça çağırana devrediyordu ("caller sorumluluğu"). Çıktı
+        # `process_name` ve `process_code` döndürdüğü için başka kurumun
+        # süreç adı/kodu sızabiliyordu. S2/S3 ile aynı desen: savunmanın
+        # çağırana bırakılması. Filtre artık burada.
+        _q = Process.query.filter(Process.id.in_(process_ids)) if process_ids else None
+        if _q is not None and tenant_id is not None:
+            _q = _q.filter(Process.tenant_id == tenant_id)
+        _procs_by_id = {p.id: p for p in _q.all()} if _q is not None else {}
 
         comparison_data = []
 
@@ -318,34 +362,86 @@ class AnalyticsService:
                 'message': 'Yeterli veri yok (minimum 10 veri noktası gerekli)'
             }
         
-        # DataFrame'e çevir
-        df = _pd().DataFrame([{
-            'date': d.data_date,
-            'value': d.actual_value
-        } for d in kpi_data])
-        
+        # B11 (2026-07-21): `'value': d.actual_value` HAM METİN veriyordu
+        # (`actual_value` String(100)). pandas string kolonda `.mean()`
+        # çağrılınca değerleri BİRLEŞTİRİP TypeError fırlatıyor —
+        # aynı dosyadaki `get_forecast` docstring'i (satır 413) bu hatayı
+        # "GERÇEK VERİYLE PATLIYORDU" diye belgeleyip düzeltmiş, burası
+        # atlanmıştı.
+        #
+        # DB'de sayısal olmayan 116 aktif `actual_value` var
+        # ('-' ×101, '%100', '₺100.070.853' …). `_parse_float` yüzde/para/
+        # binlik biçimlerini de çözer (B6); çözülemeyenler istatistikten
+        # düşer — uydurma sayı üretmeyiz.
+        from app.services.score_engine_service import _parse_float
+
+        kayitlar = []
+        atlanan = 0
+        for d in kpi_data:
+            v = _parse_float(d.actual_value)
+            if v is None:
+                atlanan += 1
+                continue
+            kayitlar.append({'date': d.data_date, 'value': v})
+
+        if atlanan:
+            from flask import current_app as _ca
+            _ca.logger.info(
+                "[get_anomaly_detection] KPI %s: %s/%s ölçüm sayıya "
+                "çevrilemedi, analiz dışı bırakıldı.",
+                kpi_id, atlanan, len(kpi_data),
+            )
+
+        # Sayısal kayıt sayısı eşiğin altına düştüyse istatistik anlamsız.
+        if len(kayitlar) < 10:
+            return {
+                'anomalies': [],
+                'message': (
+                    f'Yeterli sayısal veri yok (minimum 10 gerekli, '
+                    f'{len(kayitlar)} bulundu; {atlanan} ölçüm sayıya çevrilemedi)'
+                ),
+            }
+
+        df = _pd().DataFrame(kayitlar)
+
         # İstatistikler
         mean = df['value'].mean()
         std = df['value'].std()
-        
+
+        # Tüm değerler aynıysa std=0 → z-score sıfıra bölme (inf/NaN).
+        if not std or std == 0:
+            return {
+                'anomalies': [],
+                'message': 'Tüm ölçümler aynı — sapma hesaplanamaz.',
+                'statistics': {
+                    'mean': round(float(mean), 2), 'std': 0.0,
+                    'min': round(float(df['value'].min()), 2),
+                    'max': round(float(df['value'].max()), 2),
+                },
+            }
+
         # Anomalileri tespit et (z-score yöntemi)
         df['z_score'] = (df['value'] - mean) / std
         df['is_anomaly'] = df['z_score'].abs() > threshold
-        
+
         anomalies = df[df['is_anomaly']].to_dict('records')
-        
+
         return {
             'anomalies': [{
                 'date': a['date'].strftime('%Y-%m-%d'),
                 'value': a['value'],
                 'z_score': round(a['z_score'], 2),
-                'deviation': round(((a['value'] - mean) / mean) * 100, 2)
+                # mean=0 ise yüzde sapma tanımsız — None döner, 0 uydurmayız.
+                'deviation': (
+                    round(((a['value'] - mean) / mean) * 100, 2) if mean else None
+                ),
             } for a in anomalies],
             'statistics': {
-                'mean': round(mean, 2),
-                'std': round(std, 2),
-                'min': round(df['value'].min(), 2),
-                'max': round(df['value'].max(), 2)
+                'mean': round(float(mean), 2),
+                'std': round(float(std), 2),
+                'min': round(float(df['value'].min()), 2),
+                'max': round(float(df['value'].max()), 2),
+                'sayisal_olmayan': atlanan,
             }
         }
     

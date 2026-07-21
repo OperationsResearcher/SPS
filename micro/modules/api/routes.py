@@ -7,6 +7,7 @@ from platform_core import app_bp
 from micro.modules.surec.helpers import muhur_engeli
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData, KpiDataAudit
+from app.services.kpi_data_score_service import uygula_kpi_data_skoru
 from app.utils.audit_logger import AuditLogger
 from app.utils.db_sequence import is_pk_duplicate, sync_kpi_data_related_sequences
 from flask_babel import gettext as _
@@ -89,6 +90,7 @@ def api_kpi_data_create():
                     description=data.get("description"),
                     user_id=current_user.id,
                 )
+                uygula_kpi_data_skoru(entry, kpi)  # K1
                 db.session.add(entry)
                 db.session.flush()
                 db.session.add(KpiDataAudit(
@@ -152,6 +154,7 @@ def api_kpi_data_update(entry_id):
         entry.actual_value = str(data.get("actual_value", entry.actual_value))
         entry.target_value = data.get("target_value", entry.target_value)
         entry.description  = data.get("description", entry.description)
+        uygula_kpi_data_skoru(entry, entry.process_kpi)  # K1
         db.session.add(KpiDataAudit(
             kpi_data_id=entry.id, action_type="UPDATE",
             old_value=old_val, new_value=entry.actual_value, user_id=current_user.id,
@@ -238,7 +241,9 @@ def api_analytics_comparison():
     ]
     try:
         from app.services.analytics_service import AnalyticsService
-        return jsonify({"success": True, "data": AnalyticsService.get_comparative_analysis(ids)})
+        return jsonify({"success": True, "data": AnalyticsService.get_comparative_analysis(
+            ids, tenant_id=current_user.tenant_id  # B13: ikinci savunma katmanı
+        )})
     except Exception as e:
         current_app.logger.error(f"[api_analytics_comparison] {e}")
         return jsonify({"success": False, "message": _("Veri alınamadı.")}), 500

@@ -36,6 +36,23 @@
         }
         return out;
       };
+
+      // F10/F11: HTML kaçışı. 36 JS dosyası kendi esc()/escHtml()/_esc()
+      // kopyasını taşıyordu; birinde atlanınca (yonetim_paneli.js:164, F2)
+      // kimse fark etmiyordu. Tek kaynak burada.
+      //
+      // Tek tırnak (') da kaçırılır — yerel kopyaların hiçbiri kaçırmıyordu.
+      // Tek tırnaklı öznitelik yazan kod (yonetim_paneli.js:84 gibi) bu
+      // olmadan öznitelikten çıkılmaya açıktı.
+      window.esc = function (s) {
+        if (s === null || s === undefined) return "";
+        return String(s)
+          .replace(/&/g, "&amp;")
+          .replace(/</g, "&lt;")
+          .replace(/>/g, "&gt;")
+          .replace(/"/g, "&quot;")
+          .replace(/'/g, "&#39;");
+      };
     </script>
     <!-- Chart.js global ayarları (UI Kılavuzu §6) — Chart.js'ten SONRA yüklenmeli -->
     <script src="{{ url_for('app_bp.static', filename='platform/js/chart_defaults.js') }}?v={{ config['VERSION'] }}"></script>

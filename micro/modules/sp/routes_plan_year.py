@@ -56,6 +56,7 @@ from micro.modules.sp.helpers import (
     _plan_project_to_dict,
     _plan_task_to_dict,
 )
+from app.utils.error_handlers import json_error  # S6
 
 @app_bp.route("/k-plan/strategy/api/plan-years", methods=["GET"])
 @login_required
@@ -140,7 +141,7 @@ def sp_api_plan_years_create():
             "plan_year": _plan_year_to_dict(new_py),
         })
     except ValueError as ve:
-        return jsonify({"success": False, "message": str(ve)}), 409
+        return json_error(ve, "[sp_api_plan_years_create]", 409)
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_plan_years_create] {e}")
@@ -285,7 +286,7 @@ def sp_api_plan_year_reopen(year_id):
             "plan_year": _plan_year_to_dict(py),
         })
     except ValueError as e:
-        return jsonify({"success": False, "message": str(e)}), 400
+        return json_error(e, "[sp_api_plan_year_reopen]", 400)
     except Exception as e:
         current_app.logger.error(f"[sp_api_plan_year_reopen] {e}")
         return jsonify({"success": False, "message": _("Mühür açılırken hata oluştu.")}), 500
@@ -310,9 +311,13 @@ def sp_api_plan_year_seal_history(year_id):
         "success": True,
         "year": py.year,
         "status": py.status,
+        # K9: `close_active` da bir MÜHÜRLEME işlemidir — mühürlenen yılın o
+        # sırada kurumun aktif yılı olduğunu işaretler (reopen'da statüyü geri
+        # yüklemek için). `== "close"` kontrolü bunu "Mühür açıldı" diye
+        # gösterirdi; startswith ile iki kapatma türü de doğru etiketlenir.
         "kayitlar": [{
             "islem": k.action,
-            "islem_adi": "Mühürlendi" if k.action == "close" else "Mühür açıldı",
+            "islem_adi": "Mühürlendi" if (k.action or "").startswith("close") else "Mühür açıldı",
             "gerekce": k.reason,
             "kisi": k.actor_label or (f"user#{k.actor_id}" if k.actor_id else "—"),
             "tarih": k.created_at.isoformat() if k.created_at else None,

@@ -16,6 +16,40 @@ from app.utils.errors import (
 )
 
 
+def json_error(e, log_prefix: str = "", status: int = 500, message: str = None):
+    """İstisnayı LOG'a yazar, istemciye GÜVENLİ mesaj döner.
+
+    S6 (2026-07-21): kapsamda 112 noktada `jsonify({'message': str(e)}), 500`
+    kalıbı vardı. SQLAlchemy hatalarında `str(e)` ÇALIŞAN SQL CÜMLESİNİ,
+    tablo/kolon adlarını, constraint adlarını ve PARAMETRE DEĞERLERİNİ
+    içerir; `pg_restore` hatalarında bağlantı dizesi/host/user taşıyabilir.
+
+    Merkezî `handle_unhandled_exception` (aşağıda) bu işi zaten doğru
+    yapıyordu — sorun yerel `except` bloklarının onu ATLAMASIYDI. Bu yardımcı
+    aynı güvenliği yerel bloklara getirir.
+
+    Kullanım:
+        except Exception as e:
+            return json_error(e, "[api_proje_evm]")
+
+    Args:
+        e: yakalanan istisna (yalnız log'a gider).
+        log_prefix: log satırının başına eklenecek etiket.
+        status: HTTP kodu (varsayılan 500).
+        message: istemciye gösterilecek Türkçe mesaj; verilmezse genel metin.
+    """
+    import traceback
+    try:
+        current_app.logger.error("%s %s", log_prefix or "[hata]", e)
+        current_app.logger.error(traceback.format_exc())
+    except Exception:
+        pass
+    return jsonify({
+        "success": False,
+        "message": message or _("İşlem tamamlanamadı. Lütfen tekrar deneyin."),
+    }), status
+
+
 def register_error_handlers(app):
     """Uygulamaya merkezi hata yakalayıcıları (Interceptor) kaydeder."""
 

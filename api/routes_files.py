@@ -4,6 +4,7 @@
 api/routes.py'den bölündü (davranış/URL değişmedi). Blueprint: api.blueprint.api_bp
 """
 from flask import jsonify, request, current_app, send_file
+from flask_babel import gettext as _
 from werkzeug.utils import secure_filename
 import os
 import uuid
@@ -63,6 +64,7 @@ from api.helpers import (
     _notify_project_team_changes_api,
     _parse_date_safe,
 )
+from app.utils.error_handlers import json_error  # S6
 
 
 @api_bp.route('/projeler/<int:project_id>/dosyalar', methods=['GET', 'POST'])
@@ -242,14 +244,47 @@ def api_proje_dosyalar(project_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Proje dosyaları hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_dosyalar]", 500)
 
 
 @api_bp.route('/dokuman-merkezi', methods=['GET', 'POST'])
 @csrf.exempt
 @login_required
 def api_dokuman_merkezi():
-    """Kurumsal dosya yönetimi API"""
+    """Kurumsal dosya yönetimi API — UYGULANMADI (501).
+
+    ⚠ BU UÇ HİÇBİR ZAMAN ÇALIŞMADI. Aşağıdaki gövde `ProjectFile` modelinin
+    OLMAYAN 8 alanına dayanıyor (ölçüm 2026-07-21):
+
+        kodun beklediği : scope, is_active, category, file_name, file_size,
+                          description, version, user_id
+        modelde OLAN    : id, project_id, uploader_id, filename, file_path,
+                          file_type, created_at
+
+    GET her çağrıda `AttributeError: type object 'ProjectFile' has no
+    attribute 'scope'` ile 500 veriyordu.
+
+    POST daha tehlikeliydi: dosyayı ÖNCE diske yazıyor, SONRA DB kaydında
+    patlıyordu → `static/uploads/corporate_files/` altında sahipsiz dosya
+    birikiyordu (yükleyen "hata" görüyor, dosya sunucuda kalıyor).
+
+    Doğru düzeltme modeli genişletmek + migration yazmaktır; bu bir ürün
+    kararı olduğu için burada YAPILMADI. Kırık 500 yerine dürüst 501
+    dönülüyor — sessizce yanlış davranmaktansa "uygulanmadı" demek daha iyi.
+    Ölü gövde referans olsun diye altta bırakıldı.
+    """
+    current_app.logger.warning(
+        "[api_dokuman_merkezi] uygulanmamış uç çağrıldı (ProjectFile modeli "
+        "gerekli alanları taşımıyor) — user=%s", getattr(current_user, "id", None)
+    )
+    return jsonify({
+        'success': False,
+        'message': _('Doküman merkezi henüz kullanıma açılmadı.'),
+    }), 501
+
+
+def _api_dokuman_merkezi_olu_govde():
+    """Yukarıdaki ucun eski gövdesi — ÇALIŞMAZ, referans amaçlı saklandı."""
     try:
         if request.method == 'GET':
             # Kurumsal dosyaları getir
@@ -374,7 +409,7 @@ def api_dokuman_merkezi():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Doküman merkezi API hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[_api_dokuman_merkezi_olu_govde]", 500)
 
 
 @api_bp.route('/dokuman-merkezi/<int:file_id>/indir', methods=['GET'])
@@ -397,7 +432,7 @@ def api_dokuman_merkezi_indir(file_id):
     
     except Exception as e:
         current_app.logger.error(f'Kurumsal dosya indirme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_dokuman_merkezi_indir]", 500)
 
 
 @api_bp.route('/dokuman-merkezi/<int:file_id>', methods=['DELETE'])
@@ -431,7 +466,7 @@ def api_dokuman_merkezi_sil(file_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurumsal dosya silme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_dokuman_merkezi_sil]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/dosyalar/<int:file_id>/indir', methods=['GET'])
@@ -456,7 +491,7 @@ def api_proje_dosya_indir(project_id, file_id):
         return send_file(absolute_path, as_attachment=True, download_name=project_file.file_name)
     except Exception as e:
         current_app.logger.error(f'Dosya indirme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_dosya_indir]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/dosyalar/<int:file_id>', methods=['DELETE'])
@@ -492,4 +527,4 @@ def api_proje_dosya_sil(project_id, file_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Dosya silme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_dosya_sil]", 500)

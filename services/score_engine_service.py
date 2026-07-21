@@ -81,7 +81,13 @@ def get_pg_representative_data(
         SurecPerformansGostergesi.query
         .join(Surec)
         .filter(Surec.kurum_id == kurum_id, Surec.silindi == False)
-        .options(joinedload(SurecPerformansGostergesi.surec))
+        # K12: burada `joinedload(SurecPerformansGostergesi.surec)` yazıyordu →
+        # `ArgumentError: expected ORM mapped attribute for loader strategy`
+        # → /api/vision-score her çağrıda 500.
+        # `SurecPerformansGostergesi` aslında `ProcessKpi` takma adı; `surec`
+        # bir SYNONYM (property), gerçek ilişki `process`. joinedload synonym
+        # kabul etmez, eşlenmiş ilişki ister.
+        .options(joinedload(SurecPerformansGostergesi.process))
         .all()
     )
     # Tüm PG'lerin son verisini tek sorguda topla (N+1 önlemi)

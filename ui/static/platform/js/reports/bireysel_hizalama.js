@@ -12,7 +12,7 @@
       document.getElementById('summary').innerHTML=[
         stat('Genel Hizalama','%'+s.overall_alignment_pct,overC,'raporlar_bireysel_hizalama.genel_hizalama'),
         stat('PG\'si Olan Kullanıcı',s.users_with_pg,'#0ea5e9','raporlar_bireysel_hizalama.pg_si_olan_kullanici'),
-        stat('Toplam Kullanıcı',s.total_users,'#0f172a','raporlar_bireysel_hizalama.toplam_kullanici'),
+        stat(t('Toplam Kullanıcı'),s.total_users,'#0f172a','raporlar_bireysel_hizalama.toplam_kullanici'),
       ].join('');
       document.getElementById('tbl').innerHTML = j.users.length===0?'<tr><td colspan="5" style="padding:30px;text-align:center;color:#94a3b8;font-style:italic;">Bireysel PG\'si olan kullanıcı yok.</td></tr>':
         j.users.map(u => {

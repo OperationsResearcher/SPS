@@ -32,6 +32,12 @@ from app.models.k_radar_domain import (
 )
 from app.models.portfolio_project import Project, Task
 from app.models.k_radar import KRadarRecommendationAction
+from app.services.date_sovereign import resolve_request_year
+from app.services.score_engine_service import (
+    _parse_float,
+    _resolve_target_for_calculation,
+    compute_pg_score,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -96,7 +102,11 @@ def _weighted_score(raw_values: list[tuple[float, float]]) -> float:
     return round(weighted_sum / total_weight, 2)
 
 
-def _process_component(tenant_id: int, process_ids: list[int] | None = None) -> dict[str, Any]:
+def _process_component(
+    tenant_id: int,
+    process_ids: list[int] | None = None,
+    year: int | None = None,
+) -> dict[str, Any]:
     q = (
         ProcessKpi.query.join(Process, Process.id == ProcessKpi.process_id)
         .filter(
@@ -109,14 +119,22 @@ def _process_component(tenant_id: int, process_ids: list[int] | None = None) -> 
         q = q.filter(Process.id.in_(process_ids))
     kpis = q.all()
     # Her KPI'nın son verisini batch'le çek (N+1 önlemi)
-    from collections import defaultdict as _dd
     _kpi_ids = [k.id for k in kpis]
     _latest_by_kid: dict = {}
     if _kpi_ids:
-        for d in KpiData.query.filter(
+        # K2 (2026-07-21): yıl filtresi YOKTU → K-Radar hub karnesi 2020 ile
+        # 2026 arasında byte-byte AYNI yanıtı veriyordu (kp.score=97.54).
+        # DB'de her yıl için ayrı veri var (2020: 12.600 … 2026: 12.937 satır),
+        # yani "veri yok" mazereti geçersizdi.
+        _q = KpiData.query.filter(
             KpiData.process_kpi_id.in_(_kpi_ids),
             KpiData.is_active == True,
-        ).order_by(KpiData.process_kpi_id, KpiData.data_date.desc()).all():
+        )
+        if year:
+            _q = _q.filter(KpiData.year == year)
+        for d in _q.order_by(
+            KpiData.process_kpi_id, KpiData.data_date.desc()
+        ).all():
             if d.process_kpi_id not in _latest_by_kid:
                 _latest_by_kid[d.process_kpi_id] = d
 
@@ -126,11 +144,18 @@ def _process_component(tenant_id: int, process_ids: list[int] | None = None) -> 
         latest = _latest_by_kid.get(kpi.id)
         if not latest:
             continue
-        actual = _to_float(latest.actual_value)
-        target = _to_float(latest.target_value)
+        actual = _parse_float(latest.actual_value)
+        target = _resolve_target_for_calculation(
+            latest.target_value if latest.target_value else kpi.target_value,
+            getattr(kpi, "direction", "Increasing"),
+        )
         if actual is None or target is None or target <= 0:
             continue
-        perf = max(min((actual / target) * 100.0, 150.0), 0.0)
+        # B3/B7 deseni: `direction` burada da okunmuyordu → azalan göstergeler
+        # ters puanlanıyordu. compute_pg_score yönü ve 0-100 kırpmasını yapar.
+        perf = compute_pg_score(target, actual, getattr(kpi, "direction", "Increasing"))
+        if perf is None:
+            continue
         weight = float(kpi.weight or 1.0)
         rows.append((perf, weight))
         if perf < 70:
@@ -189,7 +214,7 @@ def _project_component(tenant_id: int, project_ids: list[int] | None = None) -> 
     }
 
 
-def _individual_component(tenant_id: int) -> dict[str, Any]:
+def _individual_component(tenant_id: int, year: int | None = None) -> dict[str, Any]:
     indicators = (
         IndividualPerformanceIndicator.query.join(User, User.id == IndividualPerformanceIndicator.user_id)
         .join(
@@ -211,9 +236,16 @@ def _individual_component(tenant_id: int) -> dict[str, Any]:
     _ind_ids = [i.id for i in indicators]
     _latest_by_ind: dict = {}
     if _ind_ids:
-        for d in IndividualKpiData.query.filter(
+        # K2: bireysel karne de yıl seçicisine tepkisizdi (süreç tarafıyla
+        # aynı sebep — yıl filtresi yoktu).
+        _iq = IndividualKpiData.query.filter(
             IndividualKpiData.individual_pg_id.in_(_ind_ids),
-        ).order_by(IndividualKpiData.individual_pg_id, IndividualKpiData.data_date.desc()).all():
+        )
+        if year:
+            _iq = _iq.filter(IndividualKpiData.year == year)
+        for d in _iq.order_by(
+            IndividualKpiData.individual_pg_id, IndividualKpiData.data_date.desc()
+        ).all():
             if d.individual_pg_id not in _latest_by_ind:
                 _latest_by_ind[d.individual_pg_id] = d
 
@@ -223,11 +255,19 @@ def _individual_component(tenant_id: int) -> dict[str, Any]:
         latest = _latest_by_ind.get(indicator.id)
         if not latest:
             continue
-        actual = _to_float(latest.actual_value)
-        target = _to_float(latest.target_value)
+        actual = _parse_float(latest.actual_value)
+        target = _resolve_target_for_calculation(
+            latest.target_value if latest.target_value else indicator.target_value,
+            getattr(indicator, "direction", "Increasing"),
+        )
         if actual is None or target is None or target <= 0:
             continue
-        perf = max(min((actual / target) * 100.0, 150.0), 0.0)
+        # B3 deseni: yön burada da okunmuyordu.
+        perf = compute_pg_score(
+            target, actual, getattr(indicator, "direction", "Increasing")
+        )
+        if perf is None:
+            continue
         weight = float(indicator.weight or 1.0)
         rows.append((perf, weight))
         if perf < 70:
@@ -284,13 +324,36 @@ def get_hub_summary(
     tenant_id: int,
     scope_process_ids: tuple[int, ...] | None = None,
     scope_project_ids: tuple[int, ...] | None = None,
+    year: int | None = None,
 ) -> dict[str, Any]:
+    """K-Radar hub karnesi.
+
+    K2 (2026-07-21): imzada `year` YOKTU. Bu yüzden hub karnesi yıl
+    seçicisini tamamen yok sayıyordu — 2020 ile 2026 yanıtı byte-byte aynıydı
+    (Tomofil: kp.score=97.54, individual.score=87.09, ks=green; KMF'de de
+    2025 vs 2026 birebir aynı).
+
+    ⚠ `year` ÇAĞIRAN TARAFINDAN GEÇİLMELİ. Bu fonksiyon `@cache.memoize`
+    ile sarılı ve memoize anahtarı ARGÜMANLARDAN üretilir. Yıl içeride
+    `resolve_request_year()` ile çözülürse cache anahtarına YANSIMAZ ve
+    tüm yıllar aynı cache girdisini paylaşır — düzeltme etkisiz kalır.
+    (Bu tam olarak K2'nin ölçüm sırasında yeniden ortaya çıkma biçimiydi.)
+
+    `year=None` geçilirse yine de çözülür, ama o çağrı cache açısından
+    "yılsız" sayılır; yalnız arka plan görevleri için uygundur.
+    """
+    if year is None:
+        year = resolve_request_year()
     # scope_* None → kurum geneli (privileged). Tuple → lider kapsamı (belge §5).
     # ks/ind kurum-tekil kalır; yalnız kp/kpr daraltılır.
     ks = _ks_component(tenant_id)
-    kp = _process_component(tenant_id, list(scope_process_ids) if scope_process_ids is not None else None)
+    kp = _process_component(
+        tenant_id,
+        list(scope_process_ids) if scope_process_ids is not None else None,
+        year=year,
+    )
     kpr = _project_component(tenant_id, list(scope_project_ids) if scope_project_ids is not None else None)
-    ind = _individual_component(tenant_id)
+    ind = _individual_component(tenant_id, year=year)
     w_ks, w_kp, w_kpr, w_ind = _get_radar_weights(tenant_id)
 
     total = _weighted_score(
@@ -389,21 +452,39 @@ def get_ks_extended_data(tenant_id: int) -> dict[str, Any]:
 
 
 @cache.memoize(timeout=300)
-def get_kp_data(tenant_id: int, scope_process_ids: tuple[int, ...] | None = None) -> dict[str, Any]:
-    return _process_component(tenant_id, list(scope_process_ids) if scope_process_ids is not None else None)
+def get_kp_data(
+    tenant_id: int,
+    scope_process_ids: tuple[int, ...] | None = None,
+    year: int | None = None,
+) -> dict[str, Any]:
+    """K2: `year` çağıranca geçilmeli — memoize anahtarı argümanlardan üretilir."""
+    if year is None:
+        year = resolve_request_year()
+    return _process_component(
+        tenant_id,
+        list(scope_process_ids) if scope_process_ids is not None else None,
+        year=year,
+    )
 
 
 @cache.memoize(timeout=300)
-def get_kp_extended_data(tenant_id: int, scope_process_ids: tuple[int, ...] | None = None) -> dict[str, Any]:
+def get_kp_extended_data(
+    tenant_id: int,
+    scope_process_ids: tuple[int, ...] | None = None,
+    year: int | None = None,
+) -> dict[str, Any]:
     # scope None → kurum geneli. Tuple → yalnız o süreçlere bağlı veriler
     # (opsiyonel-bağlı tablolarda bağsız kayıtlar düşer; belge §5, TASK-244 kararı).
+    # K2: `year` memoize anahtarına girsin diye imzada.
+    if year is None:
+        year = resolve_request_year()
     _spids = list(scope_process_ids) if scope_process_ids is not None else None
 
     def _scope_proc(q):
         """Process.id üzerinden filtreli sorguya scope uygula."""
         return q.filter(Process.id.in_(_spids)) if _spids is not None else q
 
-    base = _process_component(tenant_id, _spids)
+    base = _process_component(tenant_id, _spids, year=year)
     _pcq = Process.query.filter_by(tenant_id=tenant_id, is_active=True)
     if _spids is not None:
         _pcq = _pcq.filter(Process.id.in_(_spids))
@@ -652,6 +733,11 @@ def get_kpr_extended_data(tenant_id: int, scope_project_ids: tuple[int, ...] | N
     high_risk_count = len([v for v in risk_points if v >= 15])
 
     tasks = Task.query.filter(Task.project_id.in_(project_ids), Task.is_archived.is_(False)).all()
+    # K5: `today` burada tanımsızdı → NameError. Yalnız PROJESİ OLAN kurumda
+    # tetikleniyordu, çünkü projesiz kurum 630. satırda erken dönüyor.
+    # Bu yüzden boş test kurumlarında görünmedi; 4 uç birden 500 veriyordu:
+    # /k-radar/api/kpr/{evm,gantt,risk,resource-capacity}
+    today = date.today()
     overdue_open = 0
     dated_tasks = 0
     on_time = 0
@@ -1217,14 +1303,27 @@ def get_ks_gap_real(tenant_id: int, year: int | None = None) -> dict:
         if not kpi:
             continue
         try:
-            target = float(kpi.target_value or 0)
-            actual = float(d.actual_value or 0)
-            if target <= 0:
+            # B7 (2026-07-21): burada `direction == 'lower_is_better'` yazıyordu.
+            # DB'de o değer HİÇ YOK (Increasing 1723 · Decreasing 604 ·
+            # lower_is_better 0) → koşul hiçbir zaman tutmuyor, 604 azalan
+            # gösterge TERS puanlanıyordu. k_rapor/routes.py:41-53'te aynı hata
+            # belgelenip düzeltilmişti; bu dosya güncellenmemişti.
+            #
+            # B8: ham float() aralık ('90-100') ve yüzde ('%90') hedefleri
+            # ValueError'a düşürüp KPI'yı sessizce atlıyordu — aktif PG'lerin
+            # %36,8'i (840) bu yüzden gap analizinde kördü.
+            target = _resolve_target_for_calculation(
+                kpi.target_value, getattr(kpi, 'direction', 'Increasing')
+            )
+            actual = _parse_float(d.actual_value)
+            if target is None or actual is None or target <= 0:
                 continue
-            if getattr(kpi, 'direction', 'Increasing') == 'lower_is_better':
-                pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
-            else:
-                pct = round(min(100.0, actual / target * 100), 1)
+            pct = compute_pg_score(
+                target, actual, getattr(kpi, 'direction', 'Increasing')
+            )
+            if pct is None:
+                continue
+            pct = round(pct, 1)
             gap = round(pct - 100, 1)
             pid = kpi.process_id
             if pid not in proc_gaps:

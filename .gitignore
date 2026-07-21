@@ -47,3 +47,6 @@ docs/kokpitim_master_kullanim_kilavuzu.pdf
 .coverage.*
 htmlcov/
 .pytest_cache/
+
+# Excel gecici kilit dosyalari (dosya acikken olusur)
+~$*

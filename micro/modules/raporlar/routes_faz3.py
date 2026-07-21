@@ -86,7 +86,7 @@ def raporlar_api_stratejik_yillik_preview():
         {"no": 3, "title": _("Yönetici Özeti"), "content": _("Yıl özetinde 3 cümle + 5 kritik metrik")},
         {"no": 4, "title": _("Kurumsal Kimlik"), "content": _("Vizyon, misyon, değerler, etik")},
         {"no": 5, "title": _("Stratejik Direkler"), "content": _("Ana stratejiler + K-Vektör ağırlık")},
-        {"no": 6, "title": _("Süreç Mükemmelliği"), "content": _("Süreç sağlığı + CMMI olgunluk")},
+        {"no": 6, "title": _("Süreç Mükemmelliği"), "content": _("Süreç sağlığı + olgunluk öz-değerlendirmesi")},
         {"no": 7, "title": _("Initiative Portföyü"), "content": _("Yıl içi girişimler + bütçe")},
         {"no": 8, "title": _("Performans Göstergeleri"), "content": _("PG hedef-gerçek özet")},
         {"no": 9, "title": _("Risk Yönetimi"), "content": _("Risk heatmap + top 10")},
@@ -478,7 +478,10 @@ def raporlar_api_yatirimci_sunum_generate():
     add_body(s, _("Yıllık operasyonel göstergeler:"),
         bullets=[f"{proc_count} {_('aktif süreç')}", f"{meas_count:,} {_('KPI ölçümü')}",
                  f"{user_count} {_('aktif çalışan')}",
-                 _("Süreçler CMMI olgunluk seviyesinde izlenmektedir")])
+                 # M12: "CMMI olgunluk seviyesinde izlenmektedir" YATIRIMCI
+                 # SUNUMUNDA en riskli iddiaydı — arkadaki veri 1-5 arası
+                 # serbest ÖZ-DEĞERLENDİRME, resmî CMMI (SCAMPI) değil.
+                 _("Süreçler 1-5 olgunluk öz-değerlendirmesiyle izlenmektedir")])
     add_footer(s, 6)
 
     s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Finansal Görünüm"), BLUE)

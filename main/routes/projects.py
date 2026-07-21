@@ -2,6 +2,7 @@
 # Otomatik bölüm — `python scripts/dev/split_main_routes.py`
 from main.routes._common import *  # noqa: F401,F403
 from main.routes import main_bp
+from app.utils.error_handlers import json_error  # S6
 
 # ============================================================================
 # PROJE YÖNETİMİ ROTALARI
@@ -59,7 +60,7 @@ def muda_analyze(surec_id):
     
     except Exception as e:
         current_app.logger.error(f'Muda analiz hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[muda_analyze]", 500)
 
 
 @main_bp.route('/api/muda-hunter/efficiency-score', methods=['GET'])
@@ -77,7 +78,7 @@ def muda_efficiency_score():
     
     except Exception as e:
         current_app.logger.error(f'Efficiency score hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[muda_efficiency_score]", 500)
 
 
 # ============================================
@@ -121,7 +122,7 @@ def admin_get_organization(kisa_ad):
         })
     except Exception as e:
         current_app.logger.error(f'Kurum getirme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_get_organization]", 500)
 
 
 @main_bp.route('/admin/add-organization', methods=['POST'])
@@ -176,7 +177,7 @@ def admin_add_organization():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurum ekleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_add_organization]", 500)
 
 
 @main_bp.route('/admin/update-organization', methods=['POST'])
@@ -247,7 +248,7 @@ def admin_update_organization():
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurum güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_update_organization]", 500)
 
 
 @main_bp.route('/admin/delete-organization/<int:org_id>', methods=['DELETE'])
@@ -296,7 +297,7 @@ def admin_delete_organization(org_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurum silme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_delete_organization]", 500)
 
 
 @main_bp.route('/admin/restore-organization/<int:org_id>', methods=['POST'])
@@ -361,7 +362,7 @@ def admin_restore_organization(org_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kurum restore hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[admin_restore_organization]", 500)
 
 
 @main_bp.route('/api/guide/update-preferences', methods=['POST'])
@@ -395,7 +396,7 @@ def update_guide_preferences():
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Guide preferences güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[update_guide_preferences]", 500)
 
 
 @main_bp.route('/api/guide/update-settings', methods=['POST'])
@@ -419,7 +420,7 @@ def update_guide_settings():
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Guide settings güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[update_guide_settings]", 500)
 
 
 @main_bp.route('/api/guide/reset-walkthroughs', methods=['POST'])
@@ -433,7 +434,7 @@ def reset_walkthroughs():
         return jsonify({'success': True})
     except Exception as e:
         current_app.logger.error(f'Walkthrough sıfırlama hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[reset_walkthroughs]", 500)
 
 
 @main_bp.route('/admin/feedback/<int:feedback_id>/detail', methods=['GET'])
@@ -455,7 +456,7 @@ def get_feedback_detail(feedback_id):
                 return jsonify({'success': False, 'message': 'Bu geri bildirimi görüntüleyemezsiniz.'}), 403
         
         # User bilgilerini güvenli şekilde al
-        user_name = feedback.user.first_name or feedback.user.username if feedback.user else 'Bilinmeyen Kullanıcı'
+        user_name = feedback.user.first_name or feedback.user.email if feedback.user else 'Bilinmeyen Kullanıcı'
         user_email = feedback.user.email if feedback.user else ''
         
         return jsonify({
@@ -589,16 +590,27 @@ def submit_feedback():
             
             # Dosya seçilmiş mi kontrol et
             if screenshot_file and screenshot_file.filename:
-                # Dosya uzantısı kontrolü
-                allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-                file_ext = screenshot_file.filename.rsplit('.', 1)[1].lower() if '.' in screenshot_file.filename else ''
-                
-                if file_ext not in allowed_extensions:
+                # S7 (2026-07-21): yalnız uzantı kontrolü vardı — dosya
+                # `current_app.static_folder` altına, yani WEBROOT'a yazılıyor.
+                # Uzantı saldırganın seçtiği bir metin; içerik doğrulanmalı.
+                # app/utils/upload_security magic byte + SVG script taraması
+                # yapıyor ve projede zaten kullanılıyordu.
+                from app.utils.upload_security import validate_uploaded_image
+                _blob = screenshot_file.read()
+                screenshot_file.seek(0)
+                _ok, _msg, _ext = validate_uploaded_image(
+                    _blob, {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+                )
+                if not _ok:
+                    current_app.logger.warning(
+                        '[feedback_upload] reddedildi (ad=%r): %s',
+                        screenshot_file.filename, _msg,
+                    )
                     return jsonify({
                         'success': False,
                         'message': 'Sadece resim dosyaları kabul edilir (PNG, JPG, JPEG, GIF, WEBP).'
                     }), 400
-                
+
                 # Güvenli dosya adı oluştur
                 original_filename = secure_filename(screenshot_file.filename)
                 unique_filename = f"{uuid.uuid4().hex}_{original_filename}"
@@ -622,7 +634,7 @@ def submit_feedback():
         db.session.add(feedback)
         db.session.commit()
         
-        current_app.logger.info(f'Yeni geri bildirim kaydedildi: ID={feedback.id}, Kullanıcı={current_user.username}, Kategori={category}')
+        current_app.logger.info(f'Yeni geri bildirim kaydedildi: ID={feedback.id}, Kullanıcı={current_user.email}, Kategori={category}')
         
         return jsonify({
             'success': True,

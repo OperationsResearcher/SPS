@@ -142,7 +142,8 @@ def strateji():
                     total_score += (k.basari_puani or 0)
             
             avg_score = int(total_score / linked_kpis_count) if linked_kpis_count > 0 else 0
-        except:
+        except Exception as e:  # S10: ciplak except yasak
+            current_app.logger.warning('[v2] skor hesaplanamadi: %s', e)
             avg_score = 0
             
         status_color = 'success' if avg_score >= 80 else 'warning' if avg_score >= 50 else 'danger'

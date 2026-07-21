@@ -64,6 +64,7 @@ from api.helpers import (
     _notify_project_team_changes_api,
     _parse_date_safe,
 )
+from app.utils.error_handlers import json_error  # S6
 
 
 @api_bp.route('/projeler', methods=['GET', 'POST'])
@@ -88,7 +89,7 @@ def api_projeler_list():
             })
         except Exception as e:
             current_app.logger.error(f'Projeler listesi hatası: {e}')
-            return jsonify({'success': False, 'message': str(e)}), 500
+            return json_error(e, "[api_projeler_list]", 500)
     else:  # POST
         try:
             if not request.is_json:
@@ -211,7 +212,7 @@ def api_projeler_list():
         except Exception as e:
             db.session.rollback()
             current_app.logger.error(f'Proje oluşturma hatası: {e}')
-            return jsonify({'success': False, 'message': str(e)}), 500
+            return json_error(e, "[api_projeler_list]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>', methods=['GET', 'PUT'])
@@ -331,7 +332,7 @@ def api_proje_detay(project_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Proje detay/güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_detay]", 500)
 
 
 
@@ -370,7 +371,7 @@ def api_proje_gorevler(project_id, **kwargs):
         })
     except Exception as e:
         current_app.logger.error(f'Proje görevleri hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_gorevler]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>/yorumlar', methods=['GET'])
@@ -413,7 +414,7 @@ def api_gorev_yorumlari_get(project_id, task_id, **kwargs):
         return jsonify({'success': True, 'yorumlar': yorumlar})
     except Exception as e:
         current_app.logger.error(f'Görev yorumları GET hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_gorev_yorumlari_get]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>/yorumlar', methods=['POST'])
@@ -447,7 +448,7 @@ def api_gorev_yorumlari_post(project_id, task_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Görev yorumları POST hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_gorev_yorumlari_post]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler', methods=['POST'])
@@ -539,7 +540,7 @@ def api_gorev_olustur(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Görev oluşturma hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_gorev_olustur]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>', methods=['PUT'])
@@ -745,7 +746,7 @@ def api_gorev_guncelle(project_id, task_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Görev güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_gorev_guncelle]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>', methods=['DELETE'])
@@ -780,7 +781,7 @@ def api_gorev_sil(project_id, task_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Görev silme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_gorev_sil]", 500)
 
 
 # Görev Bağımlılıkları (Predecessors)
@@ -817,7 +818,7 @@ def api_gorev_bagimliliklar_get(project_id, task_id, **kwargs):
         return jsonify({'success': True, 'task_id': task_id, 'predecessor_ids': predecessor_ids, 'dependencies': payload})
     except Exception as e:
         current_app.logger.error(f'Görev bağımlılıkları GET hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_gorev_bagimliliklar_get]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>/bagimliliklar', methods=['POST'])
@@ -884,7 +885,7 @@ def api_gorev_bagimliliklar_set(project_id, task_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Görev bağımlılıkları POST hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_gorev_bagimliliklar_set]", 500)
 # ============================================================================
 # PROJE YÖNETİMİ - DOSYA HAVUZU API ENDPOINT'LERİ
 # ============================================================================
@@ -985,7 +986,7 @@ def api_proje_riskleri(project_id):
         })
     except Exception as e:
         current_app.logger.error(f'Risk listesi API hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_riskleri]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/riskler', methods=['POST'])
@@ -1049,7 +1050,7 @@ def api_risk_ekle(project_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Risk ekleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_risk_ekle]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/riskler/<int:risk_id>', methods=['PUT'])
@@ -1101,7 +1102,7 @@ def api_risk_guncelle(project_id, risk_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Risk güncelleme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_risk_guncelle]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/riskler/<int:risk_id>', methods=['DELETE'])
@@ -1127,7 +1128,7 @@ def api_risk_sil(project_id, risk_id):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Risk silme hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_risk_sil]", 500)
 
 
 # AI Erken Uyarı API Endpoint'leri
@@ -1157,7 +1158,7 @@ def api_ai_tahmin(project_id):
             }), 500
     except Exception as e:
         current_app.logger.error(f'AI tahmin API hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_ai_tahmin]", 500)
 
 
 # Kaynak Planlama API Endpoint'leri
@@ -1199,7 +1200,7 @@ def api_kaynak_isi_haritasi(project_id):
             }), 500
     except Exception as e:
         current_app.logger.error(f'Kaynak ısı haritası API hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_kaynak_isi_haritasi]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/klonla', methods=['POST'])
@@ -1258,7 +1259,7 @@ def api_proje_klonla(project_id):
     
     except Exception as e:
         current_app.logger.error(f'Proje klonlama hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_klonla]", 500)
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>/asiri-yukleme-kontrol', methods=['GET'])
 @login_required
 def api_asiri_yukleme_kontrol(project_id, task_id):
@@ -1280,7 +1281,7 @@ def api_asiri_yukleme_kontrol(project_id, task_id):
         })
     except Exception as e:
         current_app.logger.error(f'Aşırı yükleme kontrolü API hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_asiri_yukleme_kontrol]", 500)
 
 
 # Kullanıcı Tercihleri API Endpoint'leri
@@ -1391,7 +1392,7 @@ def api_task_complete(task_id):
         current_app.logger.error(f'Görev tamamlama hatası: {e}', exc_info=True)
         return jsonify({
             'success': False,
-            'message': str(e)
+            'message': _('İşlem tamamlanamadı.'),  # S6: str(e) sızdırıyordu
         }), 500
 
 

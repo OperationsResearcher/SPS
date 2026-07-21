@@ -306,7 +306,10 @@ class ReportService:
             comparison = AnalyticsService.get_comparative_analysis(
                 report_config.get('process_ids', []),
                 start_date,
-                end_date
+                end_date,
+                # B13: config tenant taşıyorsa süz. Bu fonksiyonun şu an canlı
+                # çağıranı yok; bağlandığı gün tenant_id'yi ZORUNLU geçirin.
+                tenant_id=report_config.get('tenant_id'),
             )
             
             report_data['sections'].append({

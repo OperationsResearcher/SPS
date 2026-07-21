@@ -68,6 +68,7 @@ from api.helpers import (
     _notify_project_team_changes_api,
     _parse_date_safe,
 )
+from app.utils.error_handlers import json_error  # S6
 
 
 @api_bp.route('/projeler/<int:project_id>/evm', methods=['GET'])
@@ -82,7 +83,7 @@ def api_proje_evm(project_id, **kwargs):
         return jsonify({'success': True, 'evm': result})
     except Exception as e:
         current_app.logger.error(f'EVM API hatası: {e}')
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_evm]", 500)
 
 
 # CPM / Kritik Yol API
@@ -96,7 +97,7 @@ def api_proje_cpm(project_id, **kwargs):
         return jsonify(result)
     except Exception as e:
         current_app.logger.error(f'CPM API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_cpm]", 500)
 
 
 # Burnup/Burndown API
@@ -110,7 +111,7 @@ def api_proje_burn(project_id, **kwargs):
         return jsonify(result)
     except Exception as e:
         current_app.logger.error(f'Burn API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_burn]", 500)
 
 
 # Rule engine API
@@ -142,7 +143,7 @@ def api_proje_kurallar(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kural API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_kurallar]", 500)
 
 
 # SLA API
@@ -178,7 +179,7 @@ def api_proje_sla(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'SLA API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_sla]", 500)
 
 
 # Tekrarlayan Görevler API
@@ -220,7 +221,7 @@ def api_proje_tekrarlayan(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Tekrarlayan görev API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_tekrarlayan]", 500)
 
 
 # Entegrasyon webhooks (Slack/Teams/Outlook)
@@ -257,7 +258,7 @@ def api_proje_integrations(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Integration API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_integrations]", 500)
 
 
 # Haftalık digest (özet)
@@ -271,7 +272,7 @@ def api_proje_digest(project_id, **kwargs):
         return jsonify({'success': True, 'digest': summary})
     except Exception as e:
         current_app.logger.error(f'Digest API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_digest]", 500)
 
 
 # RAID kayıtları
@@ -356,7 +357,7 @@ def api_proje_raid(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'RAID API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_raid]", 500)
 
 
 # RAID item update/delete
@@ -419,7 +420,7 @@ def api_proje_raid_item(project_id, item_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'RAID item API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_raid_item]", 500)
 
 
 # Portföy özet ve risk skoru
@@ -468,7 +469,7 @@ def api_portfoy_ozet():
         })
     except Exception as e:
         current_app.logger.error(f'Portföy özet hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_portfoy_ozet]", 500)
 
 
 # Çapraz bağımlılık matrisi (proje içi)
@@ -491,7 +492,7 @@ def api_proje_bagimlilik_matrisi(project_id, **kwargs):
         return jsonify({'success': True, 'matrix': matrix})
     except Exception as e:
         current_app.logger.error(f'Bağımlılık matrisi hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_bagimlilik_matrisi]", 500)
 
 
 # Baseline kayıtları
@@ -542,7 +543,7 @@ def api_proje_baseline(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Baseline API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_baseline]", 500)
 
 
 # Kapasite planı
@@ -583,7 +584,7 @@ def api_proje_kapasite(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kapasite API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_kapasite]", 500)
 
 
 # Çalışma günü takvimi
@@ -623,7 +624,7 @@ def api_proje_calisma_gunleri(project_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Çalışma günü API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_calisma_gunleri]", 500)
 
 
 # iCal export (read-only takvim)
@@ -659,7 +660,7 @@ def api_proje_ical(project_id, **kwargs):
         return current_app.response_class(ical_str, mimetype='text/calendar')
     except Exception as e:
         current_app.logger.error(f'iCal export hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_ical]", 500)
 
 
 # DELETE endpoints for project management resources
@@ -677,7 +678,7 @@ def api_proje_kapasite_delete(project_id, plan_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kapasite silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_kapasite_delete]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/integrations/<int:hook_id>', methods=['DELETE'])
@@ -694,7 +695,7 @@ def api_proje_integration_delete(project_id, hook_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Webhook silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_integration_delete]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/kurallar/<int:rule_id>', methods=['DELETE'])
@@ -711,7 +712,7 @@ def api_proje_kural_delete(project_id, rule_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kural silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_kural_delete]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/sla/<int:sla_id>', methods=['DELETE'])
@@ -728,7 +729,7 @@ def api_proje_sla_delete(project_id, sla_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'SLA silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_sla_delete]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/tekrarlayan/<int:recurring_id>', methods=['DELETE'])
@@ -745,7 +746,7 @@ def api_proje_tekrarlayan_delete(project_id, recurring_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Tekrarlayan görev silme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_tekrarlayan_delete]", 500)
 
 
 # Kapasite planı güncelle
@@ -769,7 +770,7 @@ def api_proje_kapasite_update(project_id, plan_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kapasite güncelleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_kapasite_update]", 500)
 
 
 # Entegrasyon güncelle
@@ -792,7 +793,7 @@ def api_proje_integration_update(project_id, hook_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Webhook güncelleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_integration_update]", 500)
 
 
 # Kural güncelle
@@ -819,7 +820,7 @@ def api_proje_kural_update(project_id, rule_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Kural güncelleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_kural_update]", 500)
 
 
 # SLA güncelle
@@ -843,7 +844,7 @@ def api_proje_sla_update(project_id, sla_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'SLA güncelleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_sla_update]", 500)
 
 
 # Tekrarlayan görev güncelle
@@ -867,7 +868,7 @@ def api_proje_tekrarlayan_update(project_id, recurring_id, **kwargs):
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Tekrarlayan görev güncelleme hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_tekrarlayan_update]", 500)
 # Proje ekibini getir (kapasite planı için gerekli)
 @api_bp.route('/projeler/<int:project_id>/ekip', methods=['GET'])
 @login_required
@@ -883,4 +884,4 @@ def api_proje_ekip(project_id, **kwargs):
         return jsonify({'success': True, 'team': team})
     except Exception as e:
         current_app.logger.error(f'Ekip API hatası: {e}', exc_info=True)
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[api_proje_ekip]", 500)

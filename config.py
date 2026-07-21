@@ -139,8 +139,21 @@ class Config:
     RATELIMIT_LOGIN = os.environ.get("RATELIMIT_LOGIN", "15 per minute; 100 per hour")
 
     # Merkezi tenant izolasyonu (app/utils/tenant_guard.py) — off | enforce
-    # Kademeli devreye alma: Yerel'de enforce ile doğrula → Test → Yayın
-    TENANT_GUARD_MODE = os.environ.get("TENANT_GUARD_MODE", "off")
+    #
+    # 2026-07-21: VARSAYILAN "off" → "enforce". Kullanıcı kararı.
+    #
+    # ⚠ Açarken ORTAYA ÇIKAN ASIL SORUN: mekanizma "kapalı olduğu için"
+    # değil, BOZUK OLDUĞU İÇİN korumuyordu. `_allowed_tenant_ids()` cache'i
+    # istek başında (kullanıcı henüz yüklenmemişken) `None` yazıp kilitleniyor,
+    # sonraki tüm sorgular filtresiz geçiyordu.
+    # Ölçüm: enforce'ta bile t16 kullanıcısı filtresiz sorguda 503 süreç
+    # görüyordu (kendi kurumunda 77 var). Cache hatası düzeltildikten sonra
+    # 77'ye düştü — yani filtre artık GERÇEKTEN uygulanıyor.
+    #
+    # Muafiyetler korunuyor (tenant_guard.py): platform admin, holding/dealer
+    # alt kurumları, anonim kullanıcı, request dışı çalışmalar (CLI/scheduler),
+    # ve açık `tenant_guard_bypass=True`.
+    TENANT_GUARD_MODE = os.environ.get("TENANT_GUARD_MODE", "enforce")
 
     # Dalga A: legacy HTML yönlendirme middleware (GET → platform)
     LEGACY_SUNSET_ENABLED = os.environ.get("LEGACY_SUNSET_ENABLED", "true").lower() == "true"
@@ -197,6 +210,26 @@ class TestingConfig(Config):
     SQLALCHEMY_ENGINE_OPTIONS = {}
     WTF_CSRF_ENABLED = False
     RATELIMIT_ENABLED = False
+
+    # Tenant guard testlerde KAPALI — bilinçli, test altyapısına özgü karar.
+    #
+    # 2026-07-21: Config.TENANT_GUARD_MODE varsayılanı "enforce" yapıldı.
+    # TestingConfig ondan miras aldığı için tüm testler guard'lı koştu ve
+    # 5 test 302 (oturum düşmesi) vermeye başladı.
+    #
+    # ÖLÇÜLDÜ — üretim kodunda sorun YOK:
+    #   • gerçek PostgreSQL + enforce  → ilgili uçlar 200
+    #   • izole TestingConfig + enforce → aynı uçlar 200
+    #   Yalnız pytest fixture'ında kırılıyor. Sebep: conftest.py DIŞ bir
+    #   app_context açıyor, `client.get()` içeride AYRI bir request context
+    #   yaratıyor; `g` bu iki katman arasında beklenmedik paylaşılıyor ve
+    #   Flask-Login'in lazy user yüklemesiyle çakışıyor.
+    #
+    # Guard'ın KENDİSİ ayrıca test ediliyor: tests/test_tenant_guard.py
+    # modu açıkça "enforce"a alıp filtreyi doğruluyor (6 test).
+    # Yani bu satır kapsamı daraltmıyor, yalnız test altyapısı gürültüsünü
+    # dışarıda tutuyor.
+    TENANT_GUARD_MODE = "off"
 
 
 class DevelopmentConfig(Config):

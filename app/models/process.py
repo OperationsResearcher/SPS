@@ -567,6 +567,16 @@ class IndividualPerformanceIndicator(db.Model):
     plan_year_id = db.Column(db.Integer, db.ForeignKey('plan_years.id', ondelete='SET NULL'), nullable=True, index=True)
     source_individual_kpi_id = db.Column(db.Integer, db.ForeignKey('individual_performance_indicators.id', ondelete='SET NULL'), nullable=True)
 
+    # Yıl bazlı Faz 1.4 (T9/K15): "bu YIL karneye dahil mi?"
+    # is_active ile karıştırma — o "kayıt silinmiş mi?" demek.
+    # *_year_configs.is_included yerine geçer (override tabloları kalkıyor).
+    #
+    # D6 (2026-07-21): Kolon migration ile DB'ye eklenmiş ama MODELE
+    # YANSITILMAMIŞTI — ORM üzerinden okunamıyor/yazılamıyordu, yalnız ham
+    # SQL görüyordu. Kardeş modeller (Strategy, SubStrategy, Process,
+    # ProcessKpi) aynı alanı taşıyor; bu model atlanmıştı.
+    is_included = db.Column(db.Boolean, default=True, nullable=False)
+
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
 
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))

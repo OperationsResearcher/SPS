@@ -453,22 +453,37 @@ def calculateHedefDeger(
     return hedef
 
 
-def hesapla_durum(hedef_deger: Optional[float], gerceklesen_deger: Optional[float]) -> Tuple[Optional[str], Optional[float]]:
+def hesapla_durum(
+    hedef_deger: Optional[float],
+    gerceklesen_deger: Optional[float],
+    direction: str = 'Increasing',
+) -> Tuple[Optional[str], Optional[float]]:
     """
     Durum ve durum yüzdesini hesapla
-    
+
     Args:
         hedef_deger: Hedef değer
         gerceklesen_deger: Gerçekleşen değer
-    
+        direction: 'Increasing' (artması iyi) | 'Decreasing' (azalması iyi)
+
+    B3 devamı (2026-07-21): bu fonksiyon `direction`'ı HİÇ OKUMUYORDU —
+    azalan göstergelerde (maliyet, hata, şikâyet) oran ters çıkıyordu:
+        hedef=10, gerçekleşen=50 (KÖTÜ) → %500 → 'Başarılı'
+    Aynı hata analytics_service ve k_radar_service'te de vardı; bu dördüncü
+    kopyaydı. Çağıranlar `direction` geçirmezse eski davranış korunur.
+
     Returns:
         Tuple: (durum, durum_yuzdesi) - ('Başarılı', 'Kısmen Başarılı', 'Başarısız' veya None)
     """
     if not hedef_deger or not gerceklesen_deger:
         return None, None
-    
+
     try:
-        durum_yuzdesi = (gerceklesen_deger / float(hedef_deger)) * 100
+        if (direction or 'Increasing').strip().lower() == 'decreasing':
+            # Azalması iyi: hedefin ALTINDA kalmak başarıdır.
+            durum_yuzdesi = (float(hedef_deger) / gerceklesen_deger) * 100
+        else:
+            durum_yuzdesi = (gerceklesen_deger / float(hedef_deger)) * 100
         
         if durum_yuzdesi >= 100:
             durum = 'Başarılı'
@@ -478,7 +493,17 @@ def hesapla_durum(hedef_deger: Optional[float], gerceklesen_deger: Optional[floa
             durum = 'Başarısız'
         
         return durum, durum_yuzdesi
-    except:
+    except (TypeError, ValueError, ZeroDivisionError) as e:
+        # S10 (2026-07-21): burada ÇIPLAK `except:` vardı — tüm hesaplamayı
+        # sessizce yutuyordu (KURALLAR §3 ihlali). Artık dar ve loglu.
+        try:
+            from flask import current_app
+            current_app.logger.warning(
+                "[hesapla_durum] hesaplanamadı (hedef=%r gerçekleşen=%r): %s",
+                hedef_deger, gerceklesen_deger, e,
+            )
+        except Exception:
+            pass
         return None, None
 
 

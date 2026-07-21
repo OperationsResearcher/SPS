@@ -379,7 +379,27 @@ def raporlar_api_cmmi_heatmap():
 
     avg_level = round(sum(p["level"] for p in processes) / max(len(processes), 1), 2)
 
-    # CMMI seviyeleri — Türkçe açıklamalar
+    # M12 (2026-07-21): ORDİNAL SEVİYENİN ORTALAMASI ölçek teorisi açısından
+    # geçersizdir — CMMI staged temsilinde seviyeler eşiklidir, alt seviyenin
+    # tüm gereklerini karşılamadan üste geçilemez. "3,4" gibi bir sayı
+    # yorumlanamaz. `avg_level` geriye uyum için korunuyor (UI okuyor) ama
+    # yanına ölçek-geçerli göstergeler ekleniyor: MEDYAN + eşikli oran.
+    _seviyeler = sorted(p["level"] for p in processes)
+    _n = len(_seviyeler)
+    median_level = (
+        0 if _n == 0
+        else (_seviyeler[_n // 2] if _n % 2
+              else (_seviyeler[_n // 2 - 1] + _seviyeler[_n // 2]) / 2)
+    )
+    level3_plus_pct = (
+        round(len([s for s in _seviyeler if s >= 3]) / _n * 100, 1) if _n else 0.0
+    )
+
+    # Olgunluk seviyeleri — CMMI staged temsilinden UYARLANMIŞ etiketler.
+    # ⚠ Bu bir CMMI DEĞERLENDİRMESİ DEĞİLDİR: arkadaki `process_maturity`
+    # serbest bir 1-5 öz-değerlendirme integer'ıdır; hiçbir CMMI süreç alanı,
+    # jenerik/spesifik hedef ya da SCAMPI yordamı uygulanmaz. Resmî CMMI
+    # değerlendirmesi yetkili lead appraiser gerektirir.
     level_meta = {
         1: {"label": _("1 — Başlangıç"),        "en": "Initial",                  "color": "#dc2626", "desc": _("Süreç ad-hoc/kaotik; kişiye bağımlı, tekrarlanabilirlik yok.")},
         2: {"label": _("2 — Yönetilen"),        "en": "Managed",                  "color": "#f59e0b", "desc": _("Temel süreç disiplini var; planlama, izleme, kontrol uygulanıyor.")},
@@ -425,6 +445,20 @@ def raporlar_api_cmmi_heatmap():
         "unmeasured_count": len(unmeasured),
         "tenant_process_count": len(process_ids),
         "avg_level": avg_level,
+        # M12: ordinal seviyelerin ortalaması ölçek-geçersiz. Bu iki gösterge
+        # ölçek-geçerli alternatiftir; UI zamanla `avg_level` yerine bunları
+        # göstermeli.
+        "median_level": median_level,
+        "level3_plus_pct": level3_plus_pct,
+        # Metodolojik dürüstlük etiketi (M11/M12): kullanıcı neye baktığını
+        # bilmeli. Türetilmiş göstergeyi resmî değerlendirme gibi sunmak,
+        # bunu bilen bir kalite yöneticisi çıktığında güven kaybettirir.
+        "methodology_note": _(
+            "Bu gösterge CMMI staged temsilinden uyarlanmıştır ancak resmî bir "
+            "CMMI değerlendirmesi DEĞİLDİR: veriler süreç sahiplerinin 1-5 "
+            "arası öz-değerlendirmesidir. Resmî değerlendirme (SCAMPI) yetkili "
+            "bir lead appraiser gerektirir."
+        ),
         "overall_label": overall_label,
         "overall_color": overall_color,
         "overall_advice": overall_advice,

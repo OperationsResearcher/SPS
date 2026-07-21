@@ -470,7 +470,13 @@
             <button id="btn-strategy-add-empty" class="mc-btn mc-btn-primary">
               <i class="fas fa-plus"></i> {{ _("İlk Ana Stratejiyi Ekle") }}
             </button>
-            <a href="{{ url_for('app_bp.sp_templates_page') if 'app_bp.sp_templates_page' in current_app.view_functions else '/k-plan/strategy/templates' }}" class="mc-btn mc-btn-secondary mc-btn-sm">
+            {# K4: burada 'current_app.view_functions' kontrolü vardı; current_app
+               Jinja bağlamında tanımlı olmadığı için UndefinedError → 500.
+               Blok yalnız "henüz ana strateji yok" durumunda render edildiğinden
+               hata TAM OLARAK yeni müşterinin ilk gününde çıkıyor, strateji
+               girilir girilmez kayboluyordu. Route (app_bp.sp_templates_page,
+               routes_exec_advisor.py:312) her zaman kayıtlı — koşula gerek yok. #}
+            <a href="{{ url_for('app_bp.sp_templates_page') }}" class="mc-btn mc-btn-secondary mc-btn-sm">
               <i class="fas fa-file-import"></i> {{ _("Hazır Şablondan Başla") }}
             </a>
             {% endif %}

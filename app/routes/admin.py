@@ -167,11 +167,11 @@ def tenants_archive(tenant_id):
     t = Tenant.query.get(tenant_id)
     if not t:
         flash(_("Kurum bulunamadı."), "danger")
-        return redirect(url_for("admin_bp.tenants"))
+        return redirect(url_for("app_bp.admin_tenants"))
     t.is_active = False
     db.session.commit()
     flash(_("Kurum arşivlendi."), "success")
-    return redirect(url_for("admin_bp.tenants"))
+    return redirect(url_for("app_bp.admin_tenants"))
 
 
 # ---------------------------------------------------------------------------

@@ -26,6 +26,7 @@ from app.utils.karne_hesaplamalar import (
     hesapla_basari_puani,
     hesapla_agirlikli_basari_puani,
 )
+from app.services.kpi_data_score_service import uygula_kpi_data_skoru
 from app.services.plan_year_service import get_active_plan_year_for_user
 from app.services.date_sovereign import (
     resolve_request_year,
@@ -335,6 +336,8 @@ def bireysel_api_veri_add():
             description=data.get("description"),
             user_id=current_user.id,
         )
+        # K1: bireysel PGV de skorlanmalı — süreç tarafıyla aynı boşluk vardı.
+        uygula_kpi_data_skoru(entry, pg)
         db.session.add(entry)
         db.session.commit()
         resp = {"success": True, "message": "Veri kaydedildi."}

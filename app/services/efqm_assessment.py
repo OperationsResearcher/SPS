@@ -47,7 +47,21 @@ DIMENSIONS = {
 
 
 def _level_for(total_pts: int) -> dict:
-    """EFQM tanınma seviyesi (1000 üzerinden)."""
+    """EFQM-BENZERİ olgunluk bandı (1000 üzerinden) — TANINMA SEVİYESİ DEĞİL.
+
+    M11 (2026-07-21): Docstring eskiden "EFQM tanınma seviyesi" diyordu.
+    Bu yanıltıcı: EFQM tanınma seviyeleri (Recognised by EFQM, 3/4/5 Star …)
+    kurumun KENDİ hesabıyla verilmez — bağımsız EFQM değerlendiricileri
+    tarafından RADAR mantığıyla yürütülen bir değerlendirme sonucunda verilir.
+
+    Buradaki bantlar kurumun kendi verisinden TÜRETİLMİŞ bir olgunluk
+    göstergesidir. Kriter ağırlıkları EFQM 2025 dağılımıyla örtüşüyor
+    (doğrulandı) ama sonuç resmî bir seviye DEĞİLDİR.
+
+    Ayrıca eski docstring DÖRT seviye tanımlarken fonksiyon YEDİ bant
+    döndürüyordu — belge ile kod çelişiyordu. Yedi bant korunuyor (UI
+    `stars` alanını okuyor), belge koda uyduruldu.
+    """
     if total_pts >= 700:
         return {"label": _("Dünya Lideri Performans"),
                 "tagline": _("Dönüşüm ve Geleceğe Yönelik Odaklanma"),
@@ -435,6 +449,19 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
         "narrative": narrative,
         "kpi_327": kpi_327_info,
         "model_version": "EFQM 2025",
+        # M11 (2026-07-21): kullanıcı neye baktığını bilmeli. Kriter
+        # ağırlıkları EFQM 2025 dağılımıyla örtüşüyor (doğrulandı) ama bu
+        # bir ÖZ-DEĞERLENDİRMEDİR; EFQM tanınma seviyeleri bağımsız
+        # değerlendiricilerce RADAR yordamıyla verilir.
+        # "Türetilmiş, resmî değil" demek aracı zayıflatmaz — metodolojik
+        # olgunluk sinyali verir.
+        "methodology_note": _(
+            "Bu değerlendirme EFQM 2025 kriter ağırlıklarından uyarlanmış bir "
+            "ÖZ-DEĞERLENDİRMEDİR; resmî bir EFQM tanınma seviyesi DEĞİLDİR. "
+            "Resmî tanınma, bağımsız EFQM değerlendiricileri tarafından RADAR "
+            "yordamıyla yürütülen bir değerlendirme gerektirir."
+        ),
+        "is_official_assessment": False,
         "radar": {
             "results":      _("Sonuçlar — paydaş algıları ve stratejik/operasyonel performans"),
             "approach":     _("Yaklaşım — sağlam temelli ve uyumlu yön + uygulama"),

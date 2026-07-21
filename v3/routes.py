@@ -8,6 +8,7 @@ from datetime import date, timedelta, datetime
 
 # Blueprint'i __init__.py'den import et (tekrar tanımlama!)
 from . import v3_bp
+from app.utils.error_handlers import json_error  # S6
 
 def calculate_strategic_summary(user):
     """
@@ -557,5 +558,5 @@ def save_quick_data(kpi_id):
         
     except Exception as e:
         db.session.rollback()
-        return jsonify({'success': False, 'message': str(e)}), 500
+        return json_error(e, "[save_quick_data]", 500)
 

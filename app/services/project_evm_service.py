@@ -40,9 +40,27 @@ def _task_pv(t: PlanProjectTask, today: _dt.date, bac: float) -> float:
     return bac * (elapsed / total) if total > 0 else bac
 
 
-def compute_project_evm(project_id: int) -> dict:
-    """Bir projenin EVM özet metriklerini hesaplar."""
-    project = PlanProject.query.get(project_id)
+def compute_project_evm(project_id: int, tenant_id: int | None = None) -> dict:
+    """Bir projenin EVM özet metriklerini hesaplar.
+
+    Args:
+        project_id: Proje kimliği.
+        tenant_id: Sahiplik doğrulaması için kurum kimliği. Verilirse proje
+            o kuruma ait değilse `ValueError` atar.
+
+    S3 (2026-07-21): Burada tenant filtresi YOKTU ve çağıran route da
+    yapmıyordu — yalnız rol kontrolü (`_can()`) vardı. Rol ≠ sahiplik.
+    Herhangi bir kurumda SP rolü olan kullanıcı `pid`'yi 1'den deneyerek
+    başka kurumların proje bütçesini (bac/ac/eac, görev adları ve tarihleri)
+    okuyabiliyordu.
+
+    Savunma çağırana bırakılmıyor: `tenant_id` opsiyonel ama route'lar
+    geçirir; parametresiz çağrı yalnız kurum-içi toplu işler içindir.
+    """
+    q = PlanProject.query.filter_by(id=project_id)
+    if tenant_id is not None:
+        q = q.filter_by(tenant_id=tenant_id)
+    project = q.first()
     if not project:
         raise ValueError(f"Proje bulunamadı: {project_id}")
 

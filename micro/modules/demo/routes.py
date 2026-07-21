@@ -28,9 +28,15 @@ from app.models.core import User, Role, Tenant
 # ── Kurum haritası ────────────────────────────────────────────────────────────
 # Demo landing'deki kartlar bu sözlüğe karşılık gelir.
 # Backend her kurum key'ini config.DEMO_TENANT_IDS üzerinden tenant_id'ye bağlar.
+#
+# I4 (2026-07-21): `label` alanları ÖZEL İSİMDİR — `_()` ile sarılmamalı.
+# Sarılı oldukları için Babel bunları çevrilebilir dize sayıyor ve fuzzy
+# eşleştirme absürt sonuçlar üretmişti:
+#     "Tomofil" → "Profile"      "Tom1"/"Tom2"/"Tom3" → "TOTAL" (üçü de)
+# İngilizce arayüzde kurumun adı değişirdi. Kurum adı çevrilmez.
 DEMO_TENANTS = {
     "tom1": {
-        "label": _("Tom1"),
+        "label": "Tom1",
         "package_label": _("Başlangıç Paketi"),
         "icon": "fas fa-seedling",
         "color": "#0ea5e9",
@@ -38,7 +44,7 @@ DEMO_TENANTS = {
         "description": _("Temel modüllerle başlayan küçük ölçekli bir kurum deneyimi."),
     },
     "tom2": {
-        "label": _("Tom2"),
+        "label": "Tom2",
         "package_label": _("Yönetim Paketi"),
         "icon": "fas fa-diagram-project",
         "color": "#8b5cf6",
@@ -46,7 +52,7 @@ DEMO_TENANTS = {
         "description": _("Süreç ve performans yönetimi modülleriyle genişletilmiş kurum deneyimi."),
     },
     "tom3": {
-        "label": _("Tom3"),
+        "label": "Tom3",
         "package_label": _("Strateji Paketi"),
         "icon": "fas fa-chess-knight",
         "color": "#f59e0b",
@@ -54,7 +60,7 @@ DEMO_TENANTS = {
         "description": _("Stratejik planlama ve analiz araçlarını da içeren ileri seviye deneyim."),
     },
     "tomofil": {
-        "label": _("Tomofil"),
+        "label": "Tomofil",
         "package_label": _("Master Paketi"),
         "icon": "fas fa-crown",
         "color": "#4f46e5",

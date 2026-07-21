@@ -5,7 +5,89 @@ Excel formatına uygun başarı puanı ve ağırlıklı başarı puanı hesaplam
 Eski proje uyumluluğu için taşınmıştır.
 """
 import json
-from typing import Optional, Dict, Any, Union, Tuple
+import logging
+from typing import Optional, Dict, Any, Union, Tuple, List
+
+_log = logging.getLogger(__name__)
+
+# JS tarafının (pg_tablo_modal.js, surec.js) ürettiği bant formatının anahtarları.
+# ÖLÇÜM 2026-07-21: process_kpis'te 1920 dolu kayıt →
+#   1240  [{"min":…, "max":…, "puan":…}, …]   ← bu format
+#    657  {"1":"%71-80", …}                    ← eski, string
+#     23  {"1":{"aralik":…,"aciklama":…}, …}   ← eski, nesne
+# Yeni format kayıtların %64,6'sı; parser'da karşılığı olmadığı için hepsi
+# sessizce puansız kalıyordu (M1).
+_BANT_ANAHTARLARI = ("min", "max", "puan")
+
+
+def _bant_listesi_mi(j: Any) -> bool:
+    """JS'in ürettiği [{"min":…,"max":…,"puan":…}] biçimi mi?"""
+    return (
+        isinstance(j, list)
+        and bool(j)
+        and isinstance(j[0], dict)
+        and any(k in j[0] for k in _BANT_ANAHTARLARI)
+    )
+
+
+def parse_bant_listesi(araliklar_str: Optional[str]) -> List[Dict[str, Any]]:
+    """JS bant formatını (min/max/puan) normalize edilmiş listeye çevirir.
+
+    Eski formattan farkı: puan bandın İÇİNDE taşınıyor (0-100 ölçeği) ve
+    sınırlar zaten sayısal — string aralık ayrıştırmasına gerek yok.
+    `max: null` üst sınırsız (sonsuza kadar) demektir.
+    """
+    if not araliklar_str:
+        return []
+    try:
+        j = json.loads(araliklar_str)
+    except (json.JSONDecodeError, ValueError, TypeError):
+        return []
+    if not _bant_listesi_mi(j):
+        return []
+
+    bantlar: List[Dict[str, Any]] = []
+    for item in j:
+        if not isinstance(item, dict):
+            continue
+        try:
+            puan = item.get("puan")
+            if puan is None:
+                continue
+            alt = item.get("min")
+            ust = item.get("max")
+            bantlar.append({
+                "min": None if alt is None else float(alt),
+                "max": None if ust is None else float(ust),
+                "puan": float(puan),
+            })
+        except (ValueError, TypeError):
+            continue
+    return bantlar
+
+
+def hesapla_bant_puani(
+    gerceklesen_deger: Optional[Union[int, float]],
+    bantlar: List[Dict[str, Any]],
+) -> Optional[float]:
+    """Bant listesine göre puan döndürür (bandın kendi ölçeğinde, tipik 0-100).
+
+    Bantlar üst üste binerse en yüksek puanlı eşleşme kazanır — kullanıcı
+    lehine yorum. Hiçbir banda düşmüyorsa None (uydurma puan üretmeyiz).
+    """
+    if gerceklesen_deger is None or not bantlar:
+        return None
+    try:
+        deger = float(gerceklesen_deger)
+    except (ValueError, TypeError):
+        return None
+
+    eslesen = [
+        b["puan"] for b in bantlar
+        if (b["min"] is None or deger >= b["min"])
+        and (b["max"] is None or deger <= b["max"])
+    ]
+    return max(eslesen) if eslesen else None
 
 
 def _normalize_basari_cell(v: Any) -> Tuple[Optional[str], Optional[str]]:
@@ -36,6 +118,18 @@ def parse_basari_puani_araliklari(araliklar_str: Optional[str]) -> Dict[int, str
 
     try:
         araliklar = json.loads(araliklar_str)
+
+        # Yeni bant formatı bu fonksiyonun sözleşmesine (puan→aralık string)
+        # sığmıyor: puan bandın içinde ve 0-100 ölçeğinde. Çağıran
+        # hesapla_basari_puani zaten bantlı yola sapıyor; buraya düşmesi
+        # çağıranın formatı kontrol etmediği anlamına gelir — sessiz kalma.
+        if _bant_listesi_mi(araliklar):
+            _log.warning(
+                "[karne_hesaplamalar] bant formatı (min/max/puan) eski parser'a "
+                "verildi; parse_bant_listesi kullanılmalı. Kayıt: %.120s",
+                araliklar_str,
+            )
+            return {}
 
         if isinstance(araliklar, list):
             out: Dict[int, str] = {}
@@ -217,6 +311,49 @@ def hesapla_basari_puani(
                 return 1
 
     return 3
+
+
+def hesapla_basari_puani_ham(
+    gerceklesen_deger: Optional[Union[int, float]],
+    araliklar_str: Optional[str],
+    direction: str = 'Increasing',
+) -> Tuple[Optional[float], Optional[str]]:
+    """DB'deki ham `basari_puani_araliklari` string'inden puan üretir.
+
+    İki formatı da tanır ve hangisini kullandığını söyler — çağıranın format
+    bilmesine gerek kalmaz. M1'in kök nedeni tam olarak buydu: çağıranlar
+    tek formatı varsayıyordu.
+
+    Returns:
+        (puan, olcek) — olcek: '0-100' (bant formatı) | '1-5' (eski) | None
+        Puan üretilemezse (None, None) ve sebebi log'a düşer.
+    """
+    if gerceklesen_deger is None:
+        return None, None
+    if not araliklar_str or not str(araliklar_str).strip():
+        return None, None
+
+    bantlar = parse_bant_listesi(araliklar_str)
+    if bantlar:
+        puan = hesapla_bant_puani(gerceklesen_deger, bantlar)
+        if puan is None:
+            _log.warning(
+                "[karne_hesaplamalar] değer %s tanımlı %d bandın hiçbirine "
+                "düşmedi — puan üretilemedi.", gerceklesen_deger, len(bantlar),
+            )
+            return None, None
+        return puan, '0-100'
+
+    araliklar = parse_basari_puani_araliklari(araliklar_str)
+    if not araliklar:
+        _log.warning(
+            "[karne_hesaplamalar] başarı aralığı çözümlenemedi (kayıt dolu ama "
+            "parse boş döndü). Kayıt: %.120s", araliklar_str,
+        )
+        return None, None
+
+    puan = hesapla_basari_puani(gerceklesen_deger, araliklar, direction)
+    return (float(puan) if puan is not None else None), ('1-5' if puan is not None else None)
 
 
 def hesapla_agirlikli_basari_puani(

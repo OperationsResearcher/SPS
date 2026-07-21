@@ -52,19 +52,43 @@ def _allowed_tenant_ids():
     if not has_request_context():
         return None
 
+    from flask_login import current_user
+
+    # ⚠ 2026-07-21: KİLİT KENDİNİ YİYORDU — guard hiçbir zaman devreye girmiyordu.
+    #
+    # Eski akış: cache `g` üzerinde tutuluyordu ve özyineleme kilidi olarak
+    # `g._tenant_guard_ids = None` yazılıyordu. Ama istek başında, kullanıcı
+    # HENÜZ YÜKLENMEDEN (Flask-Login `current_user`'ı lazy çözer) bir ORM
+    # sorgusu tetiklenince:
+    #     1. _allowed_tenant_ids() çağrılır, kullanıcı anonim → ids = None
+    #     2. `g._tenant_guard_ids = None` YAZILIR ve İSTEK BOYUNCA KALIR
+    #     3. Sonraki her çağrı `cached is not False` → None döner → filtre YOK
+    #
+    # Ölçüldü: enforce modunda t16 kullanıcısı filtresiz sorguda 503 süreç
+    # görüyordu (kendi kurumunda 77 var). Cache elle temizlenince 77'ye
+    # düşüyordu — yani mekanizma doğru, yalnız cache mantığı bozuktu.
+    #
+    # Çözüm: anonim/çözümlenemeyen durum CACHE'LENMEZ; kilit AYRI bir bayrak.
+    #
+    # ⚠ KİLİT EN BAŞTA — `current_user`'a DOKUNMADAN ÖNCE.
+    # Flask-Login `current_user`'ı LAZY çözer: `is_authenticated` okumak
+    # kullanıcıyı DB'den yükleten bir ORM sorgusu tetikler, o sorgu da bu
+    # dinleyiciyi yeniden çağırır. Kilit `is_authenticated`'dan sonra
+    # konursa SONSUZ ÖZYİNELEME olur (RecursionError — ilk denememde
+    # 26 test bu yüzden kırıldı).
+    if g.get("_tenant_guard_lock", False):
+        return None  # re-entrant çağrı — filtresiz geç
+
     cached = g.get("_tenant_guard_ids", False)
     if cached is not False:
         return cached
 
-    # Özyineleme kilidi: aşağıdaki alt-kurum sorgusu da bu dinleyiciyi tetikler;
-    # hesaplama bitene kadar re-entrant çağrılar filtresiz (None) döner.
-    g._tenant_guard_ids = None
-
-    from flask_login import current_user
-
+    g._tenant_guard_lock = True
     ids = None
+    kimlikli = False
     try:
-        if getattr(current_user, "is_authenticated", False):
+        kimlikli = getattr(current_user, "is_authenticated", False)
+        if kimlikli:
             tid = getattr(current_user, "tenant_id", None)
             if tid is not None and current_user.sistem_rol != "admin":
                 ids = [tid]
@@ -83,8 +107,21 @@ def _allowed_tenant_ids():
 
         logging.getLogger(__name__).warning("[tenant-guard] scope resolution failed", exc_info=True)
         ids = None
+    finally:
+        # Kilit MUTLAKA bırakılmalı; istisna hâlinde bile.
+        g._tenant_guard_lock = False
 
-    g._tenant_guard_ids = ids
+    # Yalnız kimliği ÇÖZÜLMÜŞ kullanıcı için cache'le.
+    #
+    # Anonim sonucu (None) cache'lemek, kullanıcı istek ortasında
+    # yüklendiğinde guard'ı İSTEK BOYUNCA devre dışı bırakırdı — eski kodun
+    # hatası tam olarak buydu (ölçüm: enforce'ta bile 503 süreç sızıyordu,
+    # kurumun kendi verisi 77).
+    #
+    # `kimlikli` yukarıda KİLİT ALTINDAYKEN hesaplandı; burada `current_user`a
+    # tekrar dokunmuyoruz (yine özyineleme riski olurdu).
+    if kimlikli:
+        g._tenant_guard_ids = ids
     return ids
 
 

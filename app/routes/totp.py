@@ -68,7 +68,10 @@ def totp_setup():
     session["_pending_totp_secret"] = secret
 
     qr = get_qr_code_base64(secret, current_user.email)
-    return render_template("auth/totp_setup.html", secret=secret, qr_code=qr)
+    # K12: yol "auth/totp_setup.html" idi — o konumda şablon hiç yoktu
+    # (TemplateNotFound → 500). Kardeş uçlar (satır 161/181/198) zaten
+    # "platform/auth/..." kullanıyor; şablon oraya yazıldı.
+    return render_template("platform/auth/totp_setup.html", secret=secret, qr_code=qr)
 
 
 @totp_bp.route("/verify-setup", methods=["POST"])

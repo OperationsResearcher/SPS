@@ -6,6 +6,7 @@ from flask_login import current_user, login_required
 from sqlalchemy import text
 
 from platform_core import app_bp
+from app.services.date_sovereign import resolve_request_year
 from app.models import db
 from services import k_radar_scheduler_service as _scheduler
 
@@ -83,7 +84,7 @@ def k_radar_schedule_save():
 def k_radar_api_hub_summary():
     from services.k_radar_service import get_hub_summary
     _sp, _spr = _scope_tuples()
-    return _safe_json(lambda: jsonify({"success": True, "data": get_hub_summary(_required_tenant_id(), _sp, _spr)}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_hub_summary(_required_tenant_id(), _sp, _spr, year=resolve_request_year())}))
 
 
 @app_bp.route("/k-radar/api/recommendations")
@@ -95,7 +96,7 @@ def k_radar_api_recommendations():
     )
     def _build():
         _sp, _spr = _scope_tuples()
-        summary = get_hub_summary(_required_tenant_id(), _sp, _spr)
+        summary = get_hub_summary(_required_tenant_id(), _sp, _spr, year=resolve_request_year())
         recs = get_recommendations_from_summary(summary)
         states = get_recommendation_states(_required_tenant_id(), current_user.id, recs)
         items = [{"key": recommendation_key(r), "text": r, "state": states.get(recommendation_key(r), "pending")} for r in recs]
@@ -109,7 +110,7 @@ def k_radar_api_recommendation_triggers():
     from services.k_radar_service import get_hub_summary, get_recommendation_triggers
     _sp, _spr = _scope_tuples()
     return _safe_json(
-        lambda: jsonify({"success": True, "data": {"items": get_recommendation_triggers(get_hub_summary(_required_tenant_id(), _sp, _spr))}})
+        lambda: jsonify({"success": True, "data": {"items": get_recommendation_triggers(get_hub_summary(_required_tenant_id(), _sp, _spr, year=resolve_request_year()))}})
     )
 
 
