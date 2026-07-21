@@ -15,6 +15,12 @@ class ProcessMaturity(TenantScopedMixin, db.Model):
     dimension = db.Column(db.String(100), nullable=True)
     assessed_by = db.Column(db.Integer, db.ForeignKey("users.id", ondelete="SET NULL"), nullable=True, index=True)
     assessed_at = db.Column(db.DateTime, nullable=True)
+    # D6 (2026-07-21): yıl bazlı migration ile DB'ye eklenmiş ama modele
+    # yansıtılmamıştı → ORM'den görünmüyordu (yalnız ham SQL okuyabiliyordu).
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey("plan_years.id", ondelete="SET NULL"),
+        nullable=True, index=True,
+    )
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc), nullable=False)
     updated_at = db.Column(

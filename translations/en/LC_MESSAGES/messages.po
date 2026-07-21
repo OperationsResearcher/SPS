@@ -817,9 +817,8 @@ msgid "Gerçekleşen"
 msgstr "Actual"
 
 #: app/services/report_service.py:158
-#, fuzzy
 msgid "Performans %"
-msgstr "Performance"
+msgstr "Performance %"
 
 #: app/services/report_service.py:158 ui/templates/platform/analiz/index.html:84
 #: ui/templates/platform/bireysel/karne.html:273
@@ -827,14 +826,12 @@ msgid "Trend"
 msgstr "Trend"
 
 #: app/services/report_service.py:164
-#, fuzzy
 msgid "PG Detayları"
 msgstr "KPI Details"
 
 #: app/services/report_service.py:170
-#, fuzzy
 msgid "Performans Raporu"
-msgstr "Performance report"
+msgstr "Performance Report"
 
 #: app/services/report_service.py:273
 msgid "Özel Rapor"
@@ -1756,9 +1753,8 @@ msgstr "This Organization is not a Sub-Organization."
 #: micro/modules/admin/routes_setup_import.py:34
 #: micro/modules/admin/routes_setup_import.py:63
 #: micro/modules/admin/routes_setup_import.py:79
-#, fuzzy
 msgid "Yetkiniz yok."
-msgstr "You do not have permission to delete a Process."
+msgstr "You do not have permission."
 
 #: micro/modules/admin/routes_sub_tenants.py:81
 #: micro/modules/admin/routes_sub_tenants.py:378
@@ -1985,56 +1981,48 @@ msgid "PDF oluşturulamadı."
 msgstr "PDF could not be created."
 
 #: micro/modules/demo/routes.py:33
-#, fuzzy
 msgid "Tom1"
-msgstr "TOTAL"
+msgstr "Tom1"
 
 #: micro/modules/demo/routes.py:34
-#, fuzzy
 msgid "Başlangıç Paketi"
-msgstr "e.g.: Starter Package"
+msgstr "Starter Package"
 
 #: micro/modules/demo/routes.py:38
 msgid "Temel modüllerle başlayan küçük ölçekli bir kurum deneyimi."
 msgstr ""
 
 #: micro/modules/demo/routes.py:41
-#, fuzzy
 msgid "Tom2"
-msgstr "TOTAL"
+msgstr "Tom2"
 
 #: micro/modules/demo/routes.py:42
-#, fuzzy
 msgid "Yönetim Paketi"
-msgstr "Management Panel"
+msgstr "Management Package"
 
 #: micro/modules/demo/routes.py:46
 msgid "Süreç ve performans yönetimi modülleriyle genişletilmiş kurum deneyimi."
 msgstr ""
 
 #: micro/modules/demo/routes.py:49
-#, fuzzy
 msgid "Tom3"
-msgstr "TOTAL"
+msgstr "Tom3"
 
 #: micro/modules/demo/routes.py:50
-#, fuzzy
 msgid "Strateji Paketi"
-msgstr "Strategic Analysis Package"
+msgstr "Strategy Package"
 
 #: micro/modules/demo/routes.py:54
 msgid "Stratejik planlama ve analiz araçlarını da içeren ileri seviye deneyim."
 msgstr ""
 
 #: micro/modules/demo/routes.py:57
-#, fuzzy
 msgid "Tomofil"
-msgstr "Profile"
+msgstr "Tomofil"
 
 #: micro/modules/demo/routes.py:58
-#, fuzzy
 msgid "Master Paketi"
-msgstr "Subscription Package"
+msgstr "Master Package"
 
 #: micro/modules/demo/routes.py:62
 msgid "Kokpitim'in tüm modüllerine tam erişim — 7 yıllık gerçek stratejik plan verisi."
@@ -2104,9 +2092,8 @@ msgid ""
 msgstr ""
 
 #: micro/modules/k_radar/routes_risk.py:48
-#, fuzzy
 msgid "Geçersiz kaynak türü."
-msgstr "Invalid source year."
+msgstr "Invalid source type."
 
 #: micro/modules/k_radar/routes_risk.py:66 micro/modules/k_radar/routes_risk.py:119
 msgid "Tenant bağlamı yok."
@@ -3538,18 +3525,21 @@ msgstr ""
 "Management, Metrics and Targets:"
 
 #: micro/modules/raporlar/routes_faz3.py:673
-#, fuzzy, python-format
+#, python-format
 msgid ""
 "<b>1. Yönetişim:</b> Kurumda %(n)s yönetişim (G) metriği tanımlı ve izlenmektedir; "
 "iklim riskleri bu çerçevede yönetim seviyesinde değerlendirilmektedir."
-msgstr "<b>1. Governance:</b> Assessment of climate risks at the board level."
+msgstr ""
+"<b>1. Governance:</b> %(n)s governance (G) metrics are defined and monitored in the "
+"organization; climate risks are assessed at management level within this framework."
 
 #: micro/modules/raporlar/routes_faz3.py:677
-#, fuzzy
 msgid ""
 "<b>1. Yönetişim:</b> Henüz yönetişim (G) metriği tanımlanmamıştır; iklim risklerinin "
 "yönetim kurulu seviyesinde izlenmesi için metrik tanımlanması önerilir."
-msgstr "<b>1. Governance:</b> Assessment of climate risks at the board level."
+msgstr ""
+"<b>1. Governance:</b> No governance (G) metric has been defined yet; defining metrics "
+"is recommended so that climate risks can be monitored at board level."
 
 #: micro/modules/raporlar/routes_faz3.py:685
 #, python-format
@@ -3562,18 +3552,18 @@ msgid "baz %(y)s: %(v)s"
 msgstr "base %(y)s: %(v)s"
 
 #: micro/modules/raporlar/routes_faz3.py:692
-#, fuzzy, python-format
+#, python-format
 msgid "hedef: %(v)s %(u)s"
-msgstr "Target: %(v)s"
+msgstr "target: %(v)s %(u)s"
 
 #: micro/modules/raporlar/routes_faz3.py:695
-#, fuzzy
 msgid ""
 "<b>2. Strateji:</b> Çevre metriklerine henüz hedef/baz değer atanmamıştır; "
 "kısa/orta/uzun vadeli stratejik etki analizi için hedef tanımlanması önerilir."
 msgstr ""
-"<b>2. Strategy:</b> Short/medium/long-term strategic impact analysis related to "
-"climate."
+"<b>2. Strategy:</b> No target/baseline value has been assigned to environmental "
+"metrics yet; defining targets is recommended for short/medium/long-term strategic "
+"impact analysis."
 
 #: micro/modules/raporlar/routes_faz3.py:709
 #, python-format
@@ -4148,23 +4138,20 @@ msgid "Bu dönem zaten mühürlü."
 msgstr "This period is already sealed."
 
 #: micro/modules/sp/routes_plan_year.py:212
-#, fuzzy
 msgid "Dönem mühürlenirken hata oluştu."
-msgstr "An error occurred while uploading the logo."
+msgstr "An error occurred while sealing the period."
 
 #: micro/modules/sp/routes_plan_year.py:232
 msgid "Bu dönem mühürlü değil."
 msgstr "This period is not sealed."
 
 #: micro/modules/sp/routes_plan_year.py:239
-#, fuzzy
 msgid "Mühür açma gerekçesi zorunludur."
-msgstr "Process and level are required."
+msgstr "A reason is required to unseal."
 
 #: micro/modules/sp/routes_plan_year.py:256
-#, fuzzy
 msgid "Mühür açılırken hata oluştu."
-msgstr "An error occurred while closing the year."
+msgstr "An error occurred while unsealing."
 
 #: micro/modules/sp/routes_plan_year.py:327 micro/modules/sp/routes_plan_year.py:360
 msgid "Kapalı plan yılı düzenlenemez."
@@ -4625,9 +4612,8 @@ msgid "Anladım"
 msgstr "Got it"
 
 #: ui/templates/platform/base.html:141
-#, fuzzy
 msgid "Girdi"
-msgstr "entry"
+msgstr "Input"
 
 #: ui/templates/platform/admin/holding_dashboard.html:26
 #: ui/templates/platform/admin/sub_tenants.html:3
@@ -4648,9 +4634,8 @@ msgid "Savaş Odası"
 msgstr "War Room"
 
 #: ui/templates/platform/base.html:247 ui/templates/platform/base.html:258
-#, fuzzy
 msgid "Raporlar"
-msgstr "A3 Reports"
+msgstr "Reports"
 
 #: ui/templates/platform/base.html:252 ui/templates/platform/masaustu/yonetim_ozeti.html:2
 #: ui/templates/platform/masaustu/yonetim_ozeti.html:3
@@ -4950,9 +4935,8 @@ msgstr ""
 #: ui/templates/platform/admin/demo_talepleri.html:3
 #: ui/templates/platform/admin/demo_talepleri.html:6
 #: ui/templates/platform/admin/demo_talepleri.html:15
-#, fuzzy
 msgid "Demo Talepleri"
-msgstr "WO Strategies"
+msgstr "Demo Requests"
 
 #: ui/templates/platform/admin/araclar.html:78
 msgid ""
@@ -4965,9 +4949,8 @@ msgid "Yeni araçlar buraya eklenecek"
 msgstr "New tools will be added here"
 
 #: ui/templates/platform/admin/demo_talepleri.html:2
-#, fuzzy
 msgid "Demo Talepleri — Kokpitim"
-msgstr "Backup — Kokpitim"
+msgstr "Demo Requests — Kokpitim"
 
 #: ui/templates/platform/admin/demo_talepleri.html:18
 msgid ""
@@ -4981,9 +4964,8 @@ msgid "Saatler tarayıcınızın saat dilimine göre gösterilir."
 msgstr "Times are shown according to your browser's time zone."
 
 #: ui/templates/platform/admin/demo_talepleri.html:26
-#, fuzzy
 msgid "Henüz demo talebi yok."
-msgstr "No events yet."
+msgstr "No demo requests yet."
 
 #: ui/templates/platform/admin/demo_talepleri.html:35
 #: ui/templates/platform/admin/loglar.html:177 ui/templates/platform/admin/users.html:101
@@ -5787,16 +5769,14 @@ msgid "Modül tanımlanmamış."
 msgstr "No module defined."
 
 #: ui/templates/platform/admin/setup_import.html:2
-#, fuzzy
 msgid "Kurulum İçe Aktarma — Kokpitim"
-msgstr "My Sub-Organizations — Kokpitim"
+msgstr "Setup Import — Kokpitim"
 
 #: ui/templates/platform/admin/setup_import.html:3
 #: ui/templates/platform/admin/setup_import.html:6
 #: ui/templates/platform/admin/setup_import.html:19
-#, fuzzy
 msgid "Kurulum İçe Aktarma"
-msgstr "Bulk Import"
+msgstr "Setup Import"
 
 #: ui/templates/platform/admin/setup_import.html:22
 msgid ""
@@ -5817,9 +5797,8 @@ msgid "Önizle (hiçbir şey yazılmaz)"
 msgstr ""
 
 #: ui/templates/platform/admin/setup_import.html:46
-#, fuzzy
 msgid "Önizleme ve doğrulama"
-msgstr "Verification"
+msgstr "Preview and validation"
 
 #: ui/templates/platform/admin/setup_import.html:52
 msgid "Hatalı satırları atla ve geçerli satırlarla devam et"
@@ -7409,14 +7388,12 @@ msgid "Kişisel PG ve faaliyet takibi"
 msgstr "Personal PI and activity tracking"
 
 #: ui/templates/platform/bireysel/karne.html:82
-#, fuzzy
 msgid "Genel Başarı Skoru"
-msgstr "Overall Health Score"
+msgstr "Overall Success Score"
 
 #: ui/templates/platform/bireysel/karne.html:83
-#, fuzzy
 msgid "Ağırlıklı ortalama (1-5)"
-msgstr "weighted scoring"
+msgstr "Weighted average (1-5)"
 
 #: ui/templates/platform/bireysel/karne.html:87
 #: ui/templates/platform/k_rapor/index.html:877
@@ -7465,9 +7442,8 @@ msgid "Tamamlanan"
 msgstr "Completed"
 
 #: ui/templates/platform/bireysel/karne.html:199
-#, fuzzy
 msgid "Hedef vs Gerçekleşen"
-msgstr "Actual"
+msgstr "Target vs Actual"
 
 #: ui/templates/platform/bireysel/karne.html:204
 msgid "Karşılaştırma için hedef ve gerçekleşen değeri olan gösterge yok."
@@ -7613,9 +7589,8 @@ msgid "Ara"
 msgstr "Dec"
 
 #: ui/templates/platform/bireysel/karne.html:290
-#, fuzzy
 msgid "Faaliyet Tamamlama Takvimi"
-msgstr "ACTIVITY COMPLETION"
+msgstr "Activity Completion Calendar"
 
 #: ui/templates/platform/bireysel/karne.html:295 ui/templates/platform/surec/karne.html:474
 msgid "Henüz faaliyet eklenmemiş."
@@ -7915,9 +7890,8 @@ msgid "Kayıt zorunluluğu yok"
 msgstr "No registration required"
 
 #: ui/templates/platform/demo/landing.html:310
-#, fuzzy
 msgid "Tek tıkla seçtiğiniz kurumla giriş."
-msgstr "Sign in with the role you select in one click."
+msgstr "Sign in with the organization you select in one click."
 
 #: ui/templates/platform/demo/landing.html:316
 #, python-format
@@ -7937,9 +7911,8 @@ msgid "Çıkışta tüm verileriniz silinir."
 msgstr "All your data is deleted on sign-out."
 
 #: ui/templates/platform/demo/landing.html:331
-#, fuzzy
 msgid "Hangi kurumla deneyimlemek istersiniz?"
-msgstr "Which role would you like to experience?"
+msgstr "Which organization would you like to experience?"
 
 #: ui/templates/platform/demo/landing.html:332
 msgid "Her kurum farklı bir abonelik paketini temsil eder — hepsi admin yetkisiyle açılır."
@@ -7994,13 +7967,12 @@ msgid "Veri silinir"
 msgstr "Data is deleted"
 
 #: ui/templates/platform/demo/landing.html:374
-#, fuzzy
 msgid ""
 "Demo bitiminde yaptığınız tüm değişiklikler temizlenir. Sıradaki ziyaretçi sıfırdan "
 "başlar. Kurumların orijinal verisi etkilenmez."
 msgstr ""
 "All changes you make are cleared when the demo ends. The next visitor starts from "
-"scratch. Tomofil's original data is not affected."
+"scratch. The organizations' original data is not affected."
 
 #: ui/templates/platform/demo/landing.html:377
 msgid "E-posta gönderilmez"
@@ -8270,14 +8242,12 @@ msgid "Teşhis Radarları:"
 msgstr ""
 
 #: ui/templates/platform/k_radar/hub.html:29
-#, fuzzy
 msgid "🎯 Strateji (KS)"
-msgstr "🎯 Strategy"
+msgstr "🎯 Strategy (KS)"
 
 #: ui/templates/platform/k_radar/hub.html:30
-#, fuzzy
 msgid "⚙️ Süreç (KP)"
-msgstr "Process PI"
+msgstr "⚙️ Process (KP)"
 
 #: ui/templates/platform/k_radar/hub.html:35 ui/templates/platform/masaustu/index.html:202
 #: ui/templates/platform/project/list.html:278 ui/templates/platform/project/list.html:314
@@ -9584,9 +9554,8 @@ msgid "Etki (1-5)"
 msgstr "Impact (1-5)"
 
 #: ui/templates/platform/k_radar/risk_management.html:103
-#, fuzzy
 msgid "— Kaynak seçin —"
-msgstr "— Select —"
+msgstr "— Select a source —"
 
 #: ui/templates/platform/k_radar/risk_management.html:111
 msgid ""
@@ -14437,23 +14406,20 @@ msgid "Mührü aç (gerekçe zorunlu)"
 msgstr "Unseal (reason required)"
 
 #: ui/templates/platform/sp/donemler.html:131
-#, fuzzy
 msgid "Mührü Aç"
-msgstr "Expand all"
+msgstr "Unseal"
 
 #: ui/templates/platform/sp/donemler.html:137
-#, fuzzy
 msgid "Dönemi mühürle"
-msgstr "Periods"
+msgstr "Seal the period"
 
 #: ui/templates/platform/sp/donemler.html:138
 msgid "Mühürle"
 msgstr "Seal"
 
 #: ui/templates/platform/sp/donemler.html:146
-#, fuzzy
 msgid "Mühür geçmişi"
-msgstr "Scan History"
+msgstr "Seal history"
 
 #: ui/templates/platform/sp/donemler.html:165
 msgid "Dönem Karşılaştır"
@@ -14515,9 +14481,8 @@ msgid "Seçilirse kaynak dönemin stratejileri, süreçleri ve KPI yapısı kopy
 msgstr "If selected, the source period's strategies, processes and KPI structure are copied."
 
 #: ui/templates/platform/sp/donemler.html:240
-#, fuzzy
 msgid "Mühür Geçmişi"
-msgstr "Scan History"
+msgstr "Seal History"
 
 #: ui/templates/platform/sp/dynamic_flow.html:2
 #: ui/templates/platform/sp/dynamic_flow.html:3
@@ -14553,18 +14518,16 @@ msgid "Stratejik Sağlık Paneli"
 msgstr "Strategic Health Panel"
 
 #: ui/templates/platform/sp/exec_dashboard.html:29
-#, fuzzy
 msgid "dönemi henüz mühürlenmedi."
-msgstr "Suggestion could not be generated."
+msgstr "period has not been sealed yet."
 
 #: ui/templates/platform/sp/exec_dashboard.html:30
 msgid "Mühürlenmemiş dönemlere veri girişi açık kalır."
 msgstr "Unsealed periods remain open for data entry."
 
 #: ui/templates/platform/sp/exec_dashboard.html:33
-#, fuzzy
 msgid "Dönemleri Yönet"
-msgstr "Go to Periods"
+msgstr "Manage Periods"
 
 #: ui/templates/platform/sp/exec_dashboard.html:76 ui/templates/platform/sp/menu.html:29
 msgid "Yönetici Paneli"
@@ -16213,9 +16176,8 @@ msgid "Rev. tarihi"
 msgstr "Rev. date"
 
 #: ui/templates/platform/surec/karne.html:105
-#, fuzzy
 msgid "Plan yılı"
-msgstr "Plan Year"
+msgstr "Plan year"
 
 #: ui/templates/platform/surec/karne.html:119
 msgid "Görüntülenecek süreç"

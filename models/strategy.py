@@ -104,7 +104,14 @@ class StrategyProcessMatrix(db.Model):
     
     relationship_strength = db.Column(db.Integer, default=0)  # 0-9 arası ilişki gücü
     relationship_score = db.Column(db.Integer, default=0)     # A=9, B=3
-    
+
+    # D6 (2026-07-21): yıl bazlı migration ile DB'ye eklenmiş, modele
+    # yansıtılmamıştı → ORM'den görünmüyordu.
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey('plan_years.id', ondelete='SET NULL'),
+        nullable=True, index=True,
+    )
+
     # İlişkiler
     sub_strategy = db.relationship('AltStrateji', backref=db.backref('matrix_relations', lazy=True))
     process = db.relationship('Process', backref=db.backref('strategy_matrix_relations', lazy=True))
@@ -127,6 +134,13 @@ class StrategyMapLink(db.Model):
     source_id = db.Column(db.Integer, db.ForeignKey('ana_strateji.id'), nullable=False, index=True)
     target_id = db.Column(db.Integer, db.ForeignKey('ana_strateji.id'), nullable=False, index=True)
     connection_type = db.Column(db.String(30), nullable=False, default='CAUSE_EFFECT')
+
+    # D6 (2026-07-21): yıl bazlı migration ile DB'ye eklenmiş, modele
+    # yansıtılmamıştı → ORM'den görünmüyordu.
+    plan_year_id = db.Column(
+        db.Integer, db.ForeignKey('plan_years.id', ondelete='SET NULL'),
+        nullable=True, index=True,
+    )
 
     source = db.relationship('AnaStrateji', foreign_keys=[source_id], backref=db.backref('bsc_out_links', lazy=True))
     target = db.relationship('AnaStrateji', foreign_keys=[target_id], backref=db.backref('bsc_in_links', lazy=True))
