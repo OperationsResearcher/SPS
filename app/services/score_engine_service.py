@@ -24,14 +24,52 @@ from app.extensions import cache
 from app.utils.cache_utils import CACHE_KEYS
 
 
+# Sayı olmayan ama kullanıcının hedef/gerçekleşen alanına yazdığı süsler.
+# ÖLÇÜM (B6/B8, 2026-07-21): hedefi dolu 1914 aktif PG'nin 126'sı sayıya
+# çevrilemiyordu; 84'ü sırf '%' işareti yüzünden. Kardeş parse_aralik_degeri
+# (karne tarafı) bunları zaten temizliyordu — bu motor temizlemiyordu.
+_SAYI_SUSLERI = ('%', '₺', 'TL', '$', '€', ' ')
+
+
 def _parse_float(val) -> Optional[float]:
+    """Kullanıcı girdisini float'a çevirir. Türkçe sayı biçimini tanır.
+
+    '%90'      → 90.0
+    '1.234,5'  → 1234.5   ('.' binlik, ',' ondalık)
+    '₺100.070' → 100070.0
+    '-'        → None     (kullanıcının "veri yok" yazma biçimi)
+    """
     if val is None:
         return None
     if isinstance(val, (int, float)):
         return float(val)
+
+    s = str(val).strip()
+    if not s:
+        return None
+
+    for sus in _SAYI_SUSLERI:
+        s = s.replace(sus, '')
+    s = s.strip()
+
+    # Yalnız tire/nokta gibi "boş" işaretler: kullanıcı veri yok demek istiyor.
+    if not s or s in ('-', '.', ',', '--'):
+        return None
+
+    # Türkçe biçim: '.' binlik ayraç, ',' ondalık ayraç.
+    # Sadece '.' varsa binlik mi ondalık mı belirsiz → son grup 3 haneliyse
+    # binlik kabul et ('1.234' → 1234), değilse ondalık ('3.99' → 3.99).
+    if ',' in s:
+        s = s.replace('.', '').replace(',', '.')
+    elif s.count('.') > 1:
+        s = s.replace('.', '')
+    elif '.' in s:
+        tam, _, kesir = s.rpartition('.')
+        if len(kesir) == 3 and tam.lstrip('-').isdigit():
+            s = tam + kesir
+
     try:
-        s = str(val).strip().replace(',', '.')
-        return float(s) if s else None
+        return float(s)
     except (ValueError, TypeError):
         return None
 
@@ -51,6 +89,15 @@ def _resolve_target_for_calculation(raw_target, direction: str = "Increasing") -
 
     import re as _re
     text = str(raw_target).strip()
+    if not text:
+        return None
+
+    # B6: '%90-100' gibi süslü aralıklar aşağıdaki regex'e uymuyordu → None
+    # dönüp PG sıfır sayılıyordu. Süsleri aralık ayrıştırmasından ÖNCE at.
+    # (Tek değerli girdide _parse_float zaten temizliyor.)
+    for _sus in _SAYI_SUSLERI:
+        text = text.replace(_sus, '')
+    text = text.strip()
     if not text:
         return None
 

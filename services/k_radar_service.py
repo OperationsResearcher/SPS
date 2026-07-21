@@ -32,6 +32,11 @@ from app.models.k_radar_domain import (
 )
 from app.models.portfolio_project import Project, Task
 from app.models.k_radar import KRadarRecommendationAction
+from app.services.score_engine_service import (
+    _parse_float,
+    _resolve_target_for_calculation,
+    compute_pg_score,
+)
 
 logger = logging.getLogger(__name__)
 
@@ -652,6 +657,11 @@ def get_kpr_extended_data(tenant_id: int, scope_project_ids: tuple[int, ...] | N
     high_risk_count = len([v for v in risk_points if v >= 15])
 
     tasks = Task.query.filter(Task.project_id.in_(project_ids), Task.is_archived.is_(False)).all()
+    # K5: `today` burada tanımsızdı → NameError. Yalnız PROJESİ OLAN kurumda
+    # tetikleniyordu, çünkü projesiz kurum 630. satırda erken dönüyor.
+    # Bu yüzden boş test kurumlarında görünmedi; 4 uç birden 500 veriyordu:
+    # /k-radar/api/kpr/{evm,gantt,risk,resource-capacity}
+    today = date.today()
     overdue_open = 0
     dated_tasks = 0
     on_time = 0
@@ -1217,14 +1227,27 @@ def get_ks_gap_real(tenant_id: int, year: int | None = None) -> dict:
         if not kpi:
             continue
         try:
-            target = float(kpi.target_value or 0)
-            actual = float(d.actual_value or 0)
-            if target <= 0:
+            # B7 (2026-07-21): burada `direction == 'lower_is_better'` yazıyordu.
+            # DB'de o değer HİÇ YOK (Increasing 1723 · Decreasing 604 ·
+            # lower_is_better 0) → koşul hiçbir zaman tutmuyor, 604 azalan
+            # gösterge TERS puanlanıyordu. k_rapor/routes.py:41-53'te aynı hata
+            # belgelenip düzeltilmişti; bu dosya güncellenmemişti.
+            #
+            # B8: ham float() aralık ('90-100') ve yüzde ('%90') hedefleri
+            # ValueError'a düşürüp KPI'yı sessizce atlıyordu — aktif PG'lerin
+            # %36,8'i (840) bu yüzden gap analizinde kördü.
+            target = _resolve_target_for_calculation(
+                kpi.target_value, getattr(kpi, 'direction', 'Increasing')
+            )
+            actual = _parse_float(d.actual_value)
+            if target is None or actual is None or target <= 0:
                 continue
-            if getattr(kpi, 'direction', 'Increasing') == 'lower_is_better':
-                pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
-            else:
-                pct = round(min(100.0, actual / target * 100), 1)
+            pct = compute_pg_score(
+                target, actual, getattr(kpi, 'direction', 'Increasing')
+            )
+            if pct is None:
+                continue
+            pct = round(pct, 1)
             gap = round(pct - 100, 1)
             pid = kpi.process_id
             if pid not in proc_gaps:

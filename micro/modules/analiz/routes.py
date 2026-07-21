@@ -152,7 +152,9 @@ def analiz_api_comparison():
     ]
     try:
         from app.services.analytics_service import AnalyticsService
-        result = AnalyticsService.get_comparative_analysis(valid_ids)
+        result = AnalyticsService.get_comparative_analysis(
+            valid_ids, tenant_id=current_user.tenant_id  # B13: ikinci savunma katmanı
+        )
         return jsonify({"success": True, "data": result})
     except Exception as e:
         current_app.logger.error(f"[analiz_api_comparison] {e}")

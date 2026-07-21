@@ -309,7 +309,8 @@ def get_comparison():
     comparison = AnalyticsService.get_comparative_analysis(
         process_ids=valid_ids,
         start_date=start_date,
-        end_date=end_date
+        end_date=end_date,
+        tenant_id=current_user.tenant_id,  # B13: ikinci savunma katmanı
     )
 
     return jsonify(comparison)

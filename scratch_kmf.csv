@@ -1,0 +1,848 @@
+﻿tenant_id,yil,yil_durum,surec,kpi_id,pg,durum,etkin_hedef,config_hedef,snapshot_hedef,temel_hedef,cakisma,config_var,is_included,birim,periyot
+16,2020,draft,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,320,Yönetim Kurulu Bilgilendirme Takvimine Uyum Oranı (Nakit Akış Tablosu Sunum ),FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2021,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,320,Yönetim Kurulu Bilgilendirme Takvimine Uyum Oranı (Nakit Akış Tablosu Sunum ),FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2022,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,320,Yönetim Kurulu Bilgilendirme Takvimine Uyum Oranı (Nakit Akış Tablosu Sunum ),FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2023,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,320,Yönetim Kurulu Bilgilendirme Takvimine Uyum Oranı (Nakit Akış Tablosu Sunum ),FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2024,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,320,Yönetim Kurulu Bilgilendirme Takvimine Uyum Oranı (Nakit Akış Tablosu Sunum ),FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2025,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,320,Yönetim Kurulu Bilgilendirme Takvimine Uyum Oranı (Nakit Akış Tablosu Sunum ),FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2026,active,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,320,Yönetim Kurulu Bilgilendirme Takvimine Uyum Oranı (Nakit Akış Tablosu Sunum ),FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2020,draft,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,318,Yönetim Kurulu Karar Sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2021,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,318,Yönetim Kurulu Karar Sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2022,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,318,Yönetim Kurulu Karar Sayısı,SNAPSHOT,-,,-,-,,,,sayı,Yıllık
+16,2023,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,318,Yönetim Kurulu Karar Sayısı,SNAPSHOT,-,,-,-,,,,sayı,Yıllık
+16,2024,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,318,Yönetim Kurulu Karar Sayısı,SNAPSHOT,-,,-,-,,,,sayı,Yıllık
+16,2025,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,318,Yönetim Kurulu Karar Sayısı,SNAPSHOT,-,,-,-,,,,sayı,Yıllık
+16,2026,active,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,318,Yönetim Kurulu Karar Sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2020,draft,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,319,Yönetim Kurulu Üyeleri İle Yapılan Görüşme Sayısı (Görüş Almak için Ziyaret Sayısı),FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2021,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,319,Yönetim Kurulu Üyeleri İle Yapılan Görüşme Sayısı (Görüş Almak için Ziyaret Sayısı),FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2022,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,319,Yönetim Kurulu Üyeleri İle Yapılan Görüşme Sayısı (Görüş Almak için Ziyaret Sayısı),FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2023,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,319,Yönetim Kurulu Üyeleri İle Yapılan Görüşme Sayısı (Görüş Almak için Ziyaret Sayısı),FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2024,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,319,Yönetim Kurulu Üyeleri İle Yapılan Görüşme Sayısı (Görüş Almak için Ziyaret Sayısı),FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2025,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,319,Yönetim Kurulu Üyeleri İle Yapılan Görüşme Sayısı (Görüş Almak için Ziyaret Sayısı),FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2026,active,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,319,Yönetim Kurulu Üyeleri İle Yapılan Görüşme Sayısı (Görüş Almak için Ziyaret Sayısı),FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2020,draft,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,316,Şirket Genel Kurulları Zamanlamasına Uyum Oranı,FALLBACK,100,,,100,,,,%,Yıllık
+16,2021,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,316,Şirket Genel Kurulları Zamanlamasına Uyum Oranı,SNAPSHOT,100,,100,100,,,,%,Yıllık
+16,2022,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,316,Şirket Genel Kurulları Zamanlamasına Uyum Oranı,SNAPSHOT,100,,100,100,,,,%,Yıllık
+16,2023,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,316,Şirket Genel Kurulları Zamanlamasına Uyum Oranı,SNAPSHOT,100,,100,100,,,,%,Yıllık
+16,2024,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,316,Şirket Genel Kurulları Zamanlamasına Uyum Oranı,SNAPSHOT,100,,100,100,,,,%,Yıllık
+16,2025,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,316,Şirket Genel Kurulları Zamanlamasına Uyum Oranı,SNAPSHOT,100,,100,100,,,,%,Yıllık
+16,2026,active,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,316,Şirket Genel Kurulları Zamanlamasına Uyum Oranı,FALLBACK,100,,,100,,,,%,Yıllık
+16,2020,draft,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,317,Şirket Yönetim Kurulu Toplantıları Takvimine Uyum Oranı,FALLBACK,%90-100,,,%90-100,,,,%,Yıllık
+16,2021,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,317,Şirket Yönetim Kurulu Toplantıları Takvimine Uyum Oranı,SNAPSHOT,%90-100,,%90-100,%90-100,,,,%,Yıllık
+16,2022,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,317,Şirket Yönetim Kurulu Toplantıları Takvimine Uyum Oranı,SNAPSHOT,%90-100,,%90-100,%90-100,,,,%,Yıllık
+16,2023,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,317,Şirket Yönetim Kurulu Toplantıları Takvimine Uyum Oranı,SNAPSHOT,%90-100,,%90-100,%90-100,,,,%,Yıllık
+16,2024,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,317,Şirket Yönetim Kurulu Toplantıları Takvimine Uyum Oranı,SNAPSHOT,%90-100,,%90-100,%90-100,,,,%,Yıllık
+16,2025,closed,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,317,Şirket Yönetim Kurulu Toplantıları Takvimine Uyum Oranı,SNAPSHOT,%90-100,,%90-100,%90-100,,,,%,Yıllık
+16,2026,active,SR1 - ŞİRKET ORGANLARI YÖNETİMİ SÜRECİ,317,Şirket Yönetim Kurulu Toplantıları Takvimine Uyum Oranı,FALLBACK,%90-100,,,%90-100,,,,%,Yıllık
+16,2020,draft,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,375,Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2021,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,375,Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2022,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,375,Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2023,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,375,Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2024,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,375,Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2025,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,375,Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2026,active,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,375,Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2020,draft,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,404,Bakım Onarım Hizmetleri Ortalama Tedarik Süresi,YOK,,,,,,,,Gün,Çeyreklik
+16,2021,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,404,Bakım Onarım Hizmetleri Ortalama Tedarik Süresi,YOK,,,,,,,,Gün,Çeyreklik
+16,2022,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,404,Bakım Onarım Hizmetleri Ortalama Tedarik Süresi,YOK,,,,,,,,Gün,Çeyreklik
+16,2023,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,404,Bakım Onarım Hizmetleri Ortalama Tedarik Süresi,YOK,,,,,,,,Gün,Çeyreklik
+16,2024,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,404,Bakım Onarım Hizmetleri Ortalama Tedarik Süresi,YOK,,,,,,,,Gün,Çeyreklik
+16,2025,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,404,Bakım Onarım Hizmetleri Ortalama Tedarik Süresi,SNAPSHOT,64,,64,,,,,Gün,Çeyreklik
+16,2026,active,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,404,Bakım Onarım Hizmetleri Ortalama Tedarik Süresi,YOK,,,,,,,,Gün,Çeyreklik
+16,2020,draft,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,384,Gerçekleştirilen Sipariş Sayısı,YOK,,,,,,,,adet,Çeyreklik
+16,2021,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,384,Gerçekleştirilen Sipariş Sayısı,YOK,,,,,,,,adet,Çeyreklik
+16,2022,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,384,Gerçekleştirilen Sipariş Sayısı,YOK,,,,,,,,adet,Çeyreklik
+16,2023,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,384,Gerçekleştirilen Sipariş Sayısı,YOK,,,,,,,,adet,Çeyreklik
+16,2024,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,384,Gerçekleştirilen Sipariş Sayısı,YOK,,,,,,,,adet,Çeyreklik
+16,2025,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,384,Gerçekleştirilen Sipariş Sayısı,YOK,,,,,,,,adet,Çeyreklik
+16,2026,active,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,384,Gerçekleştirilen Sipariş Sayısı,YOK,,,,,,,,adet,Çeyreklik
+16,2020,draft,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,380,Hediye Edilen Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2021,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,380,Hediye Edilen Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2022,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,380,Hediye Edilen Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2023,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,380,Hediye Edilen Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2024,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,380,Hediye Edilen Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2025,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,380,Hediye Edilen Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2026,active,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,380,Hediye Edilen Baharat Değirmeni Sayısı,YOK,,,,,,,,adet,Yıllık
+16,2020,draft,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,528,Sipariş Başına Alınan Teklif Sayısı Ortalaması,SNAPSHOT,3,,3,12,EVET,,,Adet,Çeyreklik
+16,2021,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,528,Sipariş Başına Alınan Teklif Sayısı Ortalaması,SNAPSHOT,12,,12,12,,,,Adet,Çeyreklik
+16,2022,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,528,Sipariş Başına Alınan Teklif Sayısı Ortalaması,FALLBACK,12,,,12,,,,Adet,Çeyreklik
+16,2023,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,528,Sipariş Başına Alınan Teklif Sayısı Ortalaması,FALLBACK,12,,,12,,,,Adet,Çeyreklik
+16,2024,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,528,Sipariş Başına Alınan Teklif Sayısı Ortalaması,FALLBACK,12,,,12,,,,Adet,Çeyreklik
+16,2025,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,528,Sipariş Başına Alınan Teklif Sayısı Ortalaması,FALLBACK,12,,,12,,,,Adet,Çeyreklik
+16,2026,active,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,528,Sipariş Başına Alınan Teklif Sayısı Ortalaması,FALLBACK,12,,,12,,,,Adet,Çeyreklik
+16,2020,draft,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,383,Stok Doğruluk Oranı,SNAPSHOT,%90 - % 100,,%90 - % 100,%90 - % 100,,,,%,6 ay
+16,2021,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,383,Stok Doğruluk Oranı,FALLBACK,%90 - % 100,,,%90 - % 100,,,,%,6 ay
+16,2022,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,383,Stok Doğruluk Oranı,FALLBACK,%90 - % 100,,,%90 - % 100,,,,%,6 ay
+16,2023,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,383,Stok Doğruluk Oranı,FALLBACK,%90 - % 100,,,%90 - % 100,,,,%,6 ay
+16,2024,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,383,Stok Doğruluk Oranı,FALLBACK,%90 - % 100,,,%90 - % 100,,,,%,6 ay
+16,2025,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,383,Stok Doğruluk Oranı,FALLBACK,%90 - % 100,,,%90 - % 100,,,,%,6 ay
+16,2026,active,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,383,Stok Doğruluk Oranı,SNAPSHOT,%90 - % 100,,%90 - % 100,%90 - % 100,,,,%,6 ay
+16,2020,draft,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,408,Stok Tutarı ( Pilli Baharat Değirmeni Malzemeleri ),YOK,,,,,,,,TL,Çeyreklik
+16,2021,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,408,Stok Tutarı ( Pilli Baharat Değirmeni Malzemeleri ),YOK,,,,,,,,TL,Çeyreklik
+16,2022,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,408,Stok Tutarı ( Pilli Baharat Değirmeni Malzemeleri ),YOK,,,,,,,,TL,Çeyreklik
+16,2023,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,408,Stok Tutarı ( Pilli Baharat Değirmeni Malzemeleri ),YOK,,,,,,,,TL,Çeyreklik
+16,2024,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,408,Stok Tutarı ( Pilli Baharat Değirmeni Malzemeleri ),YOK,,,,,,,,TL,Çeyreklik
+16,2025,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,408,Stok Tutarı ( Pilli Baharat Değirmeni Malzemeleri ),SNAPSHOT,57,,57,,,,,TL,Çeyreklik
+16,2026,active,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,408,Stok Tutarı ( Pilli Baharat Değirmeni Malzemeleri ),SNAPSHOT,57,,57,,,,,TL,Çeyreklik
+16,2020,draft,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,401,İkramlardan Memnuniyetlik Oranı,SNAPSHOT,%90-%100,,%90-%100,90-100,EVET,,,%,Çeyreklik
+16,2021,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,401,İkramlardan Memnuniyetlik Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Çeyreklik
+16,2022,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,401,İkramlardan Memnuniyetlik Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2023,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,401,İkramlardan Memnuniyetlik Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2024,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,401,İkramlardan Memnuniyetlik Oranı,SNAPSHOT,175,,175,90-100,EVET,,,%,Çeyreklik
+16,2025,closed,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,401,İkramlardan Memnuniyetlik Oranı,SNAPSHOT,175,,175,90-100,EVET,,,%,Çeyreklik
+16,2026,active,SR10 - TEDARİK YÖNETİMİ SÜREÇ KARNESİ,401,İkramlardan Memnuniyetlik Oranı,SNAPSHOT,175,,175,90-100,EVET,,,%,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",403,Araç Bakım/Onarım Maliyeti,YOK,,,,,,,,,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",403,Araç Bakım/Onarım Maliyeti,YOK,,,,,,,,,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",403,Araç Bakım/Onarım Maliyeti,YOK,,,,,,,,,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",403,Araç Bakım/Onarım Maliyeti,YOK,,,,,,,,,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",403,Araç Bakım/Onarım Maliyeti,YOK,,,,,,,,,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",403,Araç Bakım/Onarım Maliyeti,SNAPSHOT,98,,98,,,,,,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",403,Araç Bakım/Onarım Maliyeti,SNAPSHOT,98,,98,,,,,,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",378,Araçsız Kalınan Gün Sayısı,FALLBACK,0,,,0,,,,Gün,Aylık
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",378,Araçsız Kalınan Gün Sayısı,FALLBACK,0,,,0,,,,Gün,Aylık
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",378,Araçsız Kalınan Gün Sayısı,FALLBACK,0,,,0,,,,Gün,Aylık
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",378,Araçsız Kalınan Gün Sayısı,FALLBACK,0,,,0,,,,Gün,Aylık
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",378,Araçsız Kalınan Gün Sayısı,FALLBACK,0,,,0,,,,Gün,Aylık
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",378,Araçsız Kalınan Gün Sayısı,FALLBACK,0,,,0,,,,Gün,Aylık
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",378,Araçsız Kalınan Gün Sayısı,FALLBACK,0,,,0,,,,Gün,Aylık
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",402,Elektrik Tüketim Miktarı,YOK,,,,,,,,,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",402,Elektrik Tüketim Miktarı,YOK,,,,,,,,,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",402,Elektrik Tüketim Miktarı,YOK,,,,,,,,,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",402,Elektrik Tüketim Miktarı,YOK,,,,,,,,,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",402,Elektrik Tüketim Miktarı,YOK,,,,,,,,,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",402,Elektrik Tüketim Miktarı,SNAPSHOT,187,,187,,,,,,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",402,Elektrik Tüketim Miktarı,SNAPSHOT,187,,187,,,,,,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",414,Herhangi Bir Arizi Sebeple Eğitim Verilemeyen Gün Sayısı,FALLBACK,4,,,4,,,,Gün,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",414,Herhangi Bir Arizi Sebeple Eğitim Verilemeyen Gün Sayısı,FALLBACK,4,,,4,,,,Gün,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",414,Herhangi Bir Arizi Sebeple Eğitim Verilemeyen Gün Sayısı,FALLBACK,4,,,4,,,,Gün,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",414,Herhangi Bir Arizi Sebeple Eğitim Verilemeyen Gün Sayısı,FALLBACK,4,,,4,,,,Gün,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",414,Herhangi Bir Arizi Sebeple Eğitim Verilemeyen Gün Sayısı,SNAPSHOT,135,,135,4,EVET,,,Gün,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",414,Herhangi Bir Arizi Sebeple Eğitim Verilemeyen Gün Sayısı,FALLBACK,4,,,4,,,,Gün,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",414,Herhangi Bir Arizi Sebeple Eğitim Verilemeyen Gün Sayısı,SNAPSHOT,135,,135,4,EVET,,,Gün,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",405,Makine Teçhizat Bakım/Onarım  Maliyeti,YOK,,,,,,,,TL,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",405,Makine Teçhizat Bakım/Onarım  Maliyeti,YOK,,,,,,,,TL,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",405,Makine Teçhizat Bakım/Onarım  Maliyeti,YOK,,,,,,,,TL,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",405,Makine Teçhizat Bakım/Onarım  Maliyeti,YOK,,,,,,,,TL,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",405,Makine Teçhizat Bakım/Onarım  Maliyeti,YOK,,,,,,,,TL,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",405,Makine Teçhizat Bakım/Onarım  Maliyeti,SNAPSHOT,114,,114,,,,,TL,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",405,Makine Teçhizat Bakım/Onarım  Maliyeti,SNAPSHOT,114,,114,,,,,TL,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",386,Makine Toplam Arıza Süresi,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",386,Makine Toplam Arıza Süresi,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",386,Makine Toplam Arıza Süresi,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",386,Makine Toplam Arıza Süresi,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",386,Makine Toplam Arıza Süresi,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",386,Makine Toplam Arıza Süresi,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",386,Makine Toplam Arıza Süresi,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",420,Ramakkala Sayısı,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",420,Ramakkala Sayısı,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",420,Ramakkala Sayısı,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",420,Ramakkala Sayısı,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",420,Ramakkala Sayısı,SNAPSHOT,194,,194,0,EVET,,,Gün,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",420,Ramakkala Sayısı,SNAPSHOT,194,,194,0,EVET,,,Gün,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",420,Ramakkala Sayısı,SNAPSHOT,194,,194,0,EVET,,,Gün,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",372,Su Tüketim Miktarı,FALLBACK,-,,,-,,,,m3,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",372,Su Tüketim Miktarı,FALLBACK,-,,,-,,,,m3,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",372,Su Tüketim Miktarı,FALLBACK,-,,,-,,,,m3,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",372,Su Tüketim Miktarı,FALLBACK,-,,,-,,,,m3,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",372,Su Tüketim Miktarı,FALLBACK,-,,,-,,,,m3,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",372,Su Tüketim Miktarı,FALLBACK,-,,,-,,,,m3,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",372,Su Tüketim Miktarı,FALLBACK,-,,,-,,,,m3,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",389,Tamir Süresi(MTTR),FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",389,Tamir Süresi(MTTR),FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",389,Tamir Süresi(MTTR),FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",389,Tamir Süresi(MTTR),FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",389,Tamir Süresi(MTTR),FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",389,Tamir Süresi(MTTR),FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",389,Tamir Süresi(MTTR),FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",417,İş Kazası Sayısı,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",417,İş Kazası Sayısı,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",417,İş Kazası Sayısı,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",417,İş Kazası Sayısı,FALLBACK,0,,,0,,,,Gün,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",417,İş Kazası Sayısı,SNAPSHOT,134,,134,0,EVET,,,Gün,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",417,İş Kazası Sayısı,SNAPSHOT,134,,134,0,EVET,,,Gün,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",417,İş Kazası Sayısı,SNAPSHOT,134,,134,0,EVET,,,Gün,Çeyreklik
+16,2020,draft,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",415,İş Kazasız Gün Sayısı,FALLBACK,264,,,264,,,,Gün,Çeyreklik
+16,2021,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",415,İş Kazasız Gün Sayısı,FALLBACK,264,,,264,,,,Gün,Çeyreklik
+16,2022,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",415,İş Kazasız Gün Sayısı,FALLBACK,264,,,264,,,,Gün,Çeyreklik
+16,2023,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",415,İş Kazasız Gün Sayısı,FALLBACK,264,,,264,,,,Gün,Çeyreklik
+16,2024,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",415,İş Kazasız Gün Sayısı,FALLBACK,264,,,264,,,,Gün,Çeyreklik
+16,2025,closed,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",415,İş Kazasız Gün Sayısı,SNAPSHOT,68,,68,264,EVET,,,Gün,Çeyreklik
+16,2026,active,"SR11 - MAKİNA, TEKNOLOJİ VE BİLGİ YÖNETİMİ SÜREÇ KARNESİ",415,İş Kazasız Gün Sayısı,SNAPSHOT,68,,68,264,EVET,,,Gün,Çeyreklik
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,327,EFQM Özdeğerlendirme Puanı,FALLBACK,250-300,,,250-300,,,,Puan,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,327,EFQM Özdeğerlendirme Puanı,FALLBACK,250-300,,,250-300,,,,Puan,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,327,EFQM Özdeğerlendirme Puanı,FALLBACK,250-300,,,250-300,,,,Puan,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,327,EFQM Özdeğerlendirme Puanı,FALLBACK,250-300,,,250-300,,,,Puan,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,327,EFQM Özdeğerlendirme Puanı,FALLBACK,250-300,,,250-300,,,,Puan,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,327,EFQM Özdeğerlendirme Puanı,SNAPSHOT,250-300,,250-300,250-300,,,,Puan,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,327,EFQM Özdeğerlendirme Puanı,FALLBACK,250-300,,,250-300,,,,Puan,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,324,Hissedar Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,324,Hissedar Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,324,Hissedar Memnuniyet Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,324,Hissedar Memnuniyet Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,324,Hissedar Memnuniyet Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,324,Hissedar Memnuniyet Oranı,SNAPSHOT,90,,90,90-100,EVET,,,%,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,324,Hissedar Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,326,Odak Grup Görüşme Sayısı (Hissedar ve Toplum),FALLBACK,4-6,,,4-6,,,,sayı,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,326,Odak Grup Görüşme Sayısı (Hissedar ve Toplum),FALLBACK,4-6,,,4-6,,,,sayı,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,326,Odak Grup Görüşme Sayısı (Hissedar ve Toplum),SNAPSHOT,4-6,,4-6,4-6,,,,sayı,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,326,Odak Grup Görüşme Sayısı (Hissedar ve Toplum),SNAPSHOT,4-6,,4-6,4-6,,,,sayı,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,326,Odak Grup Görüşme Sayısı (Hissedar ve Toplum),SNAPSHOT,4-6,,4-6,4-6,,,,sayı,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,326,Odak Grup Görüşme Sayısı (Hissedar ve Toplum),SNAPSHOT,4-6,,4-6,4-6,,,,sayı,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,326,Odak Grup Görüşme Sayısı (Hissedar ve Toplum),SNAPSHOT,6,,6,4-6,EVET,,,sayı,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,321,SP Gözden Geçirme Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,321,SP Gözden Geçirme Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,321,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,95,,95,95,,,,%,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,321,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,95,,95,95,,,,%,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,321,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,95,,95,95,,,,%,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,321,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,95,,95,95,,,,%,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,321,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,95,,95,95,,,,%,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,400,SP Gözden Geçirme Planına Uyum Oranı,FALLBACK,%90-100,,,%90-100,,,,%,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,400,SP Gözden Geçirme Planına Uyum Oranı,FALLBACK,%90-100,,,%90-100,,,,%,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,400,SP Gözden Geçirme Planına Uyum Oranı,FALLBACK,%90-100,,,%90-100,,,,%,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,400,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,%90-100,,%90-100,%90-100,,,,%,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,400,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,%90-100,,%90-100,%90-100,,,,%,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,400,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,%90-100,,%90-100,%90-100,,,,%,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,400,SP Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,121,,121,%90-100,EVET,,,%,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,325,SP Veri Seti Kaynak Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,325,SP Veri Seti Kaynak Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,325,SP Veri Seti Kaynak Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,325,SP Veri Seti Kaynak Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,325,SP Veri Seti Kaynak Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,325,SP Veri Seti Kaynak Sayısı,SNAPSHOT,80,,80,,,,,sayı,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,325,SP Veri Seti Kaynak Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,323,Stratejik Hedeflere Ulaşma Oranı (SP Etkililiği),FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,323,Stratejik Hedeflere Ulaşma Oranı (SP Etkililiği),FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,323,Stratejik Hedeflere Ulaşma Oranı (SP Etkililiği),FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,323,Stratejik Hedeflere Ulaşma Oranı (SP Etkililiği),SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,323,Stratejik Hedeflere Ulaşma Oranı (SP Etkililiği),SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,323,Stratejik Hedeflere Ulaşma Oranı (SP Etkililiği),SNAPSHOT,95,,95,90-100,EVET,,,%,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,323,Stratejik Hedeflere Ulaşma Oranı (SP Etkililiği),SNAPSHOT,95,,95,90-100,EVET,,,%,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,322,Süreç Gözden Geçirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,322,Süreç Gözden Geçirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,322,Süreç Gözden Geçirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,322,Süreç Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,322,Süreç Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,322,Süreç Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,322,Süreç Gözden Geçirme Planına Uyum Oranı,SNAPSHOT,95,,95,90-100,EVET,,,%,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,329,Yıllık Bütçe Gözden Geçirme,FALLBACK,3,,,3,,,,sayı,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,329,Yıllık Bütçe Gözden Geçirme,FALLBACK,3,,,3,,,,sayı,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,329,Yıllık Bütçe Gözden Geçirme,FALLBACK,3,,,3,,,,sayı,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,329,Yıllık Bütçe Gözden Geçirme,FALLBACK,3,,,3,,,,sayı,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,329,Yıllık Bütçe Gözden Geçirme,SNAPSHOT,3,,3,3,,,,sayı,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,329,Yıllık Bütçe Gözden Geçirme,SNAPSHOT,2,,2,3,EVET,,,sayı,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,329,Yıllık Bütçe Gözden Geçirme,FALLBACK,3,,,3,,,,sayı,Yıllık
+16,2020,draft,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,328,Yıllık Bütçe Hazırlama / Raporlama,FALLBACK,2,,,2,,,,sayı,Yıllık
+16,2021,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,328,Yıllık Bütçe Hazırlama / Raporlama,FALLBACK,2,,,2,,,,sayı,Yıllık
+16,2022,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,328,Yıllık Bütçe Hazırlama / Raporlama,SNAPSHOT,2,,2,2,,,,sayı,Yıllık
+16,2023,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,328,Yıllık Bütçe Hazırlama / Raporlama,FALLBACK,2,,,2,,,,sayı,Yıllık
+16,2024,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,328,Yıllık Bütçe Hazırlama / Raporlama,SNAPSHOT,3,,3,2,EVET,,,sayı,Yıllık
+16,2025,closed,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,328,Yıllık Bütçe Hazırlama / Raporlama,SNAPSHOT,2,,2,2,,,,sayı,Yıllık
+16,2026,active,SR2 - STRATEJİK PLANLAMA YÖNETİMİ SÜREÇ KARNESİ,328,Yıllık Bütçe Hazırlama / Raporlama,SNAPSHOT,2,,2,2,,,,sayı,Yıllık
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,330,"Faaliyetlerin (eğitim, danışmanlık, etkinlik, KSS) Basında Yer Alma Sayısı",FALLBACK,12,,,12,,,,sayı,Çeyreklik
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,330,"Faaliyetlerin (eğitim, danışmanlık, etkinlik, KSS) Basında Yer Alma Sayısı",FALLBACK,12,,,12,,,,sayı,Çeyreklik
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,330,"Faaliyetlerin (eğitim, danışmanlık, etkinlik, KSS) Basında Yer Alma Sayısı",FALLBACK,12,,,12,,,,sayı,Çeyreklik
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,330,"Faaliyetlerin (eğitim, danışmanlık, etkinlik, KSS) Basında Yer Alma Sayısı",FALLBACK,12,,,12,,,,sayı,Çeyreklik
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,330,"Faaliyetlerin (eğitim, danışmanlık, etkinlik, KSS) Basında Yer Alma Sayısı",FALLBACK,12,,,12,,,,sayı,Çeyreklik
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,330,"Faaliyetlerin (eğitim, danışmanlık, etkinlik, KSS) Basında Yer Alma Sayısı",FALLBACK,12,,,12,,,,sayı,Çeyreklik
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,330,"Faaliyetlerin (eğitim, danışmanlık, etkinlik, KSS) Basında Yer Alma Sayısı",FALLBACK,12,,,12,,,,sayı,Çeyreklik
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,336,Kurum Kimliği Unsurlarının Güncelliğini Kontrol Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,336,Kurum Kimliği Unsurlarının Güncelliğini Kontrol Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,336,Kurum Kimliği Unsurlarının Güncelliğini Kontrol Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,336,Kurum Kimliği Unsurlarının Güncelliğini Kontrol Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,336,Kurum Kimliği Unsurlarının Güncelliğini Kontrol Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,336,Kurum Kimliği Unsurlarının Güncelliğini Kontrol Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,336,Kurum Kimliği Unsurlarının Güncelliğini Kontrol Planına Uyum Oranı,FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,337,Kurum İmaj Endeksi (Toplum),FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,337,Kurum İmaj Endeksi (Toplum),FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,337,Kurum İmaj Endeksi (Toplum),FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,337,Kurum İmaj Endeksi (Toplum),FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,337,Kurum İmaj Endeksi (Toplum),FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,337,Kurum İmaj Endeksi (Toplum),FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,337,Kurum İmaj Endeksi (Toplum),FALLBACK,95,,,95,,,,%,Çeyreklik
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,339,STG'lere (BM 17 Kalkınma İlkesi) hizmet eden faaliyet sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,339,STG'lere (BM 17 Kalkınma İlkesi) hizmet eden faaliyet sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,339,STG'lere (BM 17 Kalkınma İlkesi) hizmet eden faaliyet sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,339,STG'lere (BM 17 Kalkınma İlkesi) hizmet eden faaliyet sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,339,STG'lere (BM 17 Kalkınma İlkesi) hizmet eden faaliyet sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,339,STG'lere (BM 17 Kalkınma İlkesi) hizmet eden faaliyet sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,339,STG'lere (BM 17 Kalkınma İlkesi) hizmet eden faaliyet sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,333,Sosyal Medya İçerik Sayısı,FALLBACK,144,,,144,,,,sayı,Çeyreklik
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,333,Sosyal Medya İçerik Sayısı,FALLBACK,144,,,144,,,,sayı,Çeyreklik
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,333,Sosyal Medya İçerik Sayısı,FALLBACK,144,,,144,,,,sayı,Çeyreklik
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,333,Sosyal Medya İçerik Sayısı,FALLBACK,144,,,144,,,,sayı,Çeyreklik
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,333,Sosyal Medya İçerik Sayısı,FALLBACK,144,,,144,,,,sayı,Çeyreklik
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,333,Sosyal Medya İçerik Sayısı,FALLBACK,144,,,144,,,,sayı,Çeyreklik
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,333,Sosyal Medya İçerik Sayısı,FALLBACK,144,,,144,,,,sayı,Çeyreklik
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,332,Sosyal Medyadaki Takipçi Sayısı Artış Oranı (linkedin + İnstagram),FALLBACK,5650,,,5650,,,,sayı,Çeyreklik
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,332,Sosyal Medyadaki Takipçi Sayısı Artış Oranı (linkedin + İnstagram),FALLBACK,5650,,,5650,,,,sayı,Çeyreklik
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,332,Sosyal Medyadaki Takipçi Sayısı Artış Oranı (linkedin + İnstagram),FALLBACK,5650,,,5650,,,,sayı,Çeyreklik
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,332,Sosyal Medyadaki Takipçi Sayısı Artış Oranı (linkedin + İnstagram),FALLBACK,5650,,,5650,,,,sayı,Çeyreklik
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,332,Sosyal Medyadaki Takipçi Sayısı Artış Oranı (linkedin + İnstagram),FALLBACK,5650,,,5650,,,,sayı,Çeyreklik
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,332,Sosyal Medyadaki Takipçi Sayısı Artış Oranı (linkedin + İnstagram),FALLBACK,5650,,,5650,,,,sayı,Çeyreklik
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,332,Sosyal Medyadaki Takipçi Sayısı Artış Oranı (linkedin + İnstagram),FALLBACK,5650,,,5650,,,,sayı,Çeyreklik
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,338,Sosyal Sorumluluk Faaliyet Sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,338,Sosyal Sorumluluk Faaliyet Sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,338,Sosyal Sorumluluk Faaliyet Sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,338,Sosyal Sorumluluk Faaliyet Sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,338,Sosyal Sorumluluk Faaliyet Sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,338,Sosyal Sorumluluk Faaliyet Sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,338,Sosyal Sorumluluk Faaliyet Sayısı,FALLBACK,5,,,5,,,,sayı,Yıllık
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,340,Sosyal Sorumluluk Faaliyetlerine Katılan Dış Paydaş Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,340,Sosyal Sorumluluk Faaliyetlerine Katılan Dış Paydaş Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,340,Sosyal Sorumluluk Faaliyetlerine Katılan Dış Paydaş Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,340,Sosyal Sorumluluk Faaliyetlerine Katılan Dış Paydaş Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,340,Sosyal Sorumluluk Faaliyetlerine Katılan Dış Paydaş Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,340,Sosyal Sorumluluk Faaliyetlerine Katılan Dış Paydaş Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,340,Sosyal Sorumluluk Faaliyetlerine Katılan Dış Paydaş Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,331,Tanınırlık Oranı,FALLBACK,15,,,15,,,,%,Yıllık
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,331,Tanınırlık Oranı,FALLBACK,15,,,15,,,,%,Yıllık
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,331,Tanınırlık Oranı,FALLBACK,15,,,15,,,,%,Yıllık
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,331,Tanınırlık Oranı,FALLBACK,15,,,15,,,,%,Yıllık
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,331,Tanınırlık Oranı,FALLBACK,15,,,15,,,,%,Yıllık
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,331,Tanınırlık Oranı,FALLBACK,15,,,15,,,,%,Yıllık
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,331,Tanınırlık Oranı,FALLBACK,15,,,15,,,,%,Yıllık
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,334,Yeşil Dönüşüme İlişkin Paylaşım Oranı,FALLBACK,9,,,9,,,,sayı,Çeyreklik
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,334,Yeşil Dönüşüme İlişkin Paylaşım Oranı,FALLBACK,9,,,9,,,,sayı,Çeyreklik
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,334,Yeşil Dönüşüme İlişkin Paylaşım Oranı,FALLBACK,9,,,9,,,,sayı,Çeyreklik
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,334,Yeşil Dönüşüme İlişkin Paylaşım Oranı,FALLBACK,9,,,9,,,,sayı,Çeyreklik
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,334,Yeşil Dönüşüme İlişkin Paylaşım Oranı,FALLBACK,9,,,9,,,,sayı,Çeyreklik
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,334,Yeşil Dönüşüme İlişkin Paylaşım Oranı,FALLBACK,9,,,9,,,,sayı,Çeyreklik
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,334,Yeşil Dönüşüme İlişkin Paylaşım Oranı,FALLBACK,9,,,9,,,,sayı,Çeyreklik
+16,2020,draft,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,335,İçerik Başına Etkileşim Oranı,FALLBACK,11000,,,11000,,,,sayı,Çeyreklik
+16,2021,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,335,İçerik Başına Etkileşim Oranı,FALLBACK,11000,,,11000,,,,sayı,Çeyreklik
+16,2022,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,335,İçerik Başına Etkileşim Oranı,FALLBACK,11000,,,11000,,,,sayı,Çeyreklik
+16,2023,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,335,İçerik Başına Etkileşim Oranı,FALLBACK,11000,,,11000,,,,sayı,Çeyreklik
+16,2024,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,335,İçerik Başına Etkileşim Oranı,FALLBACK,11000,,,11000,,,,sayı,Çeyreklik
+16,2025,closed,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,335,İçerik Başına Etkileşim Oranı,FALLBACK,11000,,,11000,,,,sayı,Çeyreklik
+16,2026,active,SR3 - KURUM İMAJI VE KÜLTÜRÜ YÖNETİM SÜRECİ,335,İçerik Başına Etkileşim Oranı,FALLBACK,11000,,,11000,,,,sayı,Çeyreklik
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,357,Danışmanlık Hizmeti Verilen Yeni Firma Sayısı,FALLBACK,16-20,,,16-20,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,357,Danışmanlık Hizmeti Verilen Yeni Firma Sayısı,FALLBACK,16-20,,,16-20,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,357,Danışmanlık Hizmeti Verilen Yeni Firma Sayısı,FALLBACK,16-20,,,16-20,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,357,Danışmanlık Hizmeti Verilen Yeni Firma Sayısı,FALLBACK,16-20,,,16-20,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,357,Danışmanlık Hizmeti Verilen Yeni Firma Sayısı,FALLBACK,16-20,,,16-20,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,357,Danışmanlık Hizmeti Verilen Yeni Firma Sayısı,SNAPSHOT,16-20,,16-20,16-20,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,357,Danışmanlık Hizmeti Verilen Yeni Firma Sayısı,FALLBACK,16-20,,,16-20,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,351,Etkinliklere Katılımcı Sayısı,FALLBACK,1001-1200,,,1001-1200,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,351,Etkinliklere Katılımcı Sayısı,FALLBACK,1001-1200,,,1001-1200,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,351,Etkinliklere Katılımcı Sayısı,FALLBACK,1001-1200,,,1001-1200,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,351,Etkinliklere Katılımcı Sayısı,FALLBACK,1001-1200,,,1001-1200,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,351,Etkinliklere Katılımcı Sayısı,FALLBACK,1001-1200,,,1001-1200,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,351,Etkinliklere Katılımcı Sayısı,SNAPSHOT,1001-1200,,1001-1200,1001-1200,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,351,Etkinliklere Katılımcı Sayısı,FALLBACK,1001-1200,,,1001-1200,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,344,FVÖK/Net Satış Oranı,FALLBACK,18-22,,,18-22,,,,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,344,FVÖK/Net Satış Oranı,FALLBACK,18-22,,,18-22,,,,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,344,FVÖK/Net Satış Oranı,FALLBACK,18-22,,,18-22,,,,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,344,FVÖK/Net Satış Oranı,FALLBACK,18-22,,,18-22,,,,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,344,FVÖK/Net Satış Oranı,SNAPSHOT,18-22,,18-22,18-22,,,,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,344,FVÖK/Net Satış Oranı,SNAPSHOT,18-22,,18-22,18-22,,,,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,344,FVÖK/Net Satış Oranı,FALLBACK,18-22,,,18-22,,,,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,345,Gelir Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,345,Gelir Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,345,Gelir Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,345,Gelir Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,345,Gelir Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,345,Gelir Bütçesine Uyum Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,345,Gelir Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,346,Gider Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,346,Gider Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,346,Gider Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,346,Gider Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,346,Gider Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,346,Gider Bütçesine Uyum Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,346,Gider Bütçesine Uyum Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,354,Hedef Pazardaki Müşteri Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,354,Hedef Pazardaki Müşteri Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,354,Hedef Pazardaki Müşteri Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,354,Hedef Pazardaki Müşteri Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,354,Hedef Pazardaki Müşteri Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,354,Hedef Pazardaki Müşteri Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,354,Hedef Pazardaki Müşteri Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,355,KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,355,KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,355,KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,355,KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,355,KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,355,KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,355,KMF ile Aynı Bölgede Benzer Ürün ve Hizmetleri Sunan Kurum Sayısı,YOK,,,,,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,348,Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,348,Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,348,Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,348,Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,348,Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,348,Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,348,Kayseri İmalat Sanayisi Ortalama Dijital Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,347,Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,347,Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,347,Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,347,Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,347,Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,347,Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,347,Kayseri İmalat Sanayisi Ortalama Yalın Farkındalık Artış Oranı,YOK,,,,,,,,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,349,Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı,YOK,,,,,,,,%,Aylık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,349,Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı,YOK,,,,,,,,%,Aylık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,349,Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı,YOK,,,,,,,,%,Aylık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,349,Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı,YOK,,,,,,,,%,Aylık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,349,Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı,YOK,,,,,,,,%,Aylık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,349,Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı,YOK,,,,,,,,%,Aylık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,349,Kayseri İmalat Sanayisi Ortalama Yeşil/Sürdürlebilirlik Farkındalık Artış Oranı,YOK,,,,,,,,%,Aylık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,353,Mevcut Müşterileri Ziyaret Sayısı,FALLBACK,50-59,,,50-59,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,353,Mevcut Müşterileri Ziyaret Sayısı,FALLBACK,50-59,,,50-59,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,353,Mevcut Müşterileri Ziyaret Sayısı,FALLBACK,50-59,,,50-59,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,353,Mevcut Müşterileri Ziyaret Sayısı,FALLBACK,50-59,,,50-59,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,353,Mevcut Müşterileri Ziyaret Sayısı,FALLBACK,50-59,,,50-59,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,353,Mevcut Müşterileri Ziyaret Sayısı,SNAPSHOT,50-59,,50-59,50-59,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,353,Mevcut Müşterileri Ziyaret Sayısı,FALLBACK,50-59,,,50-59,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,360,Satışlarda Hibe/Teşvik Payı,FALLBACK,60-69,,,60-69,,,,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,360,Satışlarda Hibe/Teşvik Payı,FALLBACK,60-69,,,60-69,,,,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,360,Satışlarda Hibe/Teşvik Payı,FALLBACK,60-69,,,60-69,,,,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,360,Satışlarda Hibe/Teşvik Payı,FALLBACK,60-69,,,60-69,,,,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,360,Satışlarda Hibe/Teşvik Payı,FALLBACK,60-69,,,60-69,,,,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,360,Satışlarda Hibe/Teşvik Payı,SNAPSHOT,60-69,,60-69,60-69,,,,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,360,Satışlarda Hibe/Teşvik Payı,FALLBACK,60-69,,,60-69,,,,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,359,Tavsiye Edilebilirlik Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,359,Tavsiye Edilebilirlik Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,359,Tavsiye Edilebilirlik Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,359,Tavsiye Edilebilirlik Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,359,Tavsiye Edilebilirlik Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,359,Tavsiye Edilebilirlik Oranı,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,359,Tavsiye Edilebilirlik Oranı,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,343,Tekliflerin Sözleşmeye Dönüşme Oranı - Sürdürülebilirlik,FALLBACK,55-64,,,55-64,,EVET,EVET,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,343,Tekliflerin Sözleşmeye Dönüşme Oranı - Sürdürülebilirlik,FALLBACK,55-64,,,55-64,,EVET,EVET,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,343,Tekliflerin Sözleşmeye Dönüşme Oranı - Sürdürülebilirlik,FALLBACK,55-64,,,55-64,,EVET,EVET,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,343,Tekliflerin Sözleşmeye Dönüşme Oranı - Sürdürülebilirlik,FALLBACK,55-64,,,55-64,,EVET,EVET,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,343,Tekliflerin Sözleşmeye Dönüşme Oranı - Sürdürülebilirlik,FALLBACK,55-64,,,55-64,,EVET,HAYIR,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,343,Tekliflerin Sözleşmeye Dönüşme Oranı - Sürdürülebilirlik,SNAPSHOT,55-64,,55-64,55-64,,EVET,EVET,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,343,Tekliflerin Sözleşmeye Dönüşme Oranı - Sürdürülebilirlik,FALLBACK,55-64,,,55-64,,EVET,EVET,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,565,Tekliflerin Sözleşmeye Dönüşme Oranı - Yalın,FALLBACK,55-64,,,55-64,,,,%,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,565,Tekliflerin Sözleşmeye Dönüşme Oranı - Yalın,FALLBACK,55-64,,,55-64,,,,%,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,565,Tekliflerin Sözleşmeye Dönüşme Oranı - Yalın,FALLBACK,55-64,,,55-64,,,,%,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,565,Tekliflerin Sözleşmeye Dönüşme Oranı - Yalın,FALLBACK,55-64,,,55-64,,,,%,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,565,Tekliflerin Sözleşmeye Dönüşme Oranı - Yalın,SNAPSHOT,55-64,,55-64,55-64,,,,%,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,565,Tekliflerin Sözleşmeye Dönüşme Oranı - Yalın,SNAPSHOT,55-64,,55-64,55-64,,,,%,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,565,Tekliflerin Sözleşmeye Dönüşme Oranı - Yalın,FALLBACK,55-64,,,55-64,,,,%,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,341,Verilen Teklif Sayısı - Yalın,FALLBACK,40-44,,,40-44,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,341,Verilen Teklif Sayısı - Yalın,FALLBACK,40-44,,,40-44,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,341,Verilen Teklif Sayısı - Yalın,FALLBACK,40-44,,,40-44,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,341,Verilen Teklif Sayısı - Yalın,FALLBACK,40-44,,,40-44,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,341,Verilen Teklif Sayısı - Yalın,SNAPSHOT,40-44,,40-44,40-44,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,341,Verilen Teklif Sayısı - Yalın,SNAPSHOT,40-44,,40-44,40-44,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,341,Verilen Teklif Sayısı - Yalın,FALLBACK,40-44,,,40-44,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,350,"Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",FALLBACK,6-8,,,6-8,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,350,"Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",FALLBACK,6-8,,,6-8,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,350,"Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",FALLBACK,6-8,,,6-8,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,350,"Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",FALLBACK,6-8,,,6-8,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,350,"Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",FALLBACK,6-8,,,6-8,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,350,"Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",SNAPSHOT,6-8,,6-8,6-8,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,350,"Yapılan Etkinlik Sayısı (Panel, webinar, teknik gezi)",FALLBACK,6-8,,,6-8,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,352,Ziyaret Edilen Yeni Kurum Sayısı,FALLBACK,60-69,,,60-69,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,352,Ziyaret Edilen Yeni Kurum Sayısı,FALLBACK,60-69,,,60-69,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,352,Ziyaret Edilen Yeni Kurum Sayısı,FALLBACK,60-69,,,60-69,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,352,Ziyaret Edilen Yeni Kurum Sayısı,FALLBACK,60-69,,,60-69,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,352,Ziyaret Edilen Yeni Kurum Sayısı,FALLBACK,60-69,,,60-69,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,352,Ziyaret Edilen Yeni Kurum Sayısı,SNAPSHOT,60-69,,60-69,60-69,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,352,Ziyaret Edilen Yeni Kurum Sayısı,FALLBACK,60-69,,,60-69,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,361,Ödüle Başvuran Kurum ve Kuruluş Sayısı,FALLBACK,8-11,,,8-11,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,361,Ödüle Başvuran Kurum ve Kuruluş Sayısı,FALLBACK,8-11,,,8-11,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,361,Ödüle Başvuran Kurum ve Kuruluş Sayısı,FALLBACK,8-11,,,8-11,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,361,Ödüle Başvuran Kurum ve Kuruluş Sayısı,FALLBACK,8-11,,,8-11,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,361,Ödüle Başvuran Kurum ve Kuruluş Sayısı,FALLBACK,8-11,,,8-11,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,361,Ödüle Başvuran Kurum ve Kuruluş Sayısı,SNAPSHOT,8-11,,8-11,8-11,,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,361,Ödüle Başvuran Kurum ve Kuruluş Sayısı,FALLBACK,8-11,,,8-11,,,,sayı,Yıllık
+16,2020,draft,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,356,Ürün/Hizmet Geliştirme Çalıştay Sayısı,FALLBACK,5-6,,,5-6,,,,sayı,Yıllık
+16,2021,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,356,Ürün/Hizmet Geliştirme Çalıştay Sayısı,FALLBACK,5-6,,,5-6,,,,sayı,Yıllık
+16,2022,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,356,Ürün/Hizmet Geliştirme Çalıştay Sayısı,FALLBACK,5-6,,,5-6,,,,sayı,Yıllık
+16,2023,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,356,Ürün/Hizmet Geliştirme Çalıştay Sayısı,FALLBACK,5-6,,,5-6,,,,sayı,Yıllık
+16,2024,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,356,Ürün/Hizmet Geliştirme Çalıştay Sayısı,FALLBACK,5-6,,,5-6,,,,sayı,Yıllık
+16,2025,closed,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,356,Ürün/Hizmet Geliştirme Çalıştay Sayısı,SNAPSHOT,2-4,,2-4,5-6,EVET,,,sayı,Yıllık
+16,2026,active,SR4 - PAZARLAMA STRATEJİLERİ YÖNETİM SÜRECİ,356,Ürün/Hizmet Geliştirme Çalıştay Sayısı,FALLBACK,5-6,,,5-6,,,,sayı,Yıllık
+16,2020,draft,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,392,Eğitim Genel Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2021,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,392,Eğitim Genel Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2022,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,392,Eğitim Genel Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2023,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,392,Eğitim Genel Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2024,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,392,Eğitim Genel Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2025,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,392,Eğitim Genel Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2026,active,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,392,Eğitim Genel Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,%,Çeyreklik
+16,2020,draft,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,370,Eğitim Planına Uyum Oranı,FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2021,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,370,Eğitim Planına Uyum Oranı,FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2022,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,370,Eğitim Planına Uyum Oranı,FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2023,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,370,Eğitim Planına Uyum Oranı,FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2024,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,370,Eğitim Planına Uyum Oranı,FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2025,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,370,Eğitim Planına Uyum Oranı,FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2026,active,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,370,Eğitim Planına Uyum Oranı,FALLBACK,100,,,100,,,,%,Çeyreklik
+16,2020,draft,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,371,Eğitimi Çalıştay Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2021,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,371,Eğitimi Çalıştay Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2022,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,371,Eğitimi Çalıştay Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2023,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,371,Eğitimi Çalıştay Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2024,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,371,Eğitimi Çalıştay Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2025,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,371,Eğitimi Çalıştay Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2026,active,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,371,Eğitimi Çalıştay Sayısı,FALLBACK,4,,,4,,,,sayı,Yıllık
+16,2020,draft,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,363,Eğitimlere Katılan Sektör Çeşidi Sayısı,FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2021,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,363,Eğitimlere Katılan Sektör Çeşidi Sayısı,FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2022,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,363,Eğitimlere Katılan Sektör Çeşidi Sayısı,FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2023,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,363,Eğitimlere Katılan Sektör Çeşidi Sayısı,FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2024,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,363,Eğitimlere Katılan Sektör Çeşidi Sayısı,FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2025,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,363,Eğitimlere Katılan Sektör Çeşidi Sayısı,FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2026,active,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,363,Eğitimlere Katılan Sektör Çeşidi Sayısı,FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2020,draft,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,387,Sürdürülebilirlik konusunda verilen eğitim sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2021,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,387,Sürdürülebilirlik konusunda verilen eğitim sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2022,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,387,Sürdürülebilirlik konusunda verilen eğitim sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2023,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,387,Sürdürülebilirlik konusunda verilen eğitim sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2024,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,387,Sürdürülebilirlik konusunda verilen eğitim sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2025,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,387,Sürdürülebilirlik konusunda verilen eğitim sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2026,active,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,387,Sürdürülebilirlik konusunda verilen eğitim sayısı,FALLBACK,-,,,-,,,,sayı,Yıllık
+16,2020,draft,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,369,Verilen Eğitim Sayısı (kaç farklı modül),FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2021,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,369,Verilen Eğitim Sayısı (kaç farklı modül),FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2022,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,369,Verilen Eğitim Sayısı (kaç farklı modül),FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2023,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,369,Verilen Eğitim Sayısı (kaç farklı modül),FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2024,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,369,Verilen Eğitim Sayısı (kaç farklı modül),FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2025,closed,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,369,Verilen Eğitim Sayısı (kaç farklı modül),FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2026,active,SR5 - EĞİTİM HİZMETLERİ YÖNETİMİ SÜREÇ KARNESİ,369,Verilen Eğitim Sayısı (kaç farklı modül),FALLBACK,-,,,-,,,,sayı,Çeyreklik
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,535,Danışmanlık Gün Sayısı - Dijital,YOK,,,,,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,535,Danışmanlık Gün Sayısı - Dijital,YOK,,,,,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,535,Danışmanlık Gün Sayısı - Dijital,YOK,,,,,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,535,Danışmanlık Gün Sayısı - Dijital,YOK,,,,,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,535,Danışmanlık Gün Sayısı - Dijital,YOK,,,,,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,535,Danışmanlık Gün Sayısı - Dijital,YOK,,,,,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,535,Danışmanlık Gün Sayısı - Dijital,YOK,,,,,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,534,Danışmanlık Gün Sayısı - Sürdürülebilirlik,YOK,,,,,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,534,Danışmanlık Gün Sayısı - Sürdürülebilirlik,YOK,,,,,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,534,Danışmanlık Gün Sayısı - Sürdürülebilirlik,YOK,,,,,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,534,Danışmanlık Gün Sayısı - Sürdürülebilirlik,YOK,,,,,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,534,Danışmanlık Gün Sayısı - Sürdürülebilirlik,YOK,,,,,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,534,Danışmanlık Gün Sayısı - Sürdürülebilirlik,YOK,,,,,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,534,Danışmanlık Gün Sayısı - Sürdürülebilirlik,YOK,,,,,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,533,Danışmanlık Gün Sayısı - Yalın,FALLBACK,275-324,,,275-324,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,533,Danışmanlık Gün Sayısı - Yalın,SNAPSHOT,275-324,,275-324,275-324,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,533,Danışmanlık Gün Sayısı - Yalın,SNAPSHOT,275-324,,275-324,275-324,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,533,Danışmanlık Gün Sayısı - Yalın,SNAPSHOT,275-324,,275-324,275-324,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,533,Danışmanlık Gün Sayısı - Yalın,SNAPSHOT,275-324,,275-324,275-324,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,533,Danışmanlık Gün Sayısı - Yalın,SNAPSHOT,275-324,,275-324,275-324,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,533,Danışmanlık Gün Sayısı - Yalın,FALLBACK,275-324,,,275-324,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,553,Danışmanlık Projesi Memnuniyet Oranı - Dijital,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,553,Danışmanlık Projesi Memnuniyet Oranı - Dijital,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,553,Danışmanlık Projesi Memnuniyet Oranı - Dijital,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,553,Danışmanlık Projesi Memnuniyet Oranı - Dijital,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,553,Danışmanlık Projesi Memnuniyet Oranı - Dijital,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,553,Danışmanlık Projesi Memnuniyet Oranı - Dijital,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,553,Danışmanlık Projesi Memnuniyet Oranı - Dijital,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,552,Danışmanlık Projesi Memnuniyet Oranı - Sürdürülebilirlik,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,552,Danışmanlık Projesi Memnuniyet Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,552,Danışmanlık Projesi Memnuniyet Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,552,Danışmanlık Projesi Memnuniyet Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,552,Danışmanlık Projesi Memnuniyet Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,552,Danışmanlık Projesi Memnuniyet Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,552,Danışmanlık Projesi Memnuniyet Oranı - Sürdürülebilirlik,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,551,Danışmanlık Projesi Memnuniyet Oranı - Yalın,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,551,Danışmanlık Projesi Memnuniyet Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,551,Danışmanlık Projesi Memnuniyet Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,551,Danışmanlık Projesi Memnuniyet Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,551,Danışmanlık Projesi Memnuniyet Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,551,Danışmanlık Projesi Memnuniyet Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,551,Danışmanlık Projesi Memnuniyet Oranı - Yalın,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,544,Danışmanlık Süresi  - Sürdürülebilirlik (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,544,Danışmanlık Süresi  - Sürdürülebilirlik (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,544,Danışmanlık Süresi  - Sürdürülebilirlik (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,544,Danışmanlık Süresi  - Sürdürülebilirlik (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,544,Danışmanlık Süresi  - Sürdürülebilirlik (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,544,Danışmanlık Süresi  - Sürdürülebilirlik (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,544,Danışmanlık Süresi  - Sürdürülebilirlik (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,545,Danışmanlık Süresi - Dijital (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,545,Danışmanlık Süresi - Dijital (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,545,Danışmanlık Süresi - Dijital (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,545,Danışmanlık Süresi - Dijital (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,545,Danışmanlık Süresi - Dijital (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,545,Danışmanlık Süresi - Dijital (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,545,Danışmanlık Süresi - Dijital (İnsan/Gün),YOK,,,,,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,543,Danışmanlık Süresi - Yalın  (İnsan/Gün),FALLBACK,251-300,,,251-300,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,543,Danışmanlık Süresi - Yalın  (İnsan/Gün),SNAPSHOT,251-300,,251-300,251-300,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,543,Danışmanlık Süresi - Yalın  (İnsan/Gün),SNAPSHOT,251-300,,251-300,251-300,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,543,Danışmanlık Süresi - Yalın  (İnsan/Gün),SNAPSHOT,251-300,,251-300,251-300,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,543,Danışmanlık Süresi - Yalın  (İnsan/Gün),SNAPSHOT,251-300,,251-300,251-300,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,543,Danışmanlık Süresi - Yalın  (İnsan/Gün),SNAPSHOT,251-300,,251-300,251-300,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,543,Danışmanlık Süresi - Yalın  (İnsan/Gün),FALLBACK,251-300,,,251-300,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,531,Danışmanlık Takvimine (Planına) Uyum Oranı - Dijital,YOK,,,,,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,531,Danışmanlık Takvimine (Planına) Uyum Oranı - Dijital,YOK,,,,,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,531,Danışmanlık Takvimine (Planına) Uyum Oranı - Dijital,YOK,,,,,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,531,Danışmanlık Takvimine (Planına) Uyum Oranı - Dijital,YOK,,,,,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,531,Danışmanlık Takvimine (Planına) Uyum Oranı - Dijital,YOK,,,,,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,531,Danışmanlık Takvimine (Planına) Uyum Oranı - Dijital,YOK,,,,,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,531,Danışmanlık Takvimine (Planına) Uyum Oranı - Dijital,YOK,,,,,,,,%,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,530,Danışmanlık Takvimine (Planına) Uyum Oranı - Sürdürülebilirlik,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,530,Danışmanlık Takvimine (Planına) Uyum Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,530,Danışmanlık Takvimine (Planına) Uyum Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,530,Danışmanlık Takvimine (Planına) Uyum Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,530,Danışmanlık Takvimine (Planına) Uyum Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,530,Danışmanlık Takvimine (Planına) Uyum Oranı - Sürdürülebilirlik,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,530,Danışmanlık Takvimine (Planına) Uyum Oranı - Sürdürülebilirlik,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,556,Danışmanlık Takvimine (Planına) Uyum Oranı - Yalın,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,556,Danışmanlık Takvimine (Planına) Uyum Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,556,Danışmanlık Takvimine (Planına) Uyum Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,556,Danışmanlık Takvimine (Planına) Uyum Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,556,Danışmanlık Takvimine (Planına) Uyum Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,556,Danışmanlık Takvimine (Planına) Uyum Oranı - Yalın,SNAPSHOT,90-100,,90-100,90-100,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,556,Danışmanlık Takvimine (Planına) Uyum Oranı - Yalın,FALLBACK,90-100,,,90-100,,,,%,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,538,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,538,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,538,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,538,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,538,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,538,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,538,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,537,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Sürdürülebilirlik,YOK,,,,,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,537,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Sürdürülebilirlik,YOK,,,,,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,537,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Sürdürülebilirlik,YOK,,,,,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,537,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Sürdürülebilirlik,YOK,,,,,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,537,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Sürdürülebilirlik,YOK,,,,,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,537,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Sürdürülebilirlik,YOK,,,,,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,537,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Sürdürülebilirlik,YOK,,,,,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,536,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Yalın,YOK,,,,,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,536,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Yalın,YOK,,,,,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,536,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Yalın,YOK,,,,,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,536,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Yalın,YOK,,,,,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,536,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Yalın,YOK,,,,,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,536,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Yalın,YOK,,,,,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,536,Hizmet Verilen Firma Sayısı (Başladığı Yıl) - Yalın,YOK,,,,,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,532,Ortalama Proje Tamamlanma Süresi - Yalın,FALLBACK,24-26,,,24-26,,,,Hafta,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,532,Ortalama Proje Tamamlanma Süresi - Yalın,SNAPSHOT,24-26,,24-26,24-26,,,,Hafta,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,532,Ortalama Proje Tamamlanma Süresi - Yalın,SNAPSHOT,24-26,,24-26,24-26,,,,Hafta,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,532,Ortalama Proje Tamamlanma Süresi - Yalın,SNAPSHOT,24-26,,24-26,24-26,,,,Hafta,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,532,Ortalama Proje Tamamlanma Süresi - Yalın,SNAPSHOT,24-26,,24-26,24-26,,,,Hafta,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,532,Ortalama Proje Tamamlanma Süresi - Yalın,SNAPSHOT,24-26,,24-26,24-26,,,,Hafta,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,532,Ortalama Proje Tamamlanma Süresi - Yalın,FALLBACK,24-26,,,24-26,,,,Hafta,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,557,Proje Takviminden Sapma (gün) - Yalın,YOK,,,,,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,557,Proje Takviminden Sapma (gün) - Yalın,YOK,,,,,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,557,Proje Takviminden Sapma (gün) - Yalın,YOK,,,,,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,557,Proje Takviminden Sapma (gün) - Yalın,YOK,,,,,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,557,Proje Takviminden Sapma (gün) - Yalın,YOK,,,,,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,557,Proje Takviminden Sapma (gün) - Yalın,YOK,,,,,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,557,Proje Takviminden Sapma (gün) - Yalın,YOK,,,,,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,562,Projelerde Görev Alan Stajyer Sayısı (Tamamlanan Proje),FALLBACK,35-44,,,35-44,,,,Kişi,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,562,Projelerde Görev Alan Stajyer Sayısı (Tamamlanan Proje),SNAPSHOT,35-44,,35-44,35-44,,,,Kişi,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,562,Projelerde Görev Alan Stajyer Sayısı (Tamamlanan Proje),SNAPSHOT,35-44,,35-44,35-44,,,,Kişi,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,562,Projelerde Görev Alan Stajyer Sayısı (Tamamlanan Proje),SNAPSHOT,35-44,,35-44,35-44,,,,Kişi,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,562,Projelerde Görev Alan Stajyer Sayısı (Tamamlanan Proje),SNAPSHOT,35-44,,35-44,35-44,,,,Kişi,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,562,Projelerde Görev Alan Stajyer Sayısı (Tamamlanan Proje),SNAPSHOT,35-44,,35-44,35-44,,,,Kişi,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,562,Projelerde Görev Alan Stajyer Sayısı (Tamamlanan Proje),FALLBACK,35-44,,,35-44,,,,Kişi,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,539,Sürdürülen Proje Sayısı - Yalın,FALLBACK,17-23,,,17-23,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,539,Sürdürülen Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,539,Sürdürülen Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,539,Sürdürülen Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,539,Sürdürülen Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,539,Sürdürülen Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,539,Sürdürülen Proje Sayısı - Yalın,FALLBACK,17-23,,,17-23,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,549,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Djital,YOK,,,,,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,549,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Djital,YOK,,,,,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,549,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Djital,YOK,,,,,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,549,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Djital,YOK,,,,,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,549,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Djital,YOK,,,,,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,549,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Djital,YOK,,,,,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,549,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Djital,YOK,,,,,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,548,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Sürdürülebilirlik,YOK,,,,,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,548,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Sürdürülebilirlik,YOK,,,,,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,548,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Sürdürülebilirlik,YOK,,,,,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,548,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Sürdürülebilirlik,YOK,,,,,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,548,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Sürdürülebilirlik,YOK,,,,,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,548,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Sürdürülebilirlik,YOK,,,,,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,548,Tam Zamanlı Danışman Kapasite Kullanma Oranı - Sürdürülebilirlik,YOK,,,,,,,,%,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,547,Tam Zamanlı Danışman Kapasite Kullanma Oranı- Yalın,FALLBACK,80-89,,,80-89,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,547,Tam Zamanlı Danışman Kapasite Kullanma Oranı- Yalın,SNAPSHOT,80-89,,80-89,80-89,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,547,Tam Zamanlı Danışman Kapasite Kullanma Oranı- Yalın,SNAPSHOT,80-89,,80-89,80-89,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,547,Tam Zamanlı Danışman Kapasite Kullanma Oranı- Yalın,SNAPSHOT,80-89,,80-89,80-89,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,547,Tam Zamanlı Danışman Kapasite Kullanma Oranı- Yalın,SNAPSHOT,80-89,,80-89,80-89,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,547,Tam Zamanlı Danışman Kapasite Kullanma Oranı- Yalın,SNAPSHOT,80-89,,80-89,80-89,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,547,Tam Zamanlı Danışman Kapasite Kullanma Oranı- Yalın,FALLBACK,80-89,,,80-89,,,,%,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,542,Tamamlanan Proje Sayısı - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,542,Tamamlanan Proje Sayısı - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,542,Tamamlanan Proje Sayısı - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,542,Tamamlanan Proje Sayısı - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,542,Tamamlanan Proje Sayısı - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,542,Tamamlanan Proje Sayısı - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,542,Tamamlanan Proje Sayısı - Dijital,YOK,,,,,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,541,Tamamlanan Proje Sayısı - Sürdürülebilirlik,FALLBACK,14-19,,,14-19,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,541,Tamamlanan Proje Sayısı - Sürdürülebilirlik,SNAPSHOT,14-19,,14-19,14-19,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,541,Tamamlanan Proje Sayısı - Sürdürülebilirlik,SNAPSHOT,14-19,,14-19,14-19,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,541,Tamamlanan Proje Sayısı - Sürdürülebilirlik,SNAPSHOT,14-19,,14-19,14-19,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,541,Tamamlanan Proje Sayısı - Sürdürülebilirlik,SNAPSHOT,14-19,,14-19,14-19,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,541,Tamamlanan Proje Sayısı - Sürdürülebilirlik,SNAPSHOT,14-19,,14-19,14-19,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,541,Tamamlanan Proje Sayısı - Sürdürülebilirlik,FALLBACK,14-19,,,14-19,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,540,Tamamlanan Proje Sayısı - Yalın,FALLBACK,17-23,,,17-23,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,540,Tamamlanan Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,540,Tamamlanan Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,540,Tamamlanan Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,540,Tamamlanan Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,540,Tamamlanan Proje Sayısı - Yalın,SNAPSHOT,17-23,,17-23,17-23,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,540,Tamamlanan Proje Sayısı - Yalın,FALLBACK,17-23,,,17-23,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,546,Yalın Dönüşüm Danışmanlık Süresi (İnsan/Gün) Stajyerli,FALLBACK,800-999,,,800-999,,,,Gün,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,546,Yalın Dönüşüm Danışmanlık Süresi (İnsan/Gün) Stajyerli,SNAPSHOT,800-999,,800-999,800-999,,,,Gün,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,546,Yalın Dönüşüm Danışmanlık Süresi (İnsan/Gün) Stajyerli,SNAPSHOT,800-999,,800-999,800-999,,,,Gün,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,546,Yalın Dönüşüm Danışmanlık Süresi (İnsan/Gün) Stajyerli,SNAPSHOT,800-999,,800-999,800-999,,,,Gün,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,546,Yalın Dönüşüm Danışmanlık Süresi (İnsan/Gün) Stajyerli,SNAPSHOT,800-999,,800-999,800-999,,,,Gün,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,546,Yalın Dönüşüm Danışmanlık Süresi (İnsan/Gün) Stajyerli,SNAPSHOT,800-999,,800-999,800-999,,,,Gün,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,546,Yalın Dönüşüm Danışmanlık Süresi (İnsan/Gün) Stajyerli,FALLBACK,800-999,,,800-999,,,,Gün,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,423,Yalın Dönüşüm Hizmeti Verilen Kurumlardaki Getiri Miktarı,FALLBACK,150000001 - 300000000,,,150000001 - 300000000,,,,TL,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,423,Yalın Dönüşüm Hizmeti Verilen Kurumlardaki Getiri Miktarı,SNAPSHOT,150000001 - 300000000,,150000001 - 300000000,150000001 - 300000000,,,,TL,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,423,Yalın Dönüşüm Hizmeti Verilen Kurumlardaki Getiri Miktarı,SNAPSHOT,150000001 - 300000000,,150000001 - 300000000,150000001 - 300000000,,,,TL,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,423,Yalın Dönüşüm Hizmeti Verilen Kurumlardaki Getiri Miktarı,SNAPSHOT,150000001 - 300000000,,150000001 - 300000000,150000001 - 300000000,,,,TL,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,423,Yalın Dönüşüm Hizmeti Verilen Kurumlardaki Getiri Miktarı,SNAPSHOT,122,,122,150000001 - 300000000,EVET,,,TL,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,423,Yalın Dönüşüm Hizmeti Verilen Kurumlardaki Getiri Miktarı,SNAPSHOT,122,,122,150000001 - 300000000,EVET,,,TL,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,423,Yalın Dönüşüm Hizmeti Verilen Kurumlardaki Getiri Miktarı,SNAPSHOT,122,,122,150000001 - 300000000,EVET,,,TL,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,558,Yalın Dönüşüm Mükerrer Hizmet Alan Firma Sayısı (Başladığı Yıl),FALLBACK,4-5,,,4-5,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,558,Yalın Dönüşüm Mükerrer Hizmet Alan Firma Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,558,Yalın Dönüşüm Mükerrer Hizmet Alan Firma Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,558,Yalın Dönüşüm Mükerrer Hizmet Alan Firma Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,558,Yalın Dönüşüm Mükerrer Hizmet Alan Firma Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,558,Yalın Dönüşüm Mükerrer Hizmet Alan Firma Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,558,Yalın Dönüşüm Mükerrer Hizmet Alan Firma Sayısı (Başladığı Yıl),FALLBACK,4-5,,,4-5,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,560,Yalın Dönüşüm Mükerrer Proje Sayısı (Başladığı Yıl),FALLBACK,4-5,,,4-5,,,,Adet,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,560,Yalın Dönüşüm Mükerrer Proje Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,560,Yalın Dönüşüm Mükerrer Proje Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,560,Yalın Dönüşüm Mükerrer Proje Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,560,Yalın Dönüşüm Mükerrer Proje Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,560,Yalın Dönüşüm Mükerrer Proje Sayısı (Başladığı Yıl),SNAPSHOT,4-5,,4-5,4-5,,,,Adet,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,560,Yalın Dönüşüm Mükerrer Proje Sayısı (Başladığı Yıl),FALLBACK,4-5,,,4-5,,,,Adet,Yıllık
+16,2020,draft,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,550,Yarı Zamanlı Danışman Kapasite Kullanma Oranı - Yalın,YOK,,,,,,,,%,Yıllık
+16,2021,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,550,Yarı Zamanlı Danışman Kapasite Kullanma Oranı - Yalın,YOK,,,,,,,,%,Yıllık
+16,2022,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,550,Yarı Zamanlı Danışman Kapasite Kullanma Oranı - Yalın,YOK,,,,,,,,%,Yıllık
+16,2023,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,550,Yarı Zamanlı Danışman Kapasite Kullanma Oranı - Yalın,YOK,,,,,,,,%,Yıllık
+16,2024,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,550,Yarı Zamanlı Danışman Kapasite Kullanma Oranı - Yalın,YOK,,,,,,,,%,Yıllık
+16,2025,closed,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,550,Yarı Zamanlı Danışman Kapasite Kullanma Oranı - Yalın,YOK,,,,,,,,%,Yıllık
+16,2026,active,SR6 - DANIŞMANLIK HİZMETLERİ YÖNETİMİ  SÜREÇ KARNESİ,550,Yarı Zamanlı Danışman Kapasite Kullanma Oranı - Yalın,YOK,,,,,,,,%,Yıllık
+16,2020,draft,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,362,Ödül Süreci Başlatma Takvimine Uyum Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2021,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,362,Ödül Süreci Başlatma Takvimine Uyum Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2022,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,362,Ödül Süreci Başlatma Takvimine Uyum Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2023,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,362,Ödül Süreci Başlatma Takvimine Uyum Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2024,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,362,Ödül Süreci Başlatma Takvimine Uyum Oranı,SNAPSHOT,95,,95,95,,,,Yüzde,Yıllık
+16,2025,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,362,Ödül Süreci Başlatma Takvimine Uyum Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2026,active,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,362,Ödül Süreci Başlatma Takvimine Uyum Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2020,draft,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,367,Ödül Süreci Değerlendirici Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2021,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,367,Ödül Süreci Değerlendirici Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2022,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,367,Ödül Süreci Değerlendirici Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2023,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,367,Ödül Süreci Değerlendirici Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2024,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,367,Ödül Süreci Değerlendirici Sayısı,SNAPSHOT,10,,10,10,,,,Sayı,Yıllık
+16,2025,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,367,Ödül Süreci Değerlendirici Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2026,active,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,367,Ödül Süreci Değerlendirici Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2020,draft,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,365,Ödül Süreci Katılımcı Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2021,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,365,Ödül Süreci Katılımcı Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2022,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,365,Ödül Süreci Katılımcı Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2023,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,365,Ödül Süreci Katılımcı Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2024,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,365,Ödül Süreci Katılımcı Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2025,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,365,Ödül Süreci Katılımcı Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2026,active,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,365,Ödül Süreci Katılımcı Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2020,draft,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,364,Ödül Sürecine Katılan Proje Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2021,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,364,Ödül Sürecine Katılan Proje Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2022,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,364,Ödül Sürecine Katılan Proje Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2023,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,364,Ödül Sürecine Katılan Proje Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2024,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,364,Ödül Sürecine Katılan Proje Sayısı,SNAPSHOT,10,,10,10,,,,Sayı,Yıllık
+16,2025,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,364,Ödül Sürecine Katılan Proje Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2026,active,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,364,Ödül Sürecine Katılan Proje Sayısı,FALLBACK,10,,,10,,,,Sayı,Yıllık
+16,2020,draft,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,368,Ödül Töreni Genel Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2021,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,368,Ödül Töreni Genel Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2022,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,368,Ödül Töreni Genel Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2023,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,368,Ödül Töreni Genel Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2024,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,368,Ödül Töreni Genel Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2025,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,368,Ödül Töreni Genel Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2026,active,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,368,Ödül Töreni Genel Memnuniyet Oranı,FALLBACK,95,,,95,,,,Yüzde,Yıllık
+16,2020,draft,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,366,Ödül Töreni Katılımcı Sayısı,FALLBACK,375,,,375,,,,Sayı,Yıllık
+16,2021,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,366,Ödül Töreni Katılımcı Sayısı,FALLBACK,375,,,375,,,,Sayı,Yıllık
+16,2022,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,366,Ödül Töreni Katılımcı Sayısı,FALLBACK,375,,,375,,,,Sayı,Yıllık
+16,2023,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,366,Ödül Töreni Katılımcı Sayısı,FALLBACK,375,,,375,,,,Sayı,Yıllık
+16,2024,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,366,Ödül Töreni Katılımcı Sayısı,FALLBACK,375,,,375,,,,Sayı,Yıllık
+16,2025,closed,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,366,Ödül Töreni Katılımcı Sayısı,FALLBACK,375,,,375,,,,Sayı,Yıllık
+16,2026,active,SR7 - BAŞARILARI TANIMA VE ÖDÜLLENDİRME YÖNETİMİ SÜREÇ KARNESİ,366,Ödül Töreni Katılımcı Sayısı,FALLBACK,375,,,375,,,,Sayı,Yıllık
+16,2020,draft,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,382,Yıllık İzin Tamamlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Yıllık
+16,2021,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,382,Yıllık İzin Tamamlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Yıllık
+16,2022,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,382,Yıllık İzin Tamamlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Yıllık
+16,2023,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,382,Yıllık İzin Tamamlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Yıllık
+16,2024,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,382,Yıllık İzin Tamamlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Yıllık
+16,2025,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,382,Yıllık İzin Tamamlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Yıllık
+16,2026,active,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,382,Yıllık İzin Tamamlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Yıllık
+16,2020,draft,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,381,Çalışan Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,Sayı,Çeyreklik
+16,2021,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,381,Çalışan Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,Sayı,Çeyreklik
+16,2022,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,381,Çalışan Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,Sayı,Çeyreklik
+16,2023,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,381,Çalışan Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,Sayı,Çeyreklik
+16,2024,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,381,Çalışan Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,Sayı,Çeyreklik
+16,2025,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,381,Çalışan Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,Sayı,Çeyreklik
+16,2026,active,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,381,Çalışan Memnuniyet Oranı,FALLBACK,90-100,,,90-100,,,,Sayı,Çeyreklik
+16,2020,draft,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,376,Çalışan Yetkinlik Geliştirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,376,Çalışan Yetkinlik Geliştirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,376,Çalışan Yetkinlik Geliştirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,376,Çalışan Yetkinlik Geliştirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,376,Çalışan Yetkinlik Geliştirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,376,Çalışan Yetkinlik Geliştirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2026,active,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,376,Çalışan Yetkinlik Geliştirme Planına Uyum Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,377,Çalışan Yetkinlik Seviyesi İyileşme Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,377,Çalışan Yetkinlik Seviyesi İyileşme Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,377,Çalışan Yetkinlik Seviyesi İyileşme Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,377,Çalışan Yetkinlik Seviyesi İyileşme Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,377,Çalışan Yetkinlik Seviyesi İyileşme Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,377,Çalışan Yetkinlik Seviyesi İyileşme Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2026,active,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,377,Çalışan Yetkinlik Seviyesi İyileşme Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,373,Özlük Haklarını Zamanında Sağlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Aylık
+16,2021,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,373,Özlük Haklarını Zamanında Sağlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Aylık
+16,2022,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,373,Özlük Haklarını Zamanında Sağlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Aylık
+16,2023,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,373,Özlük Haklarını Zamanında Sağlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Aylık
+16,2024,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,373,Özlük Haklarını Zamanında Sağlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Aylık
+16,2025,closed,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,373,Özlük Haklarını Zamanında Sağlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Aylık
+16,2026,active,SR8 - İNSAN KAYNAKLARI YÖNETİMİ SÜREÇ KARNESİ,373,Özlük Haklarını Zamanında Sağlama Oranı,FALLBACK,90-100,,,90-100,,,,Yüzde,Aylık
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,391,Fatura vb.nin Muhasebe Sistemine Zamanında Bildirilme Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,391,Fatura vb.nin Muhasebe Sistemine Zamanında Bildirilme Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,391,Fatura vb.nin Muhasebe Sistemine Zamanında Bildirilme Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,391,Fatura vb.nin Muhasebe Sistemine Zamanında Bildirilme Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,391,Fatura vb.nin Muhasebe Sistemine Zamanında Bildirilme Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,391,Fatura vb.nin Muhasebe Sistemine Zamanında Bildirilme Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,391,Fatura vb.nin Muhasebe Sistemine Zamanında Bildirilme Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,393,Finansal Raporlar Sunum Planına Uyum Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,393,Finansal Raporlar Sunum Planına Uyum Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,393,Finansal Raporlar Sunum Planına Uyum Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,393,Finansal Raporlar Sunum Planına Uyum Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,393,Finansal Raporlar Sunum Planına Uyum Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,393,Finansal Raporlar Sunum Planına Uyum Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,393,Finansal Raporlar Sunum Planına Uyum Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,385,Finansal İşlemler Maliyetinin Faaliyet Gelirine Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,385,Finansal İşlemler Maliyetinin Faaliyet Gelirine Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,385,Finansal İşlemler Maliyetinin Faaliyet Gelirine Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,385,Finansal İşlemler Maliyetinin Faaliyet Gelirine Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,385,Finansal İşlemler Maliyetinin Faaliyet Gelirine Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,385,Finansal İşlemler Maliyetinin Faaliyet Gelirine Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,385,Finansal İşlemler Maliyetinin Faaliyet Gelirine Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,396,Kesilen Fatura Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,396,Kesilen Fatura Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,396,Kesilen Fatura Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,396,Kesilen Fatura Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,396,Kesilen Fatura Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,396,Kesilen Fatura Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,396,Kesilen Fatura Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,395,Mali Denetimden Alınan Uyarı Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,395,Mali Denetimden Alınan Uyarı Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,395,Mali Denetimden Alınan Uyarı Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,395,Mali Denetimden Alınan Uyarı Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,395,Mali Denetimden Alınan Uyarı Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,395,Mali Denetimden Alınan Uyarı Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,395,Mali Denetimden Alınan Uyarı Sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,394,Mali denetim sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,394,Mali denetim sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,394,Mali denetim sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,394,Mali denetim sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,394,Mali denetim sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,394,Mali denetim sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,394,Mali denetim sayısı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,379,Tahsilatların Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,379,Tahsilatların Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,379,Tahsilatların Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,379,Tahsilatların Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,379,Tahsilatların Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,379,Tahsilatların Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,379,Tahsilatların Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,388,Tedarikçi Ödemelerinin Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,388,Tedarikçi Ödemelerinin Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,388,Tedarikçi Ödemelerinin Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,388,Tedarikçi Ödemelerinin Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,388,Tedarikçi Ödemelerinin Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,388,Tedarikçi Ödemelerinin Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,388,Tedarikçi Ödemelerinin Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2020,draft,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,390,Vergi ve Yasal Yükümlülüklerin  Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2021,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,390,Vergi ve Yasal Yükümlülüklerin  Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2022,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,390,Vergi ve Yasal Yükümlülüklerin  Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2023,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,390,Vergi ve Yasal Yükümlülüklerin  Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2024,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,390,Vergi ve Yasal Yükümlülüklerin  Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2025,closed,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,390,Vergi ve Yasal Yükümlülüklerin  Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik
+16,2026,active,SR9 - MALİ İŞLER YÖNETİMİ SÜREÇ KARNESİ,390,Vergi ve Yasal Yükümlülüklerin  Zamanında Yapılma Oranı,FALLBACK,%90- 100,,,%90- 100,,,,Yüzde,Çeyreklik

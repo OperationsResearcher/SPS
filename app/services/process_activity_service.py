@@ -6,6 +6,7 @@ from datetime import datetime
 
 from app.models import db
 from app.models.process import KpiData, KpiDataAudit, ProcessActivity
+from app.services.kpi_data_score_service import uygula_kpi_data_skoru
 from app.utils.db_sequence import sync_kpi_data_related_sequences
 
 
@@ -48,6 +49,9 @@ def create_auto_pgv_for_activity(activity: ProcessActivity) -> KpiData | None:
         description=f'Otomatik faaliyet gerçekleşmesi: {activity.name}',
         user_id=int(user_id),
     )
+    # K1: otomatik üretilen PGV de skorlanmalı — aksi halde faaliyetten doğan
+    # satırlar elle girilenlerle aynı sessiz boşluğa düşerdi.
+    uygula_kpi_data_skoru(entry, kpi)
     db.session.add(entry)
     db.session.flush()
     db.session.add(

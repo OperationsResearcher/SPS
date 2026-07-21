@@ -266,8 +266,12 @@ def sp_api_project_evm(pid):
     if not _can():
         return jsonify({"error": "yetki yok"}), 403
     try:
-        data = compute_project_evm(pid)
+        # S3: tenant_id ZORUNLU geçilir — `_can()` yalnız rol kontrolüdür,
+        # sahiplik değil. Bu satır olmadan başka kurumun proje bütçesi okunuyordu.
+        data = compute_project_evm(pid, tenant_id=current_user.tenant_id)
         return jsonify({"success": True, **data})
+    except ValueError:
+        return jsonify({"success": False, "message": _("Proje bulunamadı.")}), 404
     except Exception as e:
         current_app.logger.error(f"evm error: {e}", exc_info=True)
         return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 500
