@@ -10,7 +10,7 @@
       const d = j.data;
       document.getElementById('summary').innerHTML=[
         stat('Analiz Edilen Strateji',d.strategies_analyzed,'#0f172a','raporlar_ai_coach.analiz_edilen_strateji'),
-        stat('En Düşük 3',d.bottom3.length,'#dc2626','raporlar_ai_coach.en_dusuk_3'),
+        stat(t('En Düşük 3'),d.bottom3.length,'#dc2626','raporlar_ai_coach.en_dusuk_3'),
       ].join('');
       document.getElementById('bottom3').innerHTML = d.bottom3.length===0?'<div style="color:#10b981;font-size:13px;">✓ Tüm stratejiler dengeli performans gösteriyor.</div>':
         '<div style="display:grid;gap:8px;">' + d.bottom3.map(s => {
@@ -20,7 +20,7 @@
             <div><div style="font-weight:600;color:#0f172a;font-size:13px;">${esc(s.code||'')} ${esc(s.title||'')}</div></div>
           </div>`;
         }).join('') + '</div>';
-      document.getElementById('advice').textContent = d.coach_advice || '(öneri üretilemedi)';
+      document.getElementById('advice').textContent = d.coach_advice || t('(öneri üretilemedi)');
     } catch(e){
       document.getElementById('loading').style.display='none';
       const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;

@@ -85,7 +85,7 @@
         statCard('Toplam Strateji', s.total_strategies, '#0f172a'),
         statCard('Dengeli', s.balanced, '#10b981', '|çarpıklık| ≤ 10'),
         statCard('Dengesiz', s.unbalanced, '#dc2626', 'ağırlık ≠ performans'),
-        statCard('Plan Yılı', s.plan_year || '—', '#0ea5e9'),
+        statCard(t('Plan Yılı'), s.plan_year || '—', '#0ea5e9'),
       ].join('');
 
       renderBars(j.strategies);

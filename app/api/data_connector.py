@@ -15,6 +15,7 @@ import secrets
 from typing import Optional
 
 from flask import Blueprint, request, jsonify, current_app
+from flask_login import login_required  # S4
 
 from extensions import db
 from app.models.core import User
@@ -52,19 +53,35 @@ def _user_from_token(token: str) -> Optional[User]:
 
 
 def _auth_or_401():
-    """Header veya query'den token al, user döndür."""
-    token = (
-        request.headers.get("X-API-Token")
-        or request.args.get("token")
-        or request.args.get("apikey")
-    )
-    user = _user_from_token(token) if token else None
-    return user
+    """Token'dan user döndür — YALNIZ başlıktan.
+
+    S4 (2026-07-21) — iki değişiklik:
+
+    1. Uçlara `@login_required` eklendi. Öncesinde kimlik doğrulamasız
+       erişilebiliyorlardı; tek koruma bu deterministik token'dı ve token
+       kullanıcı başına SABİT, DB'de saklanmıyor, İPTAL EDİLEMİYOR, süresi
+       DOLMUYOR. `SECRET_KEY` sızarsa saldırgan her tenant'taki her kullanıcı
+       için geçerli token üretebilirdi.
+       Kullanıcı kararı (2026-07-21): uçlar harici BI aracıyla kullanılmıyor
+       → kapatıldı.
+
+    2. Query string'den token kabulü KALDIRILDI (`?token=` / `?apikey=`).
+       URL'deki sır proxy/erişim loglarına, tarayıcı geçmişine ve `Referer`
+       başlığına düşer. Yalnız `X-API-Token` başlığı kabul edilir.
+    """
+    token = request.headers.get("X-API-Token")
+    if not token and (request.args.get("token") or request.args.get("apikey")):
+        current_app.logger.warning(
+            "[dataconn] query string'de token gönderildi — REDDEDİLDİ. "
+            "Token yalnız X-API-Token başlığıyla kabul edilir."
+        )
+    return _user_from_token(token) if token else None
 
 
 # ─── Endpoint'ler ────────────────────────────────────────────────────────────
 
 @dataconn_bp.route("/kpi-data")
+@login_required
 def dataconn_kpi_data():
     """KPI Data flat JSON — Power BI/Tableau için uygun denormalized format.
 
@@ -145,6 +162,7 @@ def dataconn_kpi_data():
 
 
 @dataconn_bp.route("/processes")
+@login_required
 def dataconn_processes():
     """Süreç listesi (Power BI için master data)."""
     user = _auth_or_401()
@@ -168,6 +186,7 @@ def dataconn_processes():
 
 
 @dataconn_bp.route("/kpis")
+@login_required
 def dataconn_kpis():
     """KPI tanım listesi."""
     user = _auth_or_401()
@@ -193,6 +212,7 @@ def dataconn_kpis():
 
 
 @dataconn_bp.route("/metadata")
+@login_required
 def dataconn_metadata():
     """OData-style metadata + token info (Power BI bağlantı için)."""
     user = _auth_or_401()

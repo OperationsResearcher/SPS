@@ -41,10 +41,25 @@ def kule_send():
         if 'screenshot' in request.files:
             file = request.files['screenshot']
             if file and file.filename:
-                # Basic security block
-                if not file.filename.lower().endswith(('.png', '.jpg', '.jpeg', '.gif', '.webp')):
+                # S7 (2026-07-21): burada YALNIZ uzantı-son-eki kontrolü vardı.
+                # `kotu.exe` → `kotu.png` diye yeniden adlandırılıp webroot'a
+                # (`static/uploads/`) yazılabiliyordu. app/utils/upload_security
+                # magic byte + SVG script taraması + path traversal koruması
+                # sunuyor ve iki yerde zaten doğru kullanılıyordu; burada
+                # çağrılmıyordu.
+                from app.utils.upload_security import validate_uploaded_image
+                _blob = file.read()
+                file.seek(0)
+                _ok, _msg, _ext = validate_uploaded_image(
+                    _blob, {"png", "jpg", "jpeg", "gif", "webp"}
+                )
+                if not _ok:
+                    current_app.logger.warning(
+                        "[ticket_upload] reddedildi (user=%s, ad=%r): %s",
+                        current_user.id, file.filename, _msg,
+                    )
                     return jsonify({"success": False, "message": _("Geçersiz dosya formatı. Sadece resimler kabul edilir.")}), 400
-                    
+
                 filename = secure_filename(f"ticket_{current_user.id}_{file.filename}")
                 upload_dir = os.path.join("static", "uploads", "tickets")
                 os.makedirs(upload_dir, exist_ok=True)

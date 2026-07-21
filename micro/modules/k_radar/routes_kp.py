@@ -249,27 +249,36 @@ def k_radar_api_kp_radar():
             open_risks = 0
         risk_score = max(0, 100 - open_risks * 10)
 
-        # Olgunluk: ortalama olgunluk skorları (kp_olgunluk)
-        maturity = perf  # varsayılan: performans yansır
+        # Olgunluk: süreç olgunluk öz-değerlendirmelerinin ortalaması.
+        #
+        # 2026-07-21 — İKİ AYRI HATA DÜZELTİLDİ:
+        #
+        # 1) YANLIŞ TABLO ADI. Sorgu `k_radar_kp_olgunluk`'tan okuyordu; o
+        #    tablo DB'de HİÇ VAR OLMADI (erken tasarımdan kalma isim).
+        #    Olgunluk verisi ZATEN `process_maturity`'de tutuluyor — aynı
+        #    dosyadaki `k_radar_kp_olgunluk_ekle` ORM ile oraya YAZIYOR
+        #    (ProcessMaturity modeli). Ölçüm: 340 kayıt, 5 kurumda ortalama 2.84.
+        #    Yani skor hesaplanabilirken sessizce `perf`e eşitleniyordu —
+        #    radar'ın "Olgunluk" boyutu performansın kopyasıydı.
+        #
+        # 2) ROLLBACK YOKLUĞU. PostgreSQL'de başarısız sorgu transaction'ı
+        #    ABORT eder; `except` hatayı yutsa bile sonraki HER sorgu
+        #    "current transaction is aborted" ile düşer. Bu tek yutulan hata
+        #    7 ucu birden 500'e düşürüyordu:
+        #      /k-radar/api/{ks,kp/maturity,kpr/evm,kpr/gantt,kpr/risk,
+        #                    kpr/resource-capacity} + /k-report/api/pi-dagilim
+        #    Hatanın kendisi zararsızdı; zarar rollback'in yokluğundandı.
+        #    Tablo adı düzeldi ama koruma KALIYOR (başka bir hata da abort eder).
+        maturity = perf  # veri yoksa: performans yansır
         try:
             r4 = db.session.execute(_t("""
-                SELECT AVG(skor)::float AS avg_skor
-                FROM k_radar_kp_olgunluk
-                WHERE tenant_id=:t
+                SELECT AVG(maturity_level)::float AS avg_skor
+                FROM process_maturity
+                WHERE tenant_id=:t AND is_active
             """), {"t": tid}).fetchone()
             if r4 and r4.avg_skor is not None:
                 maturity = round(float(r4.avg_skor) * 20, 1)  # 1-5 → 20-100
         except Exception as _e:
-            # ⚠ ROLLBACK ZORUNLU: PostgreSQL'de başarısız bir sorgu
-            # transaction'ı ABORT eder. `except` hatayı yutsa bile sonraki
-            # HER sorgu "current transaction is aborted" ile düşer.
-            #
-            # Ölçüm 2026-07-21: `k_radar_kp_olgunluk` tablosu DB'de HİÇ YOK
-            # (kodda 3 yerde geçiyor, migration'ı yazılmamış). Bu tek yutulan
-            # hata yüzünden 7 uç birden 500 veriyordu:
-            #   /k-radar/api/{ks,kp/maturity,kpr/evm,kpr/gantt,kpr/risk,
-            #                 kpr/resource-capacity} + /k-report/api/pi-dagilim
-            # Hatanın kendisi zararsızdı; zarar ROLLBACK'in yokluğundandı.
             db.session.rollback()
             current_app.logger.error("[k_radar_kp] olgunluk skoru hesaplanamadı: %s", _e)
 

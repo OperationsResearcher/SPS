@@ -10,7 +10,7 @@
       document.getElementById('content').style.display='block';
       const m=j.metrics;
       document.getElementById('kpis').innerHTML=[
-        stat('Toplam Bütçe', fmt(m.total_budget), '#0f172a', m.initiative_count+' girişim', 'raporlar_cfo_dashboard.toplam_butce'),
+        stat(t('Toplam Bütçe'), fmt(m.total_budget), '#0f172a', m.initiative_count+' girişim', 'raporlar_cfo_dashboard.toplam_butce'),
         stat('Harcanan', fmt(m.total_spent), '#f59e0b', '%'+m.usage_pct+' kullanım', 'raporlar_cfo_dashboard.harcanan'),
         stat('Kalan', fmt(m.remaining), '#10b981', '', 'raporlar_cfo_dashboard.kalan'),
         stat('Bütçe Aşan', m.over_budget_count, m.over_budget_count>0?'#dc2626':'#10b981', '', 'raporlar_cfo_dashboard.butce_asan'),

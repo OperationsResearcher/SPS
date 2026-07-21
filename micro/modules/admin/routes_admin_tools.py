@@ -248,6 +248,25 @@ def admin_tools_yedekleme_geri_yukle_db():
     f = request.files.get("dump")
     if not f or not f.filename.endswith(".dump"):
         return jsonify({"success": False, "message": _("Geçerli bir .dump dosyası yükleyin.")}), 400
+
+    # S7 (2026-07-21): tek kapı `filename.endswith(".dump")` idi — SALDIRGANIN
+    # SEÇTİĞİ METİN üzerinde string kontrolü. Ardından baytlar doğrudan
+    # `pg_restore`'a gidiyordu.
+    # pg_dump custom format dosyaları "PGDMP" sihirli baytıyla başlar; içerik
+    # gerçekten dump mu, ona bakılır. (Uç zaten admin + parola + yazılı onay
+    # ile korunuyor; bu üçüncü katman.)
+    _bas = f.read(5)
+    f.seek(0)
+    if _bas != b"PGDMP":
+        current_app.logger.warning(
+            "[admin_tools] DB restore reddedildi — dosya pg_dump custom "
+            "format değil (ad=%r, ilk baytlar=%r)", f.filename, _bas,
+        )
+        return jsonify({
+            "success": False,
+            "message": _("Dosya bir PostgreSQL yedeği (pg_dump custom format) değil."),
+        }), 400
+
     try:
         from app.services import yedekleme_service as Y
         fd, path = tempfile.mkstemp(suffix=".dump"); os.close(fd)
@@ -256,8 +275,13 @@ def admin_tools_yedekleme_geri_yukle_db():
         os.remove(path)
         return jsonify({"success": True, "message": _("DB geri yükleme tamamlandı.")})
     except Exception as e:
+        # S6: `f"Geri yükleme hatası: {e}"` pg_restore çıktısını (bağlantı
+        # dizesi/host/user içerebilir) istemciye sızdırıyordu.
         current_app.logger.error(f"[admin_tools] DB geri yukle: {e}", exc_info=True)
-        return jsonify({"success": False, "message": f"Geri yükleme hatası: {e}"}), 500
+        return jsonify({
+            "success": False,
+            "message": _("Geri yükleme başarısız. Ayrıntı için sunucu günlüğüne bakın."),
+        }), 500
 
 
 # ─── Hata Kontrolü ───────────────────────────────────────────────────────────

@@ -84,7 +84,7 @@
       const y = yearSel?.value || '';
       const url = '/k-report/api/cmmi-heatmap' + (y ? '?year=' + encodeURIComponent(y) : '');
       const j = await (await fetch(url, {credentials:'same-origin'})).json();
-      if (!j.success) throw new Error(j.message || 'Veri alınamadı');
+      if (!j.success) throw new Error(j.message || t('Veri alınamadı'));
       document.getElementById('cmmi-loading').style.display = 'none';
       document.getElementById('cmmi-content').style.display = '';
       const s = j.summary;

@@ -590,16 +590,27 @@ def submit_feedback():
             
             # Dosya seçilmiş mi kontrol et
             if screenshot_file and screenshot_file.filename:
-                # Dosya uzantısı kontrolü
-                allowed_extensions = {'png', 'jpg', 'jpeg', 'gif', 'webp'}
-                file_ext = screenshot_file.filename.rsplit('.', 1)[1].lower() if '.' in screenshot_file.filename else ''
-                
-                if file_ext not in allowed_extensions:
+                # S7 (2026-07-21): yalnız uzantı kontrolü vardı — dosya
+                # `current_app.static_folder` altına, yani WEBROOT'a yazılıyor.
+                # Uzantı saldırganın seçtiği bir metin; içerik doğrulanmalı.
+                # app/utils/upload_security magic byte + SVG script taraması
+                # yapıyor ve projede zaten kullanılıyordu.
+                from app.utils.upload_security import validate_uploaded_image
+                _blob = screenshot_file.read()
+                screenshot_file.seek(0)
+                _ok, _msg, _ext = validate_uploaded_image(
+                    _blob, {'png', 'jpg', 'jpeg', 'gif', 'webp'}
+                )
+                if not _ok:
+                    current_app.logger.warning(
+                        '[feedback_upload] reddedildi (ad=%r): %s',
+                        screenshot_file.filename, _msg,
+                    )
                     return jsonify({
                         'success': False,
                         'message': 'Sadece resim dosyaları kabul edilir (PNG, JPG, JPEG, GIF, WEBP).'
                     }), 400
-                
+
                 # Güvenli dosya adı oluştur
                 original_filename = secure_filename(screenshot_file.filename)
                 unique_filename = f"{uuid.uuid4().hex}_{original_filename}"

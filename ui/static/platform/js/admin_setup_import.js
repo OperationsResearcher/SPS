@@ -39,18 +39,18 @@
     post(DRYRUN_URL).then(function (j) {
       dryBtn.disabled = false;
       if (!j.success) {
-        Swal.fire({ icon: "error", title: j.message || "Dosya işlenemedi" });
+        Swal.fire({ icon: "error", title: j.message || t("Dosya işlenemedi") });
         return;
       }
       var s = j.summary || {};
       lastPlanHadErrors = (s.error || 0) > 0;
       document.getElementById("si-summary").innerHTML =
-        "✅ " + (s.add || 0) + " yeni · 🔄 " + (s.update || 0) + " güncelleme · " +
-        "📊 " + (s.strategy_rows || 0) + " strateji satırı · ❌ " + (s.error || 0) + " hatalı";
+        "✅ " + (s.add || 0) + " " + t("yeni") + " · 🔄 " + (s.update || 0) + " " + t("güncelleme") + " · " +
+        "📊 " + (s.strategy_rows || 0) + " " + t("strateji satırı") + " · ❌ " + (s.error || 0) + " " + t("hatalı");
       var errHtml = "";
       (j.errors || []).forEach(function (e) {
         errHtml += "<div style='font-size:12px;color:#b91c1c;padding:2px 0;'>" +
-          esc(e.sheet) + " — Satır " + esc(e.row) + ": " + esc(e.error) + "</div>";
+          esc(e.sheet) + " — " + t("Satır") + " " + esc(e.row) + ": " + esc(e.error) + "</div>";
       });
       document.getElementById("si-errors").innerHTML = errHtml;
       applyBtn.disabled = false;
@@ -58,22 +58,22 @@
       resultCard.style.display = "none";
     }).catch(function () {
       dryBtn.disabled = false;
-      Swal.fire({ icon: "error", title: "İstek başarısız" });
+      Swal.fire({ icon: "error", title: t("İstek başarısız") });
     });
   });
 
   applyBtn.addEventListener("click", function () {
     if (lastPlanHadErrors && !skipCheck.checked) {
       Swal.fire({ icon: "warning",
-        title: "Hatalı satırlar var",
-        text: "Düzeltin ya da 'hatalıları atla' seçeneğini işaretleyin." });
+        title: t("Hatalı satırlar var"),
+        text: t("Düzeltin ya da 'hatalıları atla' seçeneğini işaretleyin.") });
       return;
     }
     applyBtn.disabled = true;
     post(APPLY_URL, { skip_errors: skipCheck.checked ? "1" : "0" }).then(function (j) {
       applyBtn.disabled = false;
       if (!j.success || !j.applied) {
-        Swal.fire({ icon: "error", title: j.message || "Uygulama başarısız — hiçbir değişiklik yazılmadı" });
+        Swal.fire({ icon: "error", title: j.message || t("Uygulama başarısız — hiçbir değişiklik yazılmadı") });
         return;
       }
       var r = j.result || {};
@@ -88,10 +88,10 @@
       });
       document.getElementById("si-result").innerHTML = html;
       resultCard.style.display = "block";
-      Swal.fire({ icon: "success", title: "İçe aktarma tamamlandı", timer: 1800, showConfirmButton: false });
+      Swal.fire({ icon: "success", title: t("İçe aktarma tamamlandı"), timer: 1800, showConfirmButton: false });
     }).catch(function () {
       applyBtn.disabled = false;
-      Swal.fire({ icon: "error", title: "İstek başarısız" });
+      Swal.fire({ icon: "error", title: t("İstek başarısız") });
     });
   });
 })();
