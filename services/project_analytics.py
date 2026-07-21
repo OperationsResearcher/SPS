@@ -259,14 +259,20 @@ def calculate_surec_saglik_skoru(surec_id, yil=None):
                 'etki': '-%15.0',
                 'etki_sayi': -15.0  # Sıralama için sayısal değer
             })
-        if proje_tamamlama_orani < 70:
+        # K12: bu iki karşılaştırma `None` kontrolü yapmıyordu →
+        # `'<' not supported between instances of 'NoneType' and 'int'`
+        # → dıştaki except yakalayıp None dönüyor → /api/dashboard/executive 500.
+        # Değişkenler satır 76/121'de bilinçli olarak None başlatılıyor
+        # ("ölçülemedi"); ölçülemeyen bir oran "70'in altında" sayılamaz —
+        # etken listesine hiç girmemeli.
+        if proje_tamamlama_orani is not None and proje_tamamlama_orani < 70:
             etkenler.append({
                 'etken': 'Düşük Tamamlanma',
                 'deger': f'%{round(proje_tamamlama_orani, 1)}',
                 'etki': f'%{round(proje_tamamlama_orani, 1)}',
                 'etki_sayi': proje_tamamlama_orani - 70  # Ne kadar düşükse o kadar negatif
             })
-        if pg_hedef_ulasma_orani < 70:
+        if pg_hedef_ulasma_orani is not None and pg_hedef_ulasma_orani < 70:
             etkenler.append({
                 'etken': 'PG Hedef Ulaşma',
                 'deger': f'%{round(pg_hedef_ulasma_orani, 1)}',

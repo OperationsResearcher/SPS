@@ -273,7 +273,11 @@ def api_ai_coach_analyze():
         kurum_id = getattr(current_user, 'kurum_id', None)
         if not kurum_id:
             return jsonify({'success': False, 'message': 'Kurum bilgisi yok'}), 400
-        as_of_str = request.args.get('as_of_date') or (request.get_json() or {}).get('as_of_date')
+        # K12: `request.get_json()` Content-Type application/json değilse
+        # 415 FIRLATIR (None dönmez). Uç GET'i de kabul ettiği için düz bir
+        # GET isteği her seferinde 415 → dıştaki except → 500 veriyordu.
+        # silent=True hata yerine None döndürür.
+        as_of_str = request.args.get('as_of_date') or (request.get_json(silent=True) or {}).get('as_of_date')
         as_of_date = None
         if as_of_str:
             from datetime import datetime as dt

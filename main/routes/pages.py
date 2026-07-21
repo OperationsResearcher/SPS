@@ -77,7 +77,7 @@ def debug_surec_data():
             'success': True,
             'user_info': {
                 'id': current_user.id,
-                'username': current_user.username,
+                'username': current_user.email,
                 'sistem_rol': current_user.sistem_rol,
                 'kurum_id': current_user.kurum_id
             },
@@ -137,7 +137,7 @@ def api_kullanici_surecleri():
         # Tüm süreç ID'leri
         tum_surec_ids = list(set(lider_surec_ids + uye_surec_ids))
         
-        current_app.logger.info(f'Kullanıcı {current_user.id} ({current_user.username}) - Lider: {lider_surec_ids}, Üye: {uye_surec_ids}')
+        current_app.logger.info(f'Kullanıcı {current_user.id} ({current_user.email}) - Lider: {lider_surec_ids}, Üye: {uye_surec_ids}')
         
         # Süreçleri getir (kurum izolasyonu: admin dışı sadece kendi kurumu)
         if tum_surec_ids:

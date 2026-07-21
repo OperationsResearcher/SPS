@@ -12,19 +12,23 @@
             <ul class="nav nav-pills justify-content-md-end nav-fill nav-justified-sm">
                 <li class="nav-item">
                     <a class="nav-link {% if active_tab == 'tenants' %}active fw-bold{% endif %}"
-                        href="{{ url_for('admin_bp.tenants') }}">
+                        {# K7: 'admin_bp.tenants/users/packages' route'ları modern
+                           app_bp'ye taşınmış ama bu şablon güncellenmemişti →
+                           BuildError → bu layout'u extend eden HER sayfa 500.
+                           Etkilenen: /admin/kule-iletisim, /admin/strategy-management #}
+                        href="{{ url_for('app_bp.admin_tenants') }}">
                         <i class="fas fa-building me-1"></i>Kurumlar
                     </a>
                 </li>
                 <li class="nav-item ms-2">
                     <a class="nav-link {% if active_tab == 'users' %}active fw-bold{% endif %}"
-                        href="{{ url_for('admin_bp.users') }}">
+                        href="{{ url_for('app_bp.admin_users') }}">
                         <i class="fas fa-users me-1"></i>Kullanıcılar
                     </a>
                 </li>
                 <li class="nav-item ms-2">
                     <a class="nav-link {% if active_tab == 'packages' %}active fw-bold{% endif %}"
-                        href="{{ url_for('admin_bp.packages') }}">
+                        href="{{ url_for('app_bp.admin_packages') }}">
                         <i class="fas fa-cubes me-1"></i>SaaS Yönetimi
                     </a>
                 </li>

@@ -455,7 +455,7 @@ def get_feedback_detail(feedback_id):
                 return jsonify({'success': False, 'message': 'Bu geri bildirimi görüntüleyemezsiniz.'}), 403
         
         # User bilgilerini güvenli şekilde al
-        user_name = feedback.user.first_name or feedback.user.username if feedback.user else 'Bilinmeyen Kullanıcı'
+        user_name = feedback.user.first_name or feedback.user.email if feedback.user else 'Bilinmeyen Kullanıcı'
         user_email = feedback.user.email if feedback.user else ''
         
         return jsonify({
@@ -622,7 +622,7 @@ def submit_feedback():
         db.session.add(feedback)
         db.session.commit()
         
-        current_app.logger.info(f'Yeni geri bildirim kaydedildi: ID={feedback.id}, Kullanıcı={current_user.username}, Kategori={category}')
+        current_app.logger.info(f'Yeni geri bildirim kaydedildi: ID={feedback.id}, Kullanıcı={current_user.email}, Kategori={category}')
         
         return jsonify({
             'success': True,

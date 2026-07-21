@@ -72,7 +72,7 @@ def fix_bsc_schema():
             """))
             conn.commit()
 
-        return "BSC şeması güncellendi. <a href='/bsc/map/%d'>BSC Haritası</a>" % current_user.kurum_id
+        return "BSC şeması güncellendi. <a href='/bsc/map/%d'>BSC Haritası</a>" % current_user.tenant_id
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'BSC şema güncelleme hatası: {e}', exc_info=True)
@@ -83,7 +83,7 @@ def fix_bsc_schema():
 def api_strategic_planning_graph():
     """Dinamik SP akışı için graf verisini döndürür (nodes/edges + skorlar)."""
     try:
-        kurum = current_user.kurum
+        kurum = current_user.tenant
 
         def _normalize_score(raw_value, max_value) -> int:
             try:
@@ -147,12 +147,19 @@ def api_strategic_planning_graph():
             main_max_raw = 9 * len(processes) * len(subs)
             main_scores_norm[main.id] = _normalize_score(raw_total, main_max_raw)
 
-        # KPI score: agirlikli_basari_puani (0-5) => 0-100
+        # KPI score: ProcessKpi.calculated_score (ZATEN 0-100)
+        #
+        # K12: burada `kpi.agirlikli_basari_puani` okunuyordu — ProcessKpi'de
+        # BÖYLE BİR ALAN YOK → AttributeError → /api/strategic-planning/graph 500.
+        # Modeldeki skor alanı `calculated_score` ve skor motoru onu 0-100
+        # ölçeğinde yazıyor (score_engine_service compute_pg_score), dolayısıyla
+        # eski 0-5 → 0-100 normalizasyonu da kaldırıldı; uygulanmış olsaydı
+        # her skoru 20 kat şişirirdi.
         kpi_scores_norm = {}
         for kpi in kpis:
-            if kpi.agirlikli_basari_puani is None:
+            if kpi.calculated_score is None:
                 continue
-            kpi_scores_norm[kpi.id] = _normalize_score(kpi.agirlikli_basari_puani, 5.0)
+            kpi_scores_norm[kpi.id] = max(0, min(100, int(round(float(kpi.calculated_score)))))
 
         # Nodes / edges for vis-network
         nodes = []
@@ -164,14 +171,14 @@ def api_strategic_planning_graph():
             return f"{base}\n({score}%)"
 
         # Vision node (top level)
-        if kurum.vizyon:
+        if kurum.vision:
             nodes.append({
                 'id': 'vision',
                 'group': 'vision',
                 'shape': 'box',
                 'color': '#8b5cf6',
-                'label': f"VİZYON\n{kurum.vizyon[:80]}...",
-                'title': f"<b>Vizyon</b><br/>{kurum.vizyon}",
+                'label': f"VİZYON\n{kurum.vision[:80]}...",
+                'title': f"<b>Vizyon</b><br/>{kurum.vision}",
                 'url': kurum_panel_url,
                 'level': 0,
                 'font': {'size': 18, 'bold': True}
@@ -221,7 +228,7 @@ def api_strategic_planning_graph():
             })
 
         # Vision to main strategies edges
-        if kurum.vizyon:
+        if kurum.vision:
             for main in main_strategies:
                 edges.append({
                     'from': 'vision',
@@ -281,7 +288,10 @@ def api_strategic_planning_graph():
                 'shape': 'box',
                 'color': '#7c3aed',
                 'label': label,
-                'title': f"<b>{kpi.ad}</b><br/>Ağırlıklı Puan: <b>{(kpi.agirlikli_basari_puani if kpi.agirlikli_basari_puani is not None else '-')}</b><br/>Skor: <b>{(str(score) + '%' if score is not None else '-')}</b>",
+                # K12: `agirlikli_basari_puani` alanı yok (bkz. satır 150 notu).
+                # Skor zaten 0-100; ayrı bir "ağırlıklı puan" satırı göstermek
+                # yerine tek skor gösteriliyor.
+                'title': f"<b>{kpi.ad}</b><br/>Skor: <b>{(str(score) + '%' if score is not None else '-')}</b>",
                 'url': kurum_panel_url,
                 'level': 4,
                 'score': score if score is not None else None,
@@ -368,7 +378,7 @@ def api_ai_insights():
     """AI Insight'ları getir"""
     try:
         from services.ai_service import AIService
-        insights = AIService.get_insights_for_user(current_user.id, current_user.kurum_id)
+        insights = AIService.get_insights_for_user(current_user.id, current_user.tenant_id)
         return jsonify({
             'success': True,
             'insights': insights

@@ -4,6 +4,7 @@
 api/routes.py'den bölündü (davranış/URL değişmedi). Blueprint: api.blueprint.api_bp
 """
 from flask import jsonify, request, current_app, send_file
+from flask_babel import gettext as _
 from werkzeug.utils import secure_filename
 import os
 import uuid
@@ -249,7 +250,40 @@ def api_proje_dosyalar(project_id):
 @csrf.exempt
 @login_required
 def api_dokuman_merkezi():
-    """Kurumsal dosya yönetimi API"""
+    """Kurumsal dosya yönetimi API — UYGULANMADI (501).
+
+    ⚠ BU UÇ HİÇBİR ZAMAN ÇALIŞMADI. Aşağıdaki gövde `ProjectFile` modelinin
+    OLMAYAN 8 alanına dayanıyor (ölçüm 2026-07-21):
+
+        kodun beklediği : scope, is_active, category, file_name, file_size,
+                          description, version, user_id
+        modelde OLAN    : id, project_id, uploader_id, filename, file_path,
+                          file_type, created_at
+
+    GET her çağrıda `AttributeError: type object 'ProjectFile' has no
+    attribute 'scope'` ile 500 veriyordu.
+
+    POST daha tehlikeliydi: dosyayı ÖNCE diske yazıyor, SONRA DB kaydında
+    patlıyordu → `static/uploads/corporate_files/` altında sahipsiz dosya
+    birikiyordu (yükleyen "hata" görüyor, dosya sunucuda kalıyor).
+
+    Doğru düzeltme modeli genişletmek + migration yazmaktır; bu bir ürün
+    kararı olduğu için burada YAPILMADI. Kırık 500 yerine dürüst 501
+    dönülüyor — sessizce yanlış davranmaktansa "uygulanmadı" demek daha iyi.
+    Ölü gövde referans olsun diye altta bırakıldı.
+    """
+    current_app.logger.warning(
+        "[api_dokuman_merkezi] uygulanmamış uç çağrıldı (ProjectFile modeli "
+        "gerekli alanları taşımıyor) — user=%s", getattr(current_user, "id", None)
+    )
+    return jsonify({
+        'success': False,
+        'message': _('Doküman merkezi henüz kullanıma açılmadı.'),
+    }), 501
+
+
+def _api_dokuman_merkezi_olu_govde():
+    """Yukarıdaki ucun eski gövdesi — ÇALIŞMAZ, referans amaçlı saklandı."""
     try:
         if request.method == 'GET':
             # Kurumsal dosyaları getir

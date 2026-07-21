@@ -14,6 +14,18 @@ from flask_caching import Cache
 # Database — tek kaynak: kök extensions.py (db.init_app app/__init__.py içinde)
 from extensions import db  # noqa: F401
 
+# Cache — tek kaynak: kök extensions.py (init_app app/__init__.py içinde).
+#
+# 2026-07-21: Burada AYRI bir `Cache()` nesnesi vardı ve `init_app` YALNIZ
+# ona uygulanıyordu. Kök `extensions.cache`'i import eden 3 dosya
+# (api/routes_ai.py, services/cache_service.py, services/strategic_impact_service.py)
+# init edilmemiş bir nesneyle çalışıyor, `cache.get()` çağrısında
+# `KeyError: <flask_caching.Cache object>` alıyordu → /api/dashboard/executive 500.
+#
+# db için zaten bu desen kurulmuştu (yukarıdaki satır); cache atlanmıştı.
+# İki Cache nesnesi tutmak B2'deki "kopya ayrışması" hatasının aynısıydı.
+from extensions import cache  # noqa: F401
+
 migrate = Migrate()
 
 # Authentication
@@ -31,8 +43,7 @@ limiter = Limiter(
     storage_uri="memory://"
 )
 
-# Caching
-cache = Cache()
+# Caching — yukarıda kök extensions.py'den import edildi (tek nesne).
 
 # Security Headers
 talisman = Talisman()

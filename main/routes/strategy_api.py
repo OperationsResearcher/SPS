@@ -193,7 +193,7 @@ def strategy_project_detail(id):
         current_app.logger.error(f'Proje detay sayfası hatası: {str(e)}')
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         flash(f'Proje detayı görüntülenirken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
 
 
 @main_bp.route('/strategy/project/<int:id>/update_processes', methods=['POST'])
@@ -281,7 +281,7 @@ def strategy_project_add():
         # Validasyon
         if not name:
             flash('Proje adı zorunludur.', 'error')
-            return redirect(url_for('main.strategy_projects'))
+            return redirect(url_for('app_bp.sp_strategy_project_matrix'))
         
         # Tarihleri parse et
         start_date = None
@@ -318,7 +318,7 @@ def strategy_project_add():
         db.session.commit()
         
         flash('Proje başarıyla oluşturuldu.', 'success')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
         
     except Exception as e:
         import traceback
@@ -326,7 +326,7 @@ def strategy_project_add():
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         db.session.rollback()
         flash(f'Proje oluşturulurken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
 
 
 @main_bp.route('/strategy/project/<int:id>/edit', methods=['POST'])
@@ -369,7 +369,7 @@ def strategy_project_edit(id):
         # Validasyon
         if not name:
             flash('Proje adı zorunludur.', 'error')
-            return redirect(url_for('main.strategy_projects'))
+            return redirect(url_for('app_bp.sp_strategy_project_matrix'))
         
         # Tarihleri parse et
         start_date = None
@@ -412,7 +412,7 @@ def strategy_project_edit(id):
         db.session.commit()
         
         flash('Proje başarıyla güncellendi.', 'success')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
         
     except Exception as e:
         import traceback
@@ -420,7 +420,7 @@ def strategy_project_edit(id):
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         db.session.rollback()
         flash(f'Proje güncellenirken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
 
 
 @main_bp.route('/strategy/project/<int:id>/delete', methods=['POST'])
@@ -442,7 +442,7 @@ def strategy_project_delete(id):
         db.session.commit()
         
         flash(f'"{project_name}" projesi başarıyla silindi.', 'success')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
         
     except Exception as e:
         import traceback
@@ -450,7 +450,7 @@ def strategy_project_delete(id):
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         db.session.rollback()
         flash(f'Proje silinirken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
 
 
 @main_bp.route('/strategy/project/<int:id>/clone', methods=['POST'])
@@ -471,7 +471,7 @@ def strategy_project_clone(id):
         # Validasyon
         if not new_name:
             flash('Yeni proje adı zorunludur.', 'error')
-            return redirect(url_for('main.strategy_projects'))
+            return redirect(url_for('app_bp.sp_strategy_project_matrix'))
         
         # Yeni proje oluştur
         new_project = Project(
@@ -500,7 +500,7 @@ def strategy_project_clone(id):
         db.session.commit()
         
         flash(f'Proje başarıyla kopyalandı: "{new_name}"', 'success')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
         
     except Exception as e:
         import traceback
@@ -508,7 +508,7 @@ def strategy_project_clone(id):
         current_app.logger.error(f'Traceback: {traceback.format_exc()}')
         db.session.rollback()
         flash(f'Proje kopyalanırken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.strategy_projects'))
+        return redirect(url_for('app_bp.sp_strategy_project_matrix'))
 
 
 @main_bp.route('/strategy/kpi/add', methods=['POST'])
