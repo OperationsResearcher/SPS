@@ -5,6 +5,7 @@ from flask import jsonify, render_template, request, redirect, url_for, flash, c
 from flask_login import current_user, login_required
 
 from platform_core import app_bp
+from app.services.date_sovereign import resolve_request_year
 from app.models import db
 from app.models.process import Process
 from app.models.k_radar_domain import ProcessMaturity
@@ -166,7 +167,7 @@ def k_radar_kp_olgunluk_ekle():
 def k_radar_api_kp():
     from services.k_radar_service import get_kp_data
     _sp, _ = _scope_tuples()
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_data(_required_tenant_id(), _sp)}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_data(_required_tenant_id(), _sp, year=resolve_request_year())}))
 
 
 @app_bp.route("/k-radar/api/kp/radar")
@@ -183,6 +184,10 @@ def k_radar_api_kp_radar():
     """
     from sqlalchemy import text as _t
     tid = _required_tenant_id()
+    # K2: bu uç kendi ham SQL'ini kullanıyor (get_kp_data'ya gitmiyor) ve
+    # kpi_data sorgularında YIL FİLTRESİ YOKTU → 2020 ile 2026 yanıtı
+    # byte-byte aynıydı (pg_total=251, pg_on_target=219 sabit).
+    yil = resolve_request_year()
     try:
         # PG hedef üstü + veri kapsamı (tek sorgu)
         r1 = db.session.execute(_t("""
@@ -192,12 +197,14 @@ def k_radar_api_kp_radar():
                 WHERE k.is_active AND EXISTS (
                   SELECT 1 FROM kpi_data kd
                   WHERE kd.process_kpi_id=k.id AND kd.is_active=true
+                    AND kd.year = :y
                 )
               ) AS with_data,
               count(DISTINCT k.id) FILTER (
                 WHERE k.is_active AND EXISTS (
                   SELECT 1 FROM kpi_data kd
                   WHERE kd.process_kpi_id=k.id AND kd.is_active=true
+                    AND kd.year = :y
                     AND kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
                     AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
                     AND kd.actual_value::float >= kd.target_value::float
@@ -206,7 +213,7 @@ def k_radar_api_kp_radar():
             FROM process_kpis k
             JOIN processes p ON k.process_id=p.id
             WHERE p.tenant_id=:t
-        """), {"t": tid}).fetchone()
+        """), {"t": tid, "y": yil}).fetchone()
         total = int(r1.total or 0) if r1 else 0
         with_data = int(r1.with_data or 0) if r1 else 0
         on_target = int(r1.on_target or 0) if r1 else 0
@@ -382,14 +389,14 @@ def k_radar_api_kp_olgunluk_delete(row_id: int):
 @login_required
 def k_radar_api_kp_darbogaz():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("darbogaz", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0], year=resolve_request_year()).get("darbogaz", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/value-chain")
 @login_required
 def k_radar_api_kp_deger_zinciri():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("deger_zinciri", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0], year=resolve_request_year()).get("deger_zinciri", {})}))
 
 
 # ── Değer Zinciri öğe CRUD (L3 eksik tamamlama) ───────────────────────────────
@@ -530,39 +537,39 @@ def _vc_proc(raw, tid):
 @login_required
 def k_radar_api_kp_pareto():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("pareto", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0], year=resolve_request_year()).get("pareto", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/sla")
 @login_required
 def k_radar_api_kp_sla():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("sla", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0], year=resolve_request_year()).get("sla", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/benchmark")
 @login_required
 def k_radar_api_kp_benchmark():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("benchmark", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0], year=resolve_request_year()).get("benchmark", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/oee")
 @login_required
 def k_radar_api_kp_oee():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("oee", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0], year=resolve_request_year()).get("oee", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/vsm")
 @login_required
 def k_radar_api_kp_vsm():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("vsm", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0], year=resolve_request_year()).get("vsm", {})}))
 
 
 @app_bp.route("/k-radar/api/kp/capacity")
 @login_required
 def k_radar_api_kp_kapasite():
     from services.k_radar_service import get_kp_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0]).get("kapasite", {})}))
+    return _safe_json(lambda: jsonify({"success": True, "data": get_kp_extended_data(_required_tenant_id(), _scope_tuples()[0], year=resolve_request_year()).get("kapasite", {})}))

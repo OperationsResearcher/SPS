@@ -11,6 +11,7 @@ from sqlalchemy import func, and_, or_, text, select
 from sqlalchemy.orm import joinedload, selectinload
 
 from platform_core import app_bp
+from app.services.date_sovereign import resolve_request_year
 from app.models import db
 from app.models.core import User, Strategy, SubStrategy, Tenant
 from app.models.process import (
@@ -121,7 +122,23 @@ def raporlar_api_bi_kpi_data_csv():
     if not tid:
         return jsonify({"success": False, "message": "Tenant yok"}), 400
 
-    rows = db.session.query(
+    # K3 (2026-07-21): bu sorguda İKİ ayrı kusur vardı.
+    #
+    # 1) YIL FİLTRESİ YOKTU. Kullanıcı 2020'yi seçip CSV indirdiğinde dosyada
+    #    tek bir 2020 kaydı bile çıkmıyordu (ölçüm: gelen tek yıl 2024).
+    # 2) `.limit(10000)` vardı ama `ORDER BY` YOKTU → PostgreSQL'in verdiği
+    #    RASTGELE 10.000'lik dilim geliyordu (Tomofil'de 91.408 satırdan).
+    #
+    # Bu uç Power BI/Tableau'ya bağlanmak için tasarlandı: müşteri raporunu
+    # yanlış yılın rastgele üçte biri üzerine kurup fark etmiyordu.
+    #
+    # `year` parametresiz de çağrılabilsin diye ?all=1 kaçışı bırakıldı
+    # (BI aracı tüm geçmişi çekmek isteyebilir) — ama varsayılan artık
+    # kullanıcının seçtiği yıl.
+    yil = resolve_request_year()
+    tum_yillar = str(request.args.get("all", "")).lower() in ("1", "true", "yes")
+
+    q = db.session.query(
         KpiData.id, KpiData.year, KpiData.data_date, KpiData.period_type,
         KpiData.period_no, KpiData.target_value, KpiData.actual_value,
         KpiData.status, KpiData.status_percentage,
@@ -132,7 +149,17 @@ def raporlar_api_bi_kpi_data_csv():
     ).filter(
         Process.tenant_id == tid, Process.is_active.is_(True),
         KpiData.is_active.is_(True),
-    ).limit(10000).all()
+    )
+    if not tum_yillar:
+        q = q.filter(KpiData.year == yil)
+    # Deterministik sıra: kırpma olursa hep aynı dilim gelsin.
+    rows = q.order_by(KpiData.data_date.desc(), KpiData.id.desc()).limit(10000).all()
+
+    if len(rows) == 10000:
+        current_app.logger.warning(
+            "[bi_kpi_data_csv] 10.000 satır sınırına ULAŞILDI (tenant=%s, yıl=%s, "
+            "all=%s) — çıktı KIRPILMIŞ olabilir.", tid, yil, tum_yillar,
+        )
 
     buf = io.StringIO()
     w = csv.writer(buf)
@@ -143,8 +170,17 @@ def raporlar_api_bi_kpi_data_csv():
         w.writerow([r[0], r[1], r[2].isoformat() if r[2] else "", r[3], r[4],
                     r[5], r[6], r[7], r[8], r[9], r[10], r[11], r[12]])
 
+    # Kırpma sessiz kalmamalı: BI aracı başlıkları okuyamasa bile dosya adı
+    # kullanıcıya hangi yılı indirdiğini söyler.
+    dosya_adi = f"kpi_data_{'tum-yillar' if tum_yillar else yil}.csv"
+    basliklar = {
+        "Content-Disposition": f"attachment; filename={dosya_adi}",
+        "X-Kokpitim-Year": "all" if tum_yillar else str(yil),
+        "X-Kokpitim-Row-Count": str(len(rows)),
+        "X-Kokpitim-Truncated": "1" if len(rows) == 10000 else "0",
+    }
     return Response(buf.getvalue(), mimetype="text/csv; charset=utf-8",
-                    headers={"Content-Disposition": "attachment; filename=kpi_data.csv"})
+                    headers=basliklar)
 
 
 @app_bp.route("/k-report/api/bi/strategies.json")
