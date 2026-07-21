@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-283 | 2026-07-21 | ✅ Tamamlandı
+
+**Görev:** Kart açıklama zenginleştirme — raporlar dilimi 94/94 kart (191/501 tamam, 310 kaldı)
+**Modül:** raporlar (kart katmanı)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/seed_data/card_descriptions_raporlar.py` → YENİ: 94 kartın zengin açıklaması (ort. 541 krk)
+- `docs/kontrol/KART-ACIKLAMA-DEVIR.md` → ilerleme tablosu güncellendi, işleyen yöntem not edildi
+
+### Yapılan İşlem
+Devir yordamına uyuldu: 94 kart 4 paralel Explore ajanına bölündü; her kart için
+Formül/Kaynak/Eşik/Fallback/Sınır koddan (dosya:satır) çıkarıldı — uydurma yok. Açıklamalar
+yazım sözleşmesine göre (Hesap/Eşik/Sınır/Yorum/Kaynak) yazıldı; şeffaflık kuralı gereği ad-ölçüm
+ayrışmaları açıkça belirtildi (örn. sektör ortalamaları hard-coded, 'hedef revizyon' gerçek audit
+değil, '7 Muda'nın 4'ü tespit ediliyor, RPN 2-çarpanlı, AI kartlarının fallback davranışı).
+Seed KONTROL 94/94 eşleşti → uygulandı. raporlar ort. 49→541 krk; katalog ort. 277 krk. 89 test yeşil.
+
+### Notlar
+Ajan taraması 3 gerçek kod tutarsızlığı da yakaladı (ai_danisman action/pivot_type, audit PDF
+4-vs-6 bölüm, ml_anomaly '6 ölçüm' metni vs kod 8) — düzeltilmedi, KART-VERI-TUTARSIZLIKLARI
+adayı. D0 (438 ters gösterge) hâlâ onay bekliyor.
+
 ## TASK-281 | 2026-07-21 | ✅ Tamamlandı
 
 **Görev:** Yayın (www.kokpitim.com) güncellendi — `dbbe2ce` → `c65cb5dd` (109 commit, TASK-248…279)

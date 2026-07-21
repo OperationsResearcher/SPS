@@ -10,18 +10,17 @@
 
 | | |
 |---|---|
-| **Tamamlanan** | K-Radar pilotu **97/97 kart** |
-| **Kalan** | **405 kart** (501 toplam − 96 zengin) |
-| **K-Radar ortalaması** | 67 → **582 karakter** |
-| **Tüm katalog ortalaması** | 87 → **189 karakter** |
-| **Son commit** | `4a1a0bcc` — dal: `claude/k-radar-kp-sayfa-tasarim` |
-| **Merge/push** | **YAPILMADI** — kullanıcı onayı bekliyor |
+| **Tamamlanan** | K-Radar 97 + **raporlar 94** = **191/501 kart** (güncelleme 2026-07-21) |
+| **Kalan** | **310 kart** |
+| **raporlar ortalaması** | 49 → **541 karakter** (2026-07-21) |
+| **Tüm katalog ortalaması** | **277 karakter** (2026-07-21 ölçümü) |
+| **Son durum** | K-Radar altyapısı main'de (`51c30bd4`); raporlar dilimi `claude/kart-aciklama-raporlar` dalında |
 
 ### Kalan iş — modül bazında (öncelik sırası)
 
 | Modül | Kart | Mevcut ort. | Not |
 |---|---|---|---|
-| `raporlar` | **94** | 49 krk | **En kötü durum.** Çoğu `"X — rapor kartı."` şablon dolgusu |
+| ~~`raporlar`~~ | ~~94~~ | ✅ 541 krk | **BİTTİ 2026-07-21** — `card_descriptions_raporlar.py` |
 | `admin` | **83** | 74 krk | Yönetim ekranları |
 | `sp` | **83** | 87 krk | Stratejik Planlama — literatür ağırlıklı (SWOT/TOWS/PESTEL burada da var) |
 | `project` | 21 | 90 krk | Proje/portföy |
@@ -31,9 +30,16 @@
 | `ayarlar` / `kurum` / `auth` | 6+6+6 | ~90 krk | Küçük gruplar |
 | `masaustu` + diğer tekil | ~70 | — | Dağınık kalanlar |
 
-**Önerilen sıra:** `raporlar` → `sp` → `admin` → `project` → `bireysel` → kalanlar.
-(`raporlar` en kötü durumda; `sp` literatür bakımından K-Radar'a en yakın, hazır
-malzeme var — bkz. §4.)
+**Önerilen sıra (kalan):** `sp` → `admin` → `project` → `bireysel` → kalanlar.
+(`sp` literatür bakımından K-Radar'a en yakın, hazır malzeme var — bkz. §4.)
+
+**raporlar diliminde işleyen yöntem (2026-07-21, tekrar kullan):** 94 kart 4 paralel
+Explore ajanına bölündü (sayfa grupları halinde), her ajan kart başına
+Formül/Kaynak/Eşik/Fallback/Sınır çıkardı (dosya:satır kanıtlı) → açıklamalar tek
+oturumda yazıldı → seed KONTROL 94/94 eşleşme → uygulandı. Ajan bulguları ayrıca
+gerçek kod tutarsızlıkları yakaladı (ai_danisman action/pivot_type uyumsuzluğu,
+audit PDF 4-vs-6 bölüm, ml_anomaly 6-vs-8 ölçüm metni) → KART-VERI-TUTARSIZLIKLARI.md'ye
+işlenecek adaylar.
 
 ---
 
