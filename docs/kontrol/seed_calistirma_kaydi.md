@@ -11,6 +11,8 @@
 |---|---|---|---|---|---|
 | `seed_l2_module_gating.py` | ✅ (tarih bilinmiyor) | ✅ 2026-07-05 | ✅ 2026-07-05 | ? | Eksik 5 system_modules kodu + Master Package bağı. Test+Demo'da sequence drift vardı → `sync_pg_sequence_if_needed('system_modules','id')` sonra çalıştı. |
 | `seed_l2_paketler.py` | ✅ (tarih bilinmiyor) | ✅ 2026-07-05 | ✅ 2026-07-05 | ? | Başlangıç/Yönetim/Strateji paketleri. `seed_l2_module_gating.py`'ye bağımlı (önce o çalışmalı). |
+| `seed_yonetim_ozeti_kartlari.py` | ✅ (2026-07 öncesi) | ✅ 2026-07-21 (DB yerel kopyası) | ? | ✅ 2026-07-21 | YO01-09 meta. Öncesinde kart keşfi şart. |
+| `seed_sp_kart_aciklamalari.py` | ✅ (tarih bilinmiyor) | ✅ 2026-07-21 (DB yerel kopyası) | ? | ✅ 2026-07-21 (içerik md5 doğrulandı) | system_cards içeriği Yayın=Yerel birebir (501 kart, toplu md5 eşit). |
 | `seed_l3_ileri_moduller.py` | ? | ? | ? | ? | |
 | `seed_raporlar_modulu_strateji.py` | ? | ? | ? | ? | |
 | `seed_component_module_gating.py` | ? | ? | ? | ? | |

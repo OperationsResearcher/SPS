@@ -2,6 +2,57 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-281 | 2026-07-21 | ✅ Tamamlandı
+
+**Görev:** Yayın (www.kokpitim.com) güncellendi — `dbbe2ce` → `c65cb5dd` (109 commit, TASK-248…279)
+**Modül:** ops (deploy)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- Yayın sunucusu: kod `c65cb5dd`, şema `yb20c5e1a8d3` (9 migration), kart keşfi + YO seed
+- `docs/kontrol/YAYIN-DEPLOY-ONCESI-2026-07-21.md` → deploy öncesi sayımlar + sonuç raporu
+- `docs/kontrol/seed_calistirma_kaydi.md` → YO + SP kart seed satırları, Yayın/Test işaretleri
+
+### Yapılan İşlem
+Bağlayıcı 4-katman kontrolü (kod/şema/veri/tek-seferlik) deploy ÖNCESİ yapıldı ve tek listede
+sunuldu. `oracle_safe_deploy.sh` ile: PG yedek → git pull → build → 9 migration (kpi_data numeric
+ayna backfill 366k satır, period_type normalize, 202 orphan onarımı, yıl-bazlı Faz 1-2 tabloları)
+→ satır sayısı doğrulaması "değişmedi". Sonra kart keşfi (18 yeni k_radar kartı → 501) +
+`seed_yonetim_ozeti_kartlari.py`. Doğrulama: health 200 (iç+dış), container içi kod md5 = repo
+blob, alembic head eşit, system_cards içeriği (501 kart, code+description+short_id toplu md5)
+Yayın = Yerel birebir.
+
+### Notlar
+Yedek: `/opt/kokpitim/backups/pg_kokpitim_db_full_20260721_191702.sql.gz`. `kpi_data` Yayın'da
+113 satır fazla (canlı giriş — normal); `process_kpis` yerelde 1.000 fazla (KMF yerel verisi,
+Yayın'a itilmedi — veri yönü kuralı §8.6). Backfill'de bilinçli NULL kalanlar: aralık hedefi /
+'-' / yüzde / para birimi formatları (18 actual + 146 target).
+
+## TASK-280 | 2026-07-21 | ✅ Tamamlandı
+
+**Görev:** Test ortamı (test.kokpitim.com) sıfırdan kurulumla güncellendi — main `c65cb5dd` (TASK-279 dahil)
+**Modül:** ops (deploy)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- Sunucu: `/opt/kokpitim-test/app` → tamamen silinip yerel main'den yeniden kuruldu
+- Sunucu: `kokpitim_test_db` → drop + yerel DB dump'ından restore (170 tablo, sahiplik `kokpitim_test_user`)
+- `.claude/settings.local.json` → scp izin kuralı eklendi
+
+### Yapılan İşlem
+Bağlayıcı kural gereği (SUNUCU-GUNCELLEME-REHBERI §0.6: Test asla yamalanmaz) sıfırdan kurulum:
+yerel PG18 dump (plain, `\restrict` temizli) + kod tarball scp ile gönderildi (md5 doğrulandı),
+container + kod dizini + DB silindi, tarball açıldı, `.env` geri kondu (ENCRYPTION_KEY teyitli),
+DB test kullanıcısıyla restore edildi (sahiplik tuzağı yok), `docker build` + yeni container
+(`-e PORT=5050`, `.env` dosya-mount). Doğrulama: `/health` 200 (hem :5050 hem public URL),
+container içi `tenant_guard.py` md5 = yerel md5, tablo sayısı 170 = yerel, satırlar
+(tenants 13 / users 452 / system_cards 501) yerelle birebir.
+
+### Notlar
+Restore'da 2 kozmetik hata: PG18'in `transaction_timeout` parametresi (PG14 tanımıyor) +
+`schema public` sahiplik satırı — ikisi de etkisiz. `system_pages` hem yerelde hem Test'te 0
+(yerelin aynası — beklenen). Env yedeği: `/opt/kokpitim-test/env_yedek_20260721_190036`.
+
 ## TASK-279 | 2026-07-21 | ✅ Tamamlandı
 
 **Görev:** Büyük keşif raporundaki 40+ bulgunun düzeltilmesi + KMF veri mutabakatı
