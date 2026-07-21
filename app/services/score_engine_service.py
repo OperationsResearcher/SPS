@@ -74,6 +74,53 @@ def _parse_float(val) -> Optional[float]:
         return None
 
 
+# Toplulaştırma yöntemi — İKİ DİL BİR ARADA yaşıyor (D1/D2/M2, ölçüm 2026-07-21):
+#
+#   process_kpis.calculation_method       AVG 2389 · SUM 10           (kod)
+#   process_kpis.data_collection_method   Ortalama 1747 · Toplama 493 ·
+#                                          Son Değer 124 · AVG 35     (Türkçe + KİRLİ)
+#   kpi_year_configs.calculation_method   Ortalama 1050 · AVG 35 ·
+#                                          Son Değer 5 · NULL 24      (tek kolonda iki dil)
+#
+# Eskiden toplulaştırma yalnız ÜÇ Türkçe etikete bakıyordu; `AVG` hiçbir dala
+# düşmeyip `else` ile TESADÜFEN doğru sonuç veriyordu. Ama biri `SUM` yazsaydı
+# sessizce ortalama alınacaktı — stok/akım karışması demek ("yıllık satış"ı
+# ortalamak 12 kat küçültür).
+#
+# Kolonları tek dile göç ettirmek bir VERİ kararı (kullanıcı onayı ister);
+# burada okuma katmanı iki dili de doğru tanıyor. Tanınmayan değer log'a düşer.
+_AGGREGATION_ALIASES = {
+    'SUM': 'SUM', 'TOPLAMA': 'SUM', 'TOPLAM': 'SUM',
+    'LAST': 'LAST', 'SON DEĞER': 'LAST', 'SON DEGER': 'LAST', 'LATEST': 'LAST',
+    'AVG': 'AVG', 'ORTALAMA': 'AVG', 'MEAN': 'AVG', 'AVERAGE': 'AVG',
+}
+
+
+def normalize_aggregation_method(raw) -> str:
+    """Toplulaştırma yöntemini kanonik koda çevirir: 'AVG' | 'SUM' | 'LAST'.
+
+    Hem Türkçe etiketleri ('Ortalama', 'Toplama', 'Son Değer') hem İngilizce
+    kodları ('AVG', 'SUM') tanır. Bilinmeyen değer AVG'ye düşer ve log'a
+    yazılır — sessizce yanlış toplulaştırma yapmaktansa iz bırakmak gerekir.
+    """
+    if raw is None:
+        return 'AVG'
+    anahtar = str(raw).strip().upper()
+    if not anahtar:
+        return 'AVG'
+    kanonik = _AGGREGATION_ALIASES.get(anahtar)
+    if kanonik is None:
+        try:
+            current_app.logger.warning(
+                "[score_engine] bilinmeyen toplulaştırma yöntemi %r — "
+                "ortalama (AVG) varsayıldı.", raw,
+            )
+        except Exception:
+            pass
+        return 'AVG'
+    return kanonik
+
+
 def _resolve_target_for_calculation(raw_target, direction: str = "Increasing") -> Optional[float]:
     """
     Hedef değer aralık olarak girildiyse (örn: "20-24"), hesaplama için
@@ -140,11 +187,56 @@ def compute_pg_score(
 
 
 def _default_weight(weight: Optional[float], sibling_count: int) -> float:
+    """TEK bir kardeşin ağırlığı — kardeşlerin toplu durumunu BİLMEZ.
+
+    ⚠ Karışık durumda (bazı kardeşlerde ağırlık dolu, bazılarında boş) toplam
+    100 etmez. Böyle bir grubu hesaplarken `_distribute_weights` kullanın.
+    Bu fonksiyon geriye dönük uyum için duruyor.
+    """
     if sibling_count <= 0:
         return 100.0
     if weight is not None and weight > 0:
         return min(100.0, max(0.0, float(weight)))
     return 100.0 / sibling_count
+
+
+def _distribute_weights(weights: list) -> list:
+    """Kardeş grubunun ağırlıklarını tutarlı biçimde dağıtır (toplam 100).
+
+    B5 (2026-07-21): `_default_weight` her kardeşi BAĞIMSIZ değerlendiriyordu:
+    ağırlık doluysa o değer, boşsa `100/n`. Aynı süreçte ikisi karışıksa
+    payda 100 etmiyordu.
+
+        3 KPI, skorlar [100, 0, 0], ağırlıklar [60, 0, 0]
+        _default_weight → [60.0, 33.33, 33.33]   toplam 126.67
+        sonuç           : 47.37
+        beklenen (60/20/20)                     : 60.00   → 12.6 puan sapma
+
+    Ölçüm: 2327 aktif KPI'nın 469'unun ağırlığı 0; **64 süreçte** hem dolu
+    hem boş ağırlık bir arada.
+
+    Kural: tanımlı ağırlıklar aynen korunur; KALAN pay (100 − tanımlı toplam)
+    ağırlıksız kardeşlere eşit bölünür. Tanımlılar zaten 100'ü aşıyorsa
+    ağırlıksızlara pay kalmaz (0) — kullanıcının açık tercihi ezilmez.
+    """
+    n = len(weights)
+    if n == 0:
+        return []
+
+    tanimli = [
+        (float(w) if (w is not None and float(w) > 0) else None) for w in weights
+    ]
+    tanimli_toplam = sum(w for w in tanimli if w is not None)
+    bossayi = sum(1 for w in tanimli if w is None)
+
+    if bossayi == 0:
+        return [w for w in tanimli]          # hepsi tanımlı → dokunma
+    if tanimli_toplam <= 0:
+        return [100.0 / n] * n               # hiçbiri tanımlı değil → eşit
+
+    kalan = max(0.0, 100.0 - tanimli_toplam)
+    pay = kalan / bossayi
+    return [(pay if w is None else w) for w in tanimli]
 
 
 def get_pg_scores_from_kpi_data(
@@ -253,11 +345,12 @@ def get_pg_scores_from_kpi_data(
         if not actual_values:
             out[pg.id] = None
             continue
-        if method in ('Toplama', 'Toplam'):
+        yontem = normalize_aggregation_method(method)
+        if yontem == 'SUM':
             actual = sum(actual_values)
-        elif method == 'Son Değer':
+        elif yontem == 'LAST':
             actual = actual_values[0]
-        else:
+        else:  # AVG
             actual = sum(actual_values) / len(actual_values)
         score = compute_pg_score(target, actual, direction)
         out[pg.id] = score
@@ -310,15 +403,16 @@ def compute_process_scores_internal(
             return 0.0
         child_ids = children_by_parent.get(process_id, [])
         if child_ids:
-            n = len(child_ids)
+            # B5: ağırlıklar TOPLU dağıtılır — karışık durumda (bazısı dolu,
+            # bazısı boş) `_default_weight` payda 100 etmiyordu.
+            _cocuklar = [next((p for p in processes if p.id == cid), None) for cid in child_ids]
+            _agirliklar = _distribute_weights([(c.weight if c else None) for c in _cocuklar])
             total = 0.0
             w_sum = 0.0
-            for cid in child_ids:
-                c = next((p for p in processes if p.id == cid), None)
+            for cid, w in zip(child_ids, _agirliklar):
                 child_score = calc_process_score(cid)
                 if child_score is None:
                     continue  # KPI'sız alt süreç ağırlıklı ortalamaya dahil edilmez
-                w = _default_weight(c.weight if c else None, n)
                 total += child_score * w
                 w_sum += w
             process_scores[process_id] = round(total / w_sum, 2) if (w_sum and w_sum > 0) else 0.0
@@ -328,7 +422,8 @@ def compute_process_scores_internal(
             # KPI'sız süreç ağırlıklı ortalamayı bozmaması için None döndürür
             process_scores[process_id] = None
             return None
-        n = len(kpis)
+        # B5: kardeş ağırlıkları toplu dağıtılır (bkz. _distribute_weights).
+        _kpi_agirliklari = _distribute_weights([k.weight for k in kpis])
         total = 0.0
         w_sum = 0.0
         # B1/M4 (2026-07-21): PG skoru None ise (o dönemde veri girilmemiş ya
@@ -342,11 +437,10 @@ def compute_process_scores_internal(
         # Ölçülemeyen PG artık hem paydan hem paydadan düşer. Hiçbiri
         # ölçülemiyorsa süreç None döner — KPI'sız süreçle aynı muamele
         # (satır 327-330'daki mevcut desen).
-        for kpi in kpis:
+        for kpi, w in zip(kpis, _kpi_agirliklari):
             sc = pg_scores.get(kpi.id)
             if sc is None:
                 continue  # ölçülmedi → ağırlıklı ortalamaya girmez
-            w = _default_weight(kpi.weight, n)
             total += sc * w
             w_sum += w
             if persist_pg_scores:

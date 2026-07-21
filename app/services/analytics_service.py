@@ -362,34 +362,86 @@ class AnalyticsService:
                 'message': 'Yeterli veri yok (minimum 10 veri noktası gerekli)'
             }
         
-        # DataFrame'e çevir
-        df = _pd().DataFrame([{
-            'date': d.data_date,
-            'value': d.actual_value
-        } for d in kpi_data])
-        
+        # B11 (2026-07-21): `'value': d.actual_value` HAM METİN veriyordu
+        # (`actual_value` String(100)). pandas string kolonda `.mean()`
+        # çağrılınca değerleri BİRLEŞTİRİP TypeError fırlatıyor —
+        # aynı dosyadaki `get_forecast` docstring'i (satır 413) bu hatayı
+        # "GERÇEK VERİYLE PATLIYORDU" diye belgeleyip düzeltmiş, burası
+        # atlanmıştı.
+        #
+        # DB'de sayısal olmayan 116 aktif `actual_value` var
+        # ('-' ×101, '%100', '₺100.070.853' …). `_parse_float` yüzde/para/
+        # binlik biçimlerini de çözer (B6); çözülemeyenler istatistikten
+        # düşer — uydurma sayı üretmeyiz.
+        from app.services.score_engine_service import _parse_float
+
+        kayitlar = []
+        atlanan = 0
+        for d in kpi_data:
+            v = _parse_float(d.actual_value)
+            if v is None:
+                atlanan += 1
+                continue
+            kayitlar.append({'date': d.data_date, 'value': v})
+
+        if atlanan:
+            from flask import current_app as _ca
+            _ca.logger.info(
+                "[get_anomaly_detection] KPI %s: %s/%s ölçüm sayıya "
+                "çevrilemedi, analiz dışı bırakıldı.",
+                kpi_id, atlanan, len(kpi_data),
+            )
+
+        # Sayısal kayıt sayısı eşiğin altına düştüyse istatistik anlamsız.
+        if len(kayitlar) < 10:
+            return {
+                'anomalies': [],
+                'message': (
+                    f'Yeterli sayısal veri yok (minimum 10 gerekli, '
+                    f'{len(kayitlar)} bulundu; {atlanan} ölçüm sayıya çevrilemedi)'
+                ),
+            }
+
+        df = _pd().DataFrame(kayitlar)
+
         # İstatistikler
         mean = df['value'].mean()
         std = df['value'].std()
-        
+
+        # Tüm değerler aynıysa std=0 → z-score sıfıra bölme (inf/NaN).
+        if not std or std == 0:
+            return {
+                'anomalies': [],
+                'message': 'Tüm ölçümler aynı — sapma hesaplanamaz.',
+                'statistics': {
+                    'mean': round(float(mean), 2), 'std': 0.0,
+                    'min': round(float(df['value'].min()), 2),
+                    'max': round(float(df['value'].max()), 2),
+                },
+            }
+
         # Anomalileri tespit et (z-score yöntemi)
         df['z_score'] = (df['value'] - mean) / std
         df['is_anomaly'] = df['z_score'].abs() > threshold
-        
+
         anomalies = df[df['is_anomaly']].to_dict('records')
-        
+
         return {
             'anomalies': [{
                 'date': a['date'].strftime('%Y-%m-%d'),
                 'value': a['value'],
                 'z_score': round(a['z_score'], 2),
-                'deviation': round(((a['value'] - mean) / mean) * 100, 2)
+                # mean=0 ise yüzde sapma tanımsız — None döner, 0 uydurmayız.
+                'deviation': (
+                    round(((a['value'] - mean) / mean) * 100, 2) if mean else None
+                ),
             } for a in anomalies],
             'statistics': {
-                'mean': round(mean, 2),
-                'std': round(std, 2),
-                'min': round(df['value'].min(), 2),
-                'max': round(df['value'].max(), 2)
+                'mean': round(float(mean), 2),
+                'std': round(float(std), 2),
+                'min': round(float(df['value'].min()), 2),
+                'max': round(float(df['value'].max()), 2),
+                'sayisal_olmayan': atlanan,
             }
         }
     

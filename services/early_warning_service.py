@@ -8,6 +8,10 @@ from flask import current_app
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData, ProcessActivity
 from app.models.core import Notification, User
+from app.services.score_engine_service import (
+    _parse_float,
+    _resolve_target_for_calculation,
+)
 
 
 _WARN_THRESHOLD = 0.80   # hedefin %80 altı → kritik
@@ -97,8 +101,18 @@ def run_early_warning(app) -> dict:
                 critical_kpis: list[str] = []
                 for kpi in kpis:
                     try:
-                        target = float(kpi.target_value or 0)
-                        if target <= 0:
+                        # B8 (2026-07-21): burada ham `float(kpi.target_value or 0)`
+                        # vardı. Aralık ('90-100'), yüzde ('%90') veya '-' hedefli
+                        # her PG ValueError fırlatıp dıştaki except tarafından
+                        # ATLANIYORDU — aktif 2282 PG'nin 840'ı (%36,8) sayıya
+                        # çevrilemeyen hedefe sahip.
+                        # Sonuç: gece taraması PG'lerin üçte birinden fazlasında
+                        # KÖRDÜ; yöneticiye giden "N KPI hedef altında" özeti bu
+                        # 840 göstergeyi hiç saymıyordu — sessiz eksik kapsama.
+                        target = _resolve_target_for_calculation(
+                            kpi.target_value, kpi.direction or "Increasing"
+                        )
+                        if target is None or target <= 0:
                             continue
                         # Son 3 ay verisi
                         rows = (
@@ -117,18 +131,25 @@ def run_early_warning(app) -> dict:
                             continue
                         values = []
                         for r in rows:
-                            try:
-                                values.append(float(r.actual_value))
-                            except (TypeError, ValueError):
-                                pass
+                            # B8: gerçekleşen değerde de aynı sorun — '%85' gibi
+                            # girdiler atlanıyordu.
+                            v = _parse_float(r.actual_value)
+                            if v is not None:
+                                values.append(v)
                         avg = _rolling_avg(values)
                         if avg is None:
                             continue
                         direction = (kpi.direction or "Increasing").lower()
+                        # B9: azalan göstergede eşik `target * (2 - 0.80)` = 1.20 idi.
+                        # Görünüşte simetrik ama ORANSAL DEĞİL: artan tarafta
+                        # "hedefin %80'ine ulaşamadı" demek, azalan tarafta
+                        # karşılığı `target / 0.80` = 1.25'tir (2-0.80 değil).
+                        # 604 Decreasing PG bu daldan geçiyor; eşik ~%4 fazla
+                        # hassastı, gereksiz uyarı üretiyordu.
                         is_bad = (
                             avg < target * _WARN_THRESHOLD
                             if direction != "decreasing"
-                            else avg > target * (2 - _WARN_THRESHOLD)
+                            else avg > target / _WARN_THRESHOLD
                         )
                         # Trend: son değer öncekinden daha kötü mü?
                         downtrend = len(values) >= 2 and (
