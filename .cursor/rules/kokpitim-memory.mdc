@@ -1,0 +1,27 @@
+---
+description: Claude'dan taşınan proje memory + kart/modal standart sorgu dili
+alwaysApply: true
+---
+
+# Proje memory (Cursor)
+
+Kalıcı bellek **repoda**: `docs/MEMORY/MEMORY.md` (indeks) + yanındaki konu dosyaları.
+Claude Code `%USERPROFILE%\.claude\projects\c--kokpitim\memory\` kopyasıdır; otorite sırası:
+`docs/KURALLAR-MASTER.md` > `docs/MEMORY/` > Claude yerel klasör.
+
+## Ne zaman oku?
+
+- Oturum başı / belirsiz bağlam → `docs/MEMORY/MEMORY.md`
+- “Kart işine devam” → `docs/kontrol/KART-ACIKLAMA-DEVIR.md` + `docs/MEMORY/project_kart_aciklama_zenginlestirme.md`
+- Deploy / Test / Demo / Yayın → `feedback_deploy_4_katman_ve_test_demo_sifirla.md` + `docs/SUNUCU-GUNCELLEME-REHBERI.md`
+- Çalışma tarzı → `feedback_user_style.md`, `feedback_trust_and_cost.md`
+
+## “Standart değil” dili
+
+Kullanıcı `KR28`, `SPDN03` gibi kısa ID veya “standartlarımızda değil” dediğinde
+**mutlaka** `docs/kontrol/STANDART-SORGU-SOZLUGU.md` uygula:
+
+- Yalnız kart/ID → **kart görsel** checklist (§5.1)
+- Mühür / buton / modal / dialog geçiyorsa → **modal** checklist (§5); kabukla karıştırma
+
+Tek seferde: short_id→code→dosya, kapsam (kabuk|modal), UYUYOR/SAPMA kanıtlı.

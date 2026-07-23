@@ -13,8 +13,9 @@ karakter, 65'i `"X — rapor kartı."` gibi sıfır bilgi şablon dolgu). Litera
 dayanaklı, doyurucu açıklamalar isteniyor.
 
 **Durum (2026-07-24): 501/501 TAMAMLANDI (Yerel).**
-Dal: `claude/kart-aciklama-bitir`. Seed KONTROL: 501/501 aynı. Katalog ort. **464 krk**,
-kısa/boş: 0. Son dilim: `card_descriptions_proje_ayarlar.py` (60) → `--calistir`.
+Dal: `claude/kart-aciklama-bitir` (+ hesap paketi merge). Seed KONTROL: 501/501 aynı.
+Katalog ort. **464 krk**, kısa/boş: 0. Son dilim: `card_descriptions_proje_ayarlar.py`
+(60) → `--calistir`.
 
 **"Kart işine devam" denildiğinde:** iş bitti — yalnızca ortam taşıma (Test/Demo/Yayın)
 için `docs/kontrol/KART-ACIKLAMA-DEVIR.md` §6. İlerleme tablosu güncel.
@@ -28,4 +29,4 @@ için `docs/kontrol/KART-ACIKLAMA-DEVIR.md` §6. İlerleme tablosu güncel.
 **SWOT tuzağı:** "Albert Humphrey / SRI" KULLANMA. Güvenli: "1960'larda SRI'da SOFT".
 
 **Yan ürün:** kod okurken bulunan hatalar → [[project_kart_veri_tutarsizliklari]]
-(hesap dalında D1/D2/D3/T1/G1 kısmen düzeltildi; SEM backfill / İ1 açık).
+(D1/D2/D3/T1/G1 hesap paketinde düzeltildi; SEM backfill / İ1 bilinçli açık).

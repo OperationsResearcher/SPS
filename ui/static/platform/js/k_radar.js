@@ -74,17 +74,47 @@
 
   function text(id, value) {
     const el = document.getElementById(id);
-    if (el) el.textContent = value;
+    if (!el) return;
+    if (value == null || value === "") {
+      el.textContent = "—";
+      return;
+    }
+    el.textContent = value;
   }
 
   function trendText(tr) {
-    if (!tr || typeof tr !== "object") return "-";
+    if (!tr || typeof tr !== "object") return t("yetersiz veri");
+    if (tr.insufficient_data || tr.label == null) return t("yetersiz veri");
     const delta = Number(tr.delta || 0);
     const sign = delta > 0 ? "+" : "";
     const label = tr.label || t("stabil");
     const cur = Number(tr.current_period_avg || 0).toFixed(1);
     const prev = Number(tr.previous_period_avg || 0).toFixed(1);
     return label + " (" + sign + delta.toFixed(1) + " " + t("puan, son30=") + cur + ", " + t("onceki30=") + prev + ")";
+  }
+
+  function showKpEmpty(root, title) {
+    if (!root) return;
+    let host = root.querySelector("[data-kp-empty-host]");
+    if (!host) {
+      host = document.createElement("div");
+      host.setAttribute("data-kp-empty-host", "1");
+      host.className = "mc-empty";
+      host.style.padding = "24px 16px";
+      const body = root.querySelector(".mc-card-body") || root;
+      body.appendChild(host);
+    }
+    host.style.display = "";
+    host.innerHTML =
+      '<div class="mc-empty-icon"><i class="fas fa-inbox"></i></div>' +
+      '<div class="mc-empty-title">' + t(title || "Veri yok") + "</div>" +
+      '<div class="mc-empty-desc" style="opacity:.75;font-size:12px;margin-top:6px;">' +
+      t("Bu kart için henüz ölçüm/kayıt yok.") + "</div>";
+  }
+
+  function hideKpEmpty(root) {
+    const host = root && root.querySelector("[data-kp-empty-host]");
+    if (host) host.style.display = "none";
   }
 
   // ── KP alt-modul gorsel zenginlestirme (TASK: kp sayfa tasarim) ─────────────
@@ -127,8 +157,13 @@
   function renderTrendBadge(root, tr) {
     const host = root.querySelector("[data-trend-badge]");
     if (!host) return;
-    const delta = tr && typeof tr === "object" ? _num(tr.delta) : 0;
-    const label = (tr && tr.label) || "stabil";
+    if (!tr || typeof tr !== "object" || tr.label == null) {
+      host.className = "mc-badge mc-badge-gray";
+      host.innerHTML = '<i class="fas fa-minus"></i> ' + t("yetersiz veri");
+      return;
+    }
+    const delta = _num(tr.delta);
+    const label = tr.label || "stabil";
     let cls = "mc-badge-gray", icon = "fa-minus";
     if (delta > 1) { cls = "mc-badge-success"; icon = "fa-arrow-trend-up"; }
     else if (delta < -1) { cls = "mc-badge-danger"; icon = "fa-arrow-trend-down"; }
@@ -541,38 +576,53 @@
     const payload = await getJson(root.dataset.url);
     const d = payload.data || {};
     text("kp-darbogaz-critical", d.critical_kpi_count ?? 0);
-    text("kp-darbogaz-severity", d.severity_index ?? 0);
+    text("kp-darbogaz-severity", d.severity_index);
     text("kp-darbogaz-total", d.total_log_count ?? 0);
     text("kp-darbogaz-trend", trendText(d.trend));
+    if (!d.data_available) showKpEmpty(root, "Darboğaz kaydı yok");
+    else hideKpEmpty(root);
     enrichKp(root, d);
   }
 
   async function loadKpDegerZinciri(root) {
     const payload = await getJson(root.dataset.url);
     const d = payload.data || {};
-    text("kp-dz-mapped", d.mapped_process_count ?? 0);
-    text("kp-dz-muda", d.muda_risk ?? 0);
-    text("kp-dz-items", d.item_count ?? 0);
-    text("kp-dz-trend", trendText(d.trend));
+    if (!d.data_available) {
+      text("kp-dz-mapped", d.mapped_process_count ?? 0);
+      text("kp-dz-muda", null);
+      text("kp-dz-items", 0);
+      text("kp-dz-trend", null);
+      showKpEmpty(root, "Değer zinciri kaydı yok");
+    } else {
+      hideKpEmpty(root);
+      text("kp-dz-mapped", d.mapped_process_count ?? 0);
+      text("kp-dz-muda", d.muda_risk ?? null);
+      text("kp-dz-items", d.item_count ?? 0);
+      text("kp-dz-trend", trendText(d.trend));
+    }
     enrichKp(root, d);
   }
 
   async function loadKpPareto(root) {
     const payload = await getJson(root.dataset.url);
     const d = payload.data || {};
-    text("kp-pareto-impact", d.top_impact_slice ?? 0);
+    text("kp-pareto-impact", d.top_impact_slice);
     text("kp-pareto-kpi", d.kpi_count ?? 0);
     text("kp-pareto-trend", trendText(d.trend));
+    if (!d.data_available) showKpEmpty(root, "Pareto için yeterli kayıt yok");
+    else hideKpEmpty(root);
     enrichKp(root, d);
-    renderParetoChart(root, d);
+    if (d.data_available) renderParetoChart(root, d);
   }
 
   async function loadKpSla(root) {
     const payload = await getJson(root.dataset.url);
     const d = payload.data || {};
-    text("kp-sla-risk", d.breach_risk ?? 0);
+    text("kp-sla-risk", d.breach_risk);
     text("kp-sla-rows", d.observed_rows ?? 0);
     text("kp-sla-trend", trendText(d.trend));
+    if (!d.data_available) showKpEmpty(root, "SLA ölçümü yok");
+    else hideKpEmpty(root);
     enrichKp(root, d);
   }
 
@@ -588,20 +638,30 @@
   async function loadKpOee(root) {
     const payload = await getJson(root.dataset.url);
     const d = payload.data || {};
-    text("kp-oee-oee", d.oee_estimate ?? 0);
-    text("kp-oee-a", d.availability ?? 0);
-    text("kp-oee-p", d.performance ?? 0);
-    text("kp-oee-q", d.quality ?? 0);
+    // Gerçek OEE girişi yok — mc-empty (D3/İ1). Proxy ortalama varsa küçük not.
+    text("kp-oee-oee", d.oee_estimate);
+    text("kp-oee-a", d.availability);
+    text("kp-oee-p", d.performance);
+    text("kp-oee-q", d.quality);
     text("kp-oee-trend", trendText(d.trend));
+    showKpEmpty(root, "Gerçek OEE verisi yok");
     enrichKp(root, d);
   }
 
   async function loadKpVsm(root) {
     const payload = await getJson(root.dataset.url);
     const d = payload.data || {};
-    text("kp-vsm-flow", d.flow_efficiency_estimate ?? 0);
-    text("kp-vsm-waste", d.waste_pressure ?? 0);
-    text("kp-vsm-trend", trendText(d.trend));
+    if (!d.data_available) {
+      text("kp-vsm-flow", null);
+      text("kp-vsm-waste", null);
+      text("kp-vsm-trend", null);
+      showKpEmpty(root, "VSM / değer zinciri kaydı yok");
+    } else {
+      hideKpEmpty(root);
+      text("kp-vsm-flow", d.flow_efficiency_estimate);
+      text("kp-vsm-waste", d.waste_pressure);
+      text("kp-vsm-trend", trendText(d.trend));
+    }
     enrichKp(root, d);
   }
 

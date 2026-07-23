@@ -515,17 +515,22 @@ def get_kp_extended_data(
     open_bottlenecks = [b for b in bottlenecks if b.resolved_at is None]
     severity_weight = {"low": 1, "medium": 2, "high": 3, "critical": 4}
     severity_points = sum(severity_weight.get(str((b.severity or "")).strip().lower(), 2) for b in open_bottlenecks)
-    severity_index = min(100, severity_points * 8) if open_bottlenecks else min(100, critical * 20)
+    # D3: açık darboğaz yokken KPI critical'dan şişirilmiş şiddet YOK.
+    severity_index = min(100, severity_points * 8) if open_bottlenecks else None
 
     _vq = ValueChainItem.query.filter_by(tenant_id=tenant_id, is_active=True)
     if _spids is not None:
         _vq = _vq.filter(ValueChainItem.linked_process_id.in_(_spids))
     value_items = _vq.all()
     mapped_process_ids = {int(v.linked_process_id) for v in value_items if v.linked_process_id}
+    # D1: eşleme 0 iken süreç sayısına düşme YASAK — dürüst 0.
     mapped_process_count = len(mapped_process_ids)
     waste_items = [v for v in value_items if (v.muda_type or "").strip()]
     waste_ratio = (len(waste_items) / len(value_items) * 100.0) if value_items else 0.0
-    muda_risk = round(min(100.0, max(0.0, waste_ratio * 1.4)), 2) if value_items else round(max(0.0, 100.0 - score), 2)
+    # D3: değer zinciri yokken skor'dan muda_risk türetme.
+    muda_risk = (
+        round(min(100.0, max(0.0, waste_ratio * 1.4)), 2) if value_items else None
+    )
 
     process_open_counts: dict[int, int] = {}
     for b in open_bottlenecks:
@@ -535,13 +540,24 @@ def get_kp_extended_data(
         process_open_counts[pid] = process_open_counts.get(pid, 0) + 1
     open_total = sum(process_open_counts.values())
     top3 = sorted(process_open_counts.values(), reverse=True)[:3]
-    top_share = (sum(top3) / open_total * 100.0) if open_total else min(100.0, 20.0 + critical * 10.0)
+    # D3: darboğaz yokken yapay dilim yok.
+    top_share = (sum(top3) / open_total * 100.0) if open_total else None
 
     kpi_rows_all = _scope_proc(
         KpiData.query.join(ProcessKpi, ProcessKpi.id == KpiData.process_kpi_id)
         .join(Process, Process.id == ProcessKpi.process_id)
         .filter(Process.tenant_id == tenant_id, Process.is_active.is_(True), KpiData.is_active.is_(True))
     ).all()
+    kpi_dir_map = {
+        int(k.id): (k.direction or "Increasing")
+        for k in _scope_proc(
+            ProcessKpi.query.join(Process, Process.id == ProcessKpi.process_id).filter(
+                Process.tenant_id == tenant_id,
+                Process.is_active.is_(True),
+                ProcessKpi.is_active.is_(True),
+            )
+        ).all()
+    }
     breach_count = 0
     ratio_pool: list[float] = []
     for row in kpi_rows_all:
@@ -549,12 +565,18 @@ def get_kp_extended_data(
         target = _to_float(row.target_value)
         if actual is None or target is None or target <= 0:
             continue
-        ratio = max(0.0, min(1.5, actual / target))
-        ratio_pool.append(ratio)
-        if ratio < 0.9:
+        direction = kpi_dir_map.get(int(row.process_kpi_id), "Increasing")
+        pct = compute_pg_score(target, actual, direction)
+        if pct is None:
+            continue
+        ratio_pool.append(pct / 100.0)
+        if pct < 90.0:
             breach_count += 1
     observed_rows = len(ratio_pool)
-    breach_risk = round((breach_count / observed_rows) * 100.0, 2) if observed_rows else min(100.0, critical * 15.0)
+    # D3: gözlem yokken critical*15 türetme yok.
+    breach_risk = (
+        round((breach_count / observed_rows) * 100.0, 2) if observed_rows else None
+    )
 
     kpi_row_counts = _scope_proc(
         db.session.query(ProcessKpi.id, func.count(KpiData.id))
@@ -572,17 +594,21 @@ def get_kp_extended_data(
     comparability_score = round((populated_series / max(1, int(kpi_count or 0))) * 100.0, 2) if kpi_count else 0.0
     period_row_count = observed_rows
 
+    # D3 / İ1: Gerçek OEE verisi yok — KPI oranından ofsetli sahte A/P/Q üretme.
+    # ratio_pool varsa yalnızca dürüst ortalama gösterilir; OEE bileşenleri None.
     if ratio_pool:
         avg_ratio_pct = round((sum(ratio_pool) / len(ratio_pool)) * 100.0, 2)
-        availability = round(min(100.0, max(0.0, avg_ratio_pct + 4.0)), 2)
-        performance = round(min(100.0, max(0.0, avg_ratio_pct - 3.0)), 2)
-        quality = round(min(100.0, max(0.0, avg_ratio_pct)), 2)
-        oee_estimate = round((availability * performance * quality) / 10000.0, 2)
+        availability = None
+        performance = None
+        quality = None
+        oee_estimate = None
+        oee_proxy_avg = avg_ratio_pct  # şeffaf: "oran ortalaması", OEE değil
     else:
-        availability = round(min(100.0, max(0.0, score + 5.0)), 2)
-        performance = round(min(100.0, max(0.0, score - 5.0)), 2)
-        quality = round(min(100.0, max(0.0, score)), 2)
-        oee_estimate = round((availability * performance * quality) / 10000.0, 2)
+        availability = None
+        performance = None
+        quality = None
+        oee_estimate = None
+        oee_proxy_avg = None
 
     if value_items:
         value_added = len([v for v in value_items if not (v.muda_type or "").strip()])
@@ -590,8 +616,9 @@ def get_kp_extended_data(
         flow_efficiency = round((value_added / max(1, total_items)) * 100.0, 2)
         waste_pressure = round(100.0 - flow_efficiency, 2)
     else:
-        flow_efficiency = round(min(100.0, max(0.0, score - 10.0)), 2)
-        waste_pressure = round(100.0 - flow_efficiency, 2)
+        # D3: skor'dan VSM türetme yok.
+        flow_efficiency = None
+        waste_pressure = None
 
     active_process_with_kpi = (
         _scope_proc(
@@ -611,83 +638,103 @@ def get_kp_extended_data(
     curr_rows = [r for r in kpi_rows_all if r.data_date and r.data_date >= curr_start]
     prev_rows = [r for r in kpi_rows_all if r.data_date and prev_start <= r.data_date < curr_start]
 
-    def _period_health(rows: list[Any]) -> float:
+    def _period_health(rows: list[Any]) -> float | None:
+        """D2: dönem boşsa 0 uydurma — None (yetersiz veri)."""
         vals: list[float] = []
         for row in rows:
             a = _to_float(row.actual_value)
             t = _to_float(row.target_value)
             if a is None or t is None or t <= 0:
                 continue
-            vals.append(max(0.0, min(1.5, a / t)) * 100.0)
+            direction = kpi_dir_map.get(int(row.process_kpi_id), "Increasing")
+            pct = compute_pg_score(t, a, direction)
+            if pct is None:
+                continue
+            vals.append(pct)
         if not vals:
-            return 0.0
+            return None
         return round(sum(vals) / len(vals), 2)
 
     curr_health = _period_health(curr_rows)
     prev_health = _period_health(prev_rows)
-    trend_delta = round(curr_health - prev_health, 2)
-    trend_label = "stabil"
-    if trend_delta > 1:
-        trend_label = "iyilesiyor"
-    elif trend_delta < -1:
-        trend_label = "dusuyor"
-
-    trend_meta = {
-        "delta": trend_delta,
-        "label": trend_label,
-        "current_period_avg": curr_health,
-        "previous_period_avg": prev_health,
-    }
+    # D2: iki dönemden biri yoksa trend üretme.
+    if curr_health is None or prev_health is None:
+        trend_meta = None
+    else:
+        trend_delta = round(curr_health - prev_health, 2)
+        trend_label = "stabil"
+        if trend_delta > 1:
+            trend_label = "iyilesiyor"
+        elif trend_delta < -1:
+            trend_label = "dusuyor"
+        trend_meta = {
+            "delta": trend_delta,
+            "label": trend_label,
+            "current_period_avg": curr_health,
+            "previous_period_avg": prev_health,
+        }
 
     return {
         "olgunluk": {
             "process_count": int(process_count or 0),
-            "avg_level_estimate": round(maturity_avg, 2) if maturity_levels else max(1, min(5, round((score / 100.0) * 5))),
+            # D3: değerlendirme yokken skor'dan seviye uydurma yok.
+            "avg_level_estimate": round(maturity_avg, 2) if maturity_levels else None,
             "assessment_count": len(maturity_levels),
+            "data_available": bool(maturity_levels),
         },
         "darbogaz": {
             "critical_kpi_count": len(open_bottlenecks),
-            "severity_index": round(severity_index, 2),
+            "severity_index": round(severity_index, 2) if severity_index is not None else None,
             "total_log_count": len(bottlenecks),
             "trend": trend_meta,
+            "data_available": bool(open_bottlenecks) or bool(bottlenecks),
         },
         "deger_zinciri": {
-            "mapped_process_count": mapped_process_count if mapped_process_count else int(process_count or 0),
+            "mapped_process_count": mapped_process_count,
             "muda_risk": muda_risk,
             "item_count": len(value_items),
             "trend": trend_meta,
+            "data_available": bool(value_items),
         },
         "pareto": {
-            "top_impact_slice": round(top_share, 2),
+            "top_impact_slice": round(top_share, 2) if top_share is not None else None,
             "kpi_count": int(kpi_count or 0),
             "trend": trend_meta,
+            "data_available": open_total > 0,
         },
         "sla": {
             "breach_risk": breach_risk,
-            "observed_rows": observed_rows if observed_rows else int(kpi_rows or 0),
+            "observed_rows": observed_rows,
             "trend": trend_meta,
+            "data_available": observed_rows > 0,
         },
         "benchmark": {
             "comparability_score": comparability_score,
-            "period_row_count": period_row_count if period_row_count else int(kpi_rows or 0),
+            "period_row_count": period_row_count,
             "trend": trend_meta,
+            "data_available": int(kpi_count or 0) > 0,
         },
         "oee": {
+            # Gerçek OEE bileşenleri yok — mc-empty. Proxy ortalama ayrı alan.
             "oee_estimate": oee_estimate,
             "availability": availability,
             "performance": performance,
             "quality": quality,
+            "proxy_avg_pct": oee_proxy_avg,
             "trend": trend_meta,
+            "data_available": False,  # gerçek OEE girişi yok
         },
         "vsm": {
             "flow_efficiency_estimate": flow_efficiency,
             "waste_pressure": waste_pressure,
             "trend": trend_meta,
+            "data_available": bool(value_items),
         },
         "kapasite": {
             "utilization_estimate": utilization_estimate,
             "resource_pressure": resource_pressure,
             "trend": trend_meta,
+            "data_available": int(process_count or 0) > 0,
         },
     }
 
@@ -700,7 +747,6 @@ def get_kpr_data(tenant_id: int, scope_project_ids: tuple[int, ...] | None = Non
 @cache.memoize(timeout=300)
 def get_kpr_extended_data(tenant_id: int, scope_project_ids: tuple[int, ...] | None = None) -> dict[str, Any]:
     # scope None → kurum geneli. Tuple → yalnız o projeler.
-    # RiskHeatmapItem project_id taşımadığından kurum geneli kalır (teknik kısıt, belge §5).
     _sprids = list(scope_project_ids) if scope_project_ids is not None else None
     base = _project_component(tenant_id, _sprids)
     _projq = Project.query.filter_by(tenant_id=tenant_id, is_archived=False)
@@ -725,12 +771,18 @@ def get_kpr_extended_data(tenant_id: int, scope_project_ids: tuple[int, ...] | N
     avg_spi = round(sum(spi_vals) / len(spi_vals), 2) if spi_vals else 0.0
     avg_cpi = round(sum(cpi_vals) / len(cpi_vals), 2) if cpi_vals else 0.0
 
-    # RiskHeatmapItem project_id taşımaz → scope'lanamaz, kurum geneli kalır (belge §5).
-    risk_rows = RiskHeatmapItem.query.filter_by(tenant_id=tenant_id, is_active=True).all()
+    # G1: project_id ile scope. Scoped kullanıcıda NULL project_id düşer
+    # (yalnız kurum geneli / yönetici — scope None — görür).
+    from app.services.rpn_severity import is_high_or_critical
+
+    _rq = RiskHeatmapItem.query.filter_by(tenant_id=tenant_id, is_active=True)
+    if _sprids is not None:
+        _rq = _rq.filter(RiskHeatmapItem.project_id.in_(_sprids))
+    risk_rows = _rq.all()
     open_risks = [r for r in risk_rows if (r.status or "").lower() not in {"closed", "done", "resolved"}]
     risk_points = [int(r.rpn or (int(r.probability or 0) * int(r.impact or 0))) for r in open_risks]
     avg_rpn = round(sum(risk_points) / len(risk_points), 2) if risk_points else 0.0
-    high_risk_count = len([v for v in risk_points if v >= 15])
+    high_risk_count = len([v for v in risk_points if is_high_or_critical(v)])
 
     tasks = Task.query.filter(Task.project_id.in_(project_ids), Task.is_archived.is_(False)).all()
     # K5: `today` burada tanımsızdı → NameError. Yalnız PROJESİ OLAN kurumda
