@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-289 | 2026-07-24 | ✅ Tamamlandı
+
+**Görev:** Kart 501 + hesap paketi → main push → Test sıfırdan → Yayın (yedek + seed)
+**Modül:** ops (deploy) / kart / hesap
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/YAYIN-DEPLOY-ONCESI-2026-07-24.md` → 4-katman + sonuç
+- `docs/kontrol/seed_calistirma_kaydi.md` → Test/Yayın işaretleri
+- `docs/kontrol/KART-ACIKLAMA-DEVIR.md` → ortam durumu
+- main `46133796` (kart 501 + hesap D1–G1/SEM)
+
+### Yapılan İşlem
+4-katman kontrolü → Test sıfırdan (yerel dump + git archive `46133796`, health 200,
+501 kart ort. 464, alembic `hd01a2b3c4d5`) → Yayın `oracle_safe_deploy` (yedek
+`pg_kokpitim_db_full_20260723_224634.sql.gz`, pull, build, migration Text+G1,
+satır sayısı OK) → `seed_card_descriptions --calistir` 501 kart. Yayın health 200
+(iç+public), description=text, ort. 464, `project_id` var.
+
+### Notlar
+Redis Yayın'da yok (bilinen uyarı). Demo güncellenmedi. Bilinçli açık: SEM backfill, İ1.
+
 ## TASK-288 | 2026-07-24 | ✅ Tamamlandı
 
 **Görev:** Kart açıklama zenginleştirme — 501/501 tamam (son dilim proje/ayarlar 60 + Yerel seed)

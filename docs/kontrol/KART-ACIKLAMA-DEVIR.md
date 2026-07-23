@@ -213,12 +213,9 @@ farklı (15 vs 16) · İ1 isim/ölçüm ayrışmaları (6 kalem)
 
 ## 6. Deploy durumu
 
-- Yerel: **501/501 uygulandı** (2026-07-24, `seed_card_descriptions.py --calistir`;
-  migration `391945351814` zaten vardı).
-- Test / Demo / Yayın: **kart açıklama seed'i henüz taşınmadı** (kod merge +
-  Text migration + seed ayrı adımlar).
-- Oralara taşınırken **sıra önemli**: önce `flask db upgrade` (Text migration),
-  sonra `python scripts/seed_card_descriptions.py --calistir`.
-  Migration koşmadan seed çalıştırılırsa 512 sınırına takılır.
-- Seed, kod deploy'uyla otomatik çalışmaz (bilinen açık — `docs/kontrol/seed_calistirma_kaydi.md`).
+- Yerel: **501/501** (2026-07-24).
+- Test: **sıfırdan** 2026-07-24 — kod `46133796`, alembic `hd01a2b3c4d5`, ort. 464.
+- Yayın: **2026-07-24** — yedek + `oracle_safe_deploy` + seed 501; ort. 464; Text + G1.
+- Demo: **henüz taşınmadı.**
+- Seed kaydı: `docs/kontrol/seed_calistirma_kaydi.md`.
 - **Yayın / Test / Demo'ya dokunma** — kullanıcı «yayına ver» demeden deploy yok.
