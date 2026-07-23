@@ -726,7 +726,7 @@ def generatePeriyotVerileri(
                 bireysel_pgler, yil, periyot_son_cuma, hesaplama_yontemi,
                 'ceyrek', (ceyrek_baslangic, ceyrek_bitis)
             )
-            durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen)
+            durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen, direction=direction or "Increasing")
             
             veriler.append({
                 'ceyrek': ceyrek_no,
@@ -751,7 +751,7 @@ def generatePeriyotVerileri(
             bireysel_pgler, yil, periyot_son_cuma, hesaplama_yontemi,
             'yillik', (yil_baslangic, yil_bitis)
         )
-        durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen)
+        durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen, direction=direction or "Increasing")
         
         veriler.append({
             'periyot': 'yillik',
@@ -779,7 +779,7 @@ def generatePeriyotVerileri(
                 bireysel_pgler, yil, periyot_son_cuma, hesaplama_yontemi,
                 'aylik', (ay_baslangic, ay_bitis)
             )
-            durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen)
+            durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen, direction=direction or "Increasing")
             
             veriler.append({
                 'ay': ay_no,
@@ -813,7 +813,7 @@ def generatePeriyotVerileri(
                 bireysel_pgler, yil, periyot_son_cuma, hesaplama_yontemi,
                 'haftalik', (hafta_baslangic, hafta_bitis)
             )
-            durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen)
+            durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen, direction=direction or "Increasing")
             
             veriler.append({
                 'hafta': hafta_no,
@@ -844,7 +844,7 @@ def generatePeriyotVerileri(
                 bireysel_pgler, yil, veri_tarihi, hesaplama_yontemi,
                 'gunluk', (veri_tarihi, veri_tarihi)  # Aynı gün
             )
-            durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen)
+            durum, durum_yuzdesi = hesapla_durum(hedef_deger, gerceklesen, direction=direction or "Increasing")
             
             # Türkçe gün isimleri
             gun_isimleri = ['Pazartesi', 'Salı', 'Çarşamba', 'Perşembe', 'Cuma', 'Cumartesi', 'Pazar']

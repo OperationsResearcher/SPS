@@ -174,9 +174,11 @@ def handle_task_completion(task: Task, old_status: Optional[str] = None) -> int:
                     # Durum hesaplama (hedef ve gerçekleşen varsa)
                     if hedef_deger and impact_value:
                         try:
+                            _dir = getattr(bireysel_pg, "direction", None) or "Increasing"
                             durum, durum_yuzdesi = hesapla_durum(
                                 float(hedef_deger) if hedef_deger else None,
-                                float(impact_value) if impact_value else None
+                                float(impact_value) if impact_value else None,
+                                direction=_dir,
                             )
                             pg_veri.durum = durum
                             pg_veri.durum_yuzdesi = durum_yuzdesi
@@ -192,9 +194,11 @@ def handle_task_completion(task: Task, old_status: Optional[str] = None) -> int:
                     # Durum hesaplama (güncellenmiş değer için)
                     if mevcut_veri.hedef_deger and impact_value:
                         try:
+                            _dir = getattr(bireysel_pg, "direction", None) or "Increasing"
                             durum, durum_yuzdesi = hesapla_durum(
                                 float(mevcut_veri.hedef_deger) if mevcut_veri.hedef_deger else None,
-                                float(impact_value) if impact_value else None
+                                float(impact_value) if impact_value else None,
+                                direction=_dir,
                             )
                             mevcut_veri.durum = durum
                             mevcut_veri.durum_yuzdesi = durum_yuzdesi

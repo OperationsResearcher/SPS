@@ -77,15 +77,8 @@ def k_radar_api_risk_list():
     risks = q.order_by(RiskHeatmapItem.rpn.desc().nullslast()).all()
 
     def _severity(rpn):
-        if rpn is None:
-            return "low"
-        if rpn >= 16:
-            return "critical"
-        if rpn >= 10:
-            return "high"
-        if rpn >= 5:
-            return "medium"
-        return "low"
+        from app.services.rpn_severity import classify_rpn
+        return classify_rpn(rpn)
 
     rows = []
     for r in risks:
@@ -104,6 +97,7 @@ def k_radar_api_risk_list():
             "status": r.status,
             "source_type": r.source_type,
             "source_id": r.source_id,
+            "project_id": r.project_id,
             "plan_year_id": r.plan_year_id,
         })
     return jsonify({"success": True, "count": len(rows), "data": rows})
@@ -149,9 +143,14 @@ def k_radar_api_risk_add():
     if kaynak_hata:
         return jsonify({"success": False, "message": kaynak_hata}), 400
 
+    project_id = payload.get("project_id") or None
+    if project_id is None and kaynak == "project" and payload.get("source_id"):
+        project_id = payload.get("source_id")
+
     risk = RiskHeatmapItem(
         tenant_id=current_user.tenant_id,
         plan_year_id=payload.get("plan_year_id") or None,
+        project_id=project_id,
         title=title,
         probability=prob,
         impact=imp,

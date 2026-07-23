@@ -139,12 +139,21 @@ def masaustu():
         .all()
     )
     favori_pgs = []
+    from app.services.score_engine_service import compute_pg_score
+    from app.utils.numeric import safe_float
     for _pg in favori_pg_kayitlari:
         _son = (
             KpiData.query
             .filter_by(process_kpi_id=_pg.id, is_active=True)
             .order_by(KpiData.year.desc(), KpiData.data_date.desc())
             .first()
+        )
+        _hedef = safe_float(_son.target_value if _son and _son.target_value else _pg.target_value)
+        _gercek = safe_float(_son.actual_value) if _son else None
+        _hedef_orani = (
+            compute_pg_score(_hedef, _gercek, _pg.direction or "Increasing")
+            if _hedef is not None and _gercek is not None
+            else None
         )
         favori_pgs.append({
             "id": _pg.id,
@@ -156,7 +165,10 @@ def masaustu():
             "process_name": _pg.process.name if _pg.process else None,
             "actual_value": _son.actual_value if _son else None,
             "status": _son.status if _son else None,
-            "status_percentage": _son.status_percentage if _son else None,
+            # SEM-C: iki semantik ayrı — band ≠ hedef oranı
+            "basari_bandi_pct": _son.status_percentage if _son else None,
+            "hedef_orani_pct": _hedef_orani,
+            "status_percentage": _son.status_percentage if _son else None,  # geriye uyum
         })
 
     # Okunmamış bildirimler

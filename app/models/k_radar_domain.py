@@ -108,6 +108,11 @@ class RiskHeatmapItem(TenantScopedMixin, db.Model):
     id = db.Column(db.Integer, primary_key=True)
     tenant_id = db.Column(db.Integer, db.ForeignKey("tenants.id", ondelete="CASCADE"), nullable=False, index=True)
     plan_year_id = db.Column(db.Integer, db.ForeignKey("plan_years.id", ondelete="SET NULL"), nullable=True, index=True)
+    # G1 (2026-07-23): proje kapsamı — NULL = kurum geneli / henüz eşlenmemiş.
+    # Scoped kullanıcıda yalnız project_id IN scope gösterilir (NULL düşer).
+    project_id = db.Column(
+        db.Integer, db.ForeignKey("project.id", ondelete="SET NULL"), nullable=True, index=True
+    )
     title = db.Column(db.String(255), nullable=False)
     probability = db.Column(db.Integer, nullable=False)
     impact = db.Column(db.Integer, nullable=False)
