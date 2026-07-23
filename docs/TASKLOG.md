@@ -2,6 +2,26 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-287 | 2026-07-24 | ✅ Tamamlandı
+
+**Görev:** Claude memory → docs + Cursor kuralı + standart sorgu sözlüğü + proje/ayarlar kart seed (60)
+**Modül:** docs / .cursor / kart açıklama
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/MEMORY/` → Claude Code bellek kopyası (indeks + konular)
+- `docs/kontrol/STANDART-SORGU-SOZLUGU.md` → kart/modal “standart değil” dili
+- `.cursor/rules/kokpitim-memory.mdc` → alwaysApply
+- `scripts/seed_data/card_descriptions_proje_ayarlar.py` → 60 kart açıklaması (kalan dilim)
+
+### Yapılan İşlem
+Önceki oturumda hazır ama commit edilmemiş memory/Cursor taşınabilirliği ve kart
+açıklama son dilim seed’i bu dala alındı. Seed henüz `--calistir` edilmedi — kart
+işi yeni sohbette bitirilecek.
+
+### Notlar
+Dal: `claude/hesap-dogruluk-duzeltmeleri` (aynı push).
+
 ## TASK-286 | 2026-07-23 | ✅ Tamamlandı
 
 **Görev:** Hesap/doğruluk düzeltmeleri — karar paketi 1C 2A 3A 4A 5C 6A 7A 8A
