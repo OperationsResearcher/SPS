@@ -41,8 +41,9 @@ function Write-Fallback([string]$step, [string]$detail = '') {
 }
 function Invoke-Git {
     param([Parameter(ValueFromRemainingArguments = $true)][string[]]$GitArgs)
-    & git.exe -C $RepoRoot @GitArgs
-    return $LASTEXITCODE
+    # git stdout'u PowerShell return degerine karismasin
+    & git.exe -C $RepoRoot @GitArgs | Out-Host
+    return [int]$LASTEXITCODE
 }
 function Test-SecretPath([string]$path) {
     $n = $path -replace '\\', '/'
