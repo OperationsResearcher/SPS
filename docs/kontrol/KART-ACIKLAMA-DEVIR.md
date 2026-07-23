@@ -1,8 +1,7 @@
 # Kart Açıklama Zenginleştirme — DEVİR NOTU
 
-> **Durdurma noktası: 2026-07-20.** Kullanıcı başka önemli sorunlara geçti.
-> **"Kart işine devam" denildiğinde ÖNCE BU DOSYA OKUNUR**, sonra §"Devam
-> Yordamı"ndaki adımlar uygulanır. Sıfırdan keşif yapmaya gerek yok.
+> **Durum: 501/501 BİTTİ (Yerel, 2026-07-24).** İçerik işi kapandı.
+> Test/Demo/Yayın taşıma için §6. Eski “devam yordamı” (§4) arşiv nitelikli.
 
 ---
 
@@ -10,36 +9,25 @@
 
 | | |
 |---|---|
-| **Tamamlanan** | K-Radar 97 + **raporlar 94** = **191/501 kart** (güncelleme 2026-07-21) |
-| **Kalan** | **310 kart** |
-| **raporlar ortalaması** | 49 → **541 karakter** (2026-07-21) |
-| **Tüm katalog ortalaması** | **277 karakter** (2026-07-21 ölçümü) |
-| **Son durum** | K-Radar altyapısı main'de (`51c30bd4`); raporlar dilimi `claude/kart-aciklama-raporlar` dalında |
+| **Tamamlanan** | **501/501 kart** — BİTTİ (2026-07-24) |
+| **Kalan** | **0** (içerik + Yerel seed) |
+| **Tüm katalog ortalaması** | **464 karakter** (Yerel DB, 2026-07-24; kısa/boş: 0) |
+| **Dal** | `claude/kart-aciklama-bitir` (main + raporlar dilimi + proje/ayarlar 60) |
+| **Seed KONTROL** | 501 hedef · 501 zaten aynı · DB YOK: 0 |
 
-### Kalan iş — modül bazında (öncelik sırası)
+### Dilimler (tümü bitti)
 
-| Modül | Kart | Mevcut ort. | Not |
+| Dilim | Kart | Seed dosyası | Not |
 |---|---|---|---|
-| ~~`raporlar`~~ | ~~94~~ | ✅ 541 krk | **BİTTİ 2026-07-21** — `card_descriptions_raporlar.py` |
-| `admin` | **83** | 74 krk | Yönetim ekranları |
-| `sp` | **83** | 87 krk | Stratejik Planlama — literatür ağırlıklı (SWOT/TOWS/PESTEL burada da var) |
-| `project` | 21 | 90 krk | Proje/portföy |
-| `bireysel` | 14 | 68 krk | Bireysel performans |
-| `process` | 13 | 135 krk | Süreç yönetimi |
-| `yonetim` | 9 | 142 krk | |
-| `ayarlar` / `kurum` / `auth` | 6+6+6 | ~90 krk | Küçük gruplar |
-| `masaustu` + diğer tekil | ~70 | — | Dağınık kalanlar |
+| K-Radar + K-Rapor | 97 | `k_radar*` + `k_rapor` | main'de (TASK-282) |
+| raporlar | 94 | `card_descriptions_raporlar.py` | 2026-07-21 |
+| sp | 96 | `card_descriptions_sp.py` | |
+| admin | 83 | `card_descriptions_admin.py` | |
+| masaüstü + karne + YO… | 71 | `card_descriptions_masaustu_karne.py` | |
+| proje / ayarlar / kurum / profil… | 60 | `card_descriptions_proje_ayarlar.py` | 2026-07-24 Yerel `--calistir` |
 
-**Önerilen sıra (kalan):** `sp` → `admin` → `project` → `bireysel` → kalanlar.
-(`sp` literatür bakımından K-Radar'a en yakın, hazır malzeme var — bkz. §4.)
-
-**raporlar diliminde işleyen yöntem (2026-07-21, tekrar kullan):** 94 kart 4 paralel
-Explore ajanına bölündü (sayfa grupları halinde), her ajan kart başına
-Formül/Kaynak/Eşik/Fallback/Sınır çıkardı (dosya:satır kanıtlı) → açıklamalar tek
-oturumda yazıldı → seed KONTROL 94/94 eşleşme → uygulandı. Ajan bulguları ayrıca
-gerçek kod tutarsızlıkları yakaladı (ai_danisman action/pivot_type uyumsuzluğu,
-audit PDF 4-vs-6 bölüm, ml_anomaly 6-vs-8 ölçüm metni) → KART-VERI-TUTARSIZLIKLARI.md'ye
-işlenecek adaylar.
+**Sonraki iş bu dosyada değil:** Test/Demo/Yayın'a seed + Text migration taşıma —
+yalnız kullanıcı «yayına ver» / ortam güncelle dediğinde (§6).
 
 ---
 
@@ -80,11 +68,16 @@ python scripts/seed_card_descriptions.py --calistir --sadece sp   # önek filtre
 - Yeni dosya eklemek yeterli; script `card_descriptions_*.py` kalıbındaki
   tüm dosyaları otomatik birleştirir.
 
-**Mevcut içerik dosyaları:**
+**Mevcut içerik dosyaları (9 dosya = 501 kart):**
 - `card_descriptions_k_radar.py` — 9 KP alt modülü
 - `card_descriptions_k_radar_ks.py` — 16 KS + KP mini
 - `card_descriptions_k_radar_kpr.py` — 14 KPR/Cross/Risk
 - `card_descriptions_k_rapor.py` — 58 rapor kartı
+- `card_descriptions_raporlar.py` — 94
+- `card_descriptions_sp.py` — 96
+- `card_descriptions_admin.py` — 83
+- `card_descriptions_masaustu_karne.py` — 71
+- `card_descriptions_proje_ayarlar.py` — 60
 
 ---
 
@@ -220,9 +213,12 @@ farklı (15 vs 16) · İ1 isim/ölçüm ayrışmaları (6 kalem)
 
 ## 6. Deploy durumu
 
-- Yerel: **uygulandı** (97 kart + migration).
-- Test / Demo / Yayın: **hiçbiri uygulanmadı.**
+- Yerel: **501/501 uygulandı** (2026-07-24, `seed_card_descriptions.py --calistir`;
+  migration `391945351814` zaten vardı).
+- Test / Demo / Yayın: **kart açıklama seed'i henüz taşınmadı** (kod merge +
+  Text migration + seed ayrı adımlar).
 - Oralara taşınırken **sıra önemli**: önce `flask db upgrade` (Text migration),
   sonra `python scripts/seed_card_descriptions.py --calistir`.
   Migration koşmadan seed çalıştırılırsa 512 sınırına takılır.
 - Seed, kod deploy'uyla otomatik çalışmaz (bilinen açık — `docs/kontrol/seed_calistirma_kaydi.md`).
+- **Yayın / Test / Demo'ya dokunma** — kullanıcı «yayına ver» demeden deploy yok.

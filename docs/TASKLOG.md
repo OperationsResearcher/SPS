@@ -2,6 +2,30 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-284 | 2026-07-24 | ✅ Tamamlandı
+
+**Görev:** Kart açıklama zenginleştirme — 501/501 tamam (son dilim proje/ayarlar 60 + Yerel seed)
+**Modül:** kart katmanı (tüm katalog)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/seed_data/card_descriptions_proje_ayarlar.py` → 60 kart (proje/ayarlar/kurum/profil…)
+- `scripts/seed_data/card_descriptions_{raporlar,sp,admin,masaustu_karne}.py` → merge ile bu dala
+- `docs/kontrol/KART-ACIKLAMA-DEVIR.md` → 501/501 + deploy durumu
+- `docs/MEMORY/project_kart_aciklama_zenginlestirme.md` → bitti kaydı
+- `docs/kontrol/seed_calistirma_kaydi.md` → Yerel satırı
+
+### Yapılan İşlem
+Strateji A: `main` → `claude/kart-aciklama-bitir` ← merge `claude/kart-aciklama-raporlar`
+(441) + hesap dalından yalnız `proje_ayarlar` seed. Seed KONTROL: 501 hedef, 60 yazılacak,
+0 DB YOK → `--calistir` 60 güncelledi. İkinci KONTROL: 501/501 aynı. Yerel ort. 464 krk,
+kısa/boş 0. Hesap paketi (TASK-286/287) bu dalda yok — ayrı merge.
+
+### Notlar
+Test/Demo/Yayın seed + Text migration taşıma yapılmadı (kullanıcı «yayına ver» beklenir).
+Numara: bu dal TASKLOG’unda 283 sonrası 284; hesap dalında 286–287 var — merge’de çakışma
+yok (farklı dallar).
+
 ## TASK-283 | 2026-07-21 | ✅ Tamamlandı
 
 **Görev:** Kart açıklama zenginleştirme — raporlar dilimi 94/94 kart (191/501 tamam, 310 kaldı)
