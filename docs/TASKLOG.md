@@ -2,6 +2,137 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-288 | 2026-07-24 | ✅ Tamamlandı
+
+**Görev:** Kart açıklama zenginleştirme — 501/501 tamam (son dilim proje/ayarlar 60 + Yerel seed)
+**Modül:** kart katmanı (tüm katalog)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- scripts/seed_data/card_descriptions_proje_ayarlar.py → 60 kart (proje/ayarlar/kurum/profil…)
+- scripts/seed_data/card_descriptions_{raporlar,sp,admin,masaustu_karne}.py → merge ile bu dala
+- docs/kontrol/KART-ACIKLAMA-DEVIR.md → 501/501 + deploy durumu
+- docs/MEMORY/project_kart_aciklama_zenginlestirme.md → bitti kaydı
+- docs/kontrol/seed_calistirma_kaydi.md → Yerel satırı
+
+### Yapılan İşlem
+Strateji A: main → claude/kart-aciklama-bitir ← merge claude/kart-aciklama-raporlar
+(441) + proje_ayarlar seed. Seed KONTROL: 501 hedef → --calistir 60 güncelledi.
+İkinci KONTROL: 501/501 aynı. Yerel ort. 464 krk, kısa/boş 0. Hesap paketi aynı merge
+oturumunda birleştirildi (TASK-286/287).
+
+### Notlar
+Numara: hesap dalı 284–287 kullandığı için bu kayıt TASK-288.
+
+## TASK-287 | 2026-07-24 | ✅ Tamamlandı
+
+**Görev:** Claude memory → docs + Cursor kuralı + standart sorgu sözlüğü + proje/ayarlar kart seed (60)
+**Modül:** docs / .cursor / kart açıklama
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/MEMORY/` → Claude Code bellek kopyası (indeks + konular)
+- `docs/kontrol/STANDART-SORGU-SOZLUGU.md` → kart/modal “standart değil” dili
+- `.cursor/rules/kokpitim-memory.mdc` → alwaysApply
+- `scripts/seed_data/card_descriptions_proje_ayarlar.py` → 60 kart açıklaması (kalan dilim)
+
+### Yapılan İşlem
+Önceki oturumda hazır ama commit edilmemiş memory/Cursor taşınabilirliği ve kart
+açıklama son dilim seed’i bu dala alındı. Seed henüz `--calistir` edilmedi — kart
+işi yeni sohbette bitirilecek.
+
+### Notlar
+Dal: `claude/hesap-dogruluk-duzeltmeleri` (aynı push).
+
+## TASK-286 | 2026-07-23 | ✅ Tamamlandı
+
+**Görev:** Hesap/doğruluk düzeltmeleri — karar paketi 1C 2A 3A 4A 5C 6A 7A 8A
+**Modül:** k_radar / risk / masaüstü / skor
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `migrations/versions/hd01a2b3c4d5_risk_heatmap_project_id.py` → G1 project_id
+- `app/models/k_radar_domain.py` → RiskHeatmapItem.project_id
+- `app/services/rpn_severity.py` → YENİ: T1 tek RPN tablosu
+- `services/k_radar_service.py` → D1/D2/D3 + G1 scope + T1 high_risk
+- `micro/modules/k_radar/routes_risk.py` → classify_rpn + project_id yazma
+- `services/performance_service.py` · `services/project_service.py` → DIR direction
+- `ui/static/platform/js/k_radar.js` → mc-empty / yetersiz veri
+- `micro/modules/masaustu/routes.py` · `ui/templates/.../masaustu/index.html` → SEM etiket
+- `docs/kontrol/KART-VERI-TUTARSIZLIKLARI.md` · `HESAP-DOGRULUK-KESIF-2026-07-23.md`
+
+### Yapılan İşlem
+Kullanıcı kararları uygulandı: SEM etiket ayrımı (backfill yok); D1 fallback
+kaldırıldı; D3 OEE/VSM boş mc-empty; D2 trend None; T1 tek eşik modülü; DIR
+tüm hesapla_durum çağrıları; D0 belge KAPALI; G1 migration + scope filtre.
+
+### Notlar
+Dal: `claude/hesap-dogruluk-duzeltmeleri`. Yerel alembic head `hd01a2b3c4d5`.
+`pybasla.py` restart önerilir. SEM backfill ayrı ürün kararı.
+
+## TASK-285 | 2026-07-23 | ✅ Tamamlandı
+
+**Görev:** Hesap/doğruluk mevcut durum keşfi (derinlik C) — envanter + karar soruları
+**Modül:** k_rapor / k_radar / skor motoru
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/HESAP-DOGRULUK-KESIF-2026-07-23.md` → YENİ: ölçümlü bulgu envanteri
+- Canvas: `hesap-dogruluk-kesif.canvas.tsx` (IDE canvases/)
+
+### Yapılan İşlem
+Kod + Yerel DB + authenticated API ile doğruluk taraması. D0 kodda KAPALI (doküman
+geride). Yeni P0: çift skor semantiği (band vs oran, Dec %7,9 eşleşme) + D1 değer
+zinciri fallback. D2/D3/T1/DIR/G1 sınıflandı. Düzeltme yapılmadı — karar soruları
+kullanıcıya bırakıldı.
+
+### Notlar
+Canlı /login demo şifreleriyle açılamadı; API force-login ile eşdeğer ölçüldü.
+
+## TASK-284 | 2026-07-23 | ✅ Tamamlandı
+
+**Görev:** Claude Code memory → docs + Cursor kuralı + kart/modal standart sorgu sözlüğü
+**Modül:** docs / .cursor
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/MEMORY/` → YENİ: Claude Code bellek kopyası (30 dosya, indeks güncellendi)
+- `docs/kontrol/STANDART-SORGU-SOZLUGU.md` → YENİ: “standart değil” dil → kart/modal checklist
+- `.cursor/rules/kokpitim-memory.mdc` → YENİ: alwaysApply — memory + sözlük zorunlu
+
+### Yapılan İşlem
+Claude yerel memory klasörü repoya taşındı (Cursor taşınabilirliği). Kısa ID +
+“standart değil” cümleleri kart kabuğu (§5.1) ile iç modal (§5) diye ayrıldı.
+Kart açıklama memory’si git gerçeğine (441/501) notlandı. Numara: kart dalında
+TASK-282/283 olduğu için bu kayıt TASK-284.
+
+### Notlar
+Dal: `claude/memory-docs-cursor`. Claude yerel klasör silinmedi.
+
+## TASK-283 | 2026-07-21 | ✅ Tamamlandı
+
+**Görev:** Kart açıklama zenginleştirme — raporlar dilimi 94/94 kart (191/501 tamam, 310 kaldı)
+**Modül:** raporlar (kart katmanı)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/seed_data/card_descriptions_raporlar.py` → YENİ: 94 kartın zengin açıklaması (ort. 541 krk)
+- `docs/kontrol/KART-ACIKLAMA-DEVIR.md` → ilerleme tablosu güncellendi, işleyen yöntem not edildi
+
+### Yapılan İşlem
+Devir yordamına uyuldu: 94 kart 4 paralel Explore ajanına bölündü; her kart için
+Formül/Kaynak/Eşik/Fallback/Sınır koddan (dosya:satır) çıkarıldı — uydurma yok. Açıklamalar
+yazım sözleşmesine göre (Hesap/Eşik/Sınır/Yorum/Kaynak) yazıldı; şeffaflık kuralı gereği ad-ölçüm
+ayrışmaları açıkça belirtildi (örn. sektör ortalamaları hard-coded, 'hedef revizyon' gerçek audit
+değil, '7 Muda'nın 4'ü tespit ediliyor, RPN 2-çarpanlı, AI kartlarının fallback davranışı).
+Seed KONTROL 94/94 eşleşti → uygulandı. raporlar ort. 49→541 krk; katalog ort. 277 krk. 89 test yeşil.
+
+### Notlar
+Ajan taraması 3 gerçek kod tutarsızlığı da yakaladı (ai_danisman action/pivot_type, audit PDF
+4-vs-6 bölüm, ml_anomaly '6 ölçüm' metni vs kod 8) — düzeltilmedi, KART-VERI-TUTARSIZLIKLARI
+adayı. D0 (438 ters gösterge) hâlâ onay bekliyor.
+
+
 ## TASK-281 | 2026-07-21 | ✅ Tamamlandı
 
 **Görev:** Yayın (www.kokpitim.com) güncellendi — `dbbe2ce` → `c65cb5dd` (109 commit, TASK-248…279)
