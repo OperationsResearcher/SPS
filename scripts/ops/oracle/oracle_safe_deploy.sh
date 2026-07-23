@@ -86,9 +86,16 @@ else
 fi
 
 echo "==> Health"
-curl -sS http://127.0.0.1/health || curl -sS http://127.0.0.1:5000/health || true
+# nginx :80 /health sık 404 (yanıltıcı) — önce uygulama portu 5000
+HC5000=$(curl -s -o /dev/null -w '%{http_code}' --max-time 10 http://127.0.0.1:5000/health || echo 000)
+HC80=$(curl -s -o /dev/null -w '%{http_code}' --max-time 5 http://127.0.0.1/health || echo 000)
+echo "health:5000=$HC5000  health:80=$HC80 (80=404 normal olabilir)"
+if [ "$HC5000" != "200" ]; then
+  echo "UYARI: :5000 health $HC5000 — docker logs $CONTAINER | tail -50"
+fi
 echo ""
 echo "Tamam. Yedek: $BACKUP_DIR/pg_${PG_DB}_full_${TS}.sql.gz"
+echo "Orchestrator (Windows): scripts/ops/oracle/yayina_ver.ps1 — başarısızsa FALLBACK → rehber §3/§4"
 
 echo "==> 7/7 Redis kontrolu (cache + rate limit)"
 # TASK-254: Redis yoksa uygulama SESSIZCE SimpleCache + memory:// ile calisir.

@@ -211,19 +211,49 @@ ssh -i C:\crt\ssh-key-2026-04-18_v4.key ubuntu@129.159.30.175
 
 ### 8.3 Deploy akışı
 
+**Tercih edilen yol (2026-07-24):** `scripts/ops/oracle/yayina_ver.ps1`  
+(detay: `docs/SUNUCU-GUNCELLEME-REHBERI.md` §0.8). Script FALLBACK basarsa aşağıdaki elle yol.
+
 **Yerel → Test:**
 1. `git push origin main`
-2. Test VM'de kodu güncelle (rsync veya tarball; mevcut tooling: `scripts/ops/oracle/setup_test_env.sh` + manuel `docker restart kokpitim-test-web`)
+2. Orchestrator: `.\scripts\ops\oracle\yayina_ver.ps1 -Mod test -Onay`  
+   (veya elle: rehber §0.6 sıfırdan — git archive + gzip dump; eski tarball+restart yetersiz)
 3. `https://test.kokpitim.com/` smoke test
 
 **Test → Yayın:**
 1. Test'te doğrulama bitince yerelden: `git push origin main`
-2. SSH yayın VM'i: `cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh` (PG yedek, pull, Docker rebuild, Alembic, satır sayısı doğrulaması)
-3. `https://www.kokpitim.com/health` ile smoke test
+2. Orchestrator: `.\scripts\ops\oracle\yayina_ver.ps1 -Mod yayin -Onay`  
+   (veya elle: SSH → `cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh` + seed)
+3. `https://www.kokpitim.com/health` ile smoke test (`:5000` de; nginx `:80/health` 404 yanıltıcı olabilir)
 
 **Push kullanıcı istediğinde yapılır.** Yayın deploy kullanıcı **"yayına çıkalım"** dediğinde yapılır — otomatik değil.
 
-**Tam yordam:** `docs/YERELDEN_VM_YAYIN.md` · `docs/ORACLE-PROD-VM.md`
+**Tam yordam:** `docs/SUNUCU-GUNCELLEME-REHBERI.md` (canonical). Eski: `docs/YERELDEN_VM_YAYIN.md` · `docs/ORACLE-PROD-VM.md`
+
+### 8.7 Git commit / push (orchestrator — 2026-07-24)
+
+> Kullanıcı **"commit"** / **"push"** demeden commit/push yok. Ajan varsayılan yolu scripttir.
+
+**Tercih:** `scripts/ops/git/commit_push.ps1`
+
+```powershell
+cd C:\kokpitim
+.\scripts\ops\git\commit_push.ps1 -Mod durum
+.\scripts\ops\git\commit_push.ps1 -Mod commit -Mesaj "feat: ..." -Onay -YeniDal konu-kebab -Push
+# Bilinçli main istisnası (nadir):
+.\scripts\ops\git\commit_push.ps1 -Mod commit -Mesaj "docs: ..." -Onay -MainIzin -Push
+```
+
+| Kural | Script davranışı |
+|---|---|
+| İstek yoksa commit yok | `-Onay` yoksa çıkış |
+| `main`'e doğrudan commit yok | `-YeniDal` / `-Dal` veya `-MainIzin` |
+| Secret (`.env`, `*.pem`, dump…) | Stage edilmez, listelenir |
+| Push | `-Push`; GCM `auto` — `never` / `GIT_TERMINAL_PROMPT=0` yok |
+| Hook reddi | Yeni commit (amend yok, kullanıcı istemeden) |
+| Başarısız | **FALLBACK** → elle `git add/commit/push` |
+
+Merge / tag / Yayın ayrı komutlar (`merge edelim`, `yayına ver`) — bu script yapmaz.
 
 ### 8.4 Demo ortamı — yapı + sıfırlama mutabakatı (2026-06-02)
 

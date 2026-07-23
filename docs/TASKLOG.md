@@ -2,6 +2,45 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-291 | 2026-07-24 | ✅ Tamamlandı
+
+**Görev:** Commit/push orchestrator + KURALLAR §8.7 (FALLBACK'li kalıcı yol)
+**Modül:** ops / docs
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/ops/git/commit_push.ps1` → durum/commit (+Push), main koruması, secret filtresi
+- `docs/KURALLAR-MASTER.md` → §8.5
+- `.cursor/rules/kokpitim-memory.mdc` → commit/push satırı
+- `docs/MEMORY/feedback_git_commit_push_orchestrator.md` → YENİ
+
+### Yapılan İşlem
+yayina_ver ile aynı model: script öncelikli, başarısızsa FALLBACK → elle git.
+Kullanıcı istemeden commit yok; GCM never yasak.
+
+### Notlar
+Kullanım: `.\scripts\ops\git\commit_push.ps1 -Mod commit -Mesaj "..." -Onay -YeniDal konu -Push`
+
+## TASK-290 | 2026-07-24 | ✅ Tamamlandı
+
+**Görev:** Yayına-ver orchestrator (script + FALLBACK) + rehber §0.8/§7 güncellemesi
+**Modül:** ops
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/ops/oracle/yayina_ver.ps1` → Yerel giriş (kontrol/test/yayin/hepsi, `-Onay`)
+- `scripts/ops/oracle/lib_yayin_common.sh` · `dort_katman_kontrol.sh` · `test_sifirdan.sh` · `yayin_seed_kart.sh`
+- `scripts/ops/oracle/oracle_safe_deploy.sh` → health `:5000` öncelik + orchestrator notu
+- `docs/SUNUCU-GUNCELLEME-REHBERI.md` → §0.8 + madde 8 + §7 tuzakları (SCP/CRLF/ownership/health/seed)
+
+### Yapılan İşlem
+2026-07-24 token yakıcı deploy dersleri scripte gömüldü: git archive (büyük scp yok), gzip
+dump+md5 retry, PG18 strip, ownership döngüsü, Text öncesi seed engeli, FALLBACK → geleneksel
+§3/§4/§5. Script çözemezse mevcut elle yönetim korunur.
+
+### Notlar
+Demo orchestrator dışında. Kullanım: `.\scripts\ops\oracle\yayina_ver.ps1 -Mod hepsi -Onay`
+
 ## TASK-289 | 2026-07-24 | ✅ Tamamlandı
 
 **Görev:** Kart 501 + hesap paketi → main push → Test sıfırdan → Yayın (yedek + seed)

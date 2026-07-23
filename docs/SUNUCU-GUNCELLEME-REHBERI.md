@@ -2,8 +2,7 @@
 
 > **Tek canonical yordam.** Eski `docs/YERELDEN_VM_YAYIN.md` bunun yerine geçti (arşiv).
 > Terminoloji bağlayıcı (KURALLAR-MASTER §8): **Yerel / Test / Demo / Yayın**. "VM" tek başına KULLANMA.
-> Son güncelleme: 2026-07-02 (§5 container yeniden-oluşturma kalıbı + §7'ye 5 yeni tuzak — Test'in
-> haftalar sonraki ilk restart'ında art arda çıkan ENCRYPTION_KEY/port/import-sırası hataları).
+> Son güncelleme: 2026-07-24 (§0.8 orchestrator `yayina_ver.ps1` + FALLBACK; §7'ye SCP/health tuzakları).
 
 ---
 
@@ -35,6 +34,53 @@
        elle tetiklenmesi gerekir (2026-07-07'de `system_cards` boş kaldığı için keşfedildi).
    Bu 4 katman kontrol edilip listelenmeden "deploy tamamlandı" raporu VERİLMEZ. Madde 2'deki kırmızı
    çizgi (kontrol dosyası + yedek) bu kontrolün YERİNE GEÇMEZ, ona EK olarak hâlâ zorunludur.
+8. **Önce orchestrator, olmazsa geleneksel yol** (2026-07-24). Token yakmamak için varsayılan giriş
+   `scripts/ops/oracle/yayina_ver.ps1`'dir. Script bir adımda **FALLBACK** basıp çıkarsa → bu
+   rehberin §3/§4/§5 elle komutlarıyla devam edilir. Script “sessizce yama yaparak” sorun çözmeye
+   çalışmaz; ajan da FALLBACK sonrası aynı kurala uyar.
+
+---
+
+## 0.8 Orchestrator — `yayina_ver.ps1` (tercih edilen yol)
+
+> Yerel Windows PowerShell. Önkoşul: `main` push edilmiş (`origin/main` = yerel HEAD), SSH anahtarı var.
+> Yıkıcı adımlar (`test` / `yayin` / `hepsi`) için **`-Onay` zorunlu**.
+
+```powershell
+cd C:\kokpitim
+
+# 1) Yalnız 4-katman raporu (yazmaz)
+.\scripts\ops\oracle\yayina_ver.ps1 -Mod kontrol
+
+# 2) Tam akış: Test sıfırdan → Yayın yedek/deploy → kart seed
+.\scripts\ops\oracle\yayina_ver.ps1 -Mod hepsi -Onay
+
+# 3) Parça
+.\scripts\ops\oracle\yayina_ver.ps1 -Mod test  -Onay
+.\scripts\ops\oracle\yayina_ver.ps1 -Mod yayin -Onay
+.\scripts\ops\oracle\yayina_ver.ps1 -Mod yayin -Onay -AtlaSeed   # yalnız kod/şema
+```
+
+| Adım | Ne yapar | Bilinen sorun → script çözüm |
+|---|---|---|
+| Preflight | `origin/main` eşitliği, SSH anahtarı | Eşit değilse FALLBACK → `git push` |
+| 4 katman | `dort_katman_kontrol.sh` | — |
+| Test kod | Yayın `git fetch` + `git archive` (büyük tarball scp YOK) | SCP 80MB+ reset → archive |
+| Test DB | Yerel PG18 dump → gzip → scp + md5 (retry) | PG18 `transaction_timeout` / `\restrict` strip |
+| Test sahiplik | `ALTER … OWNER` döngüsü | `REASSIGN OWNED BY postgres` sistem objelerinde patlar → kullanılmaz |
+| Yayın | mevcut `oracle_safe_deploy.sh` (yedek+pull+build+alembic+satır kilidi) | Satır farkı → yedekten dön (script exit) |
+| Seed | `yayin_seed_kart.sh` — önce `description` tipi = `text` | varchar iken seed YOK (truncation) |
+| Health | `:5000` / `:5050` | nginx `:80/health` 404 yanıltıcı — yok say |
+
+**FALLBACK sonrası geleneksel yol:** aşağıdaki §3 (kontrol+yedek) → §5/§0.6 (Test) → §4 (Yayın) → seed.
+Demo bu orchestrator’da **yok** (ayrı istek + Tomofil baseline).
+
+**Uzak scriptler (repo):**
+- `lib_yayin_common.sh` — ortak (health, ownership, FALLBACK metni)
+- `dort_katman_kontrol.sh`
+- `test_sifirdan.sh`
+- `yayin_seed_kart.sh`
+- `oracle_safe_deploy.sh` (mevcut; health `:5000` öncelikli)
 
 ---
 
@@ -110,7 +156,10 @@ sudo tar czf $BK/pre_deploy_code_${TS}.tar.gz -C /opt/kokpitim/app --exclude=.gi
 
 ## 4. Yerel → Yayın (IMAGE-BAKED: build + recreate)
 
-> Ön koşul: §3 ritüeli yapıldı. Branch main'e merge + push edilmeli (Yayın `origin/main` çeker).
+> **Tercih:** §0.8 `yayina_ver.ps1 -Mod yayin -Onay` (veya `-Mod hepsi`).
+> Ön koşul: §3 ritüeli (script bunu `oracle_safe_deploy` içinde yedek+satır sayımı olarak yapar).
+> Branch main'e merge + push edilmeli (Yayın `origin/main` çeker).
+> Script FALLBACK basarsa aşağıdaki elle yol kullanılır.
 
 ```bash
 # 0) Yerelde: branch→main merge + push  (DİKKAT: GIT_TERMINAL_PROMPT=0 KULLANMA → GCM'i bloklar)
@@ -249,6 +298,11 @@ sleep 8; curl -s -o /dev/null -w "test /health -> %{http_code}\n" http://127.0.0
 | Test/Demo'da liste/panel eksik görünüyor (ör. paket sayısı yerelden az) ama kod aynı (2026-07-05) | Kök neden **kod değil, hiç çalıştırılmamış seed script'i**: `scripts/seed_l2_module_gating.py` + `scripts/seed_l2_paketler.py` yerelde bir kere elle çalıştırılmış, Test/Demo'ya kod deploy edilirken (§5, saf dosya kopyası) DB seed'i unutulmuş. **Seed script'leri git commit'i ile OTOMATİK çalışmaz** — yeni bir seed script yazıldığında/çalıştırıldığında `docs/kontrol/seed_calistirma_kaydi.md`'ye hangi ortamlarda çalıştırıldığı işlenmeli (§8 madde 4). Şüphede: ilgili script'i `--dry-run` ile ortamda çalıştır, "eksik" raporluyorsa DB'de yok demektir. Yan tuzak: eksik satırı elle eklemeden önce sequence drift kontrolü yap (`sync_pg_sequence_if_needed`) — id çakışması olur. |
 | Container içinde `flask db …` → `ImportError: cannot import name 'create_app' from partially initialized module 'app'` | Kök dizinde hem `app.py` hem `app/` paketi hem `__init__.py` bir arada olduğunda Flask CLI'nin otomatik keşfi (`app.wsgi`) yanlış modülü buluyor; `FLASK_APP=run:app` verilse bile aynı hatayı veriyor. Fallback — Alembic'i doğrudan Python'dan çalıştır: `python3 -c "from __init__ import create_app; from flask_migrate import upgrade; app=create_app();\nwith app.app_context(): upgrade()"` (çalışma dizini `/app` olmalı). |
 | scp ile büyük tarball (80MB+) transferi "başarılı" görünüyor ama `tar xzf` sonra "invalid compressed data" veriyor | scp bazen sessizce yarım kalıp exit-code 0 dönebilir (timeout/bağlantı kesintisi). **Her büyük transferden sonra `md5sum` ile bütünlük doğrula** (§5'teki komut) — boyut aynı görünse bile içerik bozuk olabilir. |
+| scp 60–150MB tarball "Connection reset / Broken pipe" (2026-07-24) | Büyük **kod** tarball'ı bırak: Yayın `.git` üzerinden `git fetch` + `git archive origin/main` → Test dizinine. DB için yalnız **gzip plain dump** (~7MB) scp + md5 + retry. Orchestrator: `yayina_ver.ps1` / `test_sifirdan.sh`. |
+| PowerShell SSH komutunda `$(date …)` / SQL tırnakları bozuluyor | Uzak işi tek satırlık kompleks bash olarak yazma; **repodaki `.sh` dosyasını** sunucuda çalıştır (`bash /tmp/…` veya `app/scripts/ops/oracle/…`). CRLF için script'i LF'ye çevir. |
+| `REASSIGN OWNED BY postgres TO app_user` → "required by the database system" | Sistem katalogları dahil oluyor. Yerine tablo/sequence döngüsü: `lib_yayin_common.sh` → `fix_table_owner`. |
+| `oracle_safe_deploy` sonunda health "404" (nginx) ama site ayakta (2026-07-24) | `:80/health` nginx 404 verebilir. Doğru: `http://127.0.0.1:5000/health` ve `https://www.kokpitim.com/health`. |
+| Seed zengin açıklama varchar(512)'de kesiliyor / truncation | Önce migration `391945351814` (Text), **sonra** `seed_card_descriptions.py --calistir`. `yayin_seed_kart.sh` tipi text değilse seed çalıştırmaz. |
 
 ---
 

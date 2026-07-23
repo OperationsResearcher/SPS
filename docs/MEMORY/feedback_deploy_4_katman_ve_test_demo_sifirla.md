@@ -31,6 +31,9 @@ yol açtı.
    (kontrol dosyası + yedek, [[project_yedekleme_ve_db]]) bunun YERİNE GEÇMEZ, ona ek olarak hâlâ
    zorunlu.
 
+3. **2026-07-24 — orchestrator:** Tercih `scripts/ops/oracle/yayina_ver.ps1` (rehber §0.8).
+   Script FALLBACK basarsa geleneksel §3/§4/§5; ajan sessiz yama yapmaz.
+
 Bu, [[project_seed_script_deploy_acigi]] ve [[project_encryption_key_deploy_riski]] memory'lerindeki
 noktasal derslerin ÜST KURALI — onlar "şu spesifik şey eksik çıktı" derken, bu memory "her deploy'da
 sistematik olarak TÜMÜNÜ kontrol et" diyor.

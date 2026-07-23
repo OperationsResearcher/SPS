@@ -31,6 +31,7 @@
 - [Demo deploy yöntemi](project_demo_deploy_yontemi.md) — scp+restart adımları, izin akışı, script artık çalışıyor — sıradaki sefer 10-15dk sürmeli
 - [Tenant clone transaction dersi](project_tenant_clone_transaction_dersi.md) — yutulan hata transaction'ı abort eder, sonraki COMMIT sessizce rollback olur; genel PostgreSQL dersi
 - [Deploy 4-katman + Test/Demo sıfırla](feedback_deploy_4_katman_ve_test_demo_sifirla.md) — BAĞLAYICI (2026-07-07): Yayın deploy'unda kod/şema/veri/seed OTOMATİK kontrol; Test/Demo hep sıfırdan kurulur, tamir edilmez
+- [Git commit/push orchestrator](feedback_git_commit_push_orchestrator.md) — `commit_push.ps1`; kullanıcı istemeden commit yok; FALLBACK elle git (2026-07-24)
 - [GitHub Actions billing kilidi](project_github_actions_billing_kilidi.md) — CI Haziran'dan beri hiç çalışmıyor (hesap kilitli); <10sn koşu = çalışmamış, yerel doğrulama şart
 - [Kart açıklama zenginleştirme](project_kart_aciklama_zenginlestirme.md) — 2026-07-23: git'te **441/501**; kalan ~60 (proje/ayarlar yarım); "devam" denince önce docs/kontrol/KART-ACIKLAMA-DEVIR.md (not: DEVİR tablosu geride kalmış olabilir — git log'a bak)
 - [Kart veri tutarsızlıkları](project_kart_veri_tutarsizliklari.md) — D0: 438 gösterge TERS hesaplanıyor (lower_is_better ölü koşulu); düzeltilmedi, onay bekliyor
