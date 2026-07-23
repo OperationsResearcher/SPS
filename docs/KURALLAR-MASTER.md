@@ -1,7 +1,7 @@
 # KOKPİTİM — MASTER KURALLAR
 > Tek gerçek kaynak. Tüm IDE'ler buraya referans verir.
 > Kural değişince SADECE bu dosya güncellenir.
-> Son güncelleme: 2026-07-15 (§8.6 veri çekme eklendi)
+> Son güncelleme: 2026-07-24 (§1.1 token diyeti)
 
 ---
 
@@ -15,6 +15,17 @@ Oku → Plan göster → Onay al → Uygula → Test et → TASKLOG yaz → Dur
 - **Deneme yanılma yasak** — kök nedeni bulmadan komut önerme
 - **Bir dosyayı değiştirmeden önce tam oku**
 - **Push kullanıcı istediğinde** — `github_sync.py` otomatik çalıştırılmaz
+
+### 1.1 Token diyeti (BAĞLAYICI — 2026-07-24)
+
+> Pro / ücretli kredi **batmasın**. Token = para. Ayrıntı: `docs/MEMORY/feedback_token_diyeti.md`
+
+1. **Ops script önce:** Yayın/Test → `scripts/ops/oracle/yayina_ver.ps1`; commit/push → `scripts/ops/git/commit_push.ps1`. Sohbette adım adım SSH/SCP/GCM tiyatrosu yok (FALLBACK hariç).
+2. **Dar bağlam:** Az dosya `@`; uzun sohbeti yeni işe taşıma; büyük iş = yeni sohbet.
+3. **Tek seferde doğru:** Aynı hatayı 3+ kör deneme yasak; 2. başarısızlıktan sonra dur / FALLBACK.
+4. **Kapsam şişirme yok:** İstenmeyeni “bir de bakayım” diye tarama.
+5. **Kısa yanıt:** Roman değil; sonuç + gerekli kanıt.
+6. Cursor kuralı: `.cursor/rules/token-diyeti.mdc` (alwaysApply).
 
 ---
 

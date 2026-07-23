@@ -8,6 +8,7 @@
 - [SP Yıllık Dönem Sistemi — Tasarım Kararları](project_sp_yillik_plan.md) — PlanYear mimarisi, kapsam, ertelenen işler (E1, D3)
 - [Kullanıcı çalışma tarzı ve beklentileri](feedback_user_style.md) — Tek seferde doğru çözüm, token/zaman israfına sıfır tolerans
 - [Güven kaybı ve token maliyeti](feedback_trust_and_cost.md) — Tekrarlayan hatalar güveni bitirdi; "dokunma" dediğinde dur, dosya okumadan kod yazma
+- [Token diyeti](feedback_token_diyeti.md) — **BAĞLAYICI 2026-07-24:** Pro batmasın; yayina_ver/commit_push önce; dar bağlam; kör deneme yok
 - [Kullanıcı profili — ileri seviye](user_profile_advanced.md) — Kaynak kod sızıntısını okumuş, Anthropic iç mimarisini biliyor, manipülasyona kapalı
 - [Ortam mimarisi](project_uc_ortam.md) — Yerel / Test / Yayın bağlayıcı terim; "VM" tek başına YASAK (NOT: artık 4 ortam — [[project_demo_ortami_mutabakat]])
 - [L paketleri deploy kuralı](project_l_paketleri_deploy_kurali.md) — TÜM L paketleri bitmeden Yayın'a çıkma YOK; deploy önerme/sorma, iş yerelde birikir

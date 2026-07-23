@@ -16,3 +16,4 @@ Tek seferde doğru çözüm sun. Çok turlu gidip gelmek kabul edilmez.
 - Alternatif yaklaşım önermeden önce mevcut isteği tam anla
 - Olmayan bir şeyi "çalışıyor" deme — doğrulamadan iddiada bulunma
 - **KAPSAM DIŞI DOKUNMA YASAK:** İstenen değişiklik tek bir şeyse, yalnızca o dosyaya/fonksiyona dokun. "Şunu da iyileştirelim" dürtüsünü bastır. Kullanıcı kendi kodunu toplamak zorunda değil.
+- **Token diyeti:** [[feedback_token_diyeti]] — deploy/git script; yeni sohbet; 3+ kör deneme yok.

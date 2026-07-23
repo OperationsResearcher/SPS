@@ -2,6 +2,25 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-292 | 2026-07-24 | ✅ Tamamlandı
+
+**Görev:** Token diyeti bağlayıcı kurallara işlendi (Pro batma riski)
+**Modül:** docs / .cursor
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/KURALLAR-MASTER.md` → §1.1 Token diyeti
+- `docs/MEMORY/feedback_token_diyeti.md` → YENİ
+- `.cursor/rules/token-diyeti.mdc` → alwaysApply
+- `.cursorrules` · `kokpitim-memory.mdc` · MEMORY indeks · `feedback_trust_and_cost.md`
+
+### Yapılan İşlem
+Orchestrator önce, dar bağlam, kör deneme yasağı, kısa yanıt — ajan her oturumda görsün diye
+MASTER + alwaysApply kural + MEMORY’ye bağlandı.
+
+### Notlar
+Kullanıcı: paket batma riski (bakarım değil batarım).
+
 ## TASK-291 | 2026-07-24 | ✅ Tamamlandı
 
 **Görev:** Commit/push orchestrator + KURALLAR §8.7 (FALLBACK'li kalıcı yol)

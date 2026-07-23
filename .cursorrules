@@ -15,6 +15,17 @@ Kullanıcı "hızlı yap" dese bile bu adım atlanamaz.
 
 ---
 
+## ZORUNLU — Token diyeti (2026-07-24)
+
+Pro kredi batmasın. Detay: `docs/KURALLAR-MASTER.md` §1.1 · `docs/MEMORY/feedback_token_diyeti.md`
+
+- Yayın/Test → `scripts/ops/oracle/yayina_ver.ps1` (sohbette SSH tiyatrosu YOK)
+- Commit/push → `scripts/ops/git/commit_push.ps1`
+- Dar `@` bağlam; büyük iş = yeni sohbet; 3+ kör deneme YASAK
+- Kısa yanıt; kapsam şişirme yok
+
+---
+
 @docs/KURALLAR-MASTER.md
 
 ---

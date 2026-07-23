@@ -15,6 +15,7 @@ Claude Code `%USERPROFILE%\.claude\projects\c--kokpitim\memory\` kopyasıdır; o
 - “Kart işine devam” → `docs/kontrol/KART-ACIKLAMA-DEVIR.md` + `docs/MEMORY/project_kart_aciklama_zenginlestirme.md`
 - Deploy / Test / Demo / Yayın → `feedback_deploy_4_katman_ve_test_demo_sifirla.md` + `docs/SUNUCU-GUNCELLEME-REHBERI.md`
 - Commit / push → `scripts/ops/git/commit_push.ps1` + `docs/KURALLAR-MASTER.md` §8.7
+- **Token / maliyet** → `feedback_token_diyeti.md` + §1.1 (BAĞLAYICI — batma riski)
 - Çalışma tarzı → `feedback_user_style.md`, `feedback_trust_and_cost.md`
 
 ## “Standart değil” dili

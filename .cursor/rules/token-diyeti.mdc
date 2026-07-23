@@ -1,0 +1,26 @@
+---
+description: Token diyeti — Pro paket batmasın; script önce, kısa bağlam, deneme-yanılma yok
+alwaysApply: true
+---
+
+# Token diyeti (BAĞLAYICI — 2026-07-24)
+
+Kullanıcı Pro kredisiyle çalışıyor; israf = **batma riski**. Her tur pahalı.
+
+## Yap
+
+1. **Deploy / Test / Yayın:** `scripts/ops/oracle/yayina_ver.ps1` — sohbette adım adım SSH/SCP yok.
+2. **Commit / push:** `scripts/ops/git/commit_push.ps1` — status/diff/GCM döngüsünü sohbette uzatma.
+3. Script **FALLBACK** basarsa geleneksel rehber; sessiz yama döngüsü yok.
+4. Tek/az dosya işi → dar `@` bağlamı; yeni büyük iş → **yeni sohbet**.
+5. İlk seferde doğru; aynı komutu 3+ kez kör deneme **yasak**.
+6. Yanıt kısa. Kullanıcıya uzun rapor yerine net sonuç.
+
+## Yapma
+
+- Tüm repo / uzun chat geçmişini her mesaja taşıma
+- “Bir de şunu tarayayım” kapsam şişirme
+- Onaysız büyük refactor / deploy denemesi
+- Orchestrator varken elle 10 adımlı sunucu tiyatrosu
+
+Otorite: `docs/KURALLAR-MASTER.md` §1.1 · `docs/MEMORY/feedback_token_diyeti.md`
