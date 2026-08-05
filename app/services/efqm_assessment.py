@@ -139,28 +139,38 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
         "SELECT count(*) FROM processes WHERE tenant_id=:t AND is_active=true " + py_clause,
         {"t": tenant_id, **py_params})
 
-    # Tenant identity — vizyon/amaç/değerler/etik/kalite politikası (K1.1 / K2.1)
+    # Tenant identity — vizyon/amaç/değerler/etik/kalite (K1.1 / K2.1)
+    # Öncelik: seçili yılın tenant_year_identities satırı; boş alanlar → tenants
+    # (SP ekranı ile aynı fallback — KMF gibi yıllık satırı olmayan kurumlar)
     identity_filled = 0
-    values_ethics_filled = 0  # core_values + code_of_ethics (K2.1)
+    values_ethics_filled = 0
     identity_fields = (
         "vision", "purpose", "core_values", "code_of_ethics", "quality_policy",
     )
+    identity_vals = {f: "" for f in identity_fields}
     try:
-        row = db.session.execute(text("""
+        if plan_year_id:
+            row = db.session.execute(text("""
+                SELECT vision, purpose, core_values, code_of_ethics, quality_policy
+                FROM tenant_year_identities
+                WHERE tenant_id=:t AND plan_year_id=:py
+                LIMIT 1
+            """), {"t": tenant_id, "py": plan_year_id}).fetchone()
+            if row:
+                for f in identity_fields:
+                    identity_vals[f] = (getattr(row, f, None) or "").strip()
+        trow = db.session.execute(text("""
             SELECT vision, purpose, core_values, code_of_ethics, quality_policy
-            FROM tenant_year_identities
-            WHERE tenant_id=:t AND (plan_year_id=:py OR :py IS NULL)
-            LIMIT 1
-        """), {"t": tenant_id, "py": plan_year_id}).fetchone()
-        if row:
-            identity_filled = sum(
-                1 for f in identity_fields
-                if (getattr(row, f, None) or "").strip()
-            )
-            values_ethics_filled = sum(
-                1 for f in ("core_values", "code_of_ethics")
-                if (getattr(row, f, None) or "").strip()
-            )
+            FROM tenants WHERE id=:t LIMIT 1
+        """), {"t": tenant_id}).fetchone()
+        if trow:
+            for f in identity_fields:
+                if not identity_vals[f]:
+                    identity_vals[f] = (getattr(trow, f, None) or "").strip()
+        identity_filled = sum(1 for f in identity_fields if identity_vals[f])
+        values_ethics_filled = sum(
+            1 for f in ("core_values", "code_of_ethics") if identity_vals[f]
+        )
     except Exception:
         identity_filled = 0
         values_ethics_filled = 0
@@ -694,10 +704,10 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
 
     notes = {
         "k1": _(
-            "1.1 kimlik (5 alan) · 1.2 SWOT veya PESTEL · 1.3 strateji/alt strateji sayısı · "
-            "1.4 aktif süreç+PG ve veri girişi. Sayı/doluluk = yapı kanıtı, Approach kalitesi değil."
+            "1.1 kimlik (yıl satırı + tenants fallback) · 1.2 SWOT veya PESTEL · "
+            "1.3 strateji/alt strateji · 1.4 süreç+PG ve veri. Seçili plan yılına göre."
         ),
-        "k2": _("Değer/etik, süreç lideri oranı, örgüt çeşitliliği, maturity/A3."),
+        "k2": _("Değer/etik (yıl+tenants), süreç lideri oranı, örgüt çeşitliliği, maturity/A3."),
         "k3": _("Paydaş haritası, dinleme anketi, OKR/girişim eylem bağı."),
         "k4": _("Strateji hizası, girişim portföyü/teslimi, veri girilen PG."),
         "k5": _("PG izleme oranı, risk sistemi, dönüşüm (girişim/maturity/A3), operasyon disiplini."),
@@ -765,9 +775,27 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
                       "Bu modüldeki türev puan ile karşılaştırılabilir."),
         }
 
+    # Seçili yıl etiketi (UI)
+    plan_year_label = None
+    plan_year_year = None
+    if plan_year_id:
+        try:
+            py_row = db.session.execute(text(
+                "SELECT year, name FROM plan_years WHERE id=:id LIMIT 1"
+            ), {"id": plan_year_id}).fetchone()
+            if py_row:
+                plan_year_year = int(py_row.year) if py_row.year is not None else None
+                plan_year_label = (py_row.name or "").strip() or (
+                    str(plan_year_year) if plan_year_year else None
+                )
+        except Exception:
+            pass
+
     return {
         "tenant_id": tenant_id,
         "plan_year_id": plan_year_id,
+        "plan_year_year": plan_year_year,
+        "plan_year_label": plan_year_label,
         "generated_at": _dt.datetime.now(_dt.timezone.utc).isoformat(),
         "total_points": total_pts,
         "max_points": 1000,
@@ -824,6 +852,9 @@ def summarize_efqm_for_card(
         "total_points": total,
         "max_points": 1000,
         "level_label": level.get("label"),
+        "plan_year_id": assessment.get("plan_year_id"),
+        "plan_year_year": assessment.get("plan_year_year"),
+        "plan_year_label": assessment.get("plan_year_label"),
         "is_official_assessment": False,
         "model_version": assessment.get("model_version") or "EFQM 2025",
     }

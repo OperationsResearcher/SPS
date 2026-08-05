@@ -483,7 +483,12 @@
   }
 
   async function loadKsEfqm(root) {
-    const payload = await getJson(root.dataset.url);
+    let url = root.dataset.url || "";
+    const sel = document.getElementById("topbar-year-select");
+    if (sel && sel.value) {
+      url += (url.includes("?") ? "&" : "?") + "year=" + encodeURIComponent(sel.value);
+    }
+    const payload = await getJson(url);
     const d = payload.data || {};
     text("ks-efqm-criteria", d.criterion_coverage != null
       ? `${d.criterion_coverage}/${d.criterion_total ?? 7}`

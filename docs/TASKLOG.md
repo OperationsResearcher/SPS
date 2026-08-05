@@ -2,6 +2,44 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-303 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM yıllık skor + kimlik tenants fallback (KMF 1.1)
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/efqm_assessment.py` → yıl kimliği + tenants fallback; plan_year etiketi
+- `micro/modules/k_radar/routes_ks.py` → `?year=` / session plan yılı
+- `ui/static/platform/js/k_radar_ks.js` · `k_radar.js` → yıl query + modal yıl satırı
+
+### Yapılan İşlem
+1.1 önce `tenant_year_identities` (seçili yıl), boş alanlar `tenants`. Kart/modal üst bardaki yılı kullanır; yıl değişince sayfa yenilenir → skor yenilenir.
+Smoke KMF: 1.1=2/5; 2026=182 vs 2025=208 puan.
+
+### Notlar
+Dal: `claude/efqm-yillik-kimlik`.
+
+## TASK-302 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** Demo tam sync (`origin/main`) + Alembic + kart seed + baseline snapshot
+**Modül:** ops / demo
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/seed_calistirma_kaydi.md` → Demo seed kaydı
+- `docs/TASKLOG.md`
+
+### Yapılan İşlem
+1. Demo app: `git archive origin/main` (`.env`/`instance`/`logs` korundu) → SHA `e9e94270`
+2. Alembic upgrade (varchar→text dahil, `391945351814` …)
+3. `seed_card_descriptions.py --calistir` → **483** güncelleme (18 kart DB’de yok)
+4. `demo_baseline snapshot` (169 tablo) — reset kırılmasın
+5. health **200**
+
+### Notlar
+Yalnız `*-demo`. Tomofil wipe yok.
+
 ## TASK-301 | 2026-08-05 | ✅ Tamamlandı
 
 **Görev:** EFQM paketi commit/push + Demo kod + Yayın deploy
