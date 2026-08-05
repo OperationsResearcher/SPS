@@ -593,7 +593,11 @@
       if (!res.success) return;
       const d = res.data || {};
       const criteriaEl = document.getElementById("ks-efqm-criteria");
-      if (criteriaEl) criteriaEl.textContent = d.criterion_coverage ?? "—";
+      if (criteriaEl) {
+        criteriaEl.textContent = d.criterion_coverage != null
+          ? `${d.criterion_coverage}/${d.criterion_total ?? 7}`
+          : "—";
+      }
       const readinessEl = document.getElementById("ks-efqm-readiness");
       if (readinessEl) {
         const val = d.readiness_score != null ? d.readiness_score + "%" : "—";
@@ -602,7 +606,8 @@
       }
       const badge = document.getElementById("ks-efqm-badge");
       if (badge) {
-        badge.textContent = d.readiness_score != null ? d.readiness_score + "%" : "—";
+        const pts = d.total_points;
+        badge.textContent = pts != null ? pts + "/1000" : (d.readiness_score != null ? d.readiness_score + "%" : "—");
         badge.style.background = d.readiness_score >= 80 ? "#d1fae5" : d.readiness_score >= 50 ? "#fef3c7" : "#fef2f2";
         badge.style.color = d.readiness_score >= 80 ? "#065f46" : d.readiness_score >= 50 ? "#92400e" : "#991b1b";
       }

@@ -8,6 +8,7 @@
 - [SP Yıllık Dönem Sistemi — Tasarım Kararları](project_sp_yillik_plan.md) — PlanYear mimarisi, kapsam, ertelenen işler (E1, D3)
 - [Kullanıcı çalışma tarzı ve beklentileri](feedback_user_style.md) — Tek seferde doğru çözüm, token/zaman israfına sıfır tolerans
 - [Güven kaybı ve token maliyeti](feedback_trust_and_cost.md) — Tekrarlayan hatalar güveni bitirdi; "dokunma" dediğinde dur, dosya okumadan kod yazma
+- [Token diyeti](feedback_token_diyeti.md) — **BAĞLAYICI 2026-07-24:** Pro batmasın; yayina_ver/commit_push önce; dar bağlam; kör deneme yok
 - [Kullanıcı profili — ileri seviye](user_profile_advanced.md) — Kaynak kod sızıntısını okumuş, Anthropic iç mimarisini biliyor, manipülasyona kapalı
 - [Ortam mimarisi](project_uc_ortam.md) — Yerel / Test / Yayın bağlayıcı terim; "VM" tek başına YASAK (NOT: artık 4 ortam — [[project_demo_ortami_mutabakat]])
 - [L paketleri deploy kuralı](project_l_paketleri_deploy_kurali.md) — TÜM L paketleri bitmeden Yayın'a çıkma YOK; deploy önerme/sorma, iş yerelde birikir
@@ -31,6 +32,7 @@
 - [Demo deploy yöntemi](project_demo_deploy_yontemi.md) — scp+restart adımları, izin akışı, script artık çalışıyor — sıradaki sefer 10-15dk sürmeli
 - [Tenant clone transaction dersi](project_tenant_clone_transaction_dersi.md) — yutulan hata transaction'ı abort eder, sonraki COMMIT sessizce rollback olur; genel PostgreSQL dersi
 - [Deploy 4-katman + Test/Demo sıfırla](feedback_deploy_4_katman_ve_test_demo_sifirla.md) — BAĞLAYICI (2026-07-07): Yayın deploy'unda kod/şema/veri/seed OTOMATİK kontrol; Test/Demo hep sıfırdan kurulur, tamir edilmez
+- [Git commit/push orchestrator](feedback_git_commit_push_orchestrator.md) — `commit_push.ps1`; kullanıcı istemeden commit yok; FALLBACK elle git (2026-07-24)
 - [GitHub Actions billing kilidi](project_github_actions_billing_kilidi.md) — CI Haziran'dan beri hiç çalışmıyor (hesap kilitli); <10sn koşu = çalışmamış, yerel doğrulama şart
 - [Kart açıklama zenginleştirme](project_kart_aciklama_zenginlestirme.md) — 2026-07-23: git'te **441/501**; kalan ~60 (proje/ayarlar yarım); "devam" denince önce docs/kontrol/KART-ACIKLAMA-DEVIR.md (not: DEVİR tablosu geride kalmış olabilir — git log'a bak)
 - [Kart veri tutarsızlıkları](project_kart_veri_tutarsizliklari.md) — D0: 438 gösterge TERS hesaplanıyor (lower_is_better ölü koşulu); düzeltilmedi, onay bekliyor

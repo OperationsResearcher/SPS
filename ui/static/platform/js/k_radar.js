@@ -485,8 +485,11 @@
   async function loadKsEfqm(root) {
     const payload = await getJson(root.dataset.url);
     const d = payload.data || {};
-    text("ks-efqm-criteria", d.criterion_coverage ?? 0);
-    text("ks-efqm-readiness", d.readiness_score ?? 0);
+    text("ks-efqm-criteria", d.criterion_coverage != null
+      ? `${d.criterion_coverage}/${d.criterion_total ?? 7}`
+      : "—");
+    const ready = d.readiness_score;
+    text("ks-efqm-readiness", ready != null ? `${ready}%` : "—");
   }
 
   async function loadKsHoshin(root) {
