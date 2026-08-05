@@ -2,6 +2,22 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-304 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM yıl filtresi — `plan_year_id IS NULL` legacy dahil (KMF Yayın 67→düzelik)
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/efqm_assessment.py` → py_clause / SWOT-PESTEL: yıl VEYA NULL (SP `include_null`)
+
+### Yapılan İşlem
+Yayın KMF strateji/süreç `plan_year_id=NULL`; sıkı yıl filtresi 0 kayıt → 67 puan.
+SP `filter_by_plan_year(include_null=True)` ile hizalandı.
+
+### Notlar
+Dal: `claude/efqm-include-null-year`.
+
 ## TASK-303 | 2026-08-05 | ✅ Tamamlandı
 
 **Görev:** EFQM yıllık skor + kimlik tenants fallback (KMF 1.1)

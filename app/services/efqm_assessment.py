@@ -120,11 +120,15 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
           'kpi_327': {target, latest_value, gap} | None,
         }
     """
-    # py_clause: sadece sabit SQL string + named parameter — kullanıcı girdisi yoktur
-    # f-string kullanımı yerine koşullu parametrik sorgu güvenlidir
-    py_clause    = "AND plan_year_id = :py"   if plan_year_id else ""
-    p_py_clause  = "AND p.plan_year_id = :py" if plan_year_id else ""
-    py_params    = {"py": plan_year_id}        if plan_year_id else {}
+    # py_clause: SP/exec_dashboard ile aynı — seçili yıl VEYA legacy (plan_year_id IS NULL)
+    # include_null=True (app.utils.plan_year_filter). KMF Yayın: strateji/süreç NULL etiketli.
+    py_clause = (
+        "AND (plan_year_id = :py OR plan_year_id IS NULL)" if plan_year_id else ""
+    )
+    p_py_clause = (
+        "AND (p.plan_year_id = :py OR p.plan_year_id IS NULL)" if plan_year_id else ""
+    )
+    py_params = {"py": plan_year_id} if plan_year_id else {}
 
     # ── Veri toplama ─────────────────────────────────────────────────────────
     strat_count = _scalar(
@@ -195,13 +199,13 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
     )
     swot_n = _scalar(
         "SELECT count(*) FROM swot_analyses WHERE tenant_id=:t "
-        + ("AND plan_year_id=:py " if plan_year_id else "")
+        + ("AND (plan_year_id=:py OR plan_year_id IS NULL) " if plan_year_id else "")
         + "AND (" + swot_content + ")",
         {"t": tenant_id, **py_params},
     )
     pestel_n = _scalar(
         "SELECT count(*) FROM pestel_analyses WHERE tenant_id=:t "
-        + ("AND plan_year_id=:py " if plan_year_id else "")
+        + ("AND (plan_year_id=:py OR plan_year_id IS NULL) " if plan_year_id else "")
         + "AND (" + pestel_content + ")",
         {"t": tenant_id, **py_params},
     )
@@ -705,7 +709,8 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
     notes = {
         "k1": _(
             "1.1 kimlik (yıl satırı + tenants fallback) · 1.2 SWOT veya PESTEL · "
-            "1.3 strateji/alt strateji · 1.4 süreç+PG ve veri. Seçili plan yılına göre."
+            "1.3 strateji/alt strateji · 1.4 süreç+PG ve veri. Seçili plan yılı "
+            "(+ etiketsiz legacy kayıtlar)."
         ),
         "k2": _("Değer/etik (yıl+tenants), süreç lideri oranı, örgüt çeşitliliği, maturity/A3."),
         "k3": _("Paydaş haritası, dinleme anketi, OKR/girişim eylem bağı."),
