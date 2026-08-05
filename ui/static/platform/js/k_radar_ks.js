@@ -589,7 +589,9 @@
 
   // ── EFQM Mini (hub kartı) ─────────────────────────────────────────────────────
   if (API.efqm) {
-    fetchJson(API.efqm).then(res => {
+    const ySel = document.getElementById("topbar-year-select");
+    const yQ = ySel && ySel.value ? ("?year=" + encodeURIComponent(ySel.value)) : "";
+    fetchJson(API.efqm + yQ).then(res => {
       if (!res.success) return;
       const d = res.data || {};
       const criteriaEl = document.getElementById("ks-efqm-criteria");
@@ -607,7 +609,8 @@
       const badge = document.getElementById("ks-efqm-badge");
       if (badge) {
         const pts = d.total_points;
-        badge.textContent = pts != null ? pts + "/1000" : (d.readiness_score != null ? d.readiness_score + "%" : "—");
+        const yr = d.plan_year_year != null ? (" · " + d.plan_year_year) : "";
+        badge.textContent = pts != null ? pts + "/1000" + yr : (d.readiness_score != null ? d.readiness_score + "%" : "—");
         badge.style.background = d.readiness_score >= 80 ? "#d1fae5" : d.readiness_score >= 50 ? "#fef3c7" : "#fef2f2";
         badge.style.color = d.readiness_score >= 80 ? "#065f46" : d.readiness_score >= 50 ? "#92400e" : "#991b1b";
       }
@@ -1225,9 +1228,15 @@
   }
 
   // ── EFQM Modal — EFQM 2025 zengin türev değerlendirme ──────────────────────
+  function efqmYearQuery() {
+    const sel = document.getElementById("topbar-year-select");
+    const y = sel && sel.value ? parseInt(sel.value, 10) : null;
+    return Number.isFinite(y) && y > 0 ? ("?year=" + y) : "";
+  }
+
   function loadEfqmModal() {
     setHtml("ks-modal-efqm-body", `<div class="kr-loading" style="padding:32px;">${t("EFQM 2025 değerlendirmesi hesaplanıyor…")}</div>`);
-    fetchJson('/k-radar/api/ks/efqm-detail').then(res => {
+    fetchJson('/k-radar/api/ks/efqm-detail' + efqmYearQuery()).then(res => {
       if (!res.success) {
         setHtml("ks-modal-efqm-body", `<div style="color:#ef4444;padding:16px;">${t("Yüklenemedi.")}</div>`);
         return;
@@ -1235,6 +1244,9 @@
       const d = res.data;
       const lvl = d.level;
       const pct = Math.round(d.total_points / 10);
+      const yearLabel = d.plan_year_year
+        ? (String(d.plan_year_year) + (d.plan_year_label && d.plan_year_label !== String(d.plan_year_year) ? (" — " + d.plan_year_label) : ""))
+        : t("Yıl seçili değil");
       const starsHtml = Array.from({length: 7}, (_, i) =>
         `<i class="fas fa-star" style="color:${i < lvl.stars ? lvl.color : '#e2e8f0'};font-size:14px;"></i>`
       ).join('');
@@ -1359,6 +1371,7 @@
           <div style="background:linear-gradient(135deg,${lvl.color}15,${lvl.color}05);border:1px solid ${lvl.color}30;border-radius:10px;padding:16px;margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
             <div>
               <div style="font-size:11px;color:${lvl.color};font-weight:700;text-transform:uppercase;letter-spacing:0.06em;">EFQM ${esc(d.model_version)} — ${t("Olgunluk Seviyesi")}</div>
+              <div style="font-size:12px;color:#64748b;margin-top:4px;"><i class="fas fa-calendar-alt"></i> ${t("Plan yılı")}: <strong style="color:#0f172a;">${esc(yearLabel)}</strong></div>
               <div style="font-size:20px;font-weight:800;color:#0f172a;margin-top:4px;">${esc(lvl.label)}</div>
               <div style="font-size:12.5px;color:#64748b;margin-top:2px;">${esc(lvl.tagline)}</div>
               <div style="margin-top:8px;">${starsHtml}</div>

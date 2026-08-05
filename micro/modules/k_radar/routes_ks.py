@@ -90,16 +90,30 @@ def k_radar_api_ks_bsc():
     return _safe_json(lambda: jsonify({"success": True, "data": get_ks_extended_data(_required_tenant_id()).get("bsc", {})}))
 
 
+def _resolve_efqm_plan_year_id(tenant_id: int):
+    """EFQM için plan yılı: ?year= sorgu veya session seçili yıl."""
+    from flask import request
+    from flask_login import current_user
+    from app.services.plan_year_service import (
+        get_active_plan_year_for_user,
+        get_plan_year,
+    )
+    year = request.args.get("year", type=int)
+    if year:
+        py = get_plan_year(tenant_id, year)
+        if py:
+            return py.id
+    py = get_active_plan_year_for_user(current_user)
+    return py.id if py else None
+
+
 @app_bp.route("/k-radar/api/ks/efqm")
 @login_required
 def k_radar_api_ks_efqm():
-    """KD11 hub kartı — modal ile aynı EFQM motoru (özet alanlar)."""
+    """KD11 hub kartı — modal ile aynı EFQM motoru (özet alanlar, yıllık)."""
     from app.services.efqm_assessment import summarize_efqm_for_card
-    from app.services.plan_year_service import get_active_plan_year_for_user
-    from flask_login import current_user
     tid = _required_tenant_id()
-    py = get_active_plan_year_for_user(current_user)
-    py_id = py.id if py else None
+    py_id = _resolve_efqm_plan_year_id(tid)
     return _safe_json(lambda: jsonify({
         "success": True,
         "data": summarize_efqm_for_card(tid, py_id),
@@ -109,13 +123,10 @@ def k_radar_api_ks_efqm():
 @app_bp.route("/k-radar/api/ks/efqm-detail")
 @login_required
 def k_radar_api_ks_efqm_detail():
-    """EFQM Modeli 2025 — 7 kriter × 3 boyut türev değerlendirmesi (1000 ölçek)."""
+    """EFQM Modeli 2025 — 7 kriter × 3 boyut (seçili / ?year= plan yılı)."""
     from app.services.efqm_assessment import compute_efqm_assessment
-    from app.services.plan_year_service import get_active_plan_year_for_user
-    from flask_login import current_user
     tid = _required_tenant_id()
-    py = get_active_plan_year_for_user(current_user)
-    py_id = py.id if py else None
+    py_id = _resolve_efqm_plan_year_id(tid)
     return _safe_json(lambda: jsonify({
         "success": True,
         "data": compute_efqm_assessment(tid, py_id),
