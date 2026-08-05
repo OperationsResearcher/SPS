@@ -395,6 +395,8 @@ def get_ks_data(tenant_id: int) -> dict[str, Any]:
 
 @cache.memoize(timeout=300)
 def get_ks_extended_data(tenant_id: int) -> dict[str, Any]:
+    from app.services.efqm_assessment import summarize_efqm_for_card
+
     base = _ks_component(tenant_id)
     strategy_count = int(base.get("strategy_count") or 0)
     process_count = int(base.get("process_count") or 0)
@@ -432,10 +434,7 @@ def get_ks_extended_data(tenant_id: int) -> dict[str, Any]:
             "perspective_coverage": min(4, max(0, (int(kpi_count or 0) // 3) + 1 if kpi_count else 0)),
             "kpi_count": int(kpi_count or 0),
         },
-        "efqm": {
-            "criterion_coverage": min(7, max(0, (strategy_count // 2) + 1 if strategy_count else 0)),
-            "readiness_score": min(100, int(base.get("score") or 0) + 10),
-        },
+        "efqm": summarize_efqm_for_card(tenant_id),
         "hoshin": {
             "objective_focus": strategy_count,
             "deployment_score": min(100, strategy_count * 10 + process_count * 2),

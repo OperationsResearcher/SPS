@@ -93,8 +93,17 @@ def k_radar_api_ks_bsc():
 @app_bp.route("/k-radar/api/ks/efqm")
 @login_required
 def k_radar_api_ks_efqm():
-    from services.k_radar_service import get_ks_extended_data
-    return _safe_json(lambda: jsonify({"success": True, "data": get_ks_extended_data(_required_tenant_id()).get("efqm", {})}))
+    """KD11 hub kartı — modal ile aynı EFQM motoru (özet alanlar)."""
+    from app.services.efqm_assessment import summarize_efqm_for_card
+    from app.services.plan_year_service import get_active_plan_year_for_user
+    from flask_login import current_user
+    tid = _required_tenant_id()
+    py = get_active_plan_year_for_user(current_user)
+    py_id = py.id if py else None
+    return _safe_json(lambda: jsonify({
+        "success": True,
+        "data": summarize_efqm_for_card(tid, py_id),
+    }))
 
 
 @app_bp.route("/k-radar/api/ks/efqm-detail")

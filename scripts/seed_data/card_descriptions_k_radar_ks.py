@@ -158,13 +158,14 @@ DESCRIPTIONS: dict[str, str] = {
         "EFQM Mükemmellik Modeli, kurumsal olgunluğu yön verme, uygulama ve sonuçlar ekseninde "
         "değerlendiren Avrupa kalite çerçevesidir.\n"
         "\n"
-        "Sınır: Bu kart gerçek bir EFQM özdeğerlendirmesi yapmaz. Kriter kapsamı strateji "
-        "sayınızdan, hazırlık skoru KS skorunuzdan türetilir — yaklaşık bir gösterge olarak "
-        "okunmalıdır.\n"
+        "Hesap: Kart ve detay modalı aynı motoru kullanır (EFQM 2025 ağırlıkları, 0–1000). "
+        "Aktif kriter = skoru > 0 olan kriter sayısı (7 üzerinden). Olgunluk % = toplam puan / 10.\n"
         "\n"
-        "Yorum: EFQM'in ayırt edici yanı, iyi uygulamaları değil bunların ÜRETTİĞİ SONUÇLARI "
-        "sorgulamasıdır. Yüksek hazırlık skoru, resmi bir değerlendirmeye girebilecek veri "
-        "olgunluğuna işaret eder; kalite seviyesinin kendisine değil."
+        "Sınır: Bu bir öz-değerlendirme proxy’sidir; resmî EFQM tanınma seviyesi değildir. "
+        "RADAR Approach matrisi uygulanmaz — yapı/sonuç kanıtlarından türetilir.\n"
+        "\n"
+        "Yorum: Yüksek olgunluk %, veri ve bağların doldurulduğunu gösterir; bağımsız "
+        "değerlendirici notu yerine geçmez."
     ),
 
     "k_radar_ks.gap_analizi": (

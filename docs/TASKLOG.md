@@ -2,6 +2,144 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-300 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM KD11 kart ↔ modal hizası
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/efqm_assessment.py` → `summarize_efqm_for_card`
+- `micro/modules/k_radar/routes_ks.py` → `/ks/efqm` gerçek motor
+- `services/k_radar_service.py` → extended efqm özeti
+- `ui/.../ks.html` · `k_radar.js` · `k_radar_ks.js` → etiket/gösterim
+- `scripts/seed_data/card_descriptions_k_radar_ks.py` → Sınır metni
+- `docs/kontrol/EFQM-KD11-KART-HIZA.md`
+
+### Yapılan İşlem
+Sahte KS+10 / strateji sayısı kaldırıldı. Kart = modal özeti (aktif kriter + puan/10).
+
+### Notlar
+Dal: `claude/efqm-k1`. Açıklama DB’de eski kalırsa seed/güncelle gerekir.
+
+## TASK-299 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM K7 (Stratejik ve Operasyonel Performans) formül yenileme — Yol A
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/EFQM-K7-PLAN.md` → karar + puan dağılımı
+- `app/services/efqm_assessment.py` → K7: PG hedef, girişim sonucu, faaliyet sonucu; data_disc kaldırıldı
+
+### Yapılan İşlem
+Dağılım 50+25+25. K1–K7 formül seti tamam. KD11 hub hizası ayrı.
+
+### Notlar
+Dal: `claude/efqm-k1`. Sonraki opsiyon: KD11 kart ↔ modal.
+
+## TASK-298 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM K6 (Paydaş Algıları) formül yenileme — Yol A, BSC yok
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/EFQM-K6-PLAN.md` → karar + puan dağılımı
+- `app/services/efqm_assessment.py` → K6: anket tipi, skor ort., derinlik; BSC/sabit baz kaldırıldı
+
+### Yapılan İşlem
+Dağılım 35+40+25. Kaynak `stakeholder_surveys`. Anket yoksa 0.
+K7 ve KD11 hub dokunulmadı.
+
+### Notlar
+Dal: `claude/efqm-k1`. Sonraki: K7.
+
+## TASK-297 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM K5 (Performans ve Dönüşüme Yön Verme) formül yenileme — Yol A
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/EFQM-K5-PLAN.md` → karar + puan dağılımı
+- `app/services/efqm_assessment.py` → K5: izleme, risk sistemi, dönüşüm, operasyon
+
+### Yapılan İşlem
+Dağılım 25+30+25+20. Boş risk/faaliyet = 0. K2.4 binary; K5.3 derinlik.
+K6–K7 ve KD11 hub dokunulmadı.
+
+### Notlar
+Dal: `claude/efqm-k1`. Sonraki: K6.
+
+## TASK-296 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM K4 (Sürdürülebilir Değer Yaratma) formül yenileme — Yol A, BSC yok
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/EFQM-K4-PLAN.md` → karar + puan dağılımı
+- `app/services/efqm_assessment.py` → K4: hiza, portföy, teslim, veri PG; BSC kaldırıldı
+
+### Yapılan İşlem
+Dağılım 30+25+25+20. 4.1 = süreç/girişim strateji hizası; 4.4 = veri girilen PG.
+K5–K7 ve KD11 hub dokunulmadı.
+
+### Notlar
+Dal: `claude/efqm-k1`. Sonraki: K5.
+
+## TASK-295 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM K3 (Paydaşlarla Bağ Kurma) formül yenileme — Yol A
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/EFQM-K3-PLAN.md` → karar + puan dağılımı
+- `app/services/efqm_assessment.py` → K3: harita, nitelik, anket, OKR+girişim
+
+### Yapılan İşlem
+Dağılım 35+20+25+20. Sahte strateji-bağı ve çalışan tabanı kaldırıldı.
+K4–K7 ve KD11 hub dokunulmadı.
+
+### Notlar
+Dal: `claude/efqm-k1`. Sonraki: K4.
+
+## TASK-294 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM K2 (Kurum Kültürü ve Liderlik) formül yenileme — Yol A
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/EFQM-K2-PLAN.md` → karar + puan dağılımı
+- `app/services/efqm_assessment.py` → K2: değer/etik, lider oranı, çeşitlilik, maturity|A3
+
+### Yapılan İşlem
+Yol A: kriter ağırlığı 100; iç proxy (RADAR matrisi yok). Dağılım 30+35+20+15.
+K3–K7 ve KD11 hub dokunulmadı.
+
+### Notlar
+Dal: `claude/efqm-k1`. Sonraki: K3.
+
+## TASK-293 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM K1 (Amaç/Vizyon/Strateji) formül yenileme — 1.1–1.4
+**Modül:** k_radar / efqm_assessment
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/kontrol/EFQM-K1-PLAN.md` → karar + puan dağılımı
+- `app/services/efqm_assessment.py` → K1: kimlik+quality_policy, SWOT|PESTEL, strateji, PMS
+
+### Yapılan İşlem
+Kullanıcı kararları: ekosistem=SWOT veya PESTEL; quality_policy eklendi; 1.4 PMS bu turda.
+Dağılım 30+20+30+20. K2–K7 ve KD11 hub dokunulmadı.
+
+### Notlar
+Dal: `claude/efqm-k1`. Sonraki: K2.
+
 ## TASK-292 | 2026-07-24 | ✅ Tamamlandı
 
 **Görev:** Token diyeti bağlayıcı kurallara işlendi (Pro batma riski)
