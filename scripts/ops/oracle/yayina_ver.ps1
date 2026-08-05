@@ -56,21 +56,23 @@ function Write-Banner([string]$msg) {
 
 function Write-Fallback([string]$step, [string]$detail = '') {
     Write-Host ""
-    Write-Host "FALLBACK — script durdu: $step" -ForegroundColor Red
+    Write-Host "FALLBACK - script durdu: $step" -ForegroundColor Red
     if ($detail) { Write-Host $detail -ForegroundColor Yellow }
-    Write-Host @"
+    $fb = @"
 
 Geleneksel yol (canonical):
-  docs/SUNUCU-GUNCELLEME-REHBERI.md  §3 yedek · §4 Yayın · §0.6/§5 Test sıfırdan
+  docs/SUNUCU-GUNCELLEME-REHBERI.md  §3 yedek · §4 Yayın · §0.6/§5 Test sifirdan
 
-Elle Yayın:
+Elle Yayin:
   ssh -i $IdentityFile $SshTarget
-  cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh
+  cd /opt/kokpitim/app
+  sudo bash scripts/ops/oracle/oracle_safe_deploy.sh
   sudo docker exec kokpitim-web bash -lc 'cd /app && python3 scripts/seed_card_descriptions.py --calistir'
 
-Elle Test: rehber §0.6 — container+DB+kod sil, yerel dump + rebuild.
-Ajan kuralı: script çözemezse geleneksel yolla devam; sessiz yama yok.
-"@ -ForegroundColor Yellow
+Elle Test: rehber §0.6 - container+DB+kod sil, yerel dump + rebuild.
+Ajan kurali: script cozemezse geleneksel yolla devam; sessiz yama yok.
+"@
+    Write-Host $fb -ForegroundColor Yellow
 }
 
 function Invoke-Oracle([string]$RemoteCmd) {
@@ -93,7 +95,7 @@ function Ensure-LfScript([string]$Path) {
 }
 
 function Sync-RemoteOpsScripts {
-    # Scriptler henüz Yayın'da eski commit'teyse /tmp'ye kopyala (küçük dosya — scp güvenli)
+    # Scriptler henüz Yayın'da eski commit'teyse /tmp'ye kopyala (küçük dosya - scp güvenli)
     $files = @(
         'lib_yayin_common.sh',
         'dort_katman_kontrol.sh',
@@ -176,7 +178,7 @@ function New-LocalDumpGz {
     $mb = [math]::Round((Get-Item $TmpDumpGz).Length / 1MB, 2)
     Write-Host "Dump gzip: $TmpDumpGz ($mb MB)"
     if ($mb -lt 1) {
-        Write-Fallback 'dump-size' "Gzip şüpheli küçük ($mb MB) — dump bozuk olabilir"
+        Write-Fallback 'dump-size' "Gzip şüpheli küçük ($mb MB) - dump bozuk olabilir"
         exit 12
     }
 }
@@ -219,39 +221,41 @@ function Invoke-TestSifirdan {
     Write-Banner 'Test sıfırdan'
     $code = Invoke-Oracle 'sudo DUMP=/tmp/kokpitim_db_local.sql.gz bash /tmp/kokpitim_ops/test_sifirdan.sh'
     if ($code -ne 0) {
-        Write-Fallback 'test_sifirdan' "exit $code — docker logs / restore log'a bak"
+        Write-Fallback 'test_sifirdan' "exit $code - docker logs / restore loga bak"
         exit $code
     }
 }
 
 function Invoke-YayinDeploy {
-    Write-Banner 'Yayın oracle_safe_deploy (yedek + pull + build + alembic)'
-    # Deploy sonrası scriptler app içinde güncellenir; önce mevcut app scriptini dene, yoksa /tmp
-    $code = Invoke-Oracle @'
+    Write-Banner 'Yayin oracle_safe_deploy (yedek + pull + build + alembic)'
+    $remote = @'
 set -e
 if [ -f /opt/kokpitim/app/scripts/ops/oracle/oracle_safe_deploy.sh ]; then
-  cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/oracle_safe_deploy.sh
+  cd /opt/kokpitim/app
+  sudo bash scripts/ops/oracle/oracle_safe_deploy.sh
 else
   sudo bash /tmp/kokpitim_ops/oracle_safe_deploy.sh
 fi
 '@
+    $code = Invoke-Oracle $remote
     if ($code -ne 0) {
-        Write-Fallback 'oracle_safe_deploy' "exit $code — yedek /opt/kokpitim/backups/ altında"
+        Write-Fallback 'oracle_safe_deploy' "exit $code - yedek /opt/kokpitim/backups/ altinda"
         exit $code
     }
 }
 
 function Invoke-YayinSeed {
-    Write-Banner 'Yayın kart seed'
-    # Deploy sonrası app içindeki güncel script tercih
-    $code = Invoke-Oracle @'
+    Write-Banner 'Yayin kart seed'
+    $remote = @'
 set -e
 if [ -f /opt/kokpitim/app/scripts/ops/oracle/yayin_seed_kart.sh ]; then
-  cd /opt/kokpitim/app && sudo bash scripts/ops/oracle/yayin_seed_kart.sh
+  cd /opt/kokpitim/app
+  sudo bash scripts/ops/oracle/yayin_seed_kart.sh
 else
   sudo bash /tmp/kokpitim_ops/yayin_seed_kart.sh
 fi
 '@
+    $code = Invoke-Oracle $remote
     if ($code -ne 0) {
         Write-Fallback 'yayin_seed' "exit $code"
         exit $code
@@ -259,7 +263,7 @@ fi
 }
 
 # --- main ---
-Write-Banner "yayina_ver.ps1 — Mod=$Mod"
+Write-Banner "yayina_ver.ps1 - Mod=$Mod"
 
 if (-not (Test-Path $Key)) {
     Write-Fallback 'ssh-key' "Anahtar yok: $Key"
@@ -314,14 +318,14 @@ switch ($Mod) {
             Invoke-TestSifirdan
         }
         else {
-            Write-Host 'Test atlandı (-AtlaTest) — kural dışı; bilinçli.' -ForegroundColor Yellow
+            Write-Host 'Test atlandı (-AtlaTest) - kural dışı; bilinçli.' -ForegroundColor Yellow
         }
         Invoke-YayinDeploy
         if (-not $AtlaSeed) { Invoke-YayinSeed }
         else { Write-Host 'Seed atlandı (-AtlaSeed)' -ForegroundColor Yellow }
         Invoke-DortKatman $sha
         Write-Host ''
-        Write-Host 'TAMAM — Test+Yayın akışı bitti. seed_calistirma_kaydi.md + TASKLOG güncelle.' -ForegroundColor Green
+        Write-Host 'TAMAM - Test+Yayin akisi bitti. seed_calistirma_kaydi.md + TASKLOG guncelle.' -ForegroundColor Green
         break
     }
 }

@@ -2,6 +2,23 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-301 | 2026-08-05 | ✅ Tamamlandı
+
+**Görev:** EFQM paketi commit/push + Demo kod + Yayın deploy
+**Modül:** ops / efqm
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/ops/oracle/yayina_ver.ps1` → PowerShell parse (here-string / tire) düzeltmesi
+
+### Yapılan İşlem
+1. Commit `36dbe37e` dal `claude/efqm-k1` + push; main merge `a4355948` + push
+2. Demo: EFQM delta + `date_sovereign` (bayat taban); health 200 — DB/seed yok
+3. Yayın: `oracle_safe_deploy` (yedek OK, satır sayısı aynı, Alembic no-op); kart seed 1 güncelleme; /health 200
+
+### Notlar
+Migration yok. `yayina_ver.ps1` parse hatası yüzünden Yayın elle safe_deploy ile yapıldı; script sonra düzeltildi (bu commit).
+
 ## TASK-300 | 2026-08-05 | ✅ Tamamlandı
 
 **Görev:** EFQM KD11 kart ↔ modal hizası
