@@ -32,6 +32,7 @@ from app.services.date_sovereign import (
     resolve_request_year,
     resolve_plan_year_for_date,
     entity_exists_in_year,
+    mirror_plan_year_from_source,
     build_existence_error,
     build_cross_year_notice,
     get_view_year,
@@ -116,6 +117,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
     """
     Süreç PG'si için geçerli kullanıcıda bireysel PG yoksa oluşturur (aynı kullanıcı adına).
     Süreç karnesi VGS — KpiData ile bireysel karneyi eşlemek için.
+    plan_year_id kaynak süreç PG'sinden gelir (aktif yıla damgalanmaz).
     """
     data = request.get_json() or {}
     raw_id = data.get("process_kpi_id")
@@ -151,9 +153,11 @@ def bireysel_api_pg_ensure_from_process_kpi():
         is_active=True,
     ).first()
     if existing:
+        # Aktif yıla damgalı eski ayna → kaynak süreç PG yılına çek (KMF 409)
+        if mirror_plan_year_from_source(existing, kpi):
+            db.session.commit()
         return jsonify({"success": True, "id": existing.id, "created": False})
 
-    active_py = get_active_plan_year_for_user(current_user)
     for attempt in (1, 2):
         try:
             pg = IndividualPerformanceIndicator(
@@ -170,7 +174,7 @@ def bireysel_api_pg_ensure_from_process_kpi():
                 source="Süreç",
                 source_process_id=kpi.process_id,
                 source_process_kpi_id=kpi.id,
-                plan_year_id=active_py.id if active_py else None,
+                plan_year_id=kpi.plan_year_id,
                 is_active=True,
             )
             db.session.add(pg)
@@ -301,6 +305,11 @@ def bireysel_api_veri_add():
             data_date_val = last_day or date.today()
         # Tarih egemen: year_val data_date'ten türesin
         year_val = data_date_val.year
+
+        if pg.source_process_kpi_id:
+            src_kpi = db.session.get(ProcessKpi, pg.source_process_kpi_id)
+            if src_kpi is not None:
+                mirror_plan_year_from_source(pg, src_kpi)
 
         # Tarih egemen plan year kontrolü (Faz 2)
         cross_year_notice = None

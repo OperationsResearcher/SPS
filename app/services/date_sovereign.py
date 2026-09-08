@@ -216,6 +216,23 @@ def entity_exists_in_year(entity: Any, plan_year: PlanYear) -> bool:
     return int(pyid) == int(plan_year.id)
 
 
+def mirror_plan_year_from_source(mirror: Any, source: Any) -> bool:
+    """Süreç PG'sinden aynalanan bireysel PG yılını kaynakla eşitler.
+
+    Ensure eskiden aktif plan yılına (ör. 2026) damgalıyordu. Kaynak süreç
+    PG yılsız (legacy) veya başka yıldayken bireysel veri_add 409 veriyor,
+    süreç kaydı ise kalıyordu. Dönüş: değiştiyse True.
+    """
+    if mirror is None or source is None:
+        return False
+    src = getattr(source, "plan_year_id", None)
+    cur = getattr(mirror, "plan_year_id", None)
+    if cur == src:
+        return False
+    mirror.plan_year_id = src
+    return True
+
+
 def entity_year_label(entity: Any) -> Optional[int]:
     """Varlığın ait olduğu yılın etiketi (varsa)."""
     pyid = getattr(entity, "plan_year_id", None)

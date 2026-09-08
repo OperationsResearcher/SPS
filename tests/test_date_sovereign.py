@@ -37,5 +37,33 @@ class TestEntityExistsInYear(unittest.TestCase):
         self.assertTrue(entity_exists_in_year(_ent("5"), _py(5)))
 
 
+class TestMirrorPlanYearFromSource(unittest.TestCase):
+    def test_none_args(self):
+        from app.services.date_sovereign import mirror_plan_year_from_source
+        self.assertFalse(mirror_plan_year_from_source(None, _ent(1)))
+        self.assertFalse(mirror_plan_year_from_source(_ent(1), None))
+
+    def test_zaten_hizali(self):
+        from app.services.date_sovereign import mirror_plan_year_from_source
+        m = _ent(None)
+        self.assertFalse(mirror_plan_year_from_source(m, _ent(None)))
+        self.assertIsNone(m.plan_year_id)
+        m2 = _ent(4)
+        self.assertFalse(mirror_plan_year_from_source(m2, _ent(4)))
+        self.assertEqual(m2.plan_year_id, 4)
+
+    def test_aktif_yil_damgasi_kaynak_null_olur(self):
+        from app.services.date_sovereign import mirror_plan_year_from_source
+        m = _ent(1)  # 2026 damgası
+        self.assertTrue(mirror_plan_year_from_source(m, _ent(None)))
+        self.assertIsNone(m.plan_year_id)
+
+    def test_kaynak_yilina_cekilir(self):
+        from app.services.date_sovereign import mirror_plan_year_from_source
+        m = _ent(1)
+        self.assertTrue(mirror_plan_year_from_source(m, _ent(2)))
+        self.assertEqual(m.plan_year_id, 2)
+
+
 if __name__ == "__main__":
     unittest.main()
