@@ -2,6 +2,24 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-305 | 2026-09-08 | ✅ Tamamlandı
+
+**Görev:** Süreç karnesi PG verisi işlerken bireysel 409 (yıl damgası) düzeltmesi
+**Modül:** bireysel / date_sovereign
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/date_sovereign.py` → `mirror_plan_year_from_source`
+- `micro/modules/bireysel/routes.py` → ensure + veri_add kaynak yıla hizalar
+- `migrations/versions/bi01c4e5f6a7_align_indiv_pg_plan_year.py` → mevcut yanlış damgaları düzeltir
+- `tests/test_date_sovereign.py` → ayna yıl testleri
+
+### Yapılan İşlem
+Süreç kaydı kalıyor, bireysel 409: ensure aktif yıla (2026) damgalıyordu. Ayna artık süreç PG yılına bağlanır; eski kayıtlar migration ile hizalanır.
+
+### Notlar
+KMF Tuğba / süreç 55 EFQM: süreç PG yılsız, bireysel PG 2026 damgalıydı.
+
 ## TASK-304 | 2026-08-05 | ✅ Tamamlandı
 
 **Görev:** EFQM yıl filtresi — `plan_year_id IS NULL` legacy dahil (KMF Yayın 67→düzelik)
