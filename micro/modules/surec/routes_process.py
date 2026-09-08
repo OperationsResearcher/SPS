@@ -639,3 +639,40 @@ def surec_api_sparklines():
     except Exception as e:
         current_app.logger.error(f"[surec_api_sparklines] {e}", exc_info=True)
         return jsonify({"success": False, "message": _("Sparkline verisi alınamadı.")}), 500
+
+
+@app_bp.route("/k-plan/process/api/vgs-launcher/catalog", methods=["GET"])
+@login_required
+def surec_api_vgs_launcher_catalog():
+    """Launcher VGS: seçilen plan yılındaki, kullanıcının yetkili olduğu süreçler."""
+    year = request.args.get("year", type=int)
+    if not year:
+        return jsonify({"success": False, "message": _("year zorunlu.")}), 400
+
+    tid = current_user.tenant_id
+    py = get_plan_year(tid, year) if tid else None
+    from app.services.date_sovereign import KAPALI_DURUMLAR
+    from app.utils.plan_year_filter import filter_by_plan_year
+
+    sealed = bool(py and getattr(py, "status", None) in KAPALI_DURUMLAR)
+    q = Process.query.filter(Process.is_active.is_(True)).order_by(Process.code)
+    if py:
+        q = filter_by_plan_year(q, Process, py.id, include_null=True)
+    rows = accessible_processes_filter(q, current_user, tid).all()
+    processes = []
+    for p in rows:
+        label = f"{p.code} — {p.name}" if p.code else (p.name or f"#{p.id}")
+        processes.append({
+            "id": p.id,
+            "code": p.code,
+            "name": p.name,
+            "label": label,
+        })
+    return jsonify({
+        "success": True,
+        "year": year,
+        "sealed": sealed,
+        "plan_year_missing": py is None,
+        "processes": processes,
+    })
+

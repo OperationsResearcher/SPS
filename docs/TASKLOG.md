@@ -2,6 +2,111 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-311 | 2026-09-08 | ✅ Tamamlandı
+
+**Görev:** Yerel saat + mühür mesajı + launcher VGS — Yayın
+**Modül:** dt_local / süreç VGS / masaüstü launcher
+**Durum:** ✅ Tamamlandı (Yayın)
+
+### Değiştirilen Dosyalar
+- TASK-306…310 birikimi (İstanbul saati, mühür metni, launcher sihirbazı, User/Tenant import)
+
+### Yapılan İşlem
+Dal `claude/fix-yerel-saat-gosterimi` main’e merge + `yayina_ver.ps1 -Mod yayin`. Yeni Alembic yok.
+
+### Notlar
+Test sıfırdan bu turda yok (yalnız Yayın).
+
+## TASK-310 | 2026-09-08 | ✅ Tamamlandı
+
+**Görev:** Launcher VGS kaydet — "İşlem tamamlanamadı" (Tenant tanımsız)
+**Modül:** süreç KPI veri API
+**Durum:** ✅ Tamamlandı (yalnız yerel)
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes_kpi_data.py` → `Tenant` import
+- `tests/test_vgs_launcher.py` → kpi-data/add 200
+
+### Yapılan İşlem
+`kpi-data/add` `Tenant` kullanıyordu ama dosya bölünürken import kalmamıştı → NameError → genel 400. History'deki `User` ile aynı sınıf.
+
+### Notlar
+Yayına alınmadı.
+
+## TASK-309 | 2026-09-08 | ✅ Tamamlandı
+
+**Görev:** Launcher VGS kayıt geçmişi — genel hata (User tanımsız)
+**Modül:** süreç KPI veri API
+**Durum:** ✅ Tamamlandı (yalnız yerel)
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes_kpi_data.py` → `User` import
+- `tests/test_vgs_launcher.py` → history 200
+
+### Yapılan İşlem
+`surec_api_kpi_data_history` `User` kullanıyordu ama import yoktu → NameError → genel 500. Import eklendi.
+
+### Notlar
+Yayına alınmadı.
+
+## TASK-308 | 2026-09-08 | ✅ Tamamlandı
+
+**Görev:** Masaüstü launcher — Yeni Veri Giriş Sihirbazı kartı (yıl → süreç → PG)
+**Modül:** launcher / süreç VGS
+**Durum:** ✅ Tamamlandı (yalnız yerel)
+
+### Değiştirilen Dosyalar
+- `micro/core/launcher.py` → plan yılı JSON (mühür dahil)
+- `micro/modules/surec/routes_process.py` → `GET /k-plan/process/api/vgs-launcher/catalog`
+- `ui/templates/platform/launcher.html` + `_vgs_modal.html`
+- `ui/static/platform/js/launcher_vgs.js`
+- `ui/static/platform/css/surec.css` → launcher kartı
+- `tests/test_vgs_launcher.py`
+
+### Yapılan İşlem
+Kart grid’in en sonunda (Takvim / Plan Dönemleri gibi). Açılınca üst bar aktif yılı seçili; mühürlü yıllar listede (kilit). Süreç listesi `accessible_processes_filter` (üye/lider/sahip; ayrıcalıklı tümü).
+
+### Notlar
+Yayına alınmadı.
+
+## TASK-307 | 2026-09-08 | ✅ Tamamlandı
+
+**Görev:** Mühürlü yıla veri girince genel hata yerine yıl + ne yapılacağı
+**Modül:** date_sovereign / süreç VGS
+**Durum:** ✅ Tamamlandı (yalnız yerel)
+
+### Değiştirilen Dosyalar
+- `app/services/date_sovereign.py` → `message` + mühür metni
+- `ui/static/platform/js/surec_vgs.js` → `message` / `mesaj`
+- `tests/test_date_sovereign.py`
+
+### Yapılan İşlem
+API `mesaj` gönderiyor, UI `message` bakıyordu → "Süreç verisi kaydedilemedi." Şimdi: "2023 yılı mühürlü olduğu için veri girişi yapılamaz. Lütfen önce Plan Dönemleri sayfasından mührü kaldırın."
+
+### Notlar
+Yayına alınmadı.
+
+## TASK-306 | 2026-09-08 | ✅ Tamamlandı
+
+**Görev:** Tam saatli gösterimleri Europe/Istanbul yapmak (UTC 3 saat geri kalıyordu)
+**Modül:** dt_local / süreç karnesi kayıt geçmişi
+**Durum:** ✅ Tamamlandı (yalnız yerel; Yayın yok)
+
+### Değiştirilen Dosyalar
+- `app/utils/dt_local.py` → naive UTC → İstanbul / Z'li ISO
+- `app/__init__.py` → Jinja `yerel_saat`
+- `micro/modules/surec/routes_kpi_data.py` · `micro/modules/bireysel/routes.py` → API anları Z'li
+- `ui/static/platform/js/app.js` → `formatLocalDateTime`
+- `surec_vgs.js` · `pg_tablo_modal.js` · `bireysel.js` · `sabah_ozeti.js`
+- masaüstü/bildirim şablonları `yerel_saat`
+- `tests/test_dt_local.py`
+
+### Yapılan İşlem
+Zsüz ISO tarayıcıda yerel sanılıyordu (12:29 → 09:29). API Z gönderir; UI İstanbul gösterir. Takvim günü kaydırılmaz.
+
+### Notlar
+Yayına alınmadı; diğer düzeltmelerle birlikte gidecek.
+
 ## TASK-305 | 2026-09-08 | ✅ Tamamlandı
 
 **Görev:** Süreç karnesi PG verisi işlerken bireysel 409 (yıl damgası) düzeltmesi

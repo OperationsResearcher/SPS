@@ -159,15 +159,16 @@ def build_sealed_error(plan_year: PlanYear) -> Dict[str, Any]:
     demez (KURALLAR §2: kullanıcıya görünen metin Türkçe).
     """
     yil = getattr(plan_year, "year", "?")
+    metin = (
+        f"{yil} yılı mühürlü olduğu için veri girişi yapılamaz. "
+        f"Lütfen önce Plan Dönemleri sayfasından mührü kaldırın."
+    )
     return {
         "success": False,
         "error": "plan_year_sealed",
         "yil": yil,
-        "mesaj": (
-            f"{yil} plan dönemi mühürlü. Mühürlü döneme veri girilemez, "
-            f"değiştirilemez veya silinemez. Değişiklik gerekiyorsa kurum üst "
-            f"yönetimi Plan Dönemleri sayfasından mührü gerekçesiyle açmalıdır."
-        ),
+        "message": metin,
+        "mesaj": metin,
     }
 
 

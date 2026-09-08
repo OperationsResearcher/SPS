@@ -604,8 +604,8 @@
         if (res.entries && res.entries.length > 0) {
           html += `<div class="micro-pg-table-scroll"><table class="micro-pg-mini-table"><thead><tr><th>${t("Veri tarihi")}</th><th>${t("Giriş")}</th><th>${t("Gerçekleşen")}</th><th>${t("Açıklama")}</th><th>${t("Kullanıcı")}</th><th></th></tr></thead><tbody>`;
           res.entries.forEach((e) => {
-            const vd = e.data_date ? new Date(e.data_date).toLocaleDateString("tr-TR") : "—";
-            const gd = e.created_at ? new Date(e.created_at).toLocaleString("tr-TR") : "—";
+            const vd = e.data_date ? (window.formatLocalDate || ((x) => new Date(x).toLocaleDateString("tr-TR")))(e.data_date) : "—";
+            const gd = e.created_at ? (window.formatLocalDateTime || ((x) => new Date(x).toLocaleString("tr-TR")))(e.created_at) : "—";
             html += `<tr data-entry-id="${e.id}">
               <td><small>${escHtml(vd)}</small></td>
               <td><small>${escHtml(gd)}</small></td>
@@ -626,7 +626,7 @@
         if (res.audits && res.audits.length > 0) {
           html += `<h6 class="micro-veri-audit-head">${t("İşlem geçmişi")}</h6><div class="micro-pg-table-scroll"><table class="micro-pg-mini-table"><thead><tr><th>${t("Tarih")}</th><th>${t("İşlem")}</th><th>${t("Kullanıcı")}</th><th>${t("Eski")}</th><th>${t("Yeni")}</th></tr></thead><tbody>`;
           res.audits.forEach((a) => {
-            const d = a.created_at ? new Date(a.created_at).toLocaleString("tr-TR") : "—";
+            const d = a.created_at ? (window.formatLocalDateTime || ((x) => new Date(x).toLocaleString("tr-TR")))(a.created_at) : "—";
             html += `<tr><td><small>${escHtml(d)}</small></td><td>${escHtml(a.action_label || a.action_type)}</td><td>${escHtml(a.user || "")}</td><td><small>${escHtml(String(a.old_value ?? "—"))}</small></td><td><small>${escHtml(String(a.new_value ?? "—"))}</small></td></tr>`;
           });
           html += "</tbody></table></div>";

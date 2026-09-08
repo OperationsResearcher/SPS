@@ -1,0 +1,75 @@
+{# Launcher — Yeni Veri Giriş Sihirbazı (VGS kaskad: yıl → süreç → PG) #}
+<div id="lvgs-overlay" class="mc-modal-overlay vgs-modal-overlay" aria-hidden="true">
+  <div class="mc-modal vgs-modal mc-modal--wide-karne" role="dialog" aria-modal="true" aria-labelledby="lvgs-title">
+    <div class="mc-modal-header">
+      <div class="mc-modal-title">
+        <i class="fas fa-wand-magic-sparkles" aria-hidden="true"></i>
+        <span id="lvgs-title">{{ _("Yeni Veri Giriş Sihirbazı") }}</span>
+      </div>
+      <button type="button" class="mc-modal-close" id="lvgs-close" aria-label="{{ _('Kapat') }}">
+        <i class="fas fa-times" aria-hidden="true"></i>
+      </button>
+    </div>
+    <div class="mc-modal-body vgs-modal-body">
+      <form id="lvgs-form" novalidate class="vgs-single-form">
+        <div class="vgs-readonly-grid">
+          <div class="tm-field tm-full">
+            <label class="mc-form-label" for="lvgs-year">{{ _("Plan yılı") }} <span class="req">*</span></label>
+            <select id="lvgs-year" class="mc-form-input" required aria-required="true"></select>
+            <p id="lvgs-sealed-hint" class="karne-field-hint is-hidden" style="color:#b45309;">
+              <i class="fas fa-lock" aria-hidden="true"></i>
+              {{ _("Bu yıl mühürlü. Kayıt kabul edilmez; önce Plan Dönemleri sayfasından mührü kaldırın.") }}
+            </p>
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label" for="lvgs-process">{{ _("Süreç") }} <span class="req">*</span></label>
+            <select id="lvgs-process" class="mc-form-input" required aria-required="true"></select>
+          </div>
+          <div class="tm-field tm-full">
+            <label class="mc-form-label" for="lvgs-kpi">{{ _("Performans göstergesi") }} <span class="req">*</span></label>
+            <select id="lvgs-kpi" class="mc-form-input" required aria-required="true"></select>
+          </div>
+        </div>
+
+        <div class="tm-field tm-full">
+          <label class="mc-form-label" for="lvgs-date">{{ _("Veri tarihi") }} <span class="req">*</span></label>
+          <input id="lvgs-date" name="entry_date" class="mc-form-input" type="date" required
+                 aria-required="true" aria-describedby="lvgs-date-hint">
+          <p id="lvgs-date-hint" class="karne-field-hint">
+            {{ _("Verinin <strong>hangi güne / olaya ilişkin</strong> olduğunu seçin (ör. anketin yapıldığı gün). <strong>Kaydet</strong> ile sisteme işlendiği tarih ve saat <strong>otomatik</strong> kaydedilir; yıl ve dönem bu veri tarihine göre PG ölçüm tipine uygun hesaplanır.") }}
+          </p>
+        </div>
+        <p class="karne-field-hint vgs-hint"><i class="fas fa-info-circle"></i> {{ _("Veri, <strong>kendi adınıza</strong> süreç karnesine ve bireysel karnenize yazılır.") }}</p>
+
+        <div class="tm-field tm-full">
+          <label class="mc-form-label" for="lvgs-value">{{ _("Gerçekleşen değer") }} <span class="req">*</span></label>
+          <input id="lvgs-value" name="actual_value" class="mc-form-input" type="text" required
+                 placeholder="{{ _('Örn: 42') }}" autocomplete="off">
+        </div>
+        <div class="tm-field tm-full">
+          <label class="mc-form-label" for="lvgs-desc">{{ _("Açıklama (opsiyonel)") }}</label>
+          <textarea id="lvgs-desc" class="mc-textarea" rows="3" placeholder="{{ _('İsteğe bağlı not') }}"></textarea>
+        </div>
+
+        <div class="vgs-history-accordion vgs-history-accordion--bottom" id="lvgs-history-accordion">
+          <button type="button" class="vgs-history-toggle" id="lvgs-history-toggle" aria-expanded="false" aria-controls="lvgs-history-panel">
+            <span class="vgs-history-toggle-label"><i class="fas fa-history" aria-hidden="true"></i> {{ _("Kayıt geçmişi") }}</span>
+            <i class="fas fa-chevron-down vgs-history-chevron" aria-hidden="true"></i>
+          </button>
+          <div id="lvgs-history-panel" class="vgs-history-panel is-collapsed" role="region" aria-labelledby="lvgs-history-toggle">
+            <div id="lvgs-history-loading" class="vgs-history-loading is-hidden">{{ _("Yükleniyor…") }}</div>
+            <div id="lvgs-history-error" class="vgs-history-error is-hidden karne-field-hint"></div>
+            <div id="lvgs-history-empty" class="vgs-history-empty is-hidden karne-field-hint">{{ _("Bu PG için henüz kayıt yok.") }}</div>
+            <div id="lvgs-history-table-wrap" class="vgs-history-table-wrap"></div>
+          </div>
+        </div>
+      </form>
+    </div>
+    <div class="mc-modal-footer vgs-modal-footer">
+      <button type="button" class="mc-btn mc-btn-secondary" id="lvgs-cancel">{{ _("İptal") }}</button>
+      <button type="submit" form="lvgs-form" class="mc-btn mc-btn-success" id="lvgs-save">
+        <i class="fas fa-save" aria-hidden="true"></i> {{ _("Kaydet") }}
+      </button>
+    </div>
+  </div>
+</div>

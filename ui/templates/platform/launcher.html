@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="masaustu">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/surec.css') }}?v={{ config.get('VERSION', '1') }}">
 {% endblock %}
 
 {% block content %}
@@ -64,6 +65,15 @@
         </a>
         {% endif %}
 
+        <button type="button" id="lvgs-open" class="mc-card mc-card-lift"
+           style="display:flex; flex-direction:column; align-items:center; padding:28px 16px 20px; text-align:center; cursor:pointer;">
+            <div style="width:56px; height:56px; border-radius:16px; display:flex; align-items:center; justify-content:center; font-size:26px; margin-bottom:14px; background:#f0fdf4;">
+                <i class="fas fa-wand-magic-sparkles" style="color:#16a34a;"></i>
+            </div>
+            <span style="font-size:13.5px; font-weight:600; color:var(--text-default); margin-bottom:6px; display:block;" class="dark:text-white">{{ _("Yeni Veri Giriş Sihirbazı") }}</span>
+            <span style="font-size:11.5px; color:#94a3b8; line-height:1.4; display:block;">{{ _("Plan yılı, süreç ve PG seçerek veri girin") }}</span>
+        </button>
+
     </div>
 
     {% if not modules %}
@@ -74,4 +84,23 @@
     </div>
     {% endif %}
 </div>
+
+{% set kpi_api_placeholder_id = 900000001 %}
+<div id="lvgs-root"
+     hidden
+     data-catalog-url="{{ url_for('app_bp.surec_api_vgs_launcher_catalog') }}"
+     data-kpi-list-url-template="{{ url_for('app_bp.surec_api_kpi_list', process_id=kpi_api_placeholder_id) }}"
+     data-kpi-data-add-url="{{ url_for('app_bp.surec_api_kpi_data_add') }}"
+     data-history-url-template="{{ url_for('app_bp.surec_api_kpi_data_history', kpi_id=kpi_api_placeholder_id) }}"
+     data-bireysel-ensure-url="{{ url_for('app_bp.bireysel_api_pg_ensure_from_process_kpi') }}"
+     data-bireysel-add-url="{{ url_for('app_bp.bireysel_api_veri_add') }}"
+     data-kpi-id-placeholder="{{ kpi_api_placeholder_id }}"
+     data-default-year="{{ active_plan_year_val or current_cal_year }}">
+</div>
+<script type="application/json" id="lvgs-years-json">{{ (vgs_plan_years or [])|tojson }}</script>
+{% include "platform/launcher/_vgs_modal.html" %}
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/launcher_vgs.js') }}?v={{ config.get('VERSION', '1') }}"></script>
 {% endblock %}

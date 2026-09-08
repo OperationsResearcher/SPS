@@ -46,7 +46,7 @@
         <tbody>
           {% for t in talepler %}
           <tr style="border-top:1px solid #eef2f7;{% if not t.is_read %}background:#fffbeb;{% endif %}">
-            <td style="padding:10px 12px;white-space:nowrap;color:#64748b;"><span data-utc="{{ t.created_at.isoformat() }}">{{ t.created_at.strftime('%d.%m.%Y %H:%M') }}</span></td>
+            <td style="padding:10px 12px;white-space:nowrap;color:#64748b;"><span data-utc="{{ t.created_at.isoformat() }}">{{ t.created_at|yerel_saat }}</span></td>
             <td style="padding:10px 12px;font-weight:600;color:#334155;">{{ t.ad_soyad }}</td>
             <td style="padding:10px 12px;">{{ t.kurum }}</td>
             <td style="padding:10px 12px;color:#64748b;">{{ t.gorev or "—" }}</td>

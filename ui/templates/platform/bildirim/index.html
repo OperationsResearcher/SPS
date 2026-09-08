@@ -64,7 +64,7 @@
           {% endif %}
           <div class="bildirim-time">
             <i class="fas fa-clock"></i>
-            {{ b.created_at.strftime('%d.%m.%Y %H:%M') }}
+            {{ b.created_at|yerel_saat }}
           </div>
         </div>
 

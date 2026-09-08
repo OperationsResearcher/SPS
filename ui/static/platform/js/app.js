@@ -271,3 +271,53 @@ var MicroUI = {
         setInterval(refreshBadge, 60000);
     });
 })();
+
+/* UTC naive ISO (Zsüz) tarayıcıda yerel sanılıyordu — 12:29 → 09:29.
+   Tam saat: Europe/Istanbul. Salt gün kaydırılmaz. */
+(function (global) {
+    'use strict';
+    var TZ = 'Europe/Istanbul';
+
+    function parseApiDateTime(iso) {
+        if (iso == null || iso === '') return null;
+        var s = String(iso).trim();
+        if (!s) return null;
+        if (/^\d{4}-\d{2}-\d{2}$/.test(s)) {
+            var noon = new Date(s + 'T12:00:00');
+            return Number.isNaN(noon.getTime()) ? null : noon;
+        }
+        if (!/[zZ]|[+-]\d{2}:?\d{2}$/.test(s)) {
+            s = s.replace(' ', 'T');
+            if (s.indexOf('T') === -1) s += 'T00:00:00';
+            s += 'Z';
+        }
+        var d = new Date(s);
+        return Number.isNaN(d.getTime()) ? null : d;
+    }
+
+    function formatLocalDateTime(iso) {
+        var d = parseApiDateTime(iso);
+        if (!d) return iso ? String(iso) : '—';
+        if (/^\d{4}-\d{2}-\d{2}$/.test(String(iso).trim())) {
+            return d.toLocaleDateString('tr-TR', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' });
+        }
+        return d.toLocaleString('tr-TR', {
+            timeZone: TZ,
+            day: '2-digit',
+            month: '2-digit',
+            year: 'numeric',
+            hour: '2-digit',
+            minute: '2-digit',
+        });
+    }
+
+    function formatLocalDate(iso) {
+        var d = parseApiDateTime(iso);
+        if (!d) return iso ? String(iso) : '—';
+        return d.toLocaleDateString('tr-TR', { timeZone: TZ, day: '2-digit', month: '2-digit', year: 'numeric' });
+    }
+
+    global.parseApiDateTime = parseApiDateTime;
+    global.formatLocalDateTime = formatLocalDateTime;
+    global.formatLocalDate = formatLocalDate;
+})(window);

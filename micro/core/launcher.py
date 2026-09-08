@@ -53,6 +53,18 @@ def _get_plan_year_context():
     )
 
 
+def _vgs_plan_years_payload(plan_years_list):
+    from app.services.date_sovereign import KAPALI_DURUMLAR
+    return [
+        {
+            "year": py.year,
+            "name": py.name,
+            "sealed": getattr(py, "status", None) in KAPALI_DURUMLAR,
+        }
+        for py in (plan_years_list or [])
+    ]
+
+
 @app_bp.route("/launcher")
 @app_bp.route("/desktop-launcher")
 @login_required
@@ -60,6 +72,7 @@ def launcher():
     """Modül launcher ekranı."""
     modules = get_accessible_modules(current_user)
     ctx = _get_plan_year_context()
+    ctx["vgs_plan_years"] = _vgs_plan_years_payload(ctx.get("plan_years"))
     return render_template("platform/launcher.html", modules=modules, **ctx)
 
 
