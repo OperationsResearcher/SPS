@@ -41,6 +41,7 @@ from app.services.date_sovereign import (
 )
 from micro.modules.surec.helpers import muhur_engeli
 from app.models.core import Tenant as _Tenant
+from app.utils.dt_local import isoformat_utc
 from flask_babel import gettext as _
 
 
@@ -597,7 +598,7 @@ def bireysel_api_karne():
         pname = pg.name if pg else "Performans göstergesi"
         ts = d.created_at or d.updated_at
         timeline_events.append({
-            "ts": ts.isoformat() if ts else None,
+            "ts": isoformat_utc(ts),
             "kind": "pg_veri",
             "title": pname,
             "detail": str(d.actual_value) if d.actual_value is not None else "",
@@ -627,7 +628,7 @@ def bireysel_api_karne():
         aylar = ["", "Oca", "Şub", "Mar", "Nis", "May", "Haz", "Tem", "Ağu", "Eyl", "Eki", "Kas", "Ara"]
         ay_ad = aylar[t.month] if 1 <= t.month <= 12 else str(t.month)
         timeline_events.append({
-            "ts": ts.isoformat() if ts else None,
+            "ts": isoformat_utc(ts),
             "kind": "faaliyet",
             "title": act.name,
             "detail": f"{ay_ad} ayı tamamlandı",

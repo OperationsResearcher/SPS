@@ -2934,3 +2934,12 @@ textarea.mc-form-input.karne-kpi-add-textarea {
   width: calc(100% - 32px);
 }
 
+/* Masaüstü launcher — Yeni Veri Giriş Sihirbazı kartı (modül kartı gibi) */
+#lvgs-open.mc-card {
+  border: none;
+  width: 100%;
+  font: inherit;
+  background: var(--color-surface, #fff);
+  color: inherit;
+}
+

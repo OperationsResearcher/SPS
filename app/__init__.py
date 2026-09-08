@@ -170,6 +170,13 @@ def create_app(config_class=None):
     def _inject_safe_url_for():
         return {"safe_url_for": safe_url_for}
 
+    from app.utils.dt_local import format_istanbul as _format_istanbul
+
+    @app.template_filter("yerel_saat")
+    def _yerel_saat_filter(dt):
+        """UTC naive an → Europe/Istanbul `08.09.2026 12:29`."""
+        return _format_istanbul(dt) or "—"
+
     @app.context_processor
     def _inject_global_plan_years():
         """Üst bardaki GLOBAL YIL SEÇİCİ için plan yılı listesi.

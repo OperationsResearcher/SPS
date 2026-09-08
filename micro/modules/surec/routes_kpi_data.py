@@ -26,7 +26,8 @@ from app.models.process import (
     KpiDataAudit,
     FavoriteKpi,
 )
-from app.models.core import User, Strategy, Tenant
+from app.models.core import Tenant, User
+from app.utils.dt_local import isoformat_utc
 from app.services.plan_year_service import (
     get_plan_year, get_kpi_configs_bulk, get_active_plan_year_for_user, list_plan_years,
     upsert_kpi_year_config,
@@ -369,11 +370,11 @@ def surec_api_kpi_data_history(kpi_id):
             "description": e.description or "",
             "user_id": e.user_id,
             "entered_by_name": _user_display_name(users_map.get(e.user_id) or e.user),
-            "recorded_at": e.created_at.isoformat() if getattr(e, "created_at", None) else None,
-            "last_updated_at": upd_audit.created_at.isoformat() if upd_audit else None,
+            "recorded_at": isoformat_utc(getattr(e, "created_at", None)),
+            "last_updated_at": isoformat_utc(upd_audit.created_at) if upd_audit else None,
             "last_updated_by_name": _user_display_name(upd_user) if upd_user else None,
             "is_active": e.is_active,
-            "deleted_at": del_at.isoformat() if del_at else None,
+            "deleted_at": isoformat_utc(del_at) if del_at else None,
             "deleted_by_id": del_by_id,
             "deleted_by_name": _user_display_name(del_user) if del_user else None,
             "can_edit": can_edit,
@@ -584,7 +585,7 @@ def surec_api_kpi_data_detail():
         rows.append({
             "id": e.id,
             "data_date": str(e.data_date),
-            "created_at": e.created_at.isoformat() if e.created_at else None,
+            "created_at": isoformat_utc(e.created_at),
             "actual_value": e.actual_value,
             "target_value": e.target_value,
             "description": e.description,
@@ -614,7 +615,7 @@ def surec_api_kpi_data_detail():
                 "new_value": a.new_value,
                 "action_detail": a.action_detail,
                 "user": user_name,
-                "created_at": a.created_at.isoformat() if a.created_at else None,
+                "created_at": isoformat_utc(a.created_at),
             })
 
     return jsonify({

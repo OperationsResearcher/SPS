@@ -233,6 +233,9 @@
     }
 
     function formatTrDate(isoOrDateStr) {
+      if (typeof window.formatLocalDate === "function") {
+        return window.formatLocalDate(isoOrDateStr);
+      }
       if (!isoOrDateStr) return "—";
       try {
         const d = new Date(isoOrDateStr);
@@ -244,6 +247,9 @@
     }
 
     function formatTrDateTime(isoStr) {
+      if (typeof window.formatLocalDateTime === "function") {
+        return window.formatLocalDateTime(isoStr);
+      }
       if (!isoStr) return "—";
       try {
         const d = new Date(isoStr);
@@ -680,7 +686,7 @@
             process_kpi_id: parseInt(vgsState.kpiId, 10),
           });
           if (!ens.success) {
-            showError(ens.message || t("Bireysel PG eşlemesi oluşturulamadı."));
+            showError(ens.message || ens.mesaj || t("Bireysel PG eşlemesi oluşturulamadı."));
             return;
           }
           indivPgId = ens.id;
@@ -688,7 +694,7 @@
 
         const data = await postJson(KPI_DATA_ADD_URL, bodyKpi);
         if (!data.success) {
-          showError(data.message || t("Süreç verisi kaydedilemedi."));
+          showError(data.message || data.mesaj || t("Süreç verisi kaydedilemedi."));
           return;
         }
 
@@ -709,6 +715,7 @@
           if (!d2.success) {
             showError(
               d2.message ||
+                d2.mesaj ||
                 t("Süreç verisi kaydedildi; bireysel karne kaydı başarısız. Bireysel modülünü kontrol edin.")
             );
             closeKpiDataEntryModal();

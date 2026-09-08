@@ -13,6 +13,7 @@
 
   function fmtDt(iso) {
     if (!iso) return '—';
+    if (window.formatLocalDateTime) return window.formatLocalDateTime(iso);
     const d = new Date(iso);
     return d.toLocaleString('tr-TR', {dateStyle: 'short', timeStyle: 'short'});
   }

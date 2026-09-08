@@ -163,9 +163,15 @@
       const li = document.createElement("li");
       li.className = "karne-timeline-item";
       const dotClass = ev.kind === "faaliyet" ? "karne-timeline-dot--faaliyet" : "karne-timeline-dot--pg";
-      const dt = ev.ts ? new Date(ev.ts) : null;
-      const timeStr = dt && !Number.isNaN(dt.getTime())
-        ? dt.toLocaleString("tr-TR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" })
+      const timeStr = ev.ts
+        ? (window.formatLocalDateTime
+            ? window.formatLocalDateTime(ev.ts)
+            : (function () {
+                const dt = new Date(ev.ts);
+                return Number.isNaN(dt.getTime())
+                  ? ""
+                  : dt.toLocaleString("tr-TR", { day: "2-digit", month: "short", hour: "2-digit", minute: "2-digit" });
+              })())
         : "";
       li.innerHTML = `
         <div class="karne-timeline-dot ${dotClass}" aria-hidden="true"></div>

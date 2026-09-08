@@ -65,5 +65,16 @@ class TestMirrorPlanYearFromSource(unittest.TestCase):
         self.assertEqual(m.plan_year_id, 2)
 
 
+class TestBuildSealedError(unittest.TestCase):
+    def test_ui_message_alani_ve_metin(self):
+        from app.services.date_sovereign import build_sealed_error
+        err = build_sealed_error(SimpleNamespace(year=2023, status="closed"))
+        self.assertFalse(err["success"])
+        self.assertEqual(err["error"], "plan_year_sealed")
+        self.assertEqual(err["message"], err["mesaj"])
+        self.assertIn("2023 yılı mühürlü", err["message"])
+        self.assertIn("mührü kaldırın", err["message"])
+
+
 if __name__ == "__main__":
     unittest.main()
