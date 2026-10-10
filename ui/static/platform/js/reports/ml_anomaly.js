@@ -9,12 +9,12 @@
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Analiz Edilen PG',s.kpis_analyzed,'#0f172a'),
-        stat('Atlanan (yetersiz veri)',s.kpis_skipped,'#94a3b8'),
-        stat('Anomali Sayısı',s.anomalies_found,s.anomalies_found>0?'#dc2626':'#10b981'),
+        stat(t('Analiz Edilen PG'),s.kpis_analyzed,'#0f172a'),
+        stat(t('Atlanan (yetersiz veri)'),s.kpis_skipped,'#94a3b8'),
+        stat(t('Anomali Sayısı'),s.anomalies_found,s.anomalies_found>0?'#dc2626':'#10b981'),
       ].join('');
       if(j.anomalies.length===0){
-        document.getElementById('anomalies').innerHTML='<div style="text-align:center;padding:40px;color:#10b981;font-size:13px;"><i class="fas fa-check-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>Anomali tespit edilmedi — KPI ölçümleriniz normal dağılımda.</div>';
+        document.getElementById('anomalies').innerHTML='<div style="text-align:center;padding:40px;color:#10b981;font-size:13px;"><i class="fas fa-check-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>' + t('Anomali tespit edilmedi — KPI ölçümleriniz normal dağılımda.') + '</div>';
         return;
       }
       document.getElementById('anomalies').innerHTML = '<div style="display:grid;gap:8px;">' + j.anomalies.map(a => `
@@ -25,10 +25,10 @@
           </div>
           <div style="text-align:right;">
             <div style="font-weight:700;color:#dc2626;font-size:14px;">${a.value}</div>
-            <div style="font-size:10.5px;color:#94a3b8;">Anomaly score: ${a.anomaly_score}</div>
+            <div style="font-size:10.5px;color:#94a3b8;">${t('Anomaly score:')} ${a.anomaly_score}</div>
           </div>
         </div>`).join('') + '</div>';
-    } catch(e){ document.getElementById('loading').style.display='none'; const er=document.getElementById('error'); er.style.display='block'; er.textContent='Hata: '+e.message; }
+    } catch(e){ document.getElementById('loading').style.display='none'; const er=document.getElementById('error'); er.style.display='block'; er.textContent=t('Hata')+': '+e.message; }
   }
   load();
 })();

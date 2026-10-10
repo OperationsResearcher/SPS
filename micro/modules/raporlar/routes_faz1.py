@@ -24,7 +24,9 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
+from .helpers import rapor_rol_gerekli
 from flask_babel import gettext as _
+from app.utils.plan_year_filter import filter_by_plan_year
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 1 — 15 HIZLI KAZANC RAPORU (PLAN-TUM-RAPORLAR.md Faz 1)
@@ -166,8 +168,7 @@ def raporlar_api_okr_cascade():
     py_id = active_py.id if active_py else None
 
     q = OkrObjective.query.filter_by(tenant_id=tid, is_active=True)
-    if py_id:
-        q = q.filter_by(plan_year_id=py_id)
+    q = filter_by_plan_year(q, OkrObjective, py_id)
     objectives = q.order_by(OkrObjective.quarter.nullsfirst(), OkrObjective.order_no).all()
 
     items = []
@@ -652,6 +653,7 @@ def raporlar_api_risk_heatmap():
 
 @app_bp.route("/k-report/two-fa")
 @login_required
+@rapor_rol_gerekli("kisisel")
 @require_module("k_rapor")
 def raporlar_iki_fa():
     return render_template("platform/raporlar/iki_fa.html")
@@ -659,6 +661,7 @@ def raporlar_iki_fa():
 
 @app_bp.route("/k-report/api/two-fa")
 @login_required
+@rapor_rol_gerekli("kisisel")
 @require_module("k_rapor")
 def raporlar_api_iki_fa():
     tid = _tid_or_none()
@@ -868,8 +871,7 @@ def raporlar_api_early_warning():
         Process.tenant_id == tid, Process.is_active.is_(True),
         ProcessKpi.is_active.is_(True),
     )
-    if py_id:
-        kpi_q = kpi_q.filter(Process.plan_year_id == py_id)
+    kpi_q = filter_by_plan_year(kpi_q, Process, py_id)
     all_kpis = kpi_q.all()
 
     # İlk 100 PG için son 6 ölçümleri tek sorguda topla (N+1 önlemi)

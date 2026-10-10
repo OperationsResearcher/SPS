@@ -73,8 +73,8 @@ def k_radar_schedule_save():
         return render_template("platform/errors/403.html"), 403
     enabled = bool(request.form.get("enabled"))
     time_val = (request.form.get("time") or "08:30").strip()
-    cfg = _scheduler.save_schedule(current_app, {"enabled": enabled, "time": time_val})
-    _scheduler.apply_schedule(current_app)
+    cfg = _scheduler.save_schedule(current_app._get_current_object(), {"enabled": enabled, "time": time_val})
+    _scheduler.apply_schedule(current_app._get_current_object())
     flash(f"K-Radar takvimi guncellendi: {'Acik' if cfg['enabled'] else 'Kapali'} {cfg['time']}", "success")
     return redirect(url_for("app_bp.k_radar_hub"))
 

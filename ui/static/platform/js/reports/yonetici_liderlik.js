@@ -16,9 +16,9 @@
         note.innerHTML = '<i class="fas fa-info-circle"></i> '+esc(s.note);
       }
       document.getElementById('summary').innerHTML = [
-        statCard('Yönetici Sayısı', s.total_leaders, '#0f172a', 'raporlar_yonetici_liderlik.yonetici_sayisi'),
-        s.has_leader_data ? statCard('Skor Hesaplanan', s.with_score || 0, '#0ea5e9') : '',
-        s.has_leader_data ? statCard('Ortalama Skor', s.avg_score_overall != null ? s.avg_score_overall : '—', '#10b981') : '',
+        statCard(t('Yönetici Sayısı'), s.total_leaders, '#0f172a', 'raporlar_yonetici_liderlik.yonetici_sayisi'),
+        s.has_leader_data ? statCard(t('Skor Hesaplanan'), s.with_score || 0, '#0ea5e9') : '',
+        s.has_leader_data ? statCard(t('Ortalama Skor'), s.avg_score_overall != null ? s.avg_score_overall : '—', '#10b981') : '',
       ].filter(Boolean).join('');
       document.getElementById('tbl').innerHTML = j.leaders.map(l => {
         const scoreColor = l.avg_process_score == null ? '#94a3b8' :
@@ -29,10 +29,10 @@
           <td style="padding:10px;text-align:right;color:#475569;font-weight:600;">${l.led_process_count}</td>
           <td style="padding:10px;text-align:right;color:${scoreColor};font-weight:700;font-size:14px;">${l.avg_process_score != null ? l.avg_process_score : '—'}</td>
         </tr>`;
-      }).join('') || '<tr><td colspan="4" style="padding:20px;text-align:center;color:#94a3b8;font-style:italic;">Yönetici verisi yok.</td></tr>';
+      }).join('') || '<tr><td colspan="4" style="padding:20px;text-align:center;color:#94a3b8;font-style:italic;">' + t('Yönetici verisi yok.') + '</td></tr>';
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err = document.getElementById('error'); err.style.display='block'; err.textContent='Hata: '+e.message;
+      const err = document.getElementById('error'); err.style.display='block'; err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

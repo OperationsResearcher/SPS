@@ -4,11 +4,12 @@
 api/routes.py'den bölündü (davranış/URL değişmedi). Blueprint: api.blueprint.api_bp
 """
 from flask import jsonify, request, current_app, send_file
+from flask_babel import gettext as _
 from werkzeug.utils import secure_filename
 import os
 import uuid
 from flask_login import login_required, current_user
-from extensions import csrf, db
+from extensions import db
 from sqlalchemy import or_, and_, text, delete, insert
 from sqlalchemy.orm import joinedload
 from app.utils.project_rbac import (
@@ -64,6 +65,9 @@ from api.helpers import (
     _parse_date_safe,
 )
 from app.utils.error_handlers import json_error  # S6
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @api_bp.route('/ai/insights', methods=['GET'])
@@ -267,7 +271,6 @@ def _build_vision_score_payload_for_ai(kurum_id, as_of_date=None):
 
 @api_bp.route('/ai-coach/analyze', methods=['GET', 'POST'])
 @login_required
-@csrf.exempt
 def api_ai_coach_analyze():
     """Skor motoru verilerini hesaplayıp AI Coach (Gemini) ile analiz ettirir; Markdown yanıt döner."""
     try:
@@ -284,8 +287,8 @@ def api_ai_coach_analyze():
             from datetime import datetime as dt
             try:
                 as_of_date = dt.strptime(str(as_of_str).strip()[:10], '%Y-%m-%d').date()
-            except ValueError:
-                pass
+            except ValueError as err:
+                logger.warning(f"api_ai_coach_analyze failed: {err}")
         payload = _build_vision_score_payload_for_ai(kurum_id, as_of_date)
         from services.ai_coach_service import analyze_strategic_performance
         result = analyze_strategic_performance(
@@ -339,7 +342,6 @@ def api_ai_advisor():
 
 
 @api_bp.route('/dashboard/ai-advisor/notify', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_ai_advisor_notify():
     """
@@ -371,7 +373,6 @@ def api_ai_advisor_notify():
 
 
 @api_bp.route('/dashboard/executive', methods=['GET'])
-@csrf.exempt
 @login_required
 def api_executive_dashboard():
     """Executive Dashboard verilerini getir"""
@@ -403,13 +404,13 @@ def api_executive_dashboard():
         if start_date:
             try:
                 filters['start_date'] = datetime.strptime(start_date, '%Y-%m-%d').date()
-            except ValueError:
-                pass
+            except ValueError as err:
+                logger.warning(f"api_executive_dashboard failed: {err}")
         if end_date:
             try:
                 filters['end_date'] = datetime.strptime(end_date, '%Y-%m-%d').date()
-            except ValueError:
-                pass
+            except ValueError as err:
+                logger.warning(f"api_executive_dashboard failed: {err}")
         
         # Filtrelenmiş verileri topla
         health_data = get_corporate_health_score(current_user.kurum_id, filters)
@@ -441,7 +442,6 @@ def api_executive_dashboard():
         current_app.logger.error(f'Executive dashboard API hatası: {e}', exc_info=True)
         return json_error(e, "[api_executive_dashboard]", 500)
 @api_bp.route('/kurum/<int:kurum_id>/stratejik-profil', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri'])
 def api_kurum_stratejik_profil(kurum_id):
@@ -465,7 +465,6 @@ def api_kurum_stratejik_profil(kurum_id):
 
 
 @api_bp.route('/ai/stratejik-oneri', methods=['POST'])
-@csrf.exempt
 @login_required
 @role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri'])
 def api_ai_stratejik_oneri():
@@ -484,7 +483,6 @@ def api_ai_stratejik_oneri():
 
 
 @api_bp.route('/ai/yeni-oneri', methods=['POST'])
-@csrf.exempt
 @login_required
 @role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri'])
 def api_ai_yeni_oneri():
@@ -502,7 +500,6 @@ def api_ai_yeni_oneri():
 
 
 @api_bp.route('/ai/kabul-et', methods=['POST'])
-@csrf.exempt
 @login_required
 @role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim', 'surec_lideri'])
 def api_ai_kabul_et():
@@ -514,7 +511,6 @@ def api_ai_kabul_et():
         current_app.logger.error(f"AI kabul hatası: {e}", exc_info=True)
         return json_error(e, "[api_ai_kabul_et]", 500)
 @api_bp.route('/simulation/what-if', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_what_if_simulation():
     """What-If simülasyonu çalıştır"""

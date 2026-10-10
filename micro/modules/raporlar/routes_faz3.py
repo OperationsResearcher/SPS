@@ -35,7 +35,12 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES, _ai_text
+from .helpers import rapor_rol_gerekli
 from flask_babel import gettext as _
+from app.utils.plan_year_filter import filter_by_plan_year
+import logging
+
+logger = logging.getLogger(__name__)
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 3 — PREMIUM ÜRÜNLER (indirilebilir PDF/PPTX/Excel/ZIP)
@@ -127,19 +132,19 @@ def raporlar_api_stratejik_yillik_generate():
 
     # Veri toplama
     strat_q = Strategy.query.filter_by(tenant_id=tid, is_active=True)
-    if active_py:
-        strat_q = strat_q.filter_by(plan_year_id=active_py.id)
+    strat_q = filter_by_plan_year(strat_q, Strategy, active_py.id if active_py else None)
     strategies = strat_q.order_by(Strategy.code).all()
     weights = {w.strategy_id: w.weight_raw or 0 for w in
                KVektorStrategyWeight.query.filter_by(tenant_id=tid).all()}
     total_w = sum(weights.values()) or 1
 
-    proc_count = Process.query.filter_by(tenant_id=tid, is_active=True,
-                                          plan_year_id=active_py.id if active_py else None).count()
-    kpi_count = ProcessKpi.query.join(Process).filter(
-        Process.tenant_id == tid, Process.plan_year_id == (active_py.id if active_py else None),
-        ProcessKpi.is_active.is_(True),
-    ).count()
+    _py_id = active_py.id if active_py else None
+    proc_count = filter_by_plan_year(
+        Process.query.filter_by(tenant_id=tid, is_active=True), Process, _py_id).count()
+    kpi_count = filter_by_plan_year(
+        ProcessKpi.query.join(Process).filter(
+            Process.tenant_id == tid, ProcessKpi.is_active.is_(True)),
+        Process, _py_id).count()
     initiatives = Initiative.query.filter_by(tenant_id=tid, is_active=True).all()
     user_count = User.query.filter_by(tenant_id=tid, is_active=True).count()
     meas_count = db.session.query(func.count(KpiData.id)).join(ProcessKpi).join(
@@ -330,6 +335,7 @@ def raporlar_api_stratejik_yillik_generate():
 
 @app_bp.route("/k-report/investor-presentation")
 @login_required
+@rapor_rol_gerekli("yonetim")
 @require_module("k_rapor")
 def raporlar_yatirimci_sunum():
     return render_template("platform/raporlar/yatirimci_sunum.html")
@@ -337,6 +343,7 @@ def raporlar_yatirimci_sunum():
 
 @app_bp.route("/k-report/api/investor-presentation/preview")
 @login_required
+@rapor_rol_gerekli("yonetim")
 @require_module("k_rapor")
 def raporlar_api_yatirimci_sunum_preview():
     tid = _tid_or_none()
@@ -376,6 +383,7 @@ def raporlar_api_yatirimci_sunum_preview():
 
 @app_bp.route("/k-report/api/investor-presentation/generate", methods=["GET", "POST"])
 @login_required
+@rapor_rol_gerekli("yonetim")
 @require_module("k_rapor")
 def raporlar_api_yatirimci_sunum_generate():
     from flask import send_file
@@ -726,8 +734,8 @@ def raporlar_api_esg_rapor_generate():
         _scope_vals = by_year_scope.get(latest, {})
         _scope_line = " · ".join(
             f"{s.upper()}: {v:,.2f} tCO₂e" for s, v in _scope_vals.items() if v > 0)
-    except NameError:
-        pass  # e_metrics boşsa by_year_scope tanımsız — veri yok mesajına düşer
+    except NameError as e:
+        logger.error(f"raporlar_api_esg_rapor_generate failed: {e}")
     if _scope_line:
         elems.append(P(_("<b>4. Metrik ve hedefler:</b> Son ölçüm yılı emisyonları — ")
                        + _scope_line, body))
@@ -753,6 +761,7 @@ def raporlar_api_esg_rapor_generate():
 
 @app_bp.route("/k-report/audit-package")
 @login_required
+@rapor_rol_gerekli("kisisel")
 @require_module("k_rapor")
 def raporlar_audit_paketi():
     return render_template("platform/raporlar/audit_paketi.html")
@@ -760,6 +769,7 @@ def raporlar_audit_paketi():
 
 @app_bp.route("/k-report/api/audit-package/generate", methods=["GET", "POST"])
 @login_required
+@rapor_rol_gerekli("kisisel")
 @require_module("k_rapor")
 def raporlar_api_audit_paketi_generate():
     from flask import send_file
@@ -912,6 +922,7 @@ def raporlar_api_audit_paketi_generate():
 
 @app_bp.route("/k-report/individual-scorecard-batch")
 @login_required
+@rapor_rol_gerekli("kisisel")
 @require_module("k_rapor")
 def raporlar_bireysel_karne_batch():
     return render_template("platform/raporlar/bireysel_karne_batch.html")
@@ -919,6 +930,7 @@ def raporlar_bireysel_karne_batch():
 
 @app_bp.route("/k-report/api/individual-scorecard-batch/preview")
 @login_required
+@rapor_rol_gerekli("kisisel")
 @require_module("k_rapor")
 def raporlar_api_bireysel_karne_batch_preview():
     tid = _tid_or_none()
@@ -941,6 +953,7 @@ def raporlar_api_bireysel_karne_batch_preview():
 
 @app_bp.route("/k-report/api/individual-scorecard-batch/generate", methods=["GET", "POST"])
 @login_required
+@rapor_rol_gerekli("kisisel")
 @require_module("k_rapor")
 def raporlar_api_bireysel_karne_batch_generate():
     from flask import send_file

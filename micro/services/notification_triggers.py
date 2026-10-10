@@ -201,7 +201,7 @@ def notify_kpi_change(kpi, process, change_type="eklendi", actor=None):
             related_user_id=actor.id if actor else None,
         )
         if uid in users:
-            _send_email(users[uid], title, message, process.tenant_id, "kpi_changed", link)
+            _send_email_async(users[uid], title, message, process.tenant_id, "kpi_changed", link)  # PERF-02
 
 
 def notify_activity_assignment(activity, process, actor=None):
@@ -235,7 +235,7 @@ def notify_activity_assignment(activity, process, actor=None):
             related_user_id=actor.id if actor else None,
         )
         if uid in users:
-            _send_email(users[uid], title, message, process.tenant_id, "activity_added", link)
+            _send_email_async(users[uid], title, message, process.tenant_id, "activity_added", link)  # PERF-02
 
 
 def notify_activity_reminder(activity, process, user, minutes_before: int, send_email: bool):

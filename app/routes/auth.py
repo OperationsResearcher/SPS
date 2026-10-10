@@ -32,8 +32,9 @@ def _write_auth_audit(action, user=None):
                 f"user_id={user.id if user else None} "
                 f"ts={datetime.datetime.now(datetime.timezone.utc).isoformat()}"
             )
-        except Exception:
-            pass
+        except Exception as log_err:  # noqa: BLE001 — audit fallback'in de logu düşerse stderr'e yaz
+            import sys
+            print(f"[SECURITY_AUDIT_FALLBACK] logging failed: {log_err}", file=sys.stderr)
 
 
 @auth_bp.route("/login", methods=["GET", "POST"])
@@ -102,7 +103,14 @@ def login():
         raw_next = request.args.get("next") or ""
         # Open redirect önlemi: sadece göreceli (local) URL'lere izin ver
         parsed = urlparse(raw_next)
-        safe_next = raw_next if (raw_next and not parsed.netloc and not parsed.scheme) else None
+        # GV-006: "/\evil.com" ve "//evil.com" tarayıcıda harici adrese gider.
+        safe_next = raw_next if (
+            raw_next.startswith("/")
+            and not raw_next.startswith("//")
+            and "\\" not in raw_next
+            and not any(ord(ch) < 32 for ch in raw_next)
+            and not parsed.netloc and not parsed.scheme
+        ) else None
         next_url = safe_next or url_for(default_landing_endpoint(user))
         return redirect(next_url)
 

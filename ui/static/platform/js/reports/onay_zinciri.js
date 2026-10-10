@@ -10,12 +10,13 @@
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Toplam',s.total,'#0f172a','raporlar_onay_zinciri.toplam'),
-        stat('Onay Bekliyor',s.pending,s.pending>0?'#f59e0b':'#94a3b8','raporlar_onay_zinciri.onay_bekliyor'),
-        stat('Onaylanmış',s.approved,'#10b981','raporlar_onay_zinciri.onaylanmis'),
-        stat('Reddedilen',s.rejected,s.rejected>0?'#dc2626':'#94a3b8','raporlar_onay_zinciri.reddedilen'),
+        stat(t('Toplam'),s.total,'#0f172a','raporlar_onay_zinciri.toplam'),
+        stat(t('Onay Bekliyor'),s.pending,s.pending>0?'#f59e0b':'#94a3b8','raporlar_onay_zinciri.onay_bekliyor'),
+        stat(t('Onaylanmış'),s.approved,'#10b981','raporlar_onay_zinciri.onaylanmis'),
+        stat(t('Reddedilen'),s.rejected,s.rejected>0?'#dc2626':'#94a3b8','raporlar_onay_zinciri.reddedilen'),
       ].join('');
       const prioColor = {'Kritik':'#dc2626','Yüksek':'#f97316','Orta':'#f59e0b','Düşük':'#94a3b8'};
+        const PRIO_TR = {'Kritik':t('Kritik'),'Yüksek':t('Yüksek'),'Orta':t('Orta'),'Düşük':t('Düşük')};
       document.getElementById('tbl').innerHTML = j.items.map(i => {
         const pc = prioColor[i.priority] || '#64748b';
         const progColor = i.progress >= 80 ? '#10b981' : i.progress >= 40 ? '#f59e0b' : '#ef4444';
@@ -23,13 +24,13 @@
           <td style="padding:10px;color:#6366f1;font-weight:700;font-size:11.5px;">${esc(i.code||'—')}</td>
           <td style="padding:10px;color:#0f172a;font-weight:600;">${esc(i.name)}</td>
           <td style="padding:10px;"><span style="background:${i.approval_color};color:#fff;padding:3px 10px;border-radius:6px;font-size:11px;font-weight:700;">${esc(i.approval)}</span></td>
-          <td style="padding:10px;"><span style="color:${pc};font-weight:700;font-size:11.5px;">${esc(i.priority||'—')}</span></td>
+          <td style="padding:10px;"><span style="color:${pc};font-weight:700;font-size:11.5px;">${esc(PRIO_TR[i.priority] || i.priority || '—')}</span></td>
           <td style="padding:10px;color:#475569;font-size:11.5px;">${esc(i.owner||'—')}</td>
           <td style="padding:10px;text-align:right;color:#475569;font-size:12px;">₺${fmt(i.budget)}</td>
           <td style="padding:10px;text-align:right;font-weight:700;color:${progColor};font-size:12px;">%${i.progress}</td>
         </tr>`;
       }).join('');
-    } catch(e){ document.getElementById('loading').style.display='none'; const er=document.getElementById('error'); er.style.display='block'; er.textContent='Hata: '+e.message; }
+    } catch(e){ document.getElementById('loading').style.display='none'; const er=document.getElementById('error'); er.style.display='block'; er.textContent=t('Hata')+': '+e.message; }
   }
   load();
 })();

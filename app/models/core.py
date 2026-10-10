@@ -124,6 +124,8 @@ class User(UserMixin, db.Model):
     # Soft delete: is_active=False (deleted_at kolonu KASITLI olarak yok —
     # sil tarihi/kim sildi gerekirse audit_logs'tan alınabilir)
     is_active = db.Column(db.Boolean, default=True, nullable=False)
+    # GUV-11: parola değişince artar → diğer açık oturumlar (çalınmış çerez dahil) düşer.
+    session_version = db.Column(db.Integer, default=0, server_default="0", nullable=False)
     # index: multi-tenant filtrenin ana kolonu — hemen her sorgu buradan geçer
     tenant_id = db.Column(
         db.Integer, db.ForeignKey("tenants.id", ondelete="SET NULL"), nullable=True, index=True
@@ -302,3 +304,9 @@ class Notification(TenantScopedMixin, db.Model):
 
     user = db.relationship("User", foreign_keys=[user_id], backref=db.backref("notifications", lazy=True))
 
+
+@db.event.listens_for(User, "before_update")
+def _user_bump_session_version(mapper, connection, target):
+    """Parola hash'i değiştiyse oturum sürümünü artır (her değiştirme noktasını kapsar)."""
+    if db.inspect(target).attrs.password_hash.history.has_changes():
+        target.session_version = (target.session_version or 0) + 1

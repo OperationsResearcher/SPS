@@ -148,9 +148,9 @@
       g.addEventListener('mouseenter', (e) => {
         const tipParts = [
           `<b>${esc(n.label)}</b>`,
-          n.score != null ? `Skor: <b>%${n.score}</b>` : '',
-          n.weight != null ? `K-Vektör ağırlık: <b>${n.weight}</b>` : '',
-          n.url ? `<span style="color:#a5b4fc;">↗ tıkla detaya git</span>` : '',
+          n.score != null ? `${t('Skor:')} <b>%${n.score}</b>` : '',
+          n.weight != null ? `${t('K-Vektör ağırlık:')} <b>${n.weight}</b>` : '',
+          n.url ? `<span style="color:#a5b4fc;">↗ ${t('tıkla detaya git')}</span>` : '',
         ].filter(Boolean).join('<br>');
         showTooltip(tipParts, e.clientX, e.clientY);
         // Vurgu: sadece bu node'un strateji_key'ine ait olanlar belirgin
@@ -178,19 +178,19 @@
 
   function fillStrategyFilter(nodes) {
     const strats = nodes.filter(n => n.level === 1);
-    stratSel.innerHTML = '<option value="all">Tümü</option>' +
+    stratSel.innerHTML = '<option value="all">' + t('Tümü') + '</option>' +
       strats.map(s => `<option value="${esc(s.id)}">${esc(s.label.substring(0, 36))}</option>`).join('');
   }
 
   function renderSummary(d) {
     const s = d.summary;
     document.getElementById('hs-summary').innerHTML = [
-      statCard('Ana Strateji',  s.strategy_nodes,     '#4f46e5', '', 'raporlar_hizalama_sankey.ana_strateji'),
-      statCard('Alt Strateji',  s.sub_strategy_nodes, '#8b5cf6', '', 'raporlar_hizalama_sankey.alt_strateji'),
-      statCard('Süreç',         s.process_nodes,      '#10b981', '', 'raporlar_hizalama_sankey.surec'),
+      statCard(t('Ana Strateji'),  s.strategy_nodes,     '#4f46e5', '', 'raporlar_hizalama_sankey.ana_strateji'),
+      statCard(t('Alt Strateji'),  s.sub_strategy_nodes, '#8b5cf6', '', 'raporlar_hizalama_sankey.alt_strateji'),
+      statCard(t('Süreç'),         s.process_nodes,      '#10b981', '', 'raporlar_hizalama_sankey.surec'),
       statCard('PG',            s.pg_nodes,           '#0ea5e9', '', 'raporlar_hizalama_sankey.pg'),
-      statCard('Bağlantı',      s.total_links,        '#6366f1', '', 'raporlar_hizalama_sankey.baglanti'),
-      statCard('Hizalanmamış',  s.unaligned_processes, s.unaligned_processes > 0 ? '#dc2626' : '#10b981', 'süreç', 'raporlar_hizalama_sankey.hizalanmamis'),
+      statCard(t('Bağlantı'),      s.total_links,        '#6366f1', '', 'raporlar_hizalama_sankey.baglanti'),
+      statCard(t('Hizalanmamış'),  s.unaligned_processes, s.unaligned_processes > 0 ? '#dc2626' : '#10b981', t('süreç'), 'raporlar_hizalama_sankey.hizalanmamis'),
     ].join('');
   }
 
@@ -214,7 +214,7 @@
       const y = yearSel?.value || '';
       const url = '/k-report/api/alignment-sankey' + (y ? '?year=' + encodeURIComponent(y) : '');
       const j = await (await fetch(url, {credentials:'same-origin'})).json();
-      if (!j.success) throw new Error(j.message || 'Veri alınamadı');
+      if (!j.success) throw new Error(j.message || t('Veri alınamadı'));
       currentData = j;
       document.getElementById('hs-loading').style.display = 'none';
       document.getElementById('hs-content').style.display = '';
@@ -231,7 +231,7 @@
       document.getElementById('hs-loading').style.display = 'none';
       const err = document.getElementById('hs-error');
       err.style.display = 'block';
-      err.textContent = 'Hata: ' + e.message;
+      err.textContent = t('Hata') + ': ' + e.message;
     }
   }
 

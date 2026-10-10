@@ -18,6 +18,9 @@ import tarfile
 import subprocess
 import datetime
 from urllib.parse import urlparse, unquote
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Kod arşivinden tamamen dışlanan dizin adları (herhangi bir seviyede)
 _EXCLUDE_DIRS = {
@@ -26,6 +29,16 @@ _EXCLUDE_DIRS = {
 }
 # instance altında yalnız yedekler/ (backup-of-backup) ve ham db dosyaları hariç; uploads dahil.
 _EXCLUDE_REL_PREFIXES = ("instance/yedekler", "instance\\yedekler")
+# GUV-08: sır/kimlik dosyaları kod arşivine ASLA girmez (.env, anahtarlar, dump'lar).
+_EXCLUDE_FILE_SUFFIXES = (".pem", ".key", ".p12", ".pfx", ".dump", ".sql.gz")
+_EXCLUDE_DIR_NAMES_SECRET = {"backups", "yedekler"}
+
+
+def _is_secret_file(name: str) -> bool:
+    n = name.lower()
+    return n == ".env" or n.startswith(".env.") or n.endswith(_EXCLUDE_FILE_SUFFIXES)
+
+
 _KEEP_LAST = 14  # rotasyon: her tür için tutulacak en son yedek sayısı
 
 
@@ -177,12 +190,17 @@ def restore_db(app, dump_path: str) -> None:
 def _iter_code_files(root: str, baseline_mtime: float | None):
     """Repo dosyalarını gez. baseline_mtime verilirse yalnız o andan SONRA değişenler (fark)."""
     for dirpath, dirnames, filenames in os.walk(root):
-        dirnames[:] = [d for d in dirnames if d not in _EXCLUDE_DIRS]
+        dirnames[:] = [
+            d for d in dirnames
+            if d not in _EXCLUDE_DIRS and d not in _EXCLUDE_DIR_NAMES_SECRET
+        ]
         rel_dir = os.path.relpath(dirpath, root)
         if rel_dir != "." and rel_dir.replace("\\", "/").startswith("instance/yedekler"):
             dirnames[:] = []
             continue
         for fn in filenames:
+            if _is_secret_file(fn):
+                continue
             full = os.path.join(dirpath, fn)
             rel = os.path.relpath(full, root).replace("\\", "/")
             if rel.startswith(_EXCLUDE_REL_PREFIXES):
@@ -221,8 +239,8 @@ def _rotate(dirpath: str, pattern: str, keep: int = _KEEP_LAST) -> int:
         try:
             os.remove(old)
             removed += 1
-        except OSError:
-            pass
+        except OSError as e:
+            logger.error(f"_rotate failed: {e}")
     return removed
 
 
@@ -244,8 +262,8 @@ def run_auto_backup(app, weekly_full_dow: int = 6) -> dict:
             result["errors"].append(f"DB: {e}")
             try:
                 app.logger.error(f"[yedekleme] otomatik DB hatası: {e}")
-            except Exception:
-                pass
+            except Exception as err:
+                logger.error(f"run_auto_backup failed: {err}")
 
         # 2) Kod — haftalık tam / günlük fark
         st = _load_state(app)
@@ -271,8 +289,8 @@ def run_auto_backup(app, weekly_full_dow: int = 6) -> dict:
             result["errors"].append(f"Kod: {e}")
             try:
                 app.logger.error(f"[yedekleme] otomatik kod hatası: {e}")
-            except Exception:
-                pass
+            except Exception as err:
+                logger.error(f"run_auto_backup failed: {err}")
 
         # 3) Rotasyon
         _rotate(d, "db_*.dump")
@@ -285,8 +303,8 @@ def run_auto_backup(app, weekly_full_dow: int = 6) -> dict:
         _save_state(app, st)
         try:
             app.logger.info(f"[yedekleme] otomatik tamam: {result}")
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"run_auto_backup failed: {err}")
         return result
 
 

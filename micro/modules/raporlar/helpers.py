@@ -42,3 +42,35 @@ def _ai_text(prompt: str, fallback: str, tid: int, endpoint: str, max_tokens: in
     except Exception as e:
         current_app.logger.info(f"[{endpoint}] LLM fallback: {e}")
     return fallback
+
+
+# ── Rol kapıları (B-002/B-003) ───────────────────────────────────────────────
+# Mevcut rol adları (sp/helpers.py::_SP_ROLES ile aynı küme); yeni rol sistemi yok.
+ROLES_KISISEL = frozenset({"Admin", "admin", "tenant_admin", "executive_manager", "kurum_yoneticisi"})
+ROLES_YONETIM = ROLES_KISISEL | {"ust_yonetim"}
+
+
+def rapor_rol_izinli(tur: str) -> bool:
+    """tur: 'kisisel' (PII/audit/2FA) veya 'yonetim' (CFO/yatırımcı)."""
+    role = getattr(current_user, "role", None)
+    name = getattr(role, "name", None)
+    allowed = ROLES_KISISEL if tur == "kisisel" else ROLES_YONETIM
+    return bool(name) and name in allowed
+
+
+def rapor_rol_gerekli(tur: str):
+    """Rol kapısı dekoratörü: API yollarında JSON 403, sayfada 403 şablonu."""
+    from functools import wraps
+    from flask import request, render_template
+    from flask_babel import gettext as _
+
+    def deco(f):
+        @wraps(f)
+        def wrapper(*args, **kwargs):
+            if not rapor_rol_izinli(tur):
+                if "/api/" in request.path:
+                    return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
+                return render_template("errors/403.html"), 403
+            return f(*args, **kwargs)
+        return wrapper
+    return deco

@@ -10,7 +10,7 @@ from platform_core import app_bp
 from app.extensions import csrf
 from extensions import db
 from app.models.initiative import Initiative, InitiativeMilestone
-from micro.modules.sp.helpers import _check_sp_role
+from micro.modules.sp.helpers import _check_sp_role, sp_plan_year_open
 from flask_babel import gettext as _
 
 
@@ -42,6 +42,7 @@ def sp_api_initiatives_list():
 @app_bp.route("/k-plan/strategy/api/initiatives", methods=["POST"])
 @csrf.exempt
 @login_required
+@sp_plan_year_open
 def sp_api_initiatives_create():
     if not _can_manage():
         return jsonify({"error": "yetki yok"}), 403
@@ -57,19 +58,37 @@ def sp_api_initiatives_create():
     if end_year < start_year:
         return jsonify({"error": "end_year >= start_year olmalı"}), 400
 
+    tid = current_user.tenant_id
+    from app.models.core import Strategy, SubStrategy, User
+    strategy_id = data.get("strategy_id") or None
+    if strategy_id is not None:
+        if not isinstance(strategy_id, int) or not Strategy.query.filter_by(id=strategy_id, tenant_id=tid).first():
+            return jsonify({"success": False, "message": _("Geçersiz strateji.")}), 400
+    sub_strategy_id = data.get("sub_strategy_id") or None
+    if sub_strategy_id is not None:
+        if not isinstance(sub_strategy_id, int) or not (
+            SubStrategy.query.join(Strategy, Strategy.id == SubStrategy.strategy_id)
+            .filter(SubStrategy.id == sub_strategy_id, Strategy.tenant_id == tid).first()
+        ):
+            return jsonify({"success": False, "message": _("Geçersiz alt strateji.")}), 400
+    owner_user_id = data.get("owner_user_id") or None
+    if owner_user_id is not None:
+        if not isinstance(owner_user_id, int) or not User.query.filter_by(id=owner_user_id, tenant_id=tid).first():
+            return jsonify({"success": False, "message": _("Geçersiz kullanıcı.")}), 400
+
     init = Initiative(
         tenant_id=current_user.tenant_id,
         code=(data.get("code") or "").strip() or None,
         name=name,
         description=data.get("description"),
-        strategy_id=data.get("strategy_id") or None,
-        sub_strategy_id=data.get("sub_strategy_id") or None,
+        strategy_id=strategy_id,
+        sub_strategy_id=sub_strategy_id,
         start_year=start_year,
         end_year=end_year,
         status=data.get("status") or "planned",
         priority=data.get("priority") or "medium",
         budget_total=data.get("budget_total") or None,
-        owner_user_id=data.get("owner_user_id") or current_user.id,
+        owner_user_id=owner_user_id or current_user.id,
     )
     db.session.add(init)
     try:
@@ -84,6 +103,7 @@ def sp_api_initiatives_create():
 @app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>", methods=["PATCH"])
 @csrf.exempt
 @login_required
+@sp_plan_year_open
 def sp_api_initiatives_update(iid):
     if not _can_manage():
         return jsonify({"error": "yetki yok"}), 403
@@ -133,6 +153,7 @@ def sp_api_initiatives_update(iid):
 @app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>", methods=["DELETE"])
 @csrf.exempt
 @login_required
+@sp_plan_year_open
 def sp_api_initiatives_delete(iid):
     if not _can_manage():
         return jsonify({"error": "yetki yok"}), 403
@@ -149,6 +170,7 @@ def sp_api_initiatives_delete(iid):
 @app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>/milestones", methods=["POST"])
 @csrf.exempt
 @login_required
+@sp_plan_year_open
 def sp_api_milestone_create(iid):
     if not _can_manage():
         return jsonify({"error": "yetki yok"}), 403
@@ -206,6 +228,7 @@ def sp_api_initiative_projects(iid):
 @app_bp.route("/k-plan/strategy/api/projects/<int:pid>/initiative", methods=["POST"])
 @csrf.exempt
 @login_required
+@sp_plan_year_open
 def sp_api_project_set_initiative(pid):
     """Bir projeyi bir stratejik girişime bağlar (veya bağı keser: initiative_id=null)."""
     from app.models.portfolio_project import Project

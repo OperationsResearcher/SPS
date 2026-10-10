@@ -18,10 +18,14 @@ import sys
 from datetime import date, datetime, timezone
 from pathlib import Path
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 try:
     sys.stdout.reconfigure(encoding="utf-8")
-except Exception:
-    pass
+except Exception as e:
+    logger.error(f"randomize_tomofil_kpi_data failed: {e}")
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))

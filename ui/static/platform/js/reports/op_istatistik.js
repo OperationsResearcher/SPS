@@ -18,9 +18,9 @@
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Toplam Süreç', s.total_processes, '#0f172a', s.plan_year ? `${s.plan_year} yılı` : '', 'raporlar_operasyon_istatistik.toplam_surec'),
-        stat('Toplam PG', s.total_kpis, '#0ea5e9', '', 'raporlar_operasyon_istatistik.toplam_pg'),
-        stat('Toplam Faaliyet', s.total_activities, '#0d9488', '', 'raporlar_operasyon_istatistik.toplam_faaliyet'),
+        stat(t('Toplam Süreç'), s.total_processes, '#0f172a', s.plan_year ? t('%(y)s yılı', {y: s.plan_year}) : '', 'raporlar_operasyon_istatistik.toplam_surec'),
+        stat(t('Toplam PG'), s.total_kpis, '#0ea5e9', '', 'raporlar_operasyon_istatistik.toplam_pg'),
+        stat(t('Toplam Faaliyet'), s.total_activities, '#0d9488', '', 'raporlar_operasyon_istatistik.toplam_faaliyet'),
       ].join('');
       document.getElementById('tbl').innerHTML = j.processes.map(p => `
         <tr style="border-bottom:1px solid #f1f5f9;">
@@ -32,7 +32,7 @@
         </tr>`).join('');
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   yearSel?.addEventListener('change', async () => {

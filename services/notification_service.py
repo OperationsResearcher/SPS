@@ -5,11 +5,65 @@ Görev ve proje bildirimleri için servis fonksiyonları
 """
 from datetime import datetime, timedelta, date
 from flask import current_app, url_for
-from app.models.legacy_bridge import db, Notification, Task, Project, User
+from app.models.legacy_bridge import db, Task, Project
+from app.models.core import Notification as _CoreNotification, User
+from app.utils.tr_time import now_tr
 from utils.task_status import COMPLETED_STATUSES, normalize_task_status
 import logging
 
 logger = logging.getLogger(__name__)
+
+
+def Notification(user_id, tip, baslik, mesaj, link=None, project_id=None, task_id=None,
+                 ilgili_user_id=None):
+    """Legacy imza -> modern `notifications` modeli (D-005). tenant_id kullanicidan turetilir."""
+    tenant_id = None
+    try:
+        u = db.session.get(User, user_id)
+        tenant_id = u.tenant_id if u else None
+    except Exception as e:
+        logger.warning("[notification] tenant cozumlenemedi u=%s: %s", user_id, e)
+    return _CoreNotification(
+        user_id=user_id,
+        tenant_id=tenant_id,
+        notification_type=tip,
+        title=baslik,
+        message=mesaj,
+        link=link,
+        is_read=False,
+        related_user_id=ilgili_user_id,
+    )
+
+
+def _persist(notification) -> bool:
+    """Bildirimi SAVEPOINT icinde ekler; hata olursa yalniz onu geri alir (session.rollback YOK)."""
+    try:
+        with db.session.begin_nested():
+            db.session.add(notification)
+        return True
+    except Exception as e:
+        logger.error("[notification] bildirim olusturulamadi: %s", e)
+        return False
+
+
+def _commit() -> bool:
+    try:
+        db.session.commit()
+        return True
+    except Exception as e:
+        logger.error("[notification] commit hatasi: %s", e)
+        return False
+
+
+def _exists_today(user_id, tip, link) -> bool:
+    """Ayni kullanici+tur+link icin bugun (TR) bildirim var mi."""
+    start = datetime.combine(now_tr().date(), datetime.min.time())
+    return db.session.query(_CoreNotification.id).filter(
+        _CoreNotification.user_id == user_id,
+        _CoreNotification.notification_type == tip,
+        _CoreNotification.link == link,
+        _CoreNotification.created_at >= start - timedelta(hours=3),
+    ).first() is not None
 
 
 def _project_leader_ids(project):
@@ -56,8 +110,8 @@ def create_task_assigned_notification(task_id, assigned_user_id, assigned_by_use
             task_id=task_id,
             ilgili_user_id=assigned_by_user_id
         )
-        db.session.add(notification)
-        db.session.commit()
+        _persist(notification)
+        _commit()
         
         # E-posta gönderimi için background task'a ekle
         from services.background_tasks import execute_async
@@ -65,7 +119,6 @@ def create_task_assigned_notification(task_id, assigned_user_id, assigned_by_use
         
         return notification
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'Görev atama bildirimi hatası: {e}')
         return None
@@ -84,19 +137,13 @@ def create_task_deadline_reminder_notification(task_id):
             return None
         
         # Varsayılan: deadline'a 1 gün kala
-        if task.due_date == date.today() + timedelta(days=1):
+        if task.due_date == now_tr().date() + timedelta(days=1):
             assigned_user = User.query.get(task.assigned_to_id)
             if not assigned_user:
                 return None
 
             # Bugün zaten bildirim üretildiyse tekrar üretme
-            existing_notification = Notification.query.filter_by(
-                task_id=task.id,
-                tip='task_deadline_reminder',
-                user_id=task.assigned_to_id,
-            ).filter(
-                Notification.created_at >= datetime.combine(date.today(), datetime.min.time())
-            ).first()
+            existing_notification = _exists_today(task.assigned_to_id, 'task_deadline_reminder', f'/projeler/{task.project_id}/gorevler/{task.id}')
             if existing_notification:
                 return None
             
@@ -109,12 +156,11 @@ def create_task_deadline_reminder_notification(task_id):
                 project_id=task.project_id,
                 task_id=task_id
             )
-            db.session.add(notification)
-            db.session.commit()
+            _persist(notification)
+            _commit()
             
             return notification
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'Deadline uyarısı hatası: {e}')
         return None
@@ -142,8 +188,8 @@ def create_task_reminder_notification(task_id, user_id):
             project_id=task.project_id,
             task_id=task_id
         )
-        db.session.add(notification)
-        db.session.commit()
+        _persist(notification)
+        _commit()
         
         # E-posta gönderimi için background task'a ekle (varsa)
         try:
@@ -154,12 +200,11 @@ def create_task_reminder_notification(task_id, user_id):
             try:
                 from flask import current_app
                 current_app.logger.warning('[notification] e-posta kuyruga alinamadi: %s', e)
-            except Exception:
-                pass
+            except Exception as err:
+                logger.error(f"create_task_reminder_notification failed: {err}")
         
         return notification
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'Görev hatırlatma bildirimi hatası: {e}')
         return None
@@ -193,11 +238,10 @@ def create_task_comment_notification(comment_id, task_id, commenter_user_id):
                     task_id=task_id,
                     ilgili_user_id=commenter_user_id
                 )
-                db.session.add(notification)
-                db.session.commit()
+                _persist(notification)
+                _commit()
                 return notification
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'Yorum bildirimi hatası: {e}')
         return None
@@ -243,7 +287,7 @@ def create_task_status_change_notification(task_id, old_status, new_status, chan
                 task_id=task_id,
                 ilgili_user_id=changed_by_user_id
             )
-            db.session.add(notification)
+            _persist(notification)
             notifications.append(notification)
         
         # Görev sahibine (değişikliği yapan hariç)
@@ -258,15 +302,14 @@ def create_task_status_change_notification(task_id, old_status, new_status, chan
                 task_id=task_id,
                 ilgili_user_id=changed_by_user_id
             )
-            db.session.add(notification)
+            _persist(notification)
             notifications.append(notification)
         
         if notifications:
-            db.session.commit()
+            _commit()
         
         return notifications
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'Durum değişikliği bildirimi hatası: {e}')
         return None
@@ -278,7 +321,7 @@ def check_and_send_deadline_reminders():
     Background task olarak çalıştırılmalı
     """
     try:
-        today = date.today()
+        today = now_tr().date()
 
         # Proje bazlı reminder_days desteği için yaklaşan görevleri geniş aralıkta al
         # (Varsayılan max 7 gün)
@@ -311,16 +354,15 @@ def check_and_send_deadline_reminders():
         _pids = list({t.project_id for t in tasks if t.project_id})
         _projects = {p.id: p for p in Project.query.filter(Project.id.in_(_pids)).all()} if _pids else {}
 
-        # Mevcut bildirimleri tek sorguda batch'le (deduplication için)
-        _today_start = datetime.combine(today, datetime.min.time())
+        # Mevcut bildirimleri tek sorguda batch'le (deduplication icin) — anahtar: (user_id, link)
         _existing_keys = set()
         if tasks:
-            for n in Notification.query.filter(
-                Notification.task_id.in_([t.id for t in tasks]),
-                Notification.tip == 'task_deadline_reminder',
-                Notification.created_at >= _today_start,
+            _start = datetime.combine(now_tr().date(), datetime.min.time()) - timedelta(hours=3)
+            for uid, lnk in db.session.query(_CoreNotification.user_id, _CoreNotification.link).filter(
+                _CoreNotification.notification_type == 'task_deadline_reminder',
+                _CoreNotification.created_at >= _start,
             ).all():
-                _existing_keys.add((n.task_id, n.user_id))
+                _existing_keys.add((uid, lnk))
 
         notifications_created = 0
         for task in tasks:
@@ -339,9 +381,10 @@ def check_and_send_deadline_reminders():
                 continue
 
             # Bugün zaten bildirim üretildiyse tekrar üretme (batch lookup)
-            if (task.id, task.assigned_to_id) in _existing_keys:
+            _lk = f'/projeler/{task.project_id}/gorevler/{task.id}'
+            if (task.assigned_to_id, _lk) in _existing_keys:
                 continue
-            _existing_keys.add((task.id, task.assigned_to_id))
+            _existing_keys.add((task.assigned_to_id, _lk))
 
             # Dinamik mesaj
             try:
@@ -354,11 +397,10 @@ def check_and_send_deadline_reminders():
                     project_id=task.project_id,
                     task_id=task.id
                 )
-                db.session.add(notification)
-                db.session.commit()
+                _persist(notification)
+                _commit()
                 notifications_created += 1
             except Exception as e:
-                db.session.rollback()
                 if current_app:
                     current_app.logger.error(f'Deadline uyarısı oluşturma hatası: {e}')
         
@@ -434,7 +476,7 @@ def create_task_overdue_notification(task_id):
 
         # Gecikmiş görev kontrolü
         normalized_status = normalize_task_status(task.status) or task.status
-        if task.due_date < date.today() and normalized_status != 'Tamamlandı':
+        if task.due_date < now_tr().date() and normalized_status != 'Tamamlandı':
             if not project:
                 return None
             
@@ -443,13 +485,7 @@ def create_task_overdue_notification(task_id):
             # Görev sahibine bildirim
             if task.assigned_to_id:
                 # Bugün bildirim gönderilmiş mi kontrol et
-                existing_notification = Notification.query.filter_by(
-                    task_id=task_id,
-                    tip='task_overdue',
-                    user_id=task.assigned_to_id,
-                ).filter(
-                    Notification.created_at >= datetime.combine(date.today(), datetime.min.time())
-                ).first()
+                existing_notification = _exists_today(task.assigned_to_id, 'task_overdue', f'/projeler/{task.project_id}/gorevler/{task_id}')
                 
                 if not existing_notification:
                     notification = Notification(
@@ -461,7 +497,7 @@ def create_task_overdue_notification(task_id):
                         project_id=task.project_id,
                         task_id=task_id
                     )
-                    db.session.add(notification)
+                    _persist(notification)
                     notifications.append(notification)
             
             # Proje liderlerine bildirim
@@ -470,13 +506,7 @@ def create_task_overdue_notification(task_id):
                 for lid in leader_ids:
                     if not lid or lid == task.assigned_to_id:
                         continue
-                    existing_notification = Notification.query.filter_by(
-                        task_id=task_id,
-                        tip='task_overdue',
-                        user_id=lid,
-                    ).filter(
-                        Notification.created_at >= datetime.combine(date.today(), datetime.min.time())
-                    ).first()
+                    existing_notification = _exists_today(lid, 'task_overdue', f'/projeler/{task.project_id}/gorevler/{task_id}')
                     if existing_notification:
                         continue
                     notification = Notification(
@@ -488,7 +518,7 @@ def create_task_overdue_notification(task_id):
                         project_id=task.project_id,
                         task_id=task_id
                     )
-                    db.session.add(notification)
+                    _persist(notification)
                     notifications.append(notification)
 
             # Gözlemcilere bildirim (opsiyonel)
@@ -497,13 +527,7 @@ def create_task_overdue_notification(task_id):
                     for observer in getattr(project, 'observers', []) or []:
                         if not observer or observer.id == task.assigned_to_id or observer.id in leader_ids:
                             continue
-                        existing_notification = Notification.query.filter_by(
-                            task_id=task_id,
-                            tip='task_overdue',
-                            user_id=observer.id,
-                        ).filter(
-                            Notification.created_at >= datetime.combine(date.today(), datetime.min.time())
-                        ).first()
+                        existing_notification = _exists_today(observer.id, 'task_overdue', f'/projeler/{task.project_id}/gorevler/{task_id}')
                         if existing_notification:
                             continue
                         notification = Notification(
@@ -515,19 +539,18 @@ def create_task_overdue_notification(task_id):
                             project_id=task.project_id,
                             task_id=task_id
                         )
-                        db.session.add(notification)
+                        _persist(notification)
                         notifications.append(notification)
                 except Exception as e:
                     logger.warning(f"[create_task_overdue_notification] observer notification suppressed: {e}")
             
             if notifications:
-                db.session.commit()
+                _commit()
             
             return notifications
         
         return None
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'Gecikme bildirimi hatası: {e}')
         return None
@@ -567,7 +590,7 @@ def create_critical_risk_notification(risk_id, created_by_user_id):
                 project_id=risk.project_id,
                 ilgili_user_id=created_by_user_id
             )
-            db.session.add(notification)
+            _persist(notification)
             notifications.append(notification)
         
         # Proje üyelerine bildirim
@@ -588,15 +611,14 @@ def create_critical_risk_notification(risk_id, created_by_user_id):
                     project_id=risk.project_id,
                     ilgili_user_id=created_by_user_id
                 )
-                db.session.add(notification)
+                _persist(notification)
                 notifications.append(notification)
         
         if notifications:
-            db.session.commit()
+            _commit()
         
         return notifications
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'Kritik risk bildirimi hatası: {e}')
         return None
@@ -608,7 +630,7 @@ def check_and_send_overdue_notifications():
     Background task olarak çalıştırılmalı
     """
     try:
-        today = date.today()
+        today = now_tr().date()
         
         # Gecikmiş ve tamamlanmamış görevler
         overdue_tasks = Task.query.filter(
@@ -679,15 +701,14 @@ def create_feedback_status_notification(feedback_id, old_status, new_status, upd
             link=f'/admin/feedback',
             ilgili_user_id=updated_by_user_id
         )
-        db.session.add(notification)
-        db.session.commit()
+        _persist(notification)
+        _commit()
         
         if current_app:
             current_app.logger.info(f'Geri bildirim durum bildirimi oluşturuldu: Feedback ID {feedback_id}, Durum: {old_status} → {new_status}')
         
         return notification
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'Geri bildirim durum bildirimi hatası: {e}', exc_info=True)
         return None
@@ -740,7 +761,7 @@ def check_pg_performance_deviation(pg_veri_id):
                 link=f'/surec/karne?pg_id={pg_veri.bireysel_pg_id}',
                 ilgili_user_id=pg_veri.user_id
             )
-            db.session.add(notification)
+            _persist(notification)
             
             # Süreç liderine de bildirim gönder (eğer süreçten geliyorsa)
             if bireysel_pg.kaynak == 'Süreç' and bireysel_pg.kaynak_surec_id:
@@ -760,18 +781,18 @@ def check_pg_performance_deviation(pg_veri_id):
                             link=f'/surec/karne?pg_id={pg_veri.bireysel_pg_id}',
                             ilgili_user_id=pg_veri.user_id
                         )
-                        db.session.add(notification)
+                        _persist(notification)
             
-            db.session.commit()
+            _commit()
             
             # Webhook tetikle (V2.0.0)
             try:
                 from services.webhook_service import trigger_pg_deviation_webhook
                 from app.models.legacy_bridge import User
                 user = User.query.get(pg_veri.user_id)
-                if user and user.kurum_id:
+                if user and user.tenant_id:
                     trigger_pg_deviation_webhook(
-                        user.kurum_id,
+                        user.tenant_id,
                         pg_veri_id,
                         abs(sapma_yuzdesi)
                     )
@@ -787,7 +808,6 @@ def check_pg_performance_deviation(pg_veri_id):
             return None
         
     except Exception as e:
-        db.session.rollback()
         if current_app:
             current_app.logger.error(f'PG performans sapması kontrolü hatası: {e}')
         return None

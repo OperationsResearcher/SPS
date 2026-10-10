@@ -126,7 +126,12 @@ def apply_schedule(app) -> dict:
     global _scheduler
     cfg = load_schedule(app)
     if _scheduler is None:
-        _scheduler = BackgroundScheduler(daemon=True)
+        # D-008: lider olmayan worker'da ikinci scheduler acma
+        from app.utils.scheduler_leader import is_leader
+        if not is_leader(app):
+            logger.info("K-Radar: lider surec degil, scheduler acilmadi.")
+            return cfg
+        _scheduler = BackgroundScheduler(daemon=True, timezone="Europe/Istanbul")
         _scheduler.start()
     if _scheduler.get_job(_job_id):
         _scheduler.remove_job(_job_id)

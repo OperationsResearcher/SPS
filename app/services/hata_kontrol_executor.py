@@ -97,8 +97,8 @@ def _persist_run(app, run_id: str) -> None:
     except Exception as e:
         try:
             app.logger.info(f"[hata_kontrol] kayıt atlandı: {e}")
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"_persist_run failed: {err}")
 
 
 def list_saved_runs(app, limit: int = 30) -> list[dict]:
@@ -172,8 +172,8 @@ def start_run(app, base_url: str | None = None, limit: int | None = None, visual
     run_id = _new_run_id()
     try:
         app.logger.info(f"[hata_kontrol] Tarama baslatiliyor (visual={visual}, limit={limit})")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"start_run failed: {e}")
     _RUNS[run_id] = {
         "id": run_id, "status": "starting", "visual": visual, "total": 0, "done": 0,
         "current": "", "results": [], "counts": {"ok": 0, "warn": 0, "fail": 0},
@@ -192,8 +192,8 @@ def start_scenarios(app, base_url: str | None = None, visual: bool = False) -> s
     run_id = _new_run_id()
     try:
         app.logger.info(f"[hata_kontrol] Senaryolar baslatiliyor (visual={visual})")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"start_scenarios failed: {e}")
     _RUNS[run_id] = {
         "id": run_id, "kind": "scenario", "status": "starting", "visual": visual,
         "total": 0, "done": 0, "current": "", "scenarios": [],
@@ -248,8 +248,8 @@ def _run_scenarios(app, run_id: str, base_url: str, visual: bool = False) -> Non
                     try:
                         vpath = page.video.path()
                         st["video_url"] = f"/static/videos/hata_kontrol/{os.path.basename(vpath)}"
-                    except Exception:
-                        pass
+                    except Exception as err:
+                        logger.error(f"_run_scenarios failed: {err}")
                 browser.close()
 
         # Senaryolar veri yazdı → tomofiltest'i baseline'a döndür (K8)
@@ -263,8 +263,8 @@ def _run_scenarios(app, run_id: str, base_url: str, visual: bool = False) -> Non
             st["reset"] = False
             try:
                 app.logger.error(f"[hata_kontrol_scenarios] reset hatası: {e}")
-            except Exception:
-                pass
+            except Exception as err:
+                logger.error(f"_run_scenarios failed: {err}")
 
         st["status"] = "done"
         st["current"] = ""
@@ -274,8 +274,8 @@ def _run_scenarios(app, run_id: str, base_url: str, visual: bool = False) -> Non
         st["error"] = str(e)[:300]
         try:
             app.logger.error(f"[hata_kontrol_scenarios] {e}", exc_info=True)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"_run_scenarios failed: {err}")
         _persist_run(app, run_id)
     finally:
         release()
@@ -319,8 +319,8 @@ def _run(app, run_id: str, base_url: str, limit: int | None, visual: bool = Fals
                         rt = resp.request.resource_type
                         if resp.status >= 500 or (resp.status >= 400 and rt in ("xhr", "fetch")):
                             sig["ajax"].append(f"{resp.status} {resp.url[:120]}")
-                    except Exception:
-                        pass
+                    except Exception as e:
+                        logger.error(f"_on_resp failed: {e}")
                 page.on("response", _on_resp)
 
                 # 1) Login (tomofiltest sentetik admini)
@@ -340,8 +340,8 @@ def _run(app, run_id: str, base_url: str, limit: int | None, visual: bool = Fals
                         status = resp.status if resp else None
                         try:
                             page.wait_for_load_state("networkidle", timeout=2500)
-                        except Exception:
-                            pass
+                        except Exception as err:
+                            logger.error(f"_run failed: {err}")
                         if visual:
                             time.sleep(2.0)
                         html = page.content()
@@ -353,8 +353,8 @@ def _run(app, run_id: str, base_url: str, limit: int | None, visual: bool = Fals
                                 pth = _norm_href(h, base_url)
                                 if pth and pth not in harvested:
                                     harvested[pth] = url
-                        except Exception:
-                            pass
+                        except Exception as err:
+                            logger.error(f"_run failed: {err}")
                     except Exception as e:
                         emsg = str(e).splitlines()[0]
                         if "Download is starting" in emsg or "net::ERR_ABORTED" in emsg:
@@ -374,8 +374,8 @@ def _run(app, run_id: str, base_url: str, limit: int | None, visual: bool = Fals
                     try:
                         vpath = page.video.path()
                         st["video_url"] = f"/static/videos/hata_kontrol/{os.path.basename(vpath)}"
-                    except Exception:
-                        pass
+                    except Exception as err:
+                        logger.error(f"_run failed: {err}")
                 browser.close()
 
         # BFS sonrası: ölü linkler + yetim sayfalar
@@ -391,8 +391,8 @@ def _run(app, run_id: str, base_url: str, limit: int | None, visual: bool = Fals
         st["error"] = str(e)[:300]
         try:
             app.logger.error(f"[hata_kontrol_executor] {e}", exc_info=True)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"_run failed: {err}")
         _persist_run(app, run_id)
     finally:
         release()

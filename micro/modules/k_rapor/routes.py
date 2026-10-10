@@ -4,34 +4,35 @@ import datetime as _dt
 
 from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
-from sqlalchemy import func
+from app.utils.plan_year_filter import filter_by_plan_year
+from sqlalchemy import func, or_
 from sqlalchemy.orm import joinedload, selectinload
 
 from platform_core import app_bp
 from extensions import db
 from app.constants.roles import PLATFORM_ADMIN_ROLES, PRIVILEGED_ROLES as _PRIVILEGED_ROLES
 from app.services.date_sovereign import resolve_request_year
+from app.services.score_engine_service import compute_pg_score
 import re as _re
-import ipaddress as _ipaddress
 from flask_babel import gettext as _
+from functools import wraps as _wraps
+
+
+def rapor_rol_gerekli(tur):
+    """Rol kapısı (B-002/B-003). raporlar.helpers çalışma anında yüklenir (döngüsel import yok)."""
+    def deco(f):
+        @_wraps(f)
+        def wrapper(*args, **kwargs):
+            from app_platform.modules.raporlar.helpers import rapor_rol_gerekli as _g
+            return _g(tur)(f)(*args, **kwargs)
+        return wrapper
+    return deco
 
 
 def _check_webhook_url(url: str):
-    """SSRF koruması: özel IP aralıklarını ve güvensiz schemalar'ı reddet."""
-    import urllib.parse
-    if not url:
-        return False, "webhook_url gerekli"
-    p = urllib.parse.urlparse(url)
-    if p.scheme not in ("https", "http"):
-        return False, "Yalnızca http/https URL'ler kabul edilir"
-    hostname = p.hostname or ""
-    try:
-        addr = _ipaddress.ip_address(hostname)
-        if addr.is_private or addr.is_loopback or addr.is_link_local or addr.is_reserved:
-            return False, "İç ağ adreslerine webhook gönderilemez"
-    except ValueError:
-        pass  # hostname, IP değil — DNS riski kabul edilebilir
-    return True, ""
+    """SSRF koruması (GUV-05): yalnız https, tüm çözümlenen IP'ler global olmalı."""
+    from app.utils.outbound_guard import validate_outbound_url
+    return validate_outbound_url(url)
 
 
 # ── Sprint 50: Custom Dashboard Builder — Widget Registry ────────────────────
@@ -338,8 +339,8 @@ def k_rapor_api_surec_pg():
                     if entry and entry.actual_value is not None:
                         try:
                             vals.append(float(entry.actual_value))
-                        except (ValueError, TypeError):
-                            pass
+                        except (ValueError, TypeError) as err:
+                            logger.warning(f"k_rapor_api_surec_pg failed: {err}")
                 cells.append({
                     "has_data": len(vals) > 0,
                     "avg_val":  round(sum(vals) / len(vals), 1) if vals else None,
@@ -549,7 +550,7 @@ def k_rapor_api_faaliyet():
             projeler = []
             proje_ozet = {"toplam": 0, "tamamlanan": 0, "devam": 0, "planlandi": 0, "geciken": 0}
             if py:
-                projects = PlanProject.query.filter_by(tenant_id=tid, plan_year_id=py.id, is_active=True).all()
+                projects = filter_by_plan_year(PlanProject.query.filter_by(tenant_id=tid, is_active=True), PlanProject, py.id).all()
                 proje_ozet["toplam"] = len(projects)
                 proje_ozet["tamamlanan"] = sum(1 for p in projects if p.status == "Tamamlandı")
                 proje_ozet["devam"] = sum(1 for p in projects if p.status == "Devam Ediyor")
@@ -597,6 +598,7 @@ def k_rapor_api_faaliyet():
 
 @app_bp.route("/k-report/api/individual")
 @login_required
+@rapor_rol_gerekli("kisisel")
 def k_rapor_api_bireysel():
     """Kullanıcı bazlı bireysel PG — özet + detay + sağlık."""
     tid  = current_user.tenant_id
@@ -614,7 +616,8 @@ def k_rapor_api_bireysel():
         py = PlanYear.query.filter_by(tenant_id=tid, year=year).first()
         if py:
             pgs = IPI.query.filter(
-                IPI.user_id.in_(uid_list), IPI.is_active.is_(True), IPI.plan_year_id == py.id
+                IPI.user_id.in_(uid_list), IPI.is_active.is_(True),
+                or_(IPI.plan_year_id == py.id, IPI.plan_year_id.is_(None))  # HATA-10
             ).all()
             if not pgs:
                 pgs = IPI.query.filter(IPI.user_id.in_(uid_list), IPI.is_active.is_(True)).all()
@@ -870,7 +873,7 @@ def k_rapor_api_risk():
         maturity = ProcessMaturity.query.filter_by(tenant_id=tid).all()
         mat_list = []
         mat_proc_ids = {m.process_id for m in maturity if m.process_id}
-        mat_proc_map = {p.id: p for p in Process.query.filter(Process.id.in_(mat_proc_ids)).all()} if mat_proc_ids else {}
+        mat_proc_map = {p.id: p for p in Process.query.filter(Process.id.in_(mat_proc_ids), Process.tenant_id == tid).all()} if mat_proc_ids else {}
         for m in maturity:
             p = mat_proc_map.get(m.process_id)
             dim_raw = (m.dimension or "").lower()
@@ -897,6 +900,7 @@ def k_rapor_api_risk():
 
 @app_bp.route("/k-report/api/audit")
 @login_required
+@rapor_rol_gerekli("kisisel")
 def k_rapor_api_denetim():
     """Audit log özeti — kim ne yaptı."""
     tid = current_user.tenant_id
@@ -996,33 +1000,28 @@ def k_rapor_api_uyari():
             Process.id.in_({k.process_id for k in kpis}), Process.is_active.is_(True)
         ).all()} if kpis else {}
 
+        # A-009: skor motordan (yıllık özet, yön, yıllık hedef, parse_tr_number)
+        from app.services import pg_year_scores as _pys
+        _smap, _pgl = _pys.score_rows(tid, year, pgs=kpis)
         kritik_pg = []
-        for kpi_id, d in latest_kpi.items():
-            kpi = kpi_map.get(kpi_id)
-            if not kpi or not kpi.target_value or not d.actual_value:
+        for kpi_id, kpi in kpi_map.items():
+            r = _smap.get(kpi_id) or {}
+            pct = r.get("score")
+            if pct is None:
                 continue
-            try:
-                target = float(kpi.target_value)
-                actual = float(d.actual_value)
-                if target <= 0:
-                    continue
-                if _azalmasi_iyi(kpi):
-                    pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
-                else:
-                    pct = round(min(100.0, actual / target * 100), 1)
-                if pct < 50:
-                    proc = proc_map.get(kpi.process_id)
-                    kritik_pg.append({
-                        "kpi_id": kpi_id,
-                        "code":   kpi.code or "",
-                        "name":   kpi.name,
-                        "surec":  proc.name if proc else "—",
-                        "hedef":  kpi.target_value,
-                        "gercek": d.actual_value,
-                        "pct":    pct,
-                    })
-            except (ValueError, TypeError):
-                pass
+            pct = round(pct, 1)
+            if pct < 50:
+                proc = proc_map.get(kpi.process_id)
+                last = latest_kpi.get(kpi_id)
+                kritik_pg.append({
+                    "kpi_id": kpi_id,
+                    "code":   kpi.code or "",
+                    "name":   kpi.name,
+                    "surec":  proc.name if proc else "—",
+                    "hedef":  kpi.target_value,
+                    "gercek": last.actual_value if last else r.get("actual"),
+                    "pct":    pct,
+                })
         kritik_pg.sort(key=lambda x: x["pct"])
 
         # ── Geciken faaliyetler ─────────────────────────────────────────────────
@@ -1433,6 +1432,10 @@ def k_rapor_api_export_excel():
     tid  = current_user.tenant_id
     year = resolve_request_year()
     tab  = request.args.get("tab", "kurumsal")
+    if str(tab).strip().lower() == "bireysel":
+        from app_platform.modules.raporlar.helpers import rapor_rol_izinli
+        if not rapor_rol_izinli("kisisel"):
+            return jsonify({"success": False, "message": _("Yetkisiz işlem.")}), 403
     try:
         import io
         from openpyxl import Workbook
@@ -1498,7 +1501,7 @@ def k_rapor_api_export_excel():
             py  = PlanYear.query.filter_by(tenant_id=tid, year=year).first()
             pgs = IPI.query.filter(
                 IPI.user_id.in_(uid_list), IPI.is_active.is_(True),
-                *([IPI.plan_year_id == py.id] if py else [])
+                *([or_(IPI.plan_year_id == py.id, IPI.plan_year_id.is_(None))] if py else [])  # HATA-10
             ).all()
             pg_ids    = [pg.id for pg in pgs]
             data_rows = IndividualKpiData.query.filter(
@@ -1708,9 +1711,15 @@ def k_rapor_api_anomalies_notify_slack():
     from app.services.kpi_anomaly_service import detect_anomalies_for_tenant
     from app.services.slack_notification import send_slack_message, format_anomaly_blocks
 
+    if not current_user.role or current_user.role.name not in _PRIVILEGED_ROLES:
+        return jsonify({"success": False, "message": "Yetkisiz"}), 403
     tid = current_user.tenant_id
     payload = request.get_json(silent=True) or {}
     webhook = (payload.get("webhook_url") or "").strip() or None
+    if webhook:
+        ok, err = _check_webhook_url(webhook)
+        if not ok:
+            return jsonify({"success": False, "message": err}), 400
     severity_min = payload.get("severity_min", "medium").lower()
     limit = int(payload.get("limit", 5))
 
@@ -1904,34 +1913,26 @@ def k_rapor_api_pg_dagilim():
         proc_ids = {k.process_id for k in kpis}
         procs    = {p.id: p for p in Process.query.filter(Process.id.in_(proc_ids)).all()}
 
-        # Başarı yüzdelerini hesapla
+        # Başarı yüzdelerini hesapla (A-009: skor motordan)
+        from app.services import pg_year_scores as _pys
+        _smap, _pgl = _pys.score_rows(tid, year, pgs=kpis)
         scores = []
         scatter = []
-        for kpi_id, d in latest_by_kpi.items():
-            kpi = kpi_map.get(kpi_id)
-            if not kpi or not kpi.target_value or not d.actual_value:
+        for kpi_id, kpi in kpi_map.items():
+            r = _smap.get(kpi_id) or {}
+            if r.get("score") is None:
                 continue
-            try:
-                target = float(kpi.target_value)
-                actual = float(d.actual_value)
-                if target <= 0:
-                    continue
-                if _azalmasi_iyi(kpi):
-                    pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
-                else:
-                    pct = round(min(100.0, actual / target * 100), 1)
-                scores.append(pct)
-                proc = procs.get(kpi.process_id)
-                scatter.append({
-                    "kpi_id":   kpi_id,
-                    "kpi_name": kpi.name,
-                    "surec":    proc.name if proc else "—",
-                    "pct":      pct,
-                    "actual":   actual,
-                    "target":   target,
-                })
-            except (ValueError, TypeError):
-                pass
+            pct = round(r["score"], 1)
+            scores.append(pct)
+            proc = procs.get(kpi.process_id)
+            scatter.append({
+                "kpi_id":   kpi_id,
+                "kpi_name": kpi.name,
+                "surec":    proc.name if proc else "—",
+                "pct":      pct,
+                "actual":   r.get("actual"),
+                "target":   r.get("target"),
+            })
 
         # Histogram bucket'ları: 0-10, 10-20, ..., 90-100
         buckets = [{"label": f"%{i*10}–{(i+1)*10}", "min": i*10, "max": (i+1)*10, "count": 0} for i in range(10)]
@@ -2165,24 +2166,10 @@ def k_rapor_api_kurum_karsilastirma():
                 if d.process_kpi_id not in latest_by_kpi:
                     latest_by_kpi[d.process_kpi_id] = d
 
-            kpi_map = {k.id: k for k in kpis}
-            scores = []
-            for kpi_id, d in latest_by_kpi.items():
-                kpi = kpi_map.get(kpi_id)
-                if not kpi or not kpi.target_value or not d.actual_value:
-                    continue
-                try:
-                    target = float(kpi.target_value)
-                    actual = float(d.actual_value)
-                    if target <= 0:
-                        continue
-                    if _azalmasi_iyi(kpi):
-                        pct = round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
-                    else:
-                        pct = round(min(100.0, actual / target * 100), 1)
-                    scores.append(pct)
-                except (ValueError, TypeError):
-                    pass
+            # A-009: skor motordan (kurum bazında yıllık özet)
+            from app.services import pg_year_scores as _pys
+            _smap, _pgl = _pys.score_rows(tenant.id, year, pgs=kpis)
+            scores = [round(r["score"], 1) for r in _smap.values() if r.get("score") is not None]
 
             results.append({
                 "tenant_id":   tenant.id,
@@ -2569,3 +2556,6 @@ def k_rapor_api_bildirim_analiz():
 # En sonda import edilir — bu dosyanın route'ları önce kaydolsun (Flask daha
 # spesifik statik kuralı zaten dinamik <path:subpath>'e tercih eder).
 from micro.modules.k_rapor import routes_katman_legacy  # noqa: E402, F401
+import logging
+
+logger = logging.getLogger(__name__)

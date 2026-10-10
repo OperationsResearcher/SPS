@@ -21,7 +21,12 @@ def init_limiter(app):
     limits = app.config.get("RATELIMIT_DEFAULT", "50000 per hour; 1000000 per day")
     limit_list = [s.strip() for s in str(limits).split(";") if s.strip()]
     storage_uri = app.config.get("RATELIMIT_STORAGE_URL", "memory://")
-    is_prod = (app.config.get("FLASK_ENV") or "").lower() == "production"
+    # GUV-12: config sınıflarında FLASK_ENV özniteliği YOK (hep boş dönüyordu →
+    # Redis hiç seçilmiyordu). Ortam değişkeninden oku; Dockerfile FLASK_ENV=production koyar.
+    import os as _os
+    is_prod = (
+        (app.config.get("FLASK_ENV") or _os.environ.get("FLASK_ENV") or "").lower() == "production"
+    )
 
     # TASK-254: Eskiden yalnız "url redis ile mi başlıyor" diye bakılıyordu.
     # Bu kontrol HER ZAMAN geçiyordu: CACHE_REDIS_URL varsayılanı

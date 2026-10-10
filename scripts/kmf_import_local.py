@@ -3,6 +3,9 @@ Yerel PostgreSQL'e KMF (tenant_id=16) verisini yayından alınan CSV'lerden yük
 """
 import psycopg2, csv, re
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 
 CSV_DIR = Path(__file__).parent.parent / "backups" / "kmf_csv_2026-06-01"
 TENANT_ID = 16
@@ -39,8 +42,8 @@ TABLES_WITH_FK = [
 for t in TABLES_WITH_FK:
     try:
         cur.execute(f"ALTER TABLE {t} DISABLE TRIGGER ALL")
-    except Exception:
-        pass  # yetki yoksa devam et
+    except Exception as err:
+        logger.error(f"kmf_import_local failed: {err}")
 
 # ── 1. KMF verilerini sil ─────────────────────────────────────────────────────
 print("=== KMF verisi siliniyor (FK bypass aktif) ===")
@@ -165,8 +168,8 @@ def load(fname, table):
 for t in TABLES_WITH_FK:
     try:
         cur.execute(f"ALTER TABLE {t} DISABLE TRIGGER ALL")
-    except Exception:
-        pass
+    except Exception as err:
+        logger.error(f"kmf_import_local failed: {err}")
 
 load("kmf_tenants.csv",            "tenants")
 load("kmf_users.csv",              "users")
@@ -185,8 +188,8 @@ load("kmf_ikd.csv",                "individual_kpi_data")
 for t in TABLES_WITH_FK:
     try:
         cur.execute(f"ALTER TABLE {t} ENABLE TRIGGER ALL")
-    except Exception:
-        pass
+    except Exception as err:
+        logger.error(f"kmf_import_local failed: {err}")
 conn.commit()
 
 # ── 3. Doğrulama ──────────────────────────────────────────────────────────────

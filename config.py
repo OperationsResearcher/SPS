@@ -46,6 +46,9 @@ def _apply_runtime_db_uri(config_obj) -> None:
 class Config:
     """Base configuration class."""
 
+    # D-006: gorev/faaliyet hatirlatma zamanlayicilari. Varsayilan KAPALI (acilinca gercek e-posta gider).
+    REMINDER_SCHEDULERS_ENABLED = os.environ.get("REMINDER_SCHEDULERS_ENABLED", "0").strip().lower() in ("1", "true", "yes", "on")
+
     SECRET_KEY = os.environ.get('SECRET_KEY')
     if not SECRET_KEY:
         raise RuntimeError("SECRET_KEY environment variable is not set!")
@@ -54,6 +57,9 @@ class Config:
     # KOKPITIM_DEMO_MODE=1 ise demo akışı (landing, rol-bazlı auto-login, banner)
     # aktiftir. PRODUCTION'da kapalı tutulmalıdır.
     KOKPITIM_DEMO_MODE = os.environ.get("KOKPITIM_DEMO_MODE", "0") == "1"
+    # GV-002: Kurum LLM base_url özel ağ/loopback olabilir mi? Yalnız kurum içi
+    # kurulumda (Yerel LLM / Ollama) açılır; bulut ortamlarında (Test/Yayın) KAPALI.
+    LLM_ALLOW_PRIVATE_BASE_URL = os.environ.get("LLM_ALLOW_PRIVATE_BASE_URL", "0") == "1"
     # Demo session süresi (dk)
     DEMO_SESSION_MINUTES = int(os.environ.get("DEMO_SESSION_MINUTES", "60"))
     # Demo verisinin bulunduğu tenant adı (Tomofil) — geriye dönük uyumluluk için korunur
@@ -211,7 +217,7 @@ class TestingConfig(Config):
     WTF_CSRF_ENABLED = False
     RATELIMIT_ENABLED = False
 
-    # Tenant guard testlerde KAPALI — bilinçli, test altyapısına özgü karar.
+    # Tenant guard testlerde ENFORCE (2026-10: tests/conftest.py her istekte g onbelleklerini sifirlar).
     #
     # 2026-07-21: Config.TENANT_GUARD_MODE varsayılanı "enforce" yapıldı.
     # TestingConfig ondan miras aldığı için tüm testler guard'lı koştu ve
@@ -229,7 +235,7 @@ class TestingConfig(Config):
     # modu açıkça "enforce"a alıp filtreyi doğruluyor (6 test).
     # Yani bu satır kapsamı daraltmıyor, yalnız test altyapısı gürültüsünü
     # dışarıda tutuyor.
-    TENANT_GUARD_MODE = "off"
+    TENANT_GUARD_MODE = "enforce"
 
 
 class DevelopmentConfig(Config):

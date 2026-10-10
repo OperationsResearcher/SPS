@@ -407,7 +407,7 @@
         {% if current_user.is_authenticated %}
         <!-- Topbar -->
         <header class="micro-topbar">
-            <button class="topbar-hamburger" id="sidebar-hamburger" title="{{ _('Menü') }}">
+            <button class="topbar-hamburger" id="sidebar-hamburger" title="{{ _('Menü') }}" aria-label="{{ _('Menü') }}">
                 <i class="fas fa-bars" style="font-size:15px;"></i>
             </button>
 
@@ -462,7 +462,7 @@
 
                 <!-- Bildirim -->
                 <a href="{{ url_for('app_bp.bildirim') }}" class="topbar-icon-btn topbar-notif-btn"
-                    title="{{ _('Bildirimler') }}" data-unread-url="{{ url_for('app_bp.bildirim_api_unread_count') }}">
+                    title="{{ _('Bildirimler') }}" aria-label="{{ _('Bildirimler') }}" data-unread-url="{{ url_for('app_bp.bildirim_api_unread_count') }}">
                     <i class="fas fa-bell"></i>
                     <span class="topbar-notif-badge" id="notif-badge" style="display:none;"></span>
                 </a>
@@ -564,7 +564,7 @@
                 {%- endif -%}
             {%- endif -%}
             <nav class="mc-breadcrumb" aria-label="Sayfa konumu">
-                <a href="/desktop-launcher" class="mc-breadcrumb-home" title="{{ _('Ana Sayfa') }}">
+                <a href="/desktop-launcher" class="mc-breadcrumb-home" title="{{ _('Ana Sayfa') }}" aria-label="{{ _('Ana Sayfa') }}">
                     <i class="fas fa-home"></i>
                 </a>
                 {%- if current_section -%}
@@ -631,7 +631,7 @@
             <h3 id="kk-card-info-name">{{ _("Kart Bilgisi") }}</h3>
             {% if kk_is_admin %}<code id="kk-card-info-code"></code>{% endif %}
           </div>
-          <button type="button" class="kk-x" id="kk-card-info-close" title="{{ _('Kapat') }}">✕</button>
+          <button type="button" class="kk-x" id="kk-card-info-close" title="{{ _('Kapat') }}" aria-label="{{ _('Kapat') }}">✕</button>
         </div>
         <div class="kk-b" id="kk-card-info-body">{{ _("Yükleniyor…") }}</div>
       </div>

@@ -21,6 +21,9 @@ from extensions import db
 from app.models.core import User
 from app.models.process import KpiData, ProcessKpi, Process
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 dataconn_bp = Blueprint("dataconn_bp", __name__, url_prefix="/api/v1/dataconn")
@@ -126,8 +129,8 @@ def dataconn_kpi_data():
         try:
             d = _dt.date.fromisoformat(from_date)
             q = q.filter(KpiData.data_date >= d)
-        except ValueError:
-            pass
+        except ValueError as e:
+            logger.warning(f"dataconn_kpi_data failed: {e}")
     if process_code:
         q = q.filter(Process.code == process_code)
 

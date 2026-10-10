@@ -112,14 +112,14 @@
     };
     tbody.innerHTML = j.items.map(r => `
       <tr style="border-bottom:1px solid #e2e8f0;">
-        <td style="padding:8px;"><b>${r.name}</b>${r.description?`<div style="font-size:11px;color:#64748b;">${r.description}</div>`:''}</td>
+        <td style="padding:8px;"><b>${mcEsc(r.name)}</b>${r.description?`<div style="font-size:11px;color:#64748b;">${mcEsc(r.description)}</div>`:''}</td>
         <td style="padding:8px;color:#64748b;">${catLabels[r.category] || r.category || '—'}</td>
         <td style="padding:8px;text-align:center;">${check(r.is_valuable, r.id, 'is_valuable')}</td>
         <td style="padding:8px;text-align:center;">${check(r.is_rare, r.id, 'is_rare')}</td>
         <td style="padding:8px;text-align:center;">${check(r.is_inimitable, r.id, 'is_inimitable')}</td>
         <td style="padding:8px;text-align:center;">${check(r.is_organized, r.id, 'is_organized')}</td>
         <td style="padding:8px;"><span style="background:${labelColor(r.competitive_label)};color:#fff;padding:3px 10px;border-radius:4px;font-size:12px;font-weight:600;">${r.competitive_label}</span></td>
-        <td style="padding:8px;text-align:center;"><button class="mc-btn mc-btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="vrio_delete(${r.id}, '${(r.name||'').replace(/'/g,'')}')"><i class="fas fa-trash"></i></button></td>
+        <td style="padding:8px;text-align:center;"><button class="mc-btn mc-btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="vrio_delete(${r.id}, '${mcEsc((r.name||'').replace(/'/g,''))}')"><i class="fas fa-trash"></i></button></td>
       </tr>
     `).join('');
   }

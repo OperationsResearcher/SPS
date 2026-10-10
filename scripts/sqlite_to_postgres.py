@@ -9,6 +9,9 @@ Kullanım:
 import os
 import sqlite3
 import sys
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Proje kökünü path'e ekle
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
@@ -191,8 +194,8 @@ def main():
     if use_replica:
         try:
             pg_cur.execute("SET session_replication_role = 'DEFAULT'")
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"main failed: {err}")
     pg_conn.commit()
     sqlite_conn.close()
     pg_conn.close()

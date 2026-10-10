@@ -18,10 +18,12 @@ from app.models.process import Process, ProcessKpi, KpiData
 # gerçek girdileri çözemiyordu. Skor motorunun kopyası bunları tanıyor.
 # Üçüncü bir kopya tutmak B2'deki ayrışma hatasının aynısı olurdu.
 from app.services.score_engine_service import (  # noqa: E402
-    _parse_float,
-    _resolve_target_for_calculation,
-    normalize_aggregation_method,
+    _kpi_effective_cfg,
+    _load_cfg_map,
+    _score_pgs,
+    weighted_average,
 )
+from app.utils.tr_time import today_tr  # noqa: E402
 
 
 def calculate_process_health_score(
@@ -56,68 +58,31 @@ def calculate_process_health_score(
     if not process:
         return None
 
-    kpis = ProcessKpi.query.filter_by(
-        process_id=process.id,
-        is_active=True
-    ).all()
+    # A-008: tek hesap motoru — yıllık config, tarih kesimi, yön, yöntem motordan.
+    from app.services.plan_year_service import get_plan_year
+    plan_year = get_plan_year(process.tenant_id, year) if process.tenant_id else None
 
-    # N+1 önlemi: tüm KPI'ların verisini tek sorguda yükle (KPI başına ayrı sorgu yerine).
-    kpi_ids = [k.id for k in kpis]
-    entries_by_kpi: Dict[int, list] = {}
-    if kpi_ids:
-        for e in (KpiData.query
-                  .filter(KpiData.process_kpi_id.in_(kpi_ids),
-                          KpiData.year == year,
-                          KpiData.is_active.is_(True))
-                  .order_by(KpiData.process_kpi_id, KpiData.data_date.desc())
-                  .all()):
-            entries_by_kpi.setdefault(e.process_kpi_id, []).append(e)
+    kpis_q = ProcessKpi.query.filter_by(process_id=process.id, is_active=True)
+    if plan_year is not None:
+        kpis_q = kpis_q.filter(
+            (ProcessKpi.plan_year_id == plan_year.id) | (ProcessKpi.plan_year_id.is_(None))
+        )
+    kpis = kpis_q.all()
 
+    cfg_map = _load_cfg_map(kpis, plan_year)
+    rows = _score_pgs(kpis, year, today_tr(), plan_year, cfg_map) if kpis else {}
+    pairs = []
     pg_scores = []
     for kpi in kpis:
-        # B6: aralık/yüzde hedefleri de çözülsün ('90-100', '%85').
-        target = _resolve_target_for_calculation(
-            kpi.target_value, kpi.direction or 'Increasing'
-        )
-        if target is None or target <= 0:
-            if kpi.calculated_score is not None:
-                # B10: burada yalnız `min(100, …)` vardı, `max(0, …)` YOKTU —
-                # ana dal (aşağıda) iki sınırı da uyguluyor. DB'de şu an
-                # negatif calculated_score yok (0/565), yani hata tetiklenmiyor;
-                # koruma eksikliği latent kalmasın diye simetrik yapıldı.
-                pg_scores.append(min(100.0, max(0.0, float(kpi.calculated_score))))
+        c = _kpi_effective_cfg(kpi, cfg_map)
+        if not c['is_included']:
             continue
+        sc = rows[kpi.id]['score']
+        pairs.append((sc, c['weight']))
+        if sc is not None:
+            pg_scores.append(sc)
 
-        entries = entries_by_kpi.get(kpi.id, [])
-
-        if not entries:
-            continue
-
-        actual_values = [_parse_float(e.actual_value) for e in entries]
-        actual_values = [v for v in actual_values if v is not None]
-        if not actual_values:
-            continue
-
-        # D1/D2/M2: iki dilli yöntem etiketleri tek noktadan çözülür.
-        # Eskiden yalnız Türkçe etiketler tanınıyordu; `AVG` (35 satır)
-        # tesadüfen doğru dala düşüyordu ama `SUM` sessizce ortalamaya
-        # dönerdi.
-        _yontem = normalize_aggregation_method(kpi.data_collection_method)
-        if _yontem == 'SUM':
-            actual = sum(actual_values)
-        elif _yontem == 'LAST':
-            actual = actual_values[0]
-        else:  # AVG
-            actual = sum(actual_values) / len(actual_values)
-
-        if kpi.direction == 'Decreasing':
-            ratio = target / actual if actual > 0 else 0
-        else:
-            ratio = actual / target if target > 0 else 0
-        score = min(100.0, max(0.0, ratio * 100.0))
-        pg_scores.append(score)
-
-    pg_hedef_ulasma = sum(pg_scores) / len(pg_scores) if pg_scores else None
+    pg_hedef_ulasma = weighted_average(pairs) if pg_scores else None
     surec_ilerleme = process.progress or 0
 
     if pg_hedef_ulasma is not None:
@@ -145,7 +110,7 @@ def calculate_process_health_score(
         'detay': {
             'pg_hedef_ulasma_orani': round(pg_hedef_ulasma, 1) if pg_hedef_ulasma is not None else None,
             'surec_ilerleme': surec_ilerleme,
-            'pg_sayisi': len(kpis),
+            'pg_sayisi': len(pairs),
             'veri_girilen_pg': len(pg_scores),
         }
     }

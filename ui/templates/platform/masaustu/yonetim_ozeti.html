@@ -183,8 +183,8 @@
         const pct = s.on_target_pct;
         const c = pct>=70 ? "#10b981" : pct>=50 ? "#f59e0b" : "#ef4444";
         return `<div style="display:flex;align-items:center;gap:12px;">
-          <span style="min-width:44px;font-size:12px;font-weight:700;color:var(--text-muted);">${s.code||""}</span>
-          <span style="flex:1;font-size:13px;color:var(--text-default);">${s.title||""}</span>
+          <span style="min-width:44px;font-size:12px;font-weight:700;color:var(--text-muted);">${mcEsc(s.code||"")}</span>
+          <span style="flex:1;font-size:13px;color:var(--text-default);">${mcEsc(s.title||"")}</span>
           <div style="width:140px;height:8px;background:var(--surface-2, #eef1f5);border-radius:4px;overflow:hidden;">
             <div style="width:${Math.max(2,pct)}%;height:100%;background:${c};"></div>
           </div>

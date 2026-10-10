@@ -51,7 +51,7 @@ def clone_project(project_id, new_name, new_start_date, keep_assignments=True, k
             name=new_name,
             manager_id=source_project.manager_id if keep_assignments else None,
             description=f"Kopya: {source_project.description}" if source_project.description else None,
-            template_id=source_project.template_id
+            source_project_id=source_project.id,
         )
         
         db.session.add(new_project)
@@ -99,6 +99,7 @@ def clone_project(project_id, new_name, new_start_date, keep_assignments=True, k
             new_task = Task(
                 project_id=new_project.id,
                 parent_id=parent_id,
+                reporter_id=source_task.reporter_id,
                 assigned_to_id=source_task.assigned_to_id if keep_assignments else None,
                 title=source_task.title,
                 description=source_task.description,
@@ -152,7 +153,6 @@ def clone_project(project_id, new_name, new_start_date, keep_assignments=True, k
                         if pred.id in task_mapping:
                             # Predecessor ilişkisini ekle (task_predecessors table)
                             from app.models.legacy_bridge import task_predecessors
-                            from sqlalchemy import insert
                             db.session.execute(
                                 insert(task_predecessors).values(
                                     task_id=new_task_id,
@@ -169,27 +169,21 @@ def clone_project(project_id, new_name, new_start_date, keep_assignments=True, k
                 description=source_risk.description,
                 impact=source_risk.impact,
                 probability=source_risk.probability,
-                mitigation_plan=source_risk.mitigation_plan,
-                status='Aktif',  # Riskleri aktif duruma al
-                created_by_id=source_risk.created_by_id
+                status='Open',
             )
             db.session.add(new_risk)
         
         # Dosya klasör yapısını kopyala (dosya içeriği değil, sadece referans)
         # Not: Fiziksel dosyalar kopyalanmaz, sadece referanslar oluşturulur
-        source_files = ProjectFile.query.filter_by(project_id=project_id, is_active=True).all()
+        source_files = ProjectFile.query.filter_by(project_id=project_id).all()
         for source_file in source_files:
             # Dosya referansını kopyala (fiziksel dosya kopyalanmaz)
             new_file = ProjectFile(
                 project_id=new_project.id,
-                user_id=source_file.user_id,
-                file_name=f"Kopya - {source_file.file_name}",
-                file_path=source_file.file_path,  # Aynı dosya yolunu kullan (veya yeni bir yol oluştur)
-                file_size=source_file.file_size,
+                uploader_id=source_file.uploader_id,
+                filename=f"Kopya - {source_file.filename}",
+                file_path=source_file.file_path,
                 file_type=source_file.file_type,
-                description=f"Kopya: {source_file.description}" if source_file.description else None,
-                version=1,
-                is_active=True
             )
             db.session.add(new_file)
         

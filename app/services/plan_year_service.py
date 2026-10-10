@@ -30,6 +30,9 @@ from app.models.plan_year import (
 )
 from app.models.process import ProcessKpi, Process, IndividualPerformanceIndicator
 from app.models.core import Strategy, SubStrategy
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # ── Yardımcı ──────────────────────────────────────────────────────────────────
@@ -611,8 +614,8 @@ def _compute_prev_year_actuals(plan_year: PlanYear) -> Dict[int, Optional[float]
         for v in vals:
             try:
                 nums.append(float(v))
-            except (TypeError, ValueError):
-                pass
+            except (TypeError, ValueError) as err:
+                logger.warning(f"_compute_prev_year_actuals failed: {err}")
         result[kpi_id] = round(sum(nums) / len(nums), 6) if nums else None
     return result
 

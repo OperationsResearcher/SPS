@@ -32,7 +32,8 @@ def check_activity_reminders(app=None):
     with app.app_context():
         # DB'de remind_at/end_at naive local datetime tutuluyor.
         # UTC karşılaştırması tetiklemeleri geciktirir.
-        now = datetime.now()
+        from app.utils.tr_time import now_tr
+        now = now_tr().replace(tzinfo=None)
         window_start = now - timedelta(minutes=5)
         due = (
             ProcessActivityReminder.query.join(ProcessActivity)
@@ -117,7 +118,7 @@ def init_process_activity_scheduler(app):
     global scheduler
     if scheduler is not None:
         return scheduler
-    scheduler = BackgroundScheduler(daemon=True)
+    scheduler = BackgroundScheduler(daemon=True, timezone="Europe/Istanbul")
     scheduler.add_job(
         func=partial(check_activity_reminders, app),
         trigger=IntervalTrigger(minutes=5),

@@ -5,6 +5,9 @@ from flask_login import current_user, login_required
 
 from platform_core import app_bp
 from micro.modules.k_radar.routes_common import _required_tenant_id, _safe_json
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _ks_swot_summary(tenant_id: int) -> dict:
@@ -30,8 +33,8 @@ def _ks_swot_summary(tenant_id: int) -> dict:
                     target = float(r.target_value)
                     if target > 0 and (actual / target) < 0.8:
                         low_perf += 1
-                except (ValueError, TypeError):
-                    pass
+                except (ValueError, TypeError) as e:
+                    logger.warning(f"_ks_swot_summary failed: {e}")
     except Exception:
         low_perf = 0
     return {"process_count": int(process_count or 0), "low_perf_kpi_rows": int(low_perf or 0)}

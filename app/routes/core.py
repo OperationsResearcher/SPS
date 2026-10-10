@@ -27,13 +27,18 @@ def kule_send():
         if not subject or not message:
             return jsonify({"success": False, "message": "Konu ve mesaj zorunludur."}), 400
 
+        # page_url yalnız http(s) veya "/" ile başlayabilir (javascript: vb. kaydedilmez)
+        page_url = (page_url or "").strip()
+        if not page_url.lower().startswith(("http://", "https://", "/")):
+            page_url = ""
+
         # Create new ticket
         ticket = Ticket(
             user_id=current_user.id,
             tenant_id=current_user.tenant_id,
-            page_url=page_url[:500] if page_url else None,  # 500 = Ticket.page_url VARCHAR(500) max uzunluğu
+            page_url=page_url[:500] or None,  # 500 = Ticket.page_url VARCHAR(500) max uzunluğu
             subject=subject[:50],
-            message=message,
+            message=message[:5000],  # Ticket.message Text; uzunluk sınırı
             status="Bekliyor"
         )
         

@@ -380,6 +380,31 @@ class ProjectRisk(db.Model):
     status = db.Column(db.String(20)) # Open, Mitigated, Closed
     created_at = db.Column(db.DateTime, default=lambda: datetime.now(timezone.utc))
 
+    _LEVEL_NUM = {'low': 1, 'medium': 3, 'high': 5, 'düşük': 1, 'orta': 3, 'yüksek': 5}
+
+    @classmethod
+    def _num(cls, value):
+        try:
+            return int(value)
+        except (TypeError, ValueError):
+            return cls._LEVEL_NUM.get(str(value or '').strip().lower(), 1)
+
+    @property
+    def risk_score(self):
+        """impact × probability (1-25). Kolon değil, hesaplanır (servisler bu adı kullanıyor)."""
+        return self._num(self.impact) * self._num(self.probability)
+
+    @property
+    def risk_level(self):
+        sc = self.risk_score
+        if sc <= 6:
+            return 'Düşük'
+        if sc <= 12:
+            return 'Orta'
+        if sc < 20:
+            return 'Yüksek'
+        return 'Kritik'
+
 # Faz 2/3 Yeni Proje Modelleri
 class Tag(db.Model):
     __tablename__ = 'tag'

@@ -48,8 +48,10 @@ _SP_ROLES = (
     "ust_yonetim",
 )
 from micro.modules.sp.helpers import (
+    sp_plan_year_open,
     _check_sp_role,
     sp_manage_required,
+    sp_plan_year_open,
     _plan_year_to_dict,
     _plan_project_to_dict,
     _plan_task_to_dict,
@@ -138,6 +140,7 @@ def sp_api_porter_get():
 @app_bp.route("/k-plan/strategy/api/porter", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_porter_save():
     """Porter 5 Güç verisini kaydet (upsert)."""
     tid = current_user.tenant_id
@@ -215,6 +218,7 @@ def sp_api_swot_get():
 @app_bp.route("/k-plan/strategy/api/swot", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_swot_save():
     """SWOT verisini kaydet (upsert)."""
     tid = current_user.tenant_id
@@ -279,6 +283,7 @@ def sp_api_tows_get():
 @app_bp.route("/k-plan/strategy/api/tows", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_tows_save():
     """TOWS verisini kaydet (upsert)."""
     tid = current_user.tenant_id
@@ -343,6 +348,7 @@ def sp_api_pestle_get():
 @app_bp.route("/k-plan/strategy/api/pestle", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_pestle_save():
     """PESTLE verisini kaydet (upsert)."""
     tid = current_user.tenant_id
@@ -467,6 +473,7 @@ def sp_api_okr_list():
 @app_bp.route("/k-plan/strategy/api/okr/objective", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_okr_objective_create():
     """Yeni Objective ekle."""
     tid = current_user.tenant_id
@@ -518,6 +525,7 @@ def sp_api_okr_objective_create():
 @app_bp.route("/k-plan/strategy/api/okr/objective/<int:obj_id>", methods=["PUT"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_okr_objective_update(obj_id):
     """Objective güncelle."""
     tid = current_user.tenant_id
@@ -561,6 +569,7 @@ def sp_api_okr_objective_update(obj_id):
 @app_bp.route("/k-plan/strategy/api/okr/objective/<int:obj_id>", methods=["DELETE"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_okr_objective_delete(obj_id):
     """Objective sil (soft)."""
     tid = current_user.tenant_id
@@ -579,6 +588,7 @@ def sp_api_okr_objective_delete(obj_id):
 @app_bp.route("/k-plan/strategy/api/okr/objective/<int:obj_id>/kr", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_okr_kr_create(obj_id):
     """Key Result ekle."""
     tid = current_user.tenant_id
@@ -610,6 +620,7 @@ def sp_api_okr_kr_create(obj_id):
 @app_bp.route("/k-plan/strategy/api/okr/kr/<int:kr_id>", methods=["PUT"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_okr_kr_update(kr_id):
     """Key Result güncelle (ilerleme dahil)."""
     tid = current_user.tenant_id
@@ -640,6 +651,7 @@ def sp_api_okr_kr_update(kr_id):
 @app_bp.route("/k-plan/strategy/api/okr/kr/<int:kr_id>", methods=["DELETE"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_okr_kr_delete(kr_id):
     """Key Result sil (soft)."""
     tid = current_user.tenant_id
@@ -716,13 +728,11 @@ def sp_api_bsc_get():
             if not kpi or not d:
                 return None
             try:
-                target = float(kpi.target_value or 0)
-                actual = float(d.actual_value or 0)
-                if target <= 0:
-                    return None
-                if (kpi.direction or "Increasing") == "Decreasing":
-                    return round(min(100.0, target / actual * 100), 1) if actual > 0 else 0.0
-                return round(min(100.0, actual / target * 100), 1)
+                from app.services.score_engine_service import compute_pg_score
+                pct = compute_pg_score(
+                    float(kpi.target_value or 0), float(d.actual_value or 0),
+                    kpi.direction or "Increasing")  # Karar 4-5: tek PG puan kuralı
+                return round(pct, 1) if pct is not None else None
             except (ValueError, TypeError):
                 return None
 
@@ -825,6 +835,7 @@ def sp_api_bsc_get():
 @app_bp.route("/k-plan/strategy/api/bsc/assign", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_bsc_assign():
     """KPI'ya perspektif ata (upsert)."""
     tid = current_user.tenant_id
@@ -876,6 +887,7 @@ def sp_api_bsc_assign():
 @app_bp.route("/k-plan/strategy/api/bsc/assign-bulk", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_bsc_assign_bulk():
     """Birden fazla KPI'ya aynı anda perspektif ata."""
     tid = current_user.tenant_id
@@ -988,6 +1000,7 @@ def sp_api_bsc_auto_suggest():
 @app_bp.route("/k-plan/strategy/api/bsc/auto-assign", methods=["POST"])
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_bsc_auto_assign():
     """Yüksek güvenli önerileri toplu uygular (min_confidence parametresi ile)."""
     tid = current_user.tenant_id

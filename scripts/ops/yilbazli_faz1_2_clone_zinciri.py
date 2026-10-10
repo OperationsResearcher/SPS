@@ -97,7 +97,7 @@ def _yil_dolu_mu(tenant_id: int, py_id: int) -> tuple[int, int]:
     return surec, pg
 
 
-def rapor_ve_uygula(calistir: bool) -> int:
+def rapor_ve_uygula(calistir: bool, tenant_id: int | None = None) -> int:
     app = create_app()
     with app.app_context():
         from app.services.plan_year_service import clone_full_plan_year
@@ -108,6 +108,8 @@ def rapor_ve_uygula(calistir: bool) -> int:
 
         tenants = _c().execute(text(
             "SELECT id, name FROM tenants WHERE is_active ORDER BY id")).fetchall()
+        if tenant_id is not None:
+            tenants = [t for t in tenants if t[0] == tenant_id]
 
         for tid, tname in tenants:
             ilk = _ilk_plan_yili(tid)
@@ -224,5 +226,7 @@ def rapor_ve_uygula(calistir: bool) -> int:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Faz 1.2 — clone zinciri")
     ap.add_argument("--calistir", action="store_true")
+    ap.add_argument("--tenant", type=int, default=None,
+                    help="Yalnız bu kurum (tenant_id); verilmezse tüm kurumlar")
     args = ap.parse_args()
-    sys.exit(rapor_ve_uygula(args.calistir))
+    sys.exit(rapor_ve_uygula(args.calistir, args.tenant))

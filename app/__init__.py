@@ -17,16 +17,13 @@ load_dotenv()
 
 from flask import Flask, jsonify
 from sqlalchemy import text
-from flask_login import LoginManager
-from flask_migrate import Migrate
-from flask_talisman import Talisman
 
-from app.extensions import csrf, cache, talisman
+from app.extensions import csrf, cache, talisman, login_manager, migrate
 from app.models import db
 from app.models.core import User
+import logging
 
-migrate = Migrate()
-login_manager = LoginManager()
+logger = logging.getLogger(__name__)
 
 
 def create_app(config_class=None):
@@ -92,6 +89,8 @@ def create_app(config_class=None):
     # Initialize security utilities
     from app.utils.security import init_limiter, set_security_headers
     init_limiter(app)
+    from app.utils.login_throttle import init_backend as _init_login_throttle
+    _init_login_throttle(app)  # GUV-12: sayaçlar Redis'te (varsa)
 
     # Merkezi tenant izolasyonu (TENANT_GUARD_MODE=enforce ise aktif)
     from app.utils.tenant_guard import init_tenant_guard
@@ -162,7 +161,24 @@ def create_app(config_class=None):
 
     @login_manager.user_loader
     def load_user(user_id):
-        return User.query.get(int(user_id)) if user_id else None
+        # GUV-11: pasife alınan / KVKK ile silinen kullanıcının açık oturumu düşer;
+        # parola değişince (session_version artar) eski oturumlar geçersiz olur.
+        if not user_id:
+            return None
+        user = User.query.get(int(user_id))
+        if user is None or not user.is_active:
+            return None
+        from flask import session as _session
+        if _session.get("sv", 0) != (user.session_version or 0):
+            return None
+        return user
+
+    from flask_login import user_logged_in
+
+    @user_logged_in.connect_via(app)
+    def _stamp_session_version(_sender, user, **_extra):
+        from flask import session as _session
+        _session["sv"] = user.session_version or 0
 
     from app.utils.safe_urls import safe_url_for
 
@@ -301,8 +317,8 @@ def create_app(config_class=None):
                 _role = _cu.role.name if (_cu.is_authenticated and _cu.role) else None
                 if card_hidden_for_role(card_code, _role):
                     return False
-            except Exception:
-                pass  # rol çözülemezse rol ekseninde engelleme (fail-open)
+            except Exception as e:
+                logger.error(f"card_visible failed: {e}")
 
             # Paket kapısı (mevcut davranış)
             if slugs is None:
@@ -535,6 +551,9 @@ def create_app(config_class=None):
     from app.routes.auth import auth_bp, login as auth_login_view, logout as auth_logout_view
 
     app.register_blueprint(auth_bp, url_prefix="")
+    from app.routes.password_reset import password_reset_bp
+
+    app.register_blueprint(password_reset_bp)
     app.add_url_rule(
         "/login",
         endpoint="public_login",
@@ -557,6 +576,8 @@ def create_app(config_class=None):
     from platform_core import app_bp
 
     app.register_blueprint(app_bp)
+    from platform_core import register_gating
+    register_gating(app)
 
     # ── 3) Uygulama blueprint'leri (tek yapı)
     from app.routes.admin import admin_bp
@@ -612,13 +633,25 @@ def create_app(config_class=None):
     app.register_blueprint(ai_bp, url_prefix="")
 
     if not app.testing:
-        from services.k_radar_scheduler_service import init_k_radar_scheduler
-        init_k_radar_scheduler(app)
-        _init_early_warning_scheduler(app)
-        _init_weekly_digest_scheduler(app)  # Sprint 18
-        _init_yedekleme_scheduler(app)
-        if app.config.get("KOKPITIM_DEMO_MODE"):
-            _init_demo_inactivity_sweeper(app)  # KURALLAR §8.4 — demo Tomofil sıfırlama
+        # KOD-02/PERF-01: gunicorn N worker → zamanlayıcılar N kez çalışıyordu.
+        # Yalnız lider süreç (PG advisory lock) başlatır; bkz. app/utils/scheduler_leader.py
+        from app.utils.scheduler_leader import run_as_leader
+
+        def _start_schedulers():
+            from services.k_radar_scheduler_service import init_k_radar_scheduler
+            init_k_radar_scheduler(app)
+            _init_early_warning_scheduler(app)
+            _init_weekly_digest_scheduler(app)  # Sprint 18
+            _init_yedekleme_scheduler(app)
+            _init_reminder_schedulers(app)  # D-006 — varsayilan KAPALI
+            if app.config.get("KOKPITIM_DEMO_MODE"):
+                _init_demo_inactivity_sweeper(app)  # KURALLAR §8.4 — demo Tomofil sıfırlama
+
+        run_as_leader(app, _start_schedulers)
+
+    if app.config.get("KOKPITIM_DEMO_MODE"):
+        from app.middleware.demo_guard import init_demo_guard
+        init_demo_guard(app)  # GUV-25
 
     # Legacy HTML sunset (GET yönlendirme / 410) — main_bp'den önce kayıt
     from app.middleware.legacy_sunset import init_legacy_sunset
@@ -640,6 +673,24 @@ def create_app(config_class=None):
     importlib.import_module("app.socketio_events")
 
     return app
+
+
+def _init_reminder_schedulers(app) -> None:
+    """Gorev/faaliyet hatirlatma zamanlayicilari (D-006).
+
+    YALNIZ REMINDER_SCHEDULERS_ENABLED acikken ve lider surecte (cagiran run_as_leader)
+    baslar. Varsayilan KAPALI: acilinca gercek kullanicilara e-posta/bildirim gider."""
+    if not app.config.get("REMINDER_SCHEDULERS_ENABLED", False):
+        app.logger.info("[reminder] REMINDER_SCHEDULERS_ENABLED=False — atlandi")
+        return
+    try:
+        from services.task_reminder_scheduler import init_scheduler
+        from services.process_activity_scheduler import init_process_activity_scheduler
+        init_scheduler(app)
+        init_process_activity_scheduler(app)
+        app.logger.info("[reminder] Hatirlatma zamanlayicilari baslatildi.")
+    except Exception as e:
+        app.logger.error("[reminder] baslatma hatasi: %s", e)
 
 
 def _init_weekly_digest_scheduler(app) -> None:

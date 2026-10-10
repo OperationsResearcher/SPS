@@ -14,9 +14,12 @@ from app.services.ai_pivot_advisor_service import generate_pivot_recommendations
 from app.services.plan_year_template_service import (
     list_templates, get_template, apply_template_to_tenant,
 )
-from micro.modules.sp.helpers import _check_sp_role
+from micro.modules.sp.helpers import _check_sp_role, sp_plan_year_open
 from app.utils.decorators import require_module
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _can():
@@ -77,37 +80,31 @@ def sp_api_exec_strategy_scores():
         if year is None:
             import datetime as _d
             year = _d.date.today().year
-        rows = db.session.execute(_t("""
-            SELECT s.id, s.code, s.title,
-                   count(DISTINCT k.id) AS pg_total,
-                   sum(CASE
-                        WHEN kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                         AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                         AND kd.actual_value::float >= kd.target_value::float
-                       THEN 1 ELSE 0 END) AS on_target,
-                   sum(CASE
-                        WHEN kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                         AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                       THEN 1 ELSE 0 END) AS comparable
+        from app.services import pg_year_scores as _pys
+        tid = current_user.tenant_id
+        link_rows = db.session.execute(_t("""
+            SELECT DISTINCT s.id, k.id AS pg_id
             FROM strategies s
             JOIN sub_strategies ss ON ss.strategy_id = s.id AND ss.is_active=true
             JOIN process_sub_strategy_links psl ON psl.sub_strategy_id = ss.id
             JOIN processes p ON p.id = psl.process_id AND p.is_active=true
             JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
-            LEFT JOIN kpi_data kd ON kd.process_kpi_id = k.id AND kd.year=:y AND kd.is_active=true
             WHERE s.tenant_id=:t AND s.is_active=true
-            GROUP BY s.id, s.code, s.title
-            ORDER BY s.code NULLS LAST
-        """), {"t": current_user.tenant_id, "y": year}).fetchall()
+        """), {"t": tid}).fetchall()
+        strat_rows = db.session.execute(_t(
+            "SELECT id, code, title FROM strategies WHERE tenant_id=:t AND is_active=true "
+            "ORDER BY code NULLS LAST"), {"t": tid}).fetchall()
+        groups = {}
+        for r in link_rows:
+            groups.setdefault(r.id, set()).add(r.pg_id)
+        score_map, _pgs = _pys.score_rows(tid, year)
         items = []
-        for r in rows:
-            comp = int(r.comparable or 0)
-            on_t = int(r.on_target or 0)
-            pct = round((on_t / comp) * 100, 1) if comp else None
+        for r in strat_rows:
+            total, on_t, comp = _pys.on_target_stats(score_map, groups.get(r.id, ()))
             items.append({
                 "id": r.id, "code": r.code or "", "title": r.title or "",
-                "pg_total": int(r.pg_total or 0),
-                "on_target_pct": pct,
+                "pg_total": total,
+                "on_target_pct": _pys.pct(on_t, comp),
                 "comparable": comp,
             })
         with_data = [x for x in items if x["on_target_pct"] is not None]
@@ -252,32 +249,28 @@ def sp_api_exec_trend():
     from sqlalchemy import text as _t
     from app.extensions import db
     try:
-        rows = db.session.execute(_t("""
-            SELECT
-              date_trunc('month', kd.data_date)::date AS month,
-              sum(CASE
-                   WHEN kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                    AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                    AND kd.actual_value::float >= kd.target_value::float
-                  THEN 1 ELSE 0 END) AS on_target,
-              sum(CASE
-                   WHEN kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                    AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                  THEN 1 ELSE 0 END) AS comparable
-            FROM kpi_data kd
-            JOIN process_kpis k ON kd.process_kpi_id = k.id
-            JOIN processes p ON k.process_id = p.id
-            WHERE p.tenant_id=:t AND kd.is_active=true
-              AND kd.data_date >= (CURRENT_DATE - INTERVAL '12 months')
-            GROUP BY 1 ORDER BY 1
-        """), {"t": current_user.tenant_id}).fetchall()
-        labels = []
-        values = []
-        for r in rows:
-            comp = int(r.comparable or 0)
-            on_t = int(r.on_target or 0)
-            labels.append(r.month.strftime("%Y-%m"))
-            values.append(round((on_t / comp) * 100, 1) if comp else None)
+        import datetime as _d
+        import calendar as _cal
+        from app.services import pg_year_scores as _pys
+        from app.utils.tr_time import today_tr
+        tid = current_user.tenant_id
+        today = today_tr()
+        labels, values = [], []
+        pgs_cache = {}
+        y, m = today.year, today.month
+        months = []
+        for _i in range(12):
+            months.append((y, m))
+            m -= 1
+            if m == 0:
+                y, m = y - 1, 12
+        for (y, m) in reversed(months):
+            last = _d.date(y, m, _cal.monthrange(y, m)[1])
+            as_of = min(last, today)
+            rows, pgs_cache[y] = _pys.score_rows(tid, y, as_of, pgs_cache.get(y))
+            _t0, on_t, comp = _pys.on_target_stats(rows, rows.keys())
+            labels.append(f"{y:04d}-{m:02d}")
+            values.append(_pys.pct(on_t, comp))
         return jsonify({"success": True, "data": {"labels": labels, "values": values}})
     except Exception as e:
         current_app.logger.error(f"exec_trend error: {e}", exc_info=True)
@@ -375,14 +368,14 @@ def _exec_heuristik_ozet(snap):
     if hs is not None:
         try:
             parts.append(f"Genel sağlık skoru %{float(hs):.0f}.")
-        except (TypeError, ValueError):
-            pass
+        except (TypeError, ValueError) as e:
+            logger.warning(f"_exec_heuristik_ozet failed: {e}")
     ot = kpi.get("on_target_pct")
     if ot is not None:
         try:
             parts.append(f"PG'lerin %{float(ot):.0f}'ı hedef üstünde.")
-        except (TypeError, ValueError):
-            pass
+        except (TypeError, ValueError) as e:
+            logger.warning(f"_exec_heuristik_ozet failed: {e}")
     total = kpi.get("total") or 0
     wd = kpi.get("with_data")
     if total and wd is not None and wd < total:
@@ -444,6 +437,7 @@ def sp_api_exec_ai_ozet():
 @app_bp.route("/k-plan/strategy/api/templates/<code>/apply", methods=["POST"])
 @csrf.exempt
 @login_required
+@sp_plan_year_open
 def sp_api_template_apply(code):
     if not _can():
         return jsonify({"error": "yetki yok"}), 403
@@ -470,49 +464,42 @@ def sp_api_template_apply(code):
 
 # ── Savaş Odası cepheleri: alt strateji + süreç + proje sıralaması ────────────
 
-_SAVAS_NUM = "kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$' AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'"
-
-_SUBSTRAT_SQL = f"""
-    SELECT ss.id, ss.code, ss.title,
-           count(DISTINCT k.id) AS pg_total,
-           sum(CASE WHEN {_SAVAS_NUM} AND kd.actual_value::float >= kd.target_value::float THEN 1 ELSE 0 END) AS on_target,
-           sum(CASE WHEN {_SAVAS_NUM} THEN 1 ELSE 0 END) AS comparable
+_SUBSTRAT_SQL = """
+    SELECT DISTINCT ss.id AS gid, ss.code, ss.title, k.id AS pg_id
     FROM sub_strategies ss
     JOIN strategies s ON ss.strategy_id = s.id AND s.is_active=true
     JOIN process_sub_strategy_links psl ON psl.sub_strategy_id = ss.id
     JOIN processes p ON p.id = psl.process_id AND p.is_active=true
     JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
-    LEFT JOIN kpi_data kd ON kd.process_kpi_id = k.id AND kd.year=:y AND kd.is_active=true
     WHERE s.tenant_id=:t AND ss.is_active=true
-    GROUP BY ss.id, ss.code, ss.title
-    ORDER BY ss.code NULLS LAST
 """
 
-_PROCESS_SQL = f"""
-    SELECT p.id, p.code, p.name AS title,
-           count(DISTINCT k.id) AS pg_total,
-           sum(CASE WHEN {_SAVAS_NUM} AND kd.actual_value::float >= kd.target_value::float THEN 1 ELSE 0 END) AS on_target,
-           sum(CASE WHEN {_SAVAS_NUM} THEN 1 ELSE 0 END) AS comparable
+_PROCESS_SQL = """
+    SELECT DISTINCT p.id AS gid, p.code, p.name AS title, k.id AS pg_id
     FROM processes p
     JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
-    LEFT JOIN kpi_data kd ON kd.process_kpi_id = k.id AND kd.year=:y AND kd.is_active=true
     WHERE p.tenant_id=:t AND p.is_active=true
-    GROUP BY p.id, p.code, p.name
-    ORDER BY p.code NULLS LAST
 """
 
 
 def _savas_rank(sql, tid, year):
+    """Grup -> PG kümesi (DISTINCT); skor motordan, PG başına tek değer (B-005)."""
     from app.extensions import db
     from sqlalchemy import text as _t
-    rows = db.session.execute(_t(sql), {"t": tid, "y": year}).fetchall()
-    items = []
+    from app.services import pg_year_scores as _pys
+    rows = db.session.execute(_t(sql), {"t": tid}).fetchall()
+    groups, meta = {}, {}
     for r in rows:
-        comp = int(r.comparable or 0)
-        on_t = int(r.on_target or 0)
-        pct = round((on_t / comp) * 100, 1) if comp else None
-        items.append({"code": r.code or "", "title": r.title or "",
-                      "on_target_pct": pct, "pg_total": int(r.pg_total or 0)})
+        groups.setdefault(r.gid, set()).add(r.pg_id)
+        meta[r.gid] = (r.code, r.title)
+    score_map, _pgs = _pys.score_rows(tid, year)
+    items = []
+    for gid, ids in groups.items():
+        total, on_t, comp = _pys.on_target_stats(score_map, ids)
+        code, title = meta[gid]
+        items.append({"code": code or "", "title": title or "",
+                      "on_target_pct": _pys.pct(on_t, comp), "pg_total": total})
+    items.sort(key=lambda x: x["code"])
     wd = [x for x in items if x["on_target_pct"] is not None]
     return {
         "top": sorted(wd, key=lambda x: x["on_target_pct"], reverse=True)[:5],

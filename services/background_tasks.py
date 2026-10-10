@@ -9,6 +9,9 @@ import threading
 from queue import Queue
 import time
 from datetime import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # Basit task queue (production'da Celery/RQ kullanılabilir)
@@ -95,8 +98,8 @@ def _notification_scheduler_loop(app, interval_seconds: int):
             try:
                 if current_app:
                     current_app.logger.error(f"Notification scheduler hatası: {e}")
-            except Exception:
-                pass
+            except Exception as err:
+                logger.error(f"_notification_scheduler_loop failed: {err}")
 
         # Sleep with stop support
         _notification_scheduler_stop.wait(interval_seconds)
@@ -131,8 +134,8 @@ def init_notification_scheduler(app):
     _notification_scheduler_thread.start()
     try:
         app.logger.info(f"Notification scheduler başlatıldı (interval={interval_minutes} dk)")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"init_notification_scheduler failed: {e}")
 
 
 def execute_async(task_func, *args, **kwargs):

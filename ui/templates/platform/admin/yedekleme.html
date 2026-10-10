@@ -28,6 +28,7 @@
   <div class="mc-card" style="padding:18px;margin-bottom:16px;" data-card-code="admin_yedekleme.manuel_yedek">
     <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);margin-bottom:4px;"><i class="fas fa-download" style="color:#0284c7;"></i> {{ _("Manuel Yedek") }}</div>
     <div style="font-size:12.5px;color:#64748b;margin-bottom:12px;">{{ _("Şimdi anlık yedek üretip bu makineye indir.") }}</div>
+    {% if is_local %}
     <div style="display:flex;gap:10px;flex-wrap:wrap;">
       <form method="post" action="{{ url_for('app_bp.admin_tools_yedekleme_indir_db') }}">
         <button type="submit" class="mc-btn mc-btn-primary"><i class="fas fa-database"></i> {{ _("DB Yedeği İndir (.dump)") }}</button>
@@ -36,6 +37,9 @@
         <button type="submit" class="mc-btn mc-btn-secondary"><i class="fas fa-file-code"></i> {{ _("Kod Yedeği İndir (.tar.gz)") }}</button>
       </form>
     </div>
+    {% else %}
+    <div style="font-size:12.5px;color:#92400e;">{{ _("Bu ortamda web'den yedek indirme kilitli. Yedekler sunucu üzerinde tutulur.") }}</div>
+    {% endif %}
     <div style="font-size:11.5px;color:#94a3b8;margin-top:8px;">{{ _("Kod yedeği büyük olabilir (~100+ MB), hazırlanması birkaç saniye sürer.") }}</div>
   </div>
 
@@ -82,7 +86,7 @@
             <td style="padding:8px 12px;text-align:right;color:#64748b;">{{ (b.size / 1048576) | round(1) }} MB</td>
             <td style="padding:8px 12px;color:#64748b;" data-utc="{{ b.mtime }}">{{ b.mtime }}</td>
             <td style="padding:8px 12px;text-align:right;">
-              <a href="{{ url_for('app_bp.admin_tools_yedekleme_indir_dosya', file=b.file) }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-download"></i></a>
+              {% if is_local %}<a href="{{ url_for('app_bp.admin_tools_yedekleme_indir_dosya', file=b.file) }}" class="mc-btn mc-btn-secondary mc-btn-sm" aria-label="{{ _('İndir') }}"><i class="fas fa-download"></i></a>{% endif %}
             </td>
           </tr>
           {% else %}

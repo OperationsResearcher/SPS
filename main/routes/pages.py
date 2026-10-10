@@ -4,6 +4,9 @@ from main.routes._common import *  # noqa: F401,F403
 from main.routes import main_bp
 from main.deprecated import legacy_html_to_platform
 from app.utils.error_handlers import json_error  # S6
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # 2026-06-17: /dashboard kaldırıldı — redirect-ölü (GET 301 → /masaustu).
@@ -171,7 +174,6 @@ def api_kullanici_surecleri():
 
 @main_bp.route('/surec/<int:surec_id>/performans-gostergesi/add', methods=['POST'])
 @login_required
-@csrf.exempt
 def surec_performans_gostergesi_add(surec_id):
     """Süreç için yeni performans göstergesi ekle"""
     try:
@@ -213,17 +215,18 @@ def surec_performans_gostergesi_add(surec_id):
         except ValueError as e:
             return jsonify({'success': False, 'message': f'Geçersiz tarih formatı: {str(e)}'}), 400
         
-        # Alt strateji ID kontrolü
+        # Alt strateji ID kontrolü (gerçek model: sub_strategies; kurum sınırı)
         alt_strateji_id = None
         if data.get('alt_strateji_id'):
             try:
                 alt_strateji_id = int(data.get('alt_strateji_id'))
-                # Alt stratejinin bu sürece ait olduğunu kontrol et
-                alt_strateji = AltStrateji.query.get(alt_strateji_id)
-                if alt_strateji and alt_strateji not in surec.alt_stratejiler:
-                    return jsonify({'success': False, 'message': 'Seçilen alt strateji bu sürece ait değil'}), 400
             except (ValueError, TypeError):
                 alt_strateji_id = None
+            if alt_strateji_id is not None:
+                from app.models.core import SubStrategy as _RealSubStrategy
+                _sub = db.session.get(_RealSubStrategy, alt_strateji_id)
+                if not _sub or not _sub.strategy or _sub.strategy.tenant_id != surec.kurum_id:
+                    return jsonify({'success': False, 'message': 'Seçilen alt strateji bu kuruma ait değil'}), 400
         
         # Skor motoru ağırlığı (0-100, opsiyonel)
         weight = None
@@ -232,8 +235,8 @@ def surec_performans_gostergesi_add(surec_id):
                 w = float(data.get('weight'))
                 if 0 <= w <= 100:
                     weight = w
-            except (ValueError, TypeError):
-                pass
+            except (ValueError, TypeError) as err:
+                logger.warning(f"surec_performans_gostergesi_add failed: {err}")
 
         # Yeni performans göstergesi oluştur
         yeni_pg = SurecPerformansGostergesi(
@@ -248,8 +251,8 @@ def surec_performans_gostergesi_add(surec_id):
             bitis_tarihi=bitis_tarihi,
             direction=data.get('direction', 'Increasing'),
             basari_puani_araliklari=data.get('basari_puani_araliklari') if data.get('basari_puani_araliklari') else None,
-            alt_strateji_id=alt_strateji_id,
-            weight=weight
+            weight=weight,
+            sub_strategy_id=alt_strateji_id
         )
         
         db.session.add(yeni_pg)
@@ -272,7 +275,6 @@ def surec_performans_gostergesi_add(surec_id):
 
 @main_bp.route('/surec/<int:surec_id>/performans-gostergesi/<int:pg_id>', methods=['GET'])
 @login_required
-@csrf.exempt
 def surec_performans_gostergesi_get(surec_id, pg_id):
     """Süreç için performans göstergesi bilgilerini getir"""
     try:
@@ -307,10 +309,10 @@ def surec_performans_gostergesi_get(surec_id, pg_id):
         
         # Performans göstergesini getir (alt strateji ile birlikte)
         pg = SurecPerformansGostergesi.query.options(
-            db.joinedload(SurecPerformansGostergesi.alt_strateji).joinedload(AltStrateji.ana_strateji)
+            db.joinedload(SurecPerformansGostergesi.sub_strategy)
         ).filter_by(
             id=pg_id,
-            surec_id=surec_id
+            surec_id=surec_id, is_active=True
         ).first()
         
         if not pg:
@@ -337,15 +339,15 @@ def surec_performans_gostergesi_get(surec_id, pg_id):
                 'direction': pg.direction,
                 'basari_puani_araliklari': pg.basari_puani_araliklari,
                 'onceki_yil_ortalamasi': pg.onceki_yil_ortalamasi,
-                'alt_strateji_id': pg.alt_strateji_id,
+                'alt_strateji_id': pg.sub_strategy_id,
                 'alt_strateji': {
-                    'id': pg.alt_strateji.id,
-                    'ad': pg.alt_strateji.ad,
+                    'id': pg.sub_strategy.id,
+                    'ad': pg.sub_strategy.title,
                     'ana_strateji': {
-                        'id': pg.alt_strateji.ana_strateji.id,
-                        'ad': pg.alt_strateji.ana_strateji.ad
-                    } if pg.alt_strateji and pg.alt_strateji.ana_strateji else None
-                } if pg.alt_strateji else None
+                        'id': pg.sub_strategy.strategy.id,
+                        'ad': pg.sub_strategy.strategy.title
+                    } if pg.sub_strategy.strategy else None
+                } if pg.sub_strategy else None
             }
         })
     except Exception as e:
@@ -357,7 +359,6 @@ def surec_performans_gostergesi_get(surec_id, pg_id):
 
 @main_bp.route('/surec/<int:surec_id>/performans-gostergesi/<int:pg_id>/update', methods=['POST'])
 @login_required
-@csrf.exempt
 def surec_performans_gostergesi_update(surec_id, pg_id):
     """Süreç için performans göstergesini güncelle"""
     try:
@@ -387,7 +388,7 @@ def surec_performans_gostergesi_update(surec_id, pg_id):
         # Performans göstergesini getir
         pg = SurecPerformansGostergesi.query.filter_by(
             id=pg_id,
-            surec_id=surec_id
+            surec_id=surec_id, is_active=True
         ).first()
         
         if not pg:
@@ -448,10 +449,23 @@ def surec_performans_gostergesi_update(surec_id, pg_id):
             except (ValueError, TypeError):
                 pg.onceki_yil_ortalamasi = None
         if 'alt_strateji_id' in data:
-            try:
-                pg.alt_strateji_id = int(data.get('alt_strateji_id')) if data.get('alt_strateji_id') else None
-            except (ValueError, TypeError):
-                pg.alt_strateji_id = None
+            # C-003: add yoluyla aynı kural — alt strateji bu sürece ait olmalı
+            raw_as_id = data.get('alt_strateji_id')
+            if not raw_as_id:
+                pg.sub_strategy_id = None
+            else:
+                try:
+                    as_id = int(raw_as_id)
+                except (ValueError, TypeError):
+                    as_id = None
+                if as_id is None:
+                    pg.sub_strategy_id = None
+                else:
+                    from app.models.core import SubStrategy as _RealSubStrategy
+                    _sub = db.session.get(_RealSubStrategy, as_id)
+                    if not _sub or not _sub.strategy or _sub.strategy.tenant_id != surec.kurum_id:
+                        return jsonify({'success': False, 'message': 'Seçilen alt strateji bu kuruma ait değil'}), 400
+                    pg.sub_strategy_id = as_id
         if 'weight' in data:
             w = data.get('weight')
             if w is None or w == '':
@@ -482,7 +496,6 @@ def surec_performans_gostergesi_update(surec_id, pg_id):
 
 @main_bp.route('/surec/<int:surec_id>/performans-gostergesi/<int:pg_id>/delete', methods=['DELETE'])
 @login_required
-@csrf.exempt
 def surec_performans_gostergesi_delete(surec_id, pg_id):
     """Süreç için performans göstergesini sil"""
     try:
@@ -502,14 +515,14 @@ def surec_performans_gostergesi_delete(surec_id, pg_id):
         # Performans göstergesini getir
         pg = SurecPerformansGostergesi.query.filter_by(
             id=pg_id,
-            surec_id=surec_id
+            surec_id=surec_id, is_active=True
         ).first()
         
         if not pg:
             return jsonify({'success': False, 'message': 'Performans göstergesi bulunamadı'}), 404
         
         pg_ad = pg.ad
-        db.session.delete(pg)
+        pg.is_active = False  # Soft delete: KPI verisi ve denetim izi korunur
         db.session.commit()
         
         current_app.logger.info(f'Süreç {surec_id} için performans göstergesi {pg_id} silindi')
@@ -555,7 +568,7 @@ def get_surec(surec_id):
                 return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
         
         # Performans göstergelerini getir
-        performans_gostergeleri = SurecPerformansGostergesi.query.filter_by(surec_id=surec_id).all()
+        performans_gostergeleri = SurecPerformansGostergesi.query.filter_by(surec_id=surec_id, is_active=True).all()
         
         # Bağlı alt süreçler (bu sürecin parent'ı olduğu süreçler)
         alt_surecler = [{'id': sub.id, 'ad': sub.ad} for sub in surec.sub_processes.filter_by(silindi=False).order_by(Surec.ad).all()]
@@ -628,7 +641,7 @@ def get_surec_faaliyetler(surec_id):
             if current_user not in surec.liderler and current_user not in surec.uyeler:
                 return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
         
-        faaliyetler = SurecFaaliyet.query.filter_by(surec_id=surec_id).all()
+        faaliyetler = SurecFaaliyet.query.filter_by(surec_id=surec_id, is_active=True).all()
         
         return jsonify({
             'success': True,
@@ -650,7 +663,6 @@ def get_surec_faaliyetler(surec_id):
 
 @main_bp.route('/surec/update/<int:surec_id>', methods=['POST'])
 @login_required
-@csrf.exempt
 def update_surec(surec_id):
     """Süreç güncelle - updateSurec fonksiyonu için"""
     try:
@@ -771,7 +783,7 @@ def get_surec_faaliyet_detay(surec_id: int, faaliyet_id: int):
         if current_user.sistem_rol != 'admin' and surec.kurum_id != current_user.kurum_id:
             return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
 
-        faaliyet = SurecFaaliyet.query.filter_by(id=faaliyet_id, surec_id=surec_id).first()
+        faaliyet = SurecFaaliyet.query.filter_by(id=faaliyet_id, surec_id=surec_id, is_active=True).first()
         if not faaliyet:
             return jsonify({'success': False, 'message': 'Faaliyet bulunamadı'}), 404
 
@@ -795,7 +807,6 @@ def get_surec_faaliyet_detay(surec_id: int, faaliyet_id: int):
 
 @main_bp.route('/surec/<int:surec_id>/faaliyet/add', methods=['POST'])
 @login_required
-@csrf.exempt
 def add_surec_faaliyet(surec_id: int):
     """Süreç faaliyeti ekle - surec_karnesi.html addFaaliyet() için"""
     try:
@@ -838,7 +849,6 @@ def add_surec_faaliyet(surec_id: int):
 
 @main_bp.route('/surec/<int:surec_id>/faaliyet/<int:faaliyet_id>/update', methods=['POST'])
 @login_required
-@csrf.exempt
 def update_surec_faaliyet(surec_id: int, faaliyet_id: int):
     """Süreç faaliyeti güncelle - surec_karnesi.html updateFaaliyet() için"""
     try:
@@ -856,7 +866,7 @@ def update_surec_faaliyet(surec_id: int, faaliyet_id: int):
         if current_user.sistem_rol != 'admin' and surec.kurum_id != current_user.kurum_id:
             return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
 
-        faaliyet = SurecFaaliyet.query.filter_by(id=faaliyet_id, surec_id=surec_id).first()
+        faaliyet = SurecFaaliyet.query.filter_by(id=faaliyet_id, surec_id=surec_id, is_active=True).first()
         if not faaliyet:
             return jsonify({'success': False, 'message': 'Faaliyet bulunamadı'}), 404
 
@@ -891,7 +901,6 @@ def update_surec_faaliyet(surec_id: int, faaliyet_id: int):
 
 @main_bp.route('/surec/<int:surec_id>/faaliyet/<int:faaliyet_id>/delete', methods=['DELETE'])
 @login_required
-@csrf.exempt
 def delete_surec_faaliyet(surec_id: int, faaliyet_id: int):
     """Süreç faaliyeti sil - surec_karnesi.html deleteFaaliyet() için"""
     try:
@@ -905,11 +914,11 @@ def delete_surec_faaliyet(surec_id: int, faaliyet_id: int):
         if current_user.sistem_rol != 'admin' and surec.kurum_id != current_user.kurum_id:
             return jsonify({'success': False, 'message': 'Bu süreçte yetkiniz yok'}), 403
 
-        faaliyet = SurecFaaliyet.query.filter_by(id=faaliyet_id, surec_id=surec_id).first()
+        faaliyet = SurecFaaliyet.query.filter_by(id=faaliyet_id, surec_id=surec_id, is_active=True).first()
         if not faaliyet:
             return jsonify({'success': False, 'message': 'Faaliyet bulunamadı'}), 404
 
-        db.session.delete(faaliyet)
+        faaliyet.is_active = False  # Soft delete: faaliyet izleme kayıtları korunur
         db.session.commit()
 
         return jsonify({'success': True, 'message': 'Faaliyet başarıyla silindi'})
@@ -1053,7 +1062,6 @@ def surec_get_for_edit(surec_id):
 
 @main_bp.route('/surec/add-simple', methods=['POST'])
 @login_required
-@csrf.exempt
 def surec_add_simple():
     """Süreç ekle - surec_panel.html form submit için"""
     try:
@@ -1135,7 +1143,6 @@ def surec_add_simple():
 
 @main_bp.route('/surec/delete/<int:surec_id>', methods=['DELETE'])
 @login_required
-@csrf.exempt
 def surec_delete(surec_id):
     """Süreç soft-delete"""
     try:

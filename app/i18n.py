@@ -25,6 +25,9 @@ from __future__ import annotations
 
 import json
 from typing import Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def get_locale() -> str:
@@ -55,8 +58,8 @@ def get_locale() -> str:
                 lang = (prefs or {}).get("language")
                 if lang in supported:
                     return lang
-        except (ValueError, TypeError):
-            pass
+        except (ValueError, TypeError) as err:
+            logger.warning(f"get_locale failed: {err}")
 
     # 4. Accept-Language
     try:
@@ -68,6 +71,9 @@ def get_locale() -> str:
 
     # 5. Default
     return current_app.config.get("BABEL_DEFAULT_LOCALE", "tr")
+
+
+_JS_MAP_CACHE: dict = {}
 
 
 def js_i18n_map() -> dict:
@@ -92,12 +98,20 @@ def js_i18n_map() -> dict:
         from flask_babel import get_translations, gettext
         gettext("")  # lazy catalog yüklemesini tetikle
         trans = get_translations()  # aktif locale'in gettext.GNUTranslations'ı
+        # PERF-04: katalog (~3500 girdi) her istekte yeniden dolaşılmasın — çeviri nesnesi
+        # başına bir kez hesaplanır (nesne .mo yeniden yüklenince değişir → önbellek kendiliğinden düşer).
+        ck = (locale, id(trans), len(getattr(trans, "_catalog", {}) or {}))
+        hit = _JS_MAP_CACHE.get(ck)
+        if hit is not None:
+            return hit
         catalog = getattr(trans, "_catalog", {}) or {}
         out = {}
         for key, val in catalog.items():
             # _catalog: {msgid: msgstr} ve {(msgid, idx): plural}. Sadece düz string id'ler.
             if isinstance(key, str) and key and isinstance(val, str) and val and key != val:
                 out[key] = val
+        _JS_MAP_CACHE.clear()
+        _JS_MAP_CACHE[ck] = out
         return out
     except Exception:
         return {}

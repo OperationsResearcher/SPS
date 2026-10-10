@@ -115,7 +115,14 @@
         confirmButtonColor: '#4f46e5',
       }).then(res => {
         if (res.isConfirmed) {
-          window.location.href = '/demo/end';
+          var tokenEl = document.querySelector('meta[name="csrf-token"]');
+          fetch('/demo/end', {
+            method: 'POST',
+            credentials: 'same-origin',
+            headers: { 'X-CSRFToken': tokenEl ? tokenEl.content : '' },
+          }).then(function (r) { return r.json(); })
+            .then(function (j) { window.location.href = (j && j.redirect) || '/demo/'; })
+            .catch(function () { window.location.href = '/demo/'; });
         }
       });
     });

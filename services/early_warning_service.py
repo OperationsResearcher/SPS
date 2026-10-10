@@ -18,20 +18,45 @@ _WARN_THRESHOLD = 0.80   # hedefin %80 altı → kritik
 _TREND_MONTHS   = 3      # kaç ay geriye bakılır
 
 
-def _send_notification(user_id: int, title: str, message: str, link: str | None = None) -> None:
-    """Kullanıcıya sistem bildirimi oluşturur."""
+def _send_notification(user_id: int, title: str, message: str, link: str | None = None,
+                       tenant_id: int | None = None) -> bool:
+    """Kullaniciya sistem bildirimi olusturur (D-009/D-010).
+
+    - tenant_id doldurulur.
+    - Ayni (tenant, kullanici, tur, baslik, mesaj) icin ayni gun (TR) ikinci bildirim uretilmez.
+    - SAVEPOINT icinde eklenir; hata yalniz bu bildirimi geri alir.
+    Doner: yeni bildirim olusturuldu mu."""
+    from app.utils.tr_time import now_tr
+    from datetime import datetime as _dt
     try:
-        notif = Notification(
-            user_id=user_id,
-            notification_type="pg_performance_deviation",  # NOT NULL — erken uyarı tipi
-            title=title,
-            message=message,
-            link=link or "",
-            is_read=False,
+        start = _dt.combine(now_tr().date(), _dt.min.time()) - timedelta(hours=3)
+        q = db.session.query(Notification.id).filter(
+            Notification.user_id == user_id,
+            Notification.notification_type == "pg_performance_deviation",
+            Notification.title == title,
+            Notification.message == message,
+            Notification.created_at >= start,
         )
-        db.session.add(notif)
+        if tenant_id is None:
+            q = q.filter(Notification.tenant_id.is_(None))
+        else:
+            q = q.filter(Notification.tenant_id == tenant_id)
+        if q.first() is not None:
+            return False
+        with db.session.begin_nested():
+            db.session.add(Notification(
+                user_id=user_id,
+                tenant_id=tenant_id,
+                notification_type="pg_performance_deviation",  # NOT NULL — erken uyari tipi
+                title=title,
+                message=message,
+                link=link or "",
+                is_read=False,
+            ))
+        return True
     except Exception as e:
-        current_app.logger.error(f"[early_warning] bildirim oluşturulamadı u={user_id}: {e}")
+        current_app.logger.error(f"[early_warning] bildirim olusturulamadi u={user_id}: {e}")
+        return False
 
 
 def _rolling_avg(values: list[float]) -> float | None:
@@ -46,7 +71,8 @@ def run_early_warning(app) -> dict:
     """
     with app.app_context():
         result = {"tenants_scanned": 0, "warnings_sent": 0, "errors": 0}
-        today = date.today()
+        from app.utils.tr_time import today_tr
+        today = today_tr()
         current_year = today.year
         three_months_ago = today - timedelta(days=90)
 
@@ -165,13 +191,14 @@ def run_early_warning(app) -> dict:
                             # Süreç liderine de bildirim
                             for leader in (proc.leaders if proc else []):
                                 if leader and leader.id not in manager_ids:
-                                    _send_notification(
+                                    if _send_notification(
                                         leader.id,
                                         "⚠️ KPI Erken Uyarı",
                                         f"{kpi.name} — hedef performans altında. Lütfen inceleyiniz.",
                                         f"/process/{proc.id}/karne" if proc else None,
-                                    )
-                                    result["warnings_sent"] += 1
+                                        tenant_id=tid,
+                                    ):
+                                        result["warnings_sent"] += 1
                     except Exception as e:
                         current_app.logger.error(f"[early_warning] kpi={kpi.id}: {e}")
                         result["errors"] += 1
@@ -197,10 +224,17 @@ def run_early_warning(app) -> dict:
                     parts = [p for p in [kpi_part, act_part] if p]
                     msg = "Dikkat: " + ", ".join(parts) + ". Detaylar için Masaüstü'nü inceleyiniz."
                     for mid in manager_ids:
-                        _send_notification(mid, "📊 Günlük Performans Özeti", msg, "/masaustu")
-                        result["warnings_sent"] += 1
+                        if _send_notification(mid, "📊 Günlük Performans Özeti", msg, "/masaustu",
+                                              tenant_id=tid):
+                            result["warnings_sent"] += 1
 
-            db.session.commit()
+                # Tenant basina commit: bozuk bir kurum digerlerini etkilemez (D-009)
+                try:
+                    db.session.commit()
+                except Exception as e:
+                    db.session.rollback()
+                    current_app.logger.error(f"[early_warning] tenant={tid} commit: {e}")
+                    result["errors"] += 1
 
         except Exception as e:
             db.session.rollback()

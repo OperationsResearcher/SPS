@@ -50,8 +50,10 @@ _SP_ROLES = (
     "ust_yonetim",
 )
 from micro.modules.sp.helpers import (
+    sp_plan_year_open,
     _check_sp_role,
     sp_manage_required,
+    sp_plan_year_open,
     _plan_year_to_dict,
     _plan_project_to_dict,
     _plan_task_to_dict,
@@ -262,6 +264,7 @@ def sp_degerler():
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_tenant_identity():
     """
     Tenant amaç/vizyon/değerler/etik alanları.

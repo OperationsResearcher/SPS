@@ -126,7 +126,7 @@
     } else {
       list.innerHTML = j1.items.filter(i => i.is_active).map(i => `
         <div class="mc-card" style="padding:12px;margin-bottom:8px;border-left:3px solid ${sevColor(i.severity)};">
-          <div style="font-weight:600;color:var(--text-default);">${i.name}</div>
+          <div style="font-weight:600;color:var(--text-default);">${mcEsc(i.name)}</div>
           <div style="font-size:12px;color:#64748b;margin-top:4px;">
             ${i.trigger_type} • ${i.threshold_operator || ''} ${i.threshold_value ?? ''} • ${i.consecutive_periods} ${t("dönem")}
           </div>
@@ -143,8 +143,8 @@
       ev.innerHTML = j2.items.map(e => `
         <div class="mc-card" style="padding:12px;margin-bottom:8px;">
           <div style="font-size:12px;color:#64748b;">${new Date(e.fired_at).toLocaleString('tr-TR')}</div>
-          <div style="font-size:13px;color:var(--text-default);">${t("Tetikleyici")} #${e.trigger_id} → ${e.action_taken || '—'}</div>
-          ${e.payload ? `<pre style="font-size:11px;background:#f8fafc;padding:6px;margin-top:4px;border-radius:4px;">${e.payload}</pre>` : ''}
+          <div style="font-size:13px;color:var(--text-default);">${t("Tetikleyici")} #${e.trigger_id} → ${mcEsc(e.action_taken || '—')}</div>
+          ${e.payload ? `<pre style="font-size:11px;background:#f8fafc;padding:6px;margin-top:4px;border-radius:4px;">${mcEsc(e.payload)}</pre>` : ''}
         </div>
       `).join('');
     }

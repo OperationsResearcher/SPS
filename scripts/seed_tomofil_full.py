@@ -33,11 +33,15 @@ from datetime import datetime, timezone
 from pathlib import Path
 
 # UTF-8 stdout (Windows console cp1254 sorunu icin)
+import logging
+
+logger = logging.getLogger(__name__)
+
 try:
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
-except Exception:
-    pass
+except Exception as e:
+    logger.error(f"seed_tomofil_full failed: {e}")
 
 # Proje koku
 ROOT = Path(__file__).resolve().parent.parent

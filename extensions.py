@@ -25,7 +25,9 @@ login_manager = LoginManager()
 login_manager.login_view = 'auth.login'
 login_manager.login_message = 'Bu sayfaya erişmek için giriş yapmalısınız.'
 login_manager.login_message_category = 'info'
-login_manager.session_protection = 'strong'
+# KOD-01: eskiden burada 'strong' vardı ama bu nesne hiç init edilmiyordu; canlı davranış
+# Flask-Login varsayılanı ('basic') idi. Davranışı değiştirmemek için açıkça 'basic'.
+login_manager.session_protection = 'basic'
 
 # CSRF koruması
 csrf = CSRFProtect()

@@ -45,6 +45,9 @@ from app_platform.services.notification_triggers import (
 )
 from app.utils.audit_logger import AuditLogger
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _notify_new_project_team(proj: Project, kid: int, old_leader_ids: set, old_member_ids: set) -> None:
@@ -165,13 +168,13 @@ def project_new():
     if request.form.get("start_date"):
         try:
             start_date = datetime.strptime(request.form.get("start_date"), "%Y-%m-%d").date()
-        except ValueError:
-            pass
+        except ValueError as err:
+            logger.warning(f"project_new failed: {err}")
     if request.form.get("end_date"):
         try:
             end_date = datetime.strptime(request.form.get("end_date"), "%Y-%m-%d").date()
-        except ValueError:
-            pass
+        except ValueError as err:
+            logger.warning(f"project_new failed: {err}")
 
     notification_settings = {
         "reminder_days": [7, 3, 1],
@@ -320,15 +323,15 @@ def project_edit(project_id: int):
     if request.form.get("start_date"):
         try:
             proj.start_date = datetime.strptime(request.form.get("start_date"), "%Y-%m-%d").date()
-        except ValueError:
-            pass
+        except ValueError as err:
+            logger.warning(f"project_edit failed: {err}")
     else:
         proj.start_date = None
     if request.form.get("end_date"):
         try:
             proj.end_date = datetime.strptime(request.form.get("end_date"), "%Y-%m-%d").date()
-        except ValueError:
-            pass
+        except ValueError as err:
+            logger.warning(f"project_edit failed: {err}")
     else:
         proj.end_date = None
 

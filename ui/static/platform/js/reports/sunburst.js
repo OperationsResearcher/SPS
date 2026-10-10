@@ -35,7 +35,7 @@
     const t = document.createElementNS(ns, 'text');
     t.setAttribute('x', cx); t.setAttribute('y', cy+5); t.setAttribute('text-anchor', 'middle');
     t.setAttribute('fill', '#fff'); t.setAttribute('font-weight', '700'); t.setAttribute('font-size', '14');
-    t.textContent = 'Vizyon';
+    t.textContent = window.t('Vizyon');
     svg.appendChild(t);
 
     // Stratejiler — ağırlığa göre slice
@@ -45,19 +45,19 @@
     strats.forEach((s, i) => {
       const slice = (s.value/totalV) * Math.PI * 2;
       const col = colors[i % colors.length];
-      drawArc(svg, cx, cy, rings[0], rings[1], a, a+slice, col, s.name, `${s.name} — ağırlık %${s.value}`);
+      drawArc(svg, cx, cy, rings[0], rings[1], a, a+slice, col, s.name, `${s.name} — ${window.t('ağırlık')} %${s.value}`);
       // Alt stratejiler eşit pay
       const subs = s.children || [];
       const sliceSub = slice / Math.max(subs.length, 1);
       let sa = a;
       subs.forEach((ss, j) => {
-        drawArc(svg, cx, cy, rings[1], rings[2], sa, sa+sliceSub, col, ss.name, `${ss.name} (alt strateji)`);
+        drawArc(svg, cx, cy, rings[1], rings[2], sa, sa+sliceSub, col, ss.name, `${ss.name} (${window.t('alt strateji')})`);
         // Süreçler
         const procs = ss.children || [];
         const sliceP = sliceSub / Math.max(procs.length, 1);
         let pa = sa;
         procs.forEach(p => {
-          drawArc(svg, cx, cy, rings[2], rings[3], pa, pa+sliceP, col, p.name, `${p.name} (süreç)`);
+          drawArc(svg, cx, cy, rings[2], rings[3], pa, pa+sliceP, col, p.name, `${p.name} (${window.t('süreç')})`);
           pa += sliceP;
         });
         sa += sliceSub;
@@ -75,7 +75,7 @@
       draw(j.tree);
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error'); err.style.display='block'; err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error'); err.style.display='block'; err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

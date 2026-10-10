@@ -15,7 +15,6 @@ from werkzeug.utils import secure_filename
 from platform_core import app_bp
 from app.models import db
 from app.models.core import User
-from extensions import csrf
 from flask_babel import gettext as _
 
 
@@ -66,6 +65,9 @@ def profil():
         # profile_picture yalnızca /profil/foto-yukle endpoint'i üzerinden güncellenir.
 
         db.session.commit()
+        # GUV-11: parola değiştiyse session_version arttı; bu oturum geçerli kalsın.
+        from flask import session as _session
+        _session["sv"] = current_user.session_version or 0
         return jsonify({"success": True, "message": _("Profil güncellendi.")})
     except Exception as e:
         db.session.rollback()
@@ -75,11 +77,6 @@ def profil():
 
 @app_bp.route("/profile/photo-upload", methods=["POST"])
 @login_required
-@csrf.exempt  # multipart/form-data JS fetch ile gönderilir; form body'ye token
-              # eklemek için frontend JS'nin FormData'ya csrf_token field eklemesi
-              # gerekir (alternatif: X-CSRFToken header). Şimdilik SameSite=Lax
-              # cookie + @login_required yeterli koruma sağlar. Frontend'e
-              # FormData.append('csrf_token', ...) eklenirse bu decorator kaldırılabilir.
 def profil_foto_yukle():
     """Profil fotoğrafı yükleme — fiziksel silme yok, sadece DB güncellenir."""
     if "file" not in request.files:
@@ -207,7 +204,6 @@ def ayarlar_hesap():
 # ── Hızlı tema güncelleme (dark mode toggle) ─────────────────────────────────
 @app_bp.route("/api/profile/theme", methods=["GET", "POST"])
 @login_required
-@csrf.exempt  # JS fetch ile AJAX çağrısı — SameSite=Lax cookie koruması yeterli
 def api_profile_theme():
     """Kullanıcının tema tercihini sunucuya kaydeder/okur (çoklu cihaz senkronu)."""
     raw = getattr(current_user, "theme_preferences", None) or "{}"

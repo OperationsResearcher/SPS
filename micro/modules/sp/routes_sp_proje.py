@@ -55,8 +55,10 @@ _SP_ROLES = (
     "ust_yonetim",
 )
 from micro.modules.sp.helpers import (
+    sp_plan_year_open,
     _check_sp_role,
     sp_manage_required,
+    sp_plan_year_open,
     _require_plan_year,
     _plan_year_to_dict,
     _plan_project_to_dict,
@@ -82,6 +84,7 @@ def sp_api_proje_list():
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_proje_save():
     """Proje ekle veya güncelle."""
     py, err = _require_plan_year()
@@ -122,6 +125,7 @@ def sp_api_proje_save():
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_proje_delete(item_id):
     obj = PlanProject.query.filter_by(
         id=item_id, tenant_id=current_user.tenant_id
@@ -154,6 +158,7 @@ def sp_api_proje_gorev_list(project_id):
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_proje_gorev_save(project_id):
     proj = PlanProject.query.filter_by(
         id=project_id, tenant_id=current_user.tenant_id, is_active=True
@@ -177,7 +182,15 @@ def sp_api_proje_gorev_save(project_id):
         obj.name        = name
         obj.description = data.get("description", obj.description)
         obj.status      = data.get("status", obj.status) or "Planlandı"
-        obj.assignee_id = data.get("assignee_id") or obj.assignee_id
+        _assignee = data.get("assignee_id") or None
+        if _assignee is not None:
+            from app.models.core import User as _User
+            if not isinstance(_assignee, int) or not _User.query.filter_by(
+                id=_assignee, tenant_id=current_user.tenant_id
+            ).first():
+                db.session.rollback()
+                return jsonify({"success": False, "message": _("Geçersiz kullanıcı.")}), 400
+        obj.assignee_id = _assignee or obj.assignee_id
         if data.get("start_date"):
             from datetime import datetime as _dt
             obj.start_date = _dt.strptime(data["start_date"], "%Y-%m-%d").date()
@@ -196,6 +209,7 @@ def sp_api_proje_gorev_save(project_id):
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_api_proje_gorev_delete(task_id):
     obj = PlanProjectTask.query.filter_by(id=task_id).first_or_404()
     proj = PlanProject.query.filter_by(

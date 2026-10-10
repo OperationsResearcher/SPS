@@ -18,21 +18,26 @@ def setup_logging(app):
     console_handler.setLevel(logging.INFO)
     
     # File handler for errors (rotated: 10MB x 5 — unbounded growth guard)
-    error_handler = RotatingFileHandler(
-        'error.log', maxBytes=10 * 1024 * 1024, backupCount=5, encoding='utf-8'
-    )
-    error_handler.setLevel(logging.ERROR)
+    # HATA-26: test çalıştırmaları gerçek error.log'a yazıp üretim hatalarını gömüyordu.
+    error_handler = None
+    if not app.config.get('TESTING'):
+        error_handler = RotatingFileHandler(
+            'error.log', maxBytes=10 * 1024 * 1024, backupCount=5, encoding='utf-8'
+        )
+        error_handler.setLevel(logging.ERROR)
     
     # Formatter
     formatter = logging.Formatter(
         '[%(asctime)s] %(levelname)s in %(module)s: %(message)s'
     )
     console_handler.setFormatter(formatter)
-    error_handler.setFormatter(formatter)
+    if error_handler:
+        error_handler.setFormatter(formatter)
     
     # Add handlers
     app.logger.addHandler(console_handler)
-    app.logger.addHandler(error_handler)
+    if error_handler:
+        app.logger.addHandler(error_handler)
     app.logger.setLevel(logging.INFO)
     
     return app.logger

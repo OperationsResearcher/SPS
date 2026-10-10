@@ -11,10 +11,10 @@
       document.getElementById('summary').innerHTML = [
         stat('Objective', s.total_objectives, '#0d9488', 'raporlar_okr_cascade.objective'),
         stat('Key Result', s.total_krs, '#0ea5e9', 'raporlar_okr_cascade.key_result'),
-        stat('Ort. Tamamlanma', '%'+s.avg_completion, s.avg_completion>=70?'#10b981':s.avg_completion>=40?'#f59e0b':'#dc2626', 'raporlar_okr_cascade.ort_tamamlanma'),
-        stat('Plan Yılı', s.plan_year||'—', '#64748b', 'raporlar_okr_cascade.plan_yili'),
+        stat(t('Ort. Tamamlanma'), '%'+s.avg_completion, s.avg_completion>=70?'#10b981':s.avg_completion>=40?'#f59e0b':'#dc2626', 'raporlar_okr_cascade.ort_tamamlanma'),
+        stat(t('Plan Yılı'), s.plan_year||'—', '#64748b', 'raporlar_okr_cascade.plan_yili'),
       ].join('');
-      document.getElementById('list').innerHTML = j.objectives.length===0?'<div style="font-size:13px;color:#94a3b8;text-align:center;padding:30px;font-style:italic;">OKR objesi yok.</div>':j.objectives.map(o => {
+      document.getElementById('list').innerHTML = j.objectives.length===0?'<div style="font-size:13px;color:#94a3b8;text-align:center;padding:30px;font-style:italic;">' + t('OKR objesi yok.') + '</div>':j.objectives.map(o => {
         const ringColor = o.avg_progress>=70?'#10b981':o.avg_progress>=40?'#f59e0b':'#dc2626';
         return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:18px;border-left:4px solid ${ringColor};">
           <div style="display:flex;justify-content:space-between;align-items:start;gap:14px;flex-wrap:wrap;margin-bottom:10px;">
@@ -44,7 +44,7 @@
       }).join('');
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

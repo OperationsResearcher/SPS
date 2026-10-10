@@ -402,35 +402,13 @@
           });
         }
 
-        const allVals = Object.values(entries)
-          .map((v) => parseFloat(v))
-          .filter((v) => !Number.isNaN(v));
+        // Karar 3 (Faz 1B): JS yedek hesabı kaldırıldı — 'Toplama'da tüm periyot anahtarlarını
+        // toplayıp değeri şişiriyordu. Yalnız sunucunun hesapladığı puan gösterilir.
         let skorHtml = "—";
         let basariNumericForWeighted = null;
-        const skorTarget = yillikHedef !== null ? yillikHedef : parseFloat(k.target_value);
-        if (allVals.length > 0 && !Number.isNaN(skorTarget) && skorTarget > 0) {
-          const compareVal =
-            hesaplamaYontemi === "Toplama" || hesaplamaYontemi === "Toplam"
-              ? allVals.reduce((a, b) => a + b, 0)
-              : allVals[allVals.length - 1];
-          let pct = Math.round((compareVal / skorTarget) * 100);
-          if (k.direction === "Decreasing") pct = compareVal > 0 ? Math.round((skorTarget / compareVal) * 100) : 0;
-          if (basariAraliklari) {
-            // Backend'den hesaplanmış başarı puanı varsa kullan (ham değer bazlı)
-            const backendPuan = k.basari_puani != null ? k.basari_puani : null;
-            const puan = backendPuan !== null ? backendPuan : hesaplaBasariPuani(pct, basariAraliklari);
-            if (puan !== null) {
-              basariNumericForWeighted = puan;
-              const cls = puan >= 4 ? "micro-pg-ok" : puan >= 3 ? "micro-pg-warn" : "micro-pg-bad";
-              skorHtml = `<span class="${cls} fw-bold">${puan}</span>`;
-            } else {
-              basariNumericForWeighted = pct;
-              skorHtml = `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
-            }
-          } else {
-            basariNumericForWeighted = pct;
-            skorHtml = `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
-          }
+        if (k.basari_puani != null && !Number.isNaN(Number(k.basari_puani))) {
+          basariNumericForWeighted = Number(k.basari_puani);
+          skorHtml = window.kkBasariPuanHtml(k.basari_puani, k.basari_olcek);
         }
 
         let agirlikliBasariHtml = "—";

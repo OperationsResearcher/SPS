@@ -12,7 +12,7 @@ class TestAgirlikliBasariPuani(unittest.TestCase):
         self.assertEqual(agirlikli(4, 50), 2.0)
 
     def test_float_agirlik(self):
-        self.assertEqual(agirlikli(4, 0.5), 2.0)
+        self.assertEqual(agirlikli(4, 0.5), 0.02)  # A-005: 0.5 = yuzde 0.5
 
     def test_tam_agirlik(self):
         self.assertEqual(agirlikli(5, 100), 5.0)

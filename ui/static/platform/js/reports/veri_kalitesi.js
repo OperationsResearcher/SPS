@@ -11,14 +11,14 @@
 
   function renderKpiList(items, container) {
     if (!items.length) {
-      container.innerHTML = '<div style="font-size:13px;color:#94a3b8;font-style:italic;padding:8px;">Sorunlu PG yok.</div>';
+      container.innerHTML = '<div style="font-size:13px;color:#94a3b8;font-style:italic;padding:8px;">' + t('Sorunlu PG yok.') + '</div>';
       return;
     }
     container.innerHTML = '<div style="display:grid;gap:8px;">' + items.map(k => `
       <div style="display:flex;align-items:center;justify-content:space-between;padding:10px 12px;border:1px solid #e2e8f0;border-radius:6px;background:#f8fafc;font-size:12.5px;">
         <div style="min-width:0;flex:1;">
           <a href="/k-plan/process/${k.process_id}/karne#kpi-${k.id}" style="font-weight:600;color:#0ea5e9;text-decoration:none;">${esc(k.code)} · ${esc(k.name)}</a>
-          <div style="font-size:11px;color:#64748b;margin-top:2px;"><a href="/k-plan/process/${k.process_id}/karne" style="color:#64748b;text-decoration:none;">${esc(k.process_name)}</a>${k.last_data_date ? ` · son: ${esc(k.last_data_date)}` : ''}</div>
+          <div style="font-size:11px;color:#64748b;margin-top:2px;"><a href="/k-plan/process/${k.process_id}/karne" style="color:#64748b;text-decoration:none;">${esc(k.process_name)}</a>${k.last_data_date ? ` · ${t('son:')} ${esc(k.last_data_date)}` : ''}</div>
         </div>
         <div style="display:flex;gap:4px;flex-wrap:wrap;max-width:50%;justify-content:flex-end;">
           ${k.issues.map(i => `<span style="background:#fee2e2;color:#991b1b;font-size:10.5px;padding:2px 7px;border-radius:8px;font-weight:600;">${esc(i)}</span>`).join('')}
@@ -28,7 +28,7 @@
   }
 
   function renderProcessBars(items, container) {
-    if (!items.length) { container.innerHTML = '<div style="color:#94a3b8;font-style:italic;">Süreç yok.</div>'; return; }
+    if (!items.length) { container.innerHTML = '<div style="color:#94a3b8;font-style:italic;">' + t('Süreç yok.') + '</div>'; return; }
     container.innerHTML = '<div style="display:grid;gap:6px;">' + items.map(p => {
       const rate = p.fill_rate;
       const color = rate >= 80 ? '#10b981' : rate >= 50 ? '#f59e0b' : '#dc2626';
@@ -53,7 +53,7 @@
       document.getElementById('error').style.display = 'none';
       const res = await fetch(url, {credentials:'same-origin'});
       const j = await res.json();
-      if (!j.success) throw new Error(j.message || 'Veri alınamadı');
+      if (!j.success) throw new Error(j.message || t('Veri alınamadı'));
 
       document.getElementById('loading').style.display = 'none';
       document.getElementById('content').style.display = 'block';
@@ -61,11 +61,11 @@
       const s = j.summary;
       const scoreColor = s.score >= 75 ? '#10b981' : s.score >= 50 ? '#f59e0b' : '#dc2626';
       document.getElementById('summary-cards').innerHTML = [
-        statCard('Genel Skor', '%' + s.score, scoreColor, s.plan_year ? `Plan yılı: ${s.plan_year}` : '', 'raporlar_veri_kalitesi.genel_skor'),
-        statCard('Toplam PG', s.total_kpi, '#0f172a', '', 'raporlar_veri_kalitesi.toplam_pg'),
-        statCard('Kritik', s.kritik_count, '#dc2626', 'acil ilgilenilmesi gerekli', 'raporlar_veri_kalitesi.kritik'),
-        statCard('Orta Risk', s.orta_count, '#f59e0b', 'eksik alanlar var', 'raporlar_veri_kalitesi.orta_risk'),
-        statCard('Sağlıklı', s.iyi_count, '#10b981', 'tam tanımlı', 'raporlar_veri_kalitesi.saglikli'),
+        statCard(t('Genel Skor'), '%' + s.score, scoreColor, s.plan_year ? `${t('Plan yılı:')} ${s.plan_year}` : '', 'raporlar_veri_kalitesi.genel_skor'),
+        statCard(t('Toplam PG'), s.total_kpi, '#0f172a', '', 'raporlar_veri_kalitesi.toplam_pg'),
+        statCard(t('Kritik'), s.kritik_count, '#dc2626', t('acil ilgilenilmesi gerekli'), 'raporlar_veri_kalitesi.kritik'),
+        statCard(t('Orta Risk'), s.orta_count, '#f59e0b', t('eksik alanlar var'), 'raporlar_veri_kalitesi.orta_risk'),
+        statCard(t('Sağlıklı'), s.iyi_count, '#10b981', t('tam tanımlı'), 'raporlar_veri_kalitesi.saglikli'),
       ].join('');
 
       renderKpiList(j.categories.kritik, document.getElementById('kritik-list'));
@@ -75,16 +75,16 @@
       document.getElementById('loading').style.display = 'none';
       const err = document.getElementById('error');
       err.style.display = 'block';
-      err.textContent = 'Hata: ' + e.message;
+      err.textContent = t('Hata') + ': ' + e.message;
     }
   }
   const _sel = document.getElementById('year-select');
   if (_sel) _sel.addEventListener('change', load);
 
   const _titles = {
-    'Kritik PG\'ler': 'Hiç ölçüm girilmemiş veya 3+ eksik alanı (hedef, birim, başarı aralığı, ölçüm) olan PG\'ler. Acil müdahale gerektirir — veri olmadan bu PG puanlanamaz.',
-    'Orta Risk PG\'ler': '1-2 eksik alanı olan PG\'ler (örn. son ölçüm 180 günden eski, hedef tanımsız, birim eksik). Puanlanabilir ama veri kalitesi düşük; eksikler giderilmeli.',
-    'Süreç Bazlı Doluluk': 'Her sürecin PG\'lerinden kaçına ölçüm girildiğinin oranı (dolu/toplam). %80+ yeşil (sağlıklı), %50-80 sarı (orta), %50 altı kırmızı (zayıf). Düşük oranlı süreçler veri girişi için öncelikli.'
+    'Kritik PG\'ler': t("Hiç ölçüm girilmemiş veya 3+ eksik alanı (hedef, birim, başarı aralığı, ölçüm) olan PG'ler. Acil müdahale gerektirir — veri olmadan bu PG puanlanamaz."),
+    'Orta Risk PG\'ler': t("1-2 eksik alanı olan PG'ler (örn. son ölçüm 180 günden eski, hedef tanımsız, birim eksik). Puanlanabilir ama veri kalitesi düşük; eksikler giderilmeli."),
+    'Süreç Bazlı Doluluk': t("Her sürecin PG'lerinden kaçına ölçüm girildiğinin oranı (dolu/toplam). %80+ yeşil (sağlıklı), %50-80 sarı (orta), %50 altı kırmızı (zayıf). Düşük oranlı süreçler veri girişi için öncelikli.")
   };
   document.querySelectorAll('.vk-info').forEach(el => {
     el.addEventListener('click', (e) => {
@@ -93,7 +93,7 @@
       const title = h3 ? h3.textContent.replace(/\s*i\s*$/, '').trim() : 'Bilgi';
       const body = el.getAttribute('title') || _titles[title] || '';
       if (window.Swal) {
-        Swal.fire({title: title, text: body, icon: 'info', confirmButtonText: 'Tamam', confirmButtonColor:'#0369a1'});
+        Swal.fire({title: title, text: body, icon: 'info', confirmButtonText: t('Tamam'), confirmButtonColor:'#0369a1'});
       } else {
         alert(title + '\n\n' + body);
       }

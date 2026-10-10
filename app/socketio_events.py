@@ -14,6 +14,42 @@ from app.services.notification_service import NotificationService
 # Aktif kullanıcılar (room tracking)
 active_users = {}
 
+
+def _process_room(process_id) -> str:
+    return f'process_{process_id}'
+
+
+def _can_access_process(process_id) -> bool:
+    """GUV-16: süreç odasına yalnız aynı kurumun kullanıcısı (platform Admin: hepsi) girebilir."""
+    from app.constants.roles import PLATFORM_ADMIN_ROLES
+    from app.models.process import Process
+    try:
+        pid = int(process_id)
+    except (TypeError, ValueError):
+        return False
+    role = getattr(getattr(current_user, "role", None), "name", None)
+    q = Process.query.filter_by(id=pid)
+    if role not in PLATFORM_ADMIN_ROLES:
+        q = q.filter_by(tenant_id=current_user.tenant_id)
+    return q.first() is not None
+
+
+def _in_process_room(process_id) -> bool:
+    """Oda yayınları için: kullanıcı odaya yetkili girişle katılmış olmalı."""
+    return _process_room(process_id) in rooms()
+
+
+def _display_name():
+    """Yayınlanan olaylarda e-posta yerine görünen ad (D-012)."""
+    name = " ".join(p for p in (getattr(current_user, "first_name", None),
+                                getattr(current_user, "last_name", None)) if p)
+    return name or None
+
+
+def _payload(data) -> dict:
+    """İstemci verisi dict değilse (None, liste, sayı) boş sözlük say."""
+    return data if isinstance(data, dict) else {}
+
 @socketio.on('connect')
 def handle_connect():
     """Kullanıcı bağlandı"""
@@ -27,7 +63,7 @@ def handle_connect():
         # Aktif kullanıcılar listesine ekle
         active_users[request.sid] = {
             'user_id': user_id,
-            'username': current_user.email,
+            'username': _display_name(),
             'connected_at': None
         }
         
@@ -50,15 +86,19 @@ def handle_disconnect():
 def handle_join_process(data):
     """Süreç room'una katıl (collaboration için)"""
     if current_user.is_authenticated:
+        data = _payload(data)
         process_id = data.get('process_id')
-        room = f'process_{process_id}'
-        
+        if not _can_access_process(process_id):
+            emit('error', {'message': 'forbidden'})
+            return
+        room = _process_room(process_id)
+
         join_room(room)
         
         # Diğer kullanıcılara bildir
         emit('user_joined', {
             'user_id': current_user.id,
-            'username': current_user.email,
+            'username': _display_name(),
             'process_id': process_id
         }, room=room, skip_sid=request.sid)
         
@@ -69,15 +109,19 @@ def handle_join_process(data):
 def handle_leave_process(data):
     """Süreç room'undan ayrıl"""
     if current_user.is_authenticated:
+        data = _payload(data)
         process_id = data.get('process_id')
-        room = f'process_{process_id}'
-        
+        # D-012: yalnız yetkili girişle odaya katılmış kullanıcı ayrılma olayı yayınlayabilir
+        if not _in_process_room(process_id):
+            return
+        room = _process_room(process_id)
+
         leave_room(room)
-        
-        # Diğer kullanıcılara bildir
+
+        # Diğer kullanıcılara bildir (e-posta yok)
         emit('user_left', {
             'user_id': current_user.id,
-            'username': current_user.email,
+            'username': _display_name(),
             'process_id': process_id
         }, room=room)
         
@@ -88,17 +132,20 @@ def handle_leave_process(data):
 def handle_kpi_data_update(data):
     """KPI veri güncellemesi (real-time collaboration)"""
     if current_user.is_authenticated:
+        data = _payload(data)
         process_id = data.get('process_id')
         kpi_id = data.get('kpi_id')
         field = data.get('field')
         value = data.get('value')
-        
+        if not _in_process_room(process_id):
+            return  # GUV-16: yetkili katılım olmadan yayın yok
+
         # Diğer kullanıcılara broadcast et
         emit('kpi_updated', {
             'kpi_id': kpi_id,
             'field': field,
             'value': value,
-            'updated_by': current_user.email,
+            'updated_by': current_user.id,
             'timestamp': None
         }, room=f'process_{process_id}', skip_sid=request.sid)
         
@@ -109,12 +156,15 @@ def handle_kpi_data_update(data):
 def handle_typing(data):
     """Kullanıcı yazıyor göstergesi"""
     if current_user.is_authenticated:
+        data = _payload(data)
         process_id = data.get('process_id')
         field = data.get('field')
-        
+        if not _in_process_room(process_id):
+            return
+
         emit('user_typing', {
             'user_id': current_user.id,
-            'username': current_user.email,
+            'username': _display_name(),
             'field': field
         }, room=f'process_{process_id}', skip_sid=request.sid)
 
@@ -124,7 +174,7 @@ def handle_mark_notification_read(data):
     """Bildirimi okundu olarak işaretle"""
     if current_user.is_authenticated:
         notification_id = data.get('notification_id')
-        NotificationService.mark_as_read(notification_id)
+        NotificationService.mark_as_read(notification_id, current_user.id)  # GUV-16: sahiplik
         
         # Güncel okunmamış sayıyı gönder
         unread_count = NotificationService.get_unread_count(current_user.id)
@@ -135,9 +185,12 @@ def handle_mark_notification_read(data):
 def handle_get_active_users(data):
     """Aktif kullanıcıları getir"""
     if current_user.is_authenticated:
+        data = _payload(data)
         process_id = data.get('process_id')
-        room = f'process_{process_id}'
-        
+        if not _in_process_room(process_id):
+            return
+        room = _process_room(process_id)
+
         # Bu room'daki aktif kullanıcıları bul
         room_users = []
         for sid, user_info in active_users.items():
@@ -177,7 +230,8 @@ def handle_kpi_data_entered(data):
     """
     if not current_user.is_authenticated:
         return
-    tenant_id = data.get("tenant_id") or current_user.tenant_id
+    tenant_id = current_user.tenant_id  # GUV-16: istemcinin verdiği tenant_id'ye güvenilmez
+    data = _payload(data)
     socketio.emit(
         "morning_summary_refresh",
         {"reason": "kpi_data_entered", "process_id": data.get("process_id")},

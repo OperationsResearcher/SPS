@@ -22,6 +22,10 @@ from typing import Optional, Any, Dict
 from flask import session
 
 from app.models.plan_year import PlanYear
+from app.utils.tr_time import today_tr
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # ── 1. VIEW CONTEXT ───────────────────────────────────────────────────────────
@@ -39,9 +43,9 @@ def get_view_year(user) -> int:
     if sel:
         try:
             return int(sel)
-        except (TypeError, ValueError):
-            pass
-    return date.today().year
+        except (TypeError, ValueError) as e:
+            logger.warning(f"get_view_year failed: {e}")
+    return today_tr().year
 
 
 def resolve_request_year(user=None, default_year: Optional[int] = None) -> int:
@@ -63,7 +67,7 @@ def resolve_request_year(user=None, default_year: Optional[int] = None) -> int:
         geniş ve kırılgan; (b) backend'de `?year` yokken session'a düşmek.
         Kullanıcı (b)'yi seçti: tek nokta, çok daha güvenli.
 
-        Bu fonksiyon `date.today().year` yerine çağrıldığında, o route
+        Bu fonksiyon `today_tr().year` yerine çağrıldığında, o route
         kullanıcının yıl seçimini otomatik olarak onurlandırır.
 
     Not: `user` parametresi geriye uyumluluk için opsiyonel; yıl session'dan
@@ -78,10 +82,10 @@ def resolve_request_year(user=None, default_year: Optional[int] = None) -> int:
                     y = int(ham)
                     if 1900 < y < 3000:
                         return y
-                except (TypeError, ValueError):
-                    pass
-    except Exception:
-        pass
+                except (TypeError, ValueError) as e:
+                    logger.warning(f"resolve_request_year failed: {e}")
+    except Exception as e:
+        logger.error(f"resolve_request_year failed: {e}")
 
     # Arka plan görevlerinde (zamanlayıcı) request/session yoktur — S6 gereği
     # oralarda tenant'ın aktif PlanYear'ı kullanılır, bu fonksiyon değil.
@@ -92,12 +96,12 @@ def resolve_request_year(user=None, default_year: Optional[int] = None) -> int:
     if sel:
         try:
             return int(sel)
-        except (TypeError, ValueError):
-            pass
+        except (TypeError, ValueError) as e:
+            logger.warning(f"resolve_request_year failed: {e}")
 
     if default_year:
         return int(default_year)
-    return date.today().year
+    return today_tr().year
 
 
 def get_view_plan_year(tenant_id: int, user) -> Optional[PlanYear]:

@@ -1381,8 +1381,8 @@ def get_ks_gap_real(tenant_id: int, year: int | None = None) -> dict:
                 proc_gaps[pid] = {"scores": [], "kpi_count": 0}
             proc_gaps[pid]["scores"].append(pct)
             proc_gaps[pid]["kpi_count"] += 1
-        except (ValueError, TypeError):
-            pass
+        except (ValueError, TypeError) as e:
+            logger.warning(f"get_ks_gap_real failed: {e}")
 
     gap_rows = []
     for pid, data in proc_gaps.items():

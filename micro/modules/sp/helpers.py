@@ -207,7 +207,7 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
     # ── 0. Vizyon düğümü ──────────────────────────────────────────────────────
     vizyon_text = "Vizyon"
     try:
-        py = PlanYear.query.filter_by(tenant_id=tenant_id, is_active=True).order_by(PlanYear.id.desc()).first()
+        py = PlanYear.query.filter_by(tenant_id=tenant_id, status="active").order_by(PlanYear.id.desc()).first()
         if py:
             tyi = TenantYearIdentity.query.filter_by(plan_year_id=py.id, tenant_id=tenant_id).first()
             if tyi and tyi.vision:
@@ -222,6 +222,34 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
         "level": 0,
         "title": vizyon_text,
     })
+
+    # ── PERF-13: döngü içi sorguları toplu ön-yükleme (50-150 sorgu → 3) ─────
+    from collections import defaultdict as _dd
+    from sqlalchemy import func as _func
+    from app.models import db as _db
+    _ss_ids = [ss.id for st in strategies for ss in (st.sub_strategies or [])
+               if getattr(ss, "is_active", True)]
+    _procs_by_ss: dict = _dd(list)
+    _pgs_by_proc: dict = _dd(list)
+    _pg_total: dict = {}
+    if _ss_ids:
+        for _ss_id, _proc in (
+            _db.session.query(ProcessSubStrategyLink.sub_strategy_id, Process)
+            .join(Process, ProcessSubStrategyLink.process_id == Process.id)
+            .filter(Process.is_active.is_(True), Process.tenant_id == tenant_id,
+                    ProcessSubStrategyLink.sub_strategy_id.in_(_ss_ids))
+            .order_by(Process.id).all()
+        ):
+            if len(_procs_by_ss[_ss_id]) < 12:
+                _procs_by_ss[_ss_id].append(_proc)
+        _proc_ids = list({p.id for lst in _procs_by_ss.values() for p in lst})
+        if _proc_ids:
+            for _pg in (ProcessKpi.query
+                        .filter(ProcessKpi.process_id.in_(_proc_ids), ProcessKpi.is_active.is_(True))
+                        .order_by(ProcessKpi.id).all()):
+                _pg_total[_pg.process_id] = _pg_total.get(_pg.process_id, 0) + 1
+                if len(_pgs_by_proc[_pg.process_id]) < 7:
+                    _pgs_by_proc[_pg.process_id].append(_pg)
 
     # ── 1-3. Strateji → Alt Strateji → Süreç → PG ────────────────────────────
     for s in strategies:
@@ -247,13 +275,7 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
             })
             edges.append({"from": s_id, "to": ss_id})
 
-            processes = (
-                Process.query.filter_by(is_active=True, tenant_id=tenant_id)
-                .join(ProcessSubStrategyLink, ProcessSubStrategyLink.process_id == Process.id)
-                .filter(ProcessSubStrategyLink.sub_strategy_id == ss.id)
-                .limit(12)
-                .all()
-            )
+            processes = _procs_by_ss.get(ss.id, [])
             for proc in processes:
                 p_id = f"p_{proc.id}"
                 edges.append({"from": ss_id, "to": p_id})
@@ -270,7 +292,7 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
                 })
 
                 # Bireysel PG'ler (max 7 adet, süreç başına bir kez)
-                pgs = ProcessKpi.query.filter_by(process_id=proc.id, is_active=True).limit(7).all()
+                pgs = _pgs_by_proc.get(proc.id, [])
                 for pg in pgs:
                     pg_id = f"pg_{pg.id}"
                     if pg_id not in seen_pg:
@@ -289,7 +311,7 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
                     edges.append({"from": p_id, "to": pg_id})
 
                 # Fazla PG özet düğümü (süreç başına bir kez)
-                total_pg = ProcessKpi.query.filter_by(process_id=proc.id, is_active=True).count()
+                total_pg = _pg_total.get(proc.id, 0)
                 if total_pg > 7:
                     more_id = f"pg_more_{proc.id}"
                     nodes.append({
@@ -359,3 +381,24 @@ def build_strateji_harita_graph(tenant_id: int, strategies: list) -> dict:
         "proje":      sum(1 for n in nodes if n["group"] == "proje"),
     }
     return {"success": True, "nodes": nodes, "edges": edges, "meta": meta}
+
+
+def sp_plan_year_open(f):
+    """SP yazma uçlarında mühür (K8) kapısı: mühürlü yıla yazma 409.
+
+    Yılı çözülemeyen (PlanYear yok) istek engellenmez — surec/bireysel ile aynı davranış.
+    """
+    from app.services.date_sovereign import plan_year_writable
+
+    @wraps(f)
+    def decorated(*args, **kwargs):
+        py = get_active_plan_year_for_user(current_user)
+        if py is not None and not plan_year_writable(py):
+            return jsonify({
+                "success": False,
+                "error": "plan_year_sealed",
+                "message": _("Bu plan yılı mühürlü; değişiklik yapılamaz."),
+            }), 409
+        return f(*args, **kwargs)
+
+    return decorated

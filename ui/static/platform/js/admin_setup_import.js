@@ -31,7 +31,8 @@
     var fd = new FormData();
     fd.append("file", fileInput.files[0]);
     if (extra) Object.keys(extra).forEach(function (k) { fd.append(k, extra[k]); });
-    return fetch(url, { method: "POST", body: fd }).then(function (r) { return r.json(); });
+    var csrf = document.querySelector('meta[name="csrf-token"]');
+    return fetch(url, { method: "POST", body: fd, headers: { "X-CSRFToken": csrf ? csrf.content : "" } }).then(function (r) { return r.json(); });
   }
 
   dryBtn.addEventListener("click", function () {

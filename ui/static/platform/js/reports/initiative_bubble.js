@@ -4,12 +4,12 @@
   const tooltip = document.getElementById('ib-tooltip');
 
   const STATUS_TR = {
-    planned:'Planlandı', in_progress:'Devam Ediyor', on_hold:'Beklemede',
-    completed:'Tamamlandı', cancelled:'İptal', delayed:'Gecikmiş', active:'Aktif'
+    planned:t('Planlandı'), in_progress:t('Devam Ediyor'), on_hold:t('Beklemede'),
+    completed:t('Tamamlandı'), cancelled:t('İptal'), delayed:t('Gecikmiş'), active:t('Aktif')
   };
   const PRIORITY_TR = {
-    critical:'Kritik', high:'Yüksek', medium:'Orta', low:'Düşük',
-    Critical:'Kritik', High:'Yüksek', Medium:'Orta', Low:'Düşük'
+    critical:t('Kritik'), high:t('Yüksek'), medium:t('Orta'), low:t('Düşük'),
+    Critical:t('Kritik'), High:t('Yüksek'), Medium:t('Orta'), Low:t('Düşük')
   };
   const trStatus = s => STATUS_TR[s] || s || '—';
   const trPriority = p => PRIORITY_TR[p] || p || '—';
@@ -43,8 +43,8 @@
     axes.innerHTML = `
       <line x1="${padL}" y1="${h-padB}" x2="${w-padR}" y2="${h-padB}" stroke="#cbd5e1" stroke-width="1"/>
       <line x1="${padL}" y1="${padT}" x2="${padL}" y2="${h-padB}" stroke="#cbd5e1" stroke-width="1"/>
-      <text x="${padL+8}" y="${padT-8}" font-size="11" font-weight="600" fill="#475569">↑ Bütçe Kullanımı %</text>
-      <text x="${w-padR}" y="${h-padB+30}" font-size="11" font-weight="600" fill="#475569" text-anchor="end">İlerleme % →</text>
+      <text x="${padL+8}" y="${padT-8}" font-size="11" font-weight="600" fill="#475569">↑ ${t('Bütçe Kullanımı')} %</text>
+      <text x="${w-padR}" y="${h-padB+30}" font-size="11" font-weight="600" fill="#475569" text-anchor="end">${t('İlerleme')} % →</text>
     `;
     svg.appendChild(axes);
 
@@ -56,8 +56,8 @@
     grid.innerHTML += `
       <rect x="${padL}" y="${padT}" width="${midX-padL}" height="${midY-padT}" fill="#fee2e2" opacity="0.25"/>
       <rect x="${midX}" y="${midY}" width="${w-padR-midX}" height="${h-padB-midY}" fill="#dcfce7" opacity="0.30"/>
-      <text x="${padL+10}" y="${padT+18}" font-size="10" fill="#991b1b" opacity="0.7">⚠ Riskli</text>
-      <text x="${w-padR-10}" y="${h-padB-8}" font-size="10" fill="#166534" opacity="0.7" text-anchor="end">✓ İdeal</text>
+      <text x="${padL+10}" y="${padT+18}" font-size="10" fill="#991b1b" opacity="0.7">⚠ ${t('Riskli')}</text>
+      <text x="${w-padR-10}" y="${h-padB-8}" font-size="10" fill="#166534" opacity="0.7" text-anchor="end">✓ ${t('İdeal')}</text>
     `;
     for (let p of [0,25,50,75,100]) {
       const y = padT + (h-padT-padB) * (1 - p/100);
@@ -83,11 +83,11 @@
       g.addEventListener('mouseenter', (e) => {
         showTooltip(`
           <b>${esc(b.code || '')} · ${esc(b.name)}</b><br>
-          Durum: <b>${esc(trStatus(b.status))}</b> · Öncelik: <b style="color:${b.color}">${esc(trPriority(b.priority))}</b><br>
-          Toplam bütçe: <b>₺${fmt(b.budget_total)}</b><br>
-          Harcanan: <b>₺${fmt(b.budget_spent)}</b> (%${b.budget_usage_pct})<br>
-          İlerleme: <b>%${b.progress_pct}</b><br>
-          Süre: ${b.start_year}-${b.end_year}
+          ${t('Durum:')} <b>${esc(trStatus(b.status))}</b> · ${t('Öncelik:')} <b style="color:${b.color}">${esc(trPriority(b.priority))}</b><br>
+          ${t('Toplam bütçe:')} <b>₺${fmt(b.budget_total)}</b><br>
+          ${t('Harcanan:')} <b>₺${fmt(b.budget_spent)}</b> (%${b.budget_usage_pct})<br>
+          ${t('İlerleme:')} <b>%${b.progress_pct}</b><br>
+          ${t('Süre:')} ${b.start_year}-${b.end_year}
         `, e);
       });
       g.addEventListener('mousemove', (e) => { tooltip.style.left = (e.clientX+14)+'px'; tooltip.style.top = (e.clientY+14)+'px'; });
@@ -104,10 +104,10 @@
       document.getElementById('content').style.display='block';
       const s = j.summary;
       document.getElementById('summary').innerHTML = [
-        statCard('Toplam Girişim',    s.total, '#0f172a', '', 'raporlar_initiative_bubble.toplam_girisim'),
-        statCard('Toplam Bütçe',      '₺'+fmt(s.total_budget), '#0ea5e9', '', 'raporlar_initiative_bubble.toplam_butce'),
-        statCard('Harcanan Bütçe',    '₺'+fmt(s.total_spent),  '#f59e0b', 'kullanım %'+Math.round(s.total_spent/Math.max(s.total_budget,1)*100), 'raporlar_initiative_bubble.harcanan_butce'),
-        statCard('Ortalama İlerleme', s.avg_progress+'%',       '#10b981', '', 'raporlar_initiative_bubble.ortalama_ilerleme'),
+        statCard(t('Toplam Girişim'),    s.total, '#0f172a', '', 'raporlar_initiative_bubble.toplam_girisim'),
+        statCard(t('Toplam Bütçe'),      '₺'+fmt(s.total_budget), '#0ea5e9', '', 'raporlar_initiative_bubble.toplam_butce'),
+        statCard(t('Harcanan Bütçe'),    '₺'+fmt(s.total_spent),  '#f59e0b', t('kullanım')+' %'+Math.round(s.total_spent/Math.max(s.total_budget,1)*100), 'raporlar_initiative_bubble.harcanan_butce'),
+        statCard(t('Ortalama İlerleme'), s.avg_progress+'%',       '#10b981', '', 'raporlar_initiative_bubble.ortalama_ilerleme'),
       ].join('');
       drawBubble(j.bubbles || []);
       document.getElementById('tbl').innerHTML = (j.bubbles || []).map(b => `
@@ -124,7 +124,7 @@
         </tr>`).join('');
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err = document.getElementById('error'); err.style.display='block'; err.textContent='Hata: '+e.message;
+      const err = document.getElementById('error'); err.style.display='block'; err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

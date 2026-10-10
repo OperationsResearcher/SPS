@@ -19,3 +19,4 @@ marshmallow==3.20.1
 # Security scanning (pip-audit ile bağımlılık CVE taraması)
 # Kullanım: pip-audit -r requirements.txt
 pip-audit>=2.7.0
+pytest-timeout==2.4.0

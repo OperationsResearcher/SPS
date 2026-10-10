@@ -5,7 +5,7 @@ from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
-from extensions import db, csrf
+from extensions import db
 from flask_babel import gettext as _
 
 
@@ -55,7 +55,6 @@ def api_scheduled_reports_get():
 
 
 @app_bp.route("/api/scheduled-reports", methods=["POST"])
-@csrf.exempt
 @login_required
 def api_scheduled_reports_save():
     data = request.get_json(silent=True) or {}

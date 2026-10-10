@@ -9,6 +9,7 @@ from flask_login import login_required, current_user
 from platform_core import app_bp
 from app_platform.modules.surec.permissions import user_can_enter_pgv
 from app.models import db
+from sqlalchemy.exc import IntegrityError
 from sqlalchemy.orm import contains_eager
 from app.utils.db_sequence import is_pk_duplicate, sync_pg_sequence_if_needed
 from app.models.process import (
@@ -41,6 +42,9 @@ from app.services.date_sovereign import (
 from micro.modules.surec.helpers import muhur_engeli
 from app.models.core import Tenant as _Tenant
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _is_individual_pg_pk_duplicate(err: Exception) -> bool:
@@ -182,6 +186,13 @@ def bireysel_api_pg_ensure_from_process_kpi():
                 sync_pg_sequence_if_needed("individual_performance_indicators", "id")
                 db.session.commit()
                 continue
+            # HATA-24: eşzamanlı ikinci istek unique indeksine takıldı → kayıt zaten var.
+            if isinstance(e, IntegrityError):
+                dup = IndividualPerformanceIndicator.query.filter_by(
+                    user_id=current_user.id, source_process_kpi_id=kpi.id, is_active=True
+                ).first()
+                if dup:
+                    return jsonify({"success": True, "id": dup.id, "created": False})
             current_app.logger.error(f"[bireysel_api_pg_ensure_from_process_kpi] {e}")
             return jsonify({"success": False, "message": _("İşlem tamamlanamadı.")}), 400
 
@@ -629,23 +640,10 @@ def bireysel_api_karne():
     timeline_events.sort(key=lambda x: x["ts"], reverse=True)
     timeline_events = timeline_events[:40]
 
-    def _norm_weight(w):
-        try:
-            w = float(w or 0)
-        except (TypeError, ValueError):
-            return 0.0
-        return w / 100.0 if w > 1 else w
+    from app.services.score_engine_service import weighted_average as _weighted_average
 
     _scored = [p for p in pg_list if p["basari_puani"] is not None]
-    _norm_weights = [_norm_weight(p["weight"]) for p in _scored]
-    _toplam_agirlik = sum(_norm_weights)
-    if _scored and _toplam_agirlik > 0:
-        genel_skor = sum(p["basari_puani"] * w for p, w in zip(_scored, _norm_weights)) / _toplam_agirlik
-        genel_skor = round(genel_skor, 2)
-    elif _scored:
-        genel_skor = round(sum(p["basari_puani"] for p in _scored) / len(_scored), 2)
-    else:
-        genel_skor = None
+    genel_skor = _weighted_average([(p["basari_puani"], p["weight"]) for p in _scored]) if _scored else None
 
     return jsonify({
         "success": True,
@@ -689,8 +687,8 @@ def bireysel_api_pg_series(pg_id):
                         m = int(key.split("_", 1)[1])
                         if 1 <= m <= 12:
                             monthly_last[m] = e.actual_value
-                    except (ValueError, IndexError):
-                        pass
+                    except (ValueError, IndexError) as err:
+                        logger.warning(f"bireysel_api_pg_series failed: {err}")
 
     return jsonify({
         "success": True,

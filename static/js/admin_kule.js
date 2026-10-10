@@ -1,3 +1,11 @@
+// Kullanıcı verisini HTML'e güvenle basmak için yerel kaçış (bu sayfa platform base'i yüklemez)
+function mcEsc(s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"']/g, function (c) {
+        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+    });
+}
+
 document.addEventListener('DOMContentLoaded', function () {
     const viewButtons = document.querySelectorAll('.btn-view-ticket');
     const statusButtons = document.querySelectorAll('.btn-update-status');
@@ -17,22 +25,26 @@ document.addEventListener('DOMContentLoaded', function () {
                 .then(data => {
                     if (data.success) {
                         const ticket = data.ticket;
+                        const safePageUrl = /^(https?:\/\/|\/)/i.test(ticket.page_url || '');
+                        const pageHtml = safePageUrl
+                            ? `<a href="${mcEsc(ticket.page_url)}" target="_blank" rel="noopener">${mcEsc(ticket.page_url)}</a>`
+                            : mcEsc(ticket.page_url || '');
                         let html = `
                             <div class="row">
-                                <div class="col-md-6 mb-3"><strong>Kullanıcı:</strong> ${ticket.user_name}</div>
-                                <div class="col-md-6 mb-3"><strong>Kurum:</strong> ${ticket.tenant_name}</div>
-                                <div class="col-md-6 mb-3"><strong>Konu:</strong> <span class="badge bg-secondary">${ticket.subject}</span></div>
-                                <div class="col-md-6 mb-3"><strong>Durum:</strong> ${ticket.status}</div>
-                                <div class="col-md-6 mb-3"><strong>Sayfa:</strong> <a href="${ticket.page_url}" target="_blank">${ticket.page_url}</a></div>
-                                <div class="col-md-12 mb-3"><strong>Mesaj:</strong> <div class="p-3 bg-light border rounded mt-2">${ticket.message}</div></div>
+                                <div class="col-md-6 mb-3"><strong>Kullanıcı:</strong> ${mcEsc(ticket.user_name)}</div>
+                                <div class="col-md-6 mb-3"><strong>Kurum:</strong> ${mcEsc(ticket.tenant_name)}</div>
+                                <div class="col-md-6 mb-3"><strong>Konu:</strong> <span class="badge bg-secondary">${mcEsc(ticket.subject)}</span></div>
+                                <div class="col-md-6 mb-3"><strong>Durum:</strong> ${mcEsc(ticket.status)}</div>
+                                <div class="col-md-6 mb-3"><strong>Sayfa:</strong> ${pageHtml}</div>
+                                <div class="col-md-12 mb-3"><strong>Mesaj:</strong> <div class="p-3 bg-light border rounded mt-2">${mcEsc(ticket.message)}</div></div>
                         `;
 
                         if (ticket.screenshot_path) {
                             html += `
                                 <div class="col-md-12 mb-3">
                                     <strong>Ekran Görüntüsü:</strong><br>
-                                    <a href="/static/${ticket.screenshot_path}" target="_blank">
-                                        <img src="/static/${ticket.screenshot_path}" class="img-fluid rounded mt-2 shadow" style="max-height: 400px;">
+                                    <a href="/static/${mcEsc(ticket.screenshot_path)}" target="_blank">
+                                        <img src="/static/${mcEsc(ticket.screenshot_path)}" class="img-fluid rounded mt-2 shadow" style="max-height: 400px;">
                                     </a>
                                 </div>
                             `;
@@ -41,7 +53,7 @@ document.addEventListener('DOMContentLoaded', function () {
                         html += `</div>`;
                         contentDiv.innerHTML = html;
                     } else {
-                        contentDiv.innerHTML = `<div class="alert alert-danger">${data.message || 'Bir hata oluştu.'}</div>`;
+                        contentDiv.innerHTML = `<div class="alert alert-danger">${mcEsc(data.message || 'Bir hata oluştu.')}</div>`;
                     }
                 })
                 .catch(err => {

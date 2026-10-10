@@ -11,10 +11,10 @@
       const delta = s.latest_total - s.first_total;
       const deltaC = delta<=0?'#10b981':'#dc2626';
       document.getElementById('summary').innerHTML=[
-        stat('Metrik Sayısı',s.metrics_count,'#0f172a','raporlar_carbon_trend.metrik_sayisi'),
-        stat('Veri Yılı',s.years_with_data,'#0ea5e9','raporlar_carbon_trend.veri_yili'),
-        stat('Son Yıl Toplam',s.latest_total.toFixed(1)+' tCO₂e','#10b981','raporlar_carbon_trend.son_yil_toplam'),
-        stat('İlk Yıla Göre',(delta>0?'+':'')+delta.toFixed(1),deltaC,'raporlar_carbon_trend.ilk_yila_gore'),
+        stat(t('Metrik Sayısı'),s.metrics_count,'#0f172a','raporlar_carbon_trend.metrik_sayisi'),
+        stat(t('Veri Yılı'),s.years_with_data,'#0ea5e9','raporlar_carbon_trend.veri_yili'),
+        stat(t('Son Yıl Toplam'),s.latest_total.toFixed(1)+' tCO₂e','#10b981','raporlar_carbon_trend.son_yil_toplam'),
+        stat(t('İlk Yıla Göre'),(delta>0?'+':'')+delta.toFixed(1),deltaC,'raporlar_carbon_trend.ilk_yila_gore'),
       ].join('');
       if(j.trend.length===0){
         document.getElementById('empty-note').style.display='block';
@@ -46,7 +46,7 @@
       document.getElementById('chart').innerHTML = html;
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

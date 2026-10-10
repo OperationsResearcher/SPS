@@ -694,8 +694,8 @@ def render_digest_pdf(tenant_id: int, tenant_name: str = None, tenant=None) -> t
                 "[weekly-digest] reportlab PDF uretilemedi: %s\n%s",
                 e, traceback.format_exc()
             )
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"render_digest_pdf failed: {err}")
 
     # Tercih 2: WeasyPrint (Linux/Mac sunucularda kurulu olabilir)
     try:

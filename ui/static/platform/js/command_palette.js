@@ -44,7 +44,7 @@
     { title: t("Kurum Ayarları"),          url: "/organization/settings", icon: "fa-building",          group: t("Sayfa") },
     { title: t("Ayarlar"),                 url: "/settings",          icon: "fa-cog",                  group: t("Sayfa") },
     { title: t("Profil"),                  url: "/profile",           icon: "fa-user",                 group: t("Sayfa") },
-    { title: t("Yönetim Paneli"),          url: "/admin/yonetim",     icon: "fa-user-shield",          group: t("Sayfa") },
+    { title: t("Yönetim Paneli"),          url: "/admin/yonetim-paneli", icon: "fa-user-shield",          group: t("Sayfa") },
     { title: t("Kullanıcılar"),            url: "/admin/users",       icon: "fa-users",                group: t("Sayfa") },
   ];
 

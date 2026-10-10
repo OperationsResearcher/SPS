@@ -791,7 +791,13 @@
   function computeYillikHedefMicro(targetValue, olcumPeriyodu, hesaplamaYontemi) {
     const tv = parseFloat(targetValue);
     if (isNaN(tv) || tv <= 0) return null;
-    if (hesaplamaYontemi !== "Toplama" && hesaplamaYontemi !== "Toplam") return tv;
+    if (
+      hesaplamaYontemi !== "Toplama" &&
+      hesaplamaYontemi !== "Toplam" &&
+      String(hesaplamaYontemi).toUpperCase() !== "SUM"
+    ) {
+      return tv;
+    }
     const olcumCarpan = {
       yillik: 1,
       ceyrek: 4,
@@ -828,11 +834,18 @@
     if (
       hesaplamaYontemi === "Ortalama" ||
       hesaplamaYontemi === "Son Değer" ||
+      ["AVG", "LAST"].includes(String(hesaplamaYontemi).toUpperCase()) ||
       !hesaplamaYontemi
     ) {
       return tv;
     }
-    if (hesaplamaYontemi !== "Toplama" && hesaplamaYontemi !== "Toplam") return tv;
+    if (
+      hesaplamaYontemi !== "Toplama" &&
+      hesaplamaYontemi !== "Toplam" &&
+      String(hesaplamaYontemi).toUpperCase() !== "SUM"
+    ) {
+      return tv;
+    }
     const yillikHedef = computeYillikHedefMicro(targetValue, olcumPeriyodu, hesaplamaYontemi);
     if (yillikHedef === null) return null;
     const gp = (gosterimPeriyot || "ceyrek").toLowerCase();
@@ -859,22 +872,6 @@
     return s || null;
   }
 
-  function hesaplaBasariPuaniMicro(pct, araliklar) {
-    if (!araliklar || typeof araliklar !== "object") return null;
-    for (let puan = 1; puan <= 5; puan++) {
-      const raw = araliklar[puan] || araliklar[String(puan)];
-      const aralik = coerceBasariAralikStrMicro(raw);
-      if (!aralik) continue;
-      const parts = aralik.split("-");
-      const minStr = parts[0];
-      const maxStr = parts.length > 1 ? parts.slice(1).join("-") : undefined;
-      const min = parseFloat(minStr) || 0;
-      const max = maxStr !== undefined && String(maxStr).trim() !== "" ? parseFloat(maxStr) : Infinity;
-      if (pct >= min && pct <= max) return puan;
-    }
-    return null;
-  }
-
   function parseBasariAraliklarObjectMicro(k) {
     if (!k.basari_puani_araliklari) return null;
     try {
@@ -891,42 +888,8 @@
    * HTML döner; kart şablonunda güvenli sayısal içerik kullanılır.
    */
   function formatKanbanBasariPuaniLikeTable(k) {
-    // Backend'den hesaplanmış başarı puanı varsa direkt kullan
-    if (k.basari_puani != null) {
-      const puan = k.basari_puani;
-      const cls = puan >= 4 ? "micro-pg-ok" : puan >= 3 ? "micro-pg-warn" : "micro-pg-bad";
-      return `<span class="${cls} fw-bold">${puan}</span>`;
-    }
-    // Fallback: frontend hesaplama (yüzde bazlı aralıklar için)
-    const entries = k.entries || {};
-    const allVals = Object.values(entries)
-      .map((v) => parseFloat(v))
-      .filter((v) => !Number.isNaN(v));
-    const hesaplamaYontemi = k.data_collection_method || "Ortalama";
-    const olcumPeriyodu = k.period || "";
-    const yillikHedef = computeYillikHedefMicro(k.target_value, olcumPeriyodu, hesaplamaYontemi);
-    const basariAraliklari = parseBasariAraliklarObjectMicro(k);
-    const skorTarget = yillikHedef !== null ? yillikHedef : parseFloat(k.target_value);
-    if (allVals.length === 0 || Number.isNaN(skorTarget) || skorTarget <= 0) {
-      return "—";
-    }
-    const compareVal =
-      hesaplamaYontemi === "Toplama" || hesaplamaYontemi === "Toplam"
-        ? allVals.reduce((a, b) => a + b, 0)
-        : allVals[allVals.length - 1];
-    let pct = Math.round((compareVal / skorTarget) * 100);
-    if (k.direction === "Decreasing") {
-      pct = compareVal > 0 ? Math.round((skorTarget / compareVal) * 100) : 0;
-    }
-    if (basariAraliklari) {
-      const puan = hesaplaBasariPuaniMicro(pct, basariAraliklari);
-      if (puan !== null) {
-        const cls = puan >= 4 ? "micro-pg-ok" : puan >= 3 ? "micro-pg-warn" : "micro-pg-bad";
-        return `<span class="${cls} fw-bold">${puan}</span>`;
-      }
-      return `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
-    }
-    return `<span class="${pct >= 100 ? "micro-pg-ok" : pct >= 80 ? "micro-pg-warn" : "micro-pg-bad"} fw-bold">%${pct}</span>`;
+    // Karar 3 (Faz 1B): JS yedek hesabı kaldırıldı; yalnız sunucu puanı (ölçeğe duyarlı).
+    return window.kkBasariPuanHtml(k.basari_puani, k.basari_olcek);
   }
 
   /** K-Vektör analizi: PG ağırlıkları — kesir (topl.1) veya yüzde puanı (topl.100) */
@@ -1832,12 +1795,16 @@
     } else {
       skorTarget = computeCellTargetMicro(k.target_value, olcumPer, hesap, gp);
     }
+    // A-010: azalan yönde gerçekleşen <= 0 -> %100 (backend achievement ile aynı)
+    if (k.direction === "Decreasing" && compareVal <= 0) {
+      return 100;
+    }
     if (skorTarget == null || Number.isNaN(skorTarget) || skorTarget <= 0) {
       return null;
     }
     let pct = Math.round((compareVal / skorTarget) * 100);
     if (k.direction === "Decreasing") {
-      pct = compareVal > 0 ? Math.round((skorTarget / compareVal) * 100) : 0;
+      pct = Math.round((skorTarget / compareVal) * 100);
     }
     return Math.max(0, pct);
   }

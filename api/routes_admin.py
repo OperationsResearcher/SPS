@@ -4,11 +4,12 @@
 api/routes.py'den bölündü (davranış/URL değişmedi). Blueprint: api.blueprint.api_bp
 """
 from flask import jsonify, request, current_app, send_file
+from flask_babel import gettext as _
 from werkzeug.utils import secure_filename
 import os
 import uuid
 from flask_login import login_required, current_user
-from extensions import csrf, db
+from extensions import db
 from sqlalchemy import or_, and_, text, delete, insert
 from sqlalchemy.orm import joinedload
 from app.utils.project_rbac import (
@@ -101,8 +102,34 @@ def get_user_activities():
     except Exception as e:
         current_app.logger.error(f"Activities API hatası: {e}")
         return jsonify({'error': str(e)}), 500
+_LOGO_ROLES = ('admin', 'kurum_yoneticisi', 'ust_yonetim')
+_LOGO_DIR = os.path.join('static', 'uploads', 'logos')
+
+
+def _safe_remove_old_logo(old_logo):
+    """Eski logoyu yalnız logo dizini icindeyse sil (path traversal korumasi)."""
+    if not old_logo or not (old_logo.startswith('/static/') or old_logo.startswith('static/')):
+        return
+    base = os.path.realpath(_LOGO_DIR)
+    target = os.path.realpath(old_logo.lstrip('/'))
+    if os.path.dirname(target) != base:
+        current_app.logger.warning('Logo delete blocked outside logo dir: %s', old_logo)
+        return
+    if os.path.isfile(target):
+        try:
+            os.remove(target)
+        except Exception as e:
+            current_app.logger.warning(f'Eski logo silinemedi: {e}')
+
+
+def _is_valid_logo_url(url):
+    import re
+    if re.match(r'^https?://[^\s<>"\']+$', url, re.I):
+        return True
+    return bool(re.match(r'^/static/uploads/logos/[A-Za-z0-9_.\-]+$', url)) and '..' not in url
+
+
 @api_bp.route('/kurum/upload-logo', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_kurum_upload_logo():
     """Kurum logosunu yükle"""
@@ -112,6 +139,9 @@ def api_kurum_upload_logo():
         import os
         import uuid
         
+        if current_user.sistem_rol not in _LOGO_ROLES:
+            return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+
         if 'file' not in request.files:
             return jsonify({'success': False, 'message': 'Dosya seçilmedi!'}), 400
         
@@ -137,24 +167,16 @@ def api_kurum_upload_logo():
         file_path = os.path.join(upload_folder, unique_filename)
         file.save(file_path)
         
-        # Eski logo dosyasını sil (varsa ve static klasöründeyse)
+        # Eski logo dosyasını sil (yalnız static/uploads/logos içindeyse)
         kurum = current_user.tenant
-        if kurum.logo_url:
-            old_logo = kurum.logo_url
-            if old_logo.startswith('/static/') or old_logo.startswith('static/'):
-                old_path = old_logo.lstrip('/')
-                if os.path.exists(old_path):
-                    try:
-                        os.remove(old_path)
-                    except Exception as e:
-                        current_app.logger.warning(f'Eski logo silinemedi: {e}')
+        _safe_remove_old_logo(kurum.logo_url)
         
         # Veritabanında güncelle
         logo_url = f'/static/uploads/logos/{unique_filename}'
         kurum.logo_url = logo_url
         db.session.commit()
         
-        current_app.logger.info(f'Kurum logosu güncellendi: {kurum.kisa_ad} -> {unique_filename}')
+        current_app.logger.info(f'Kurum logosu güncellendi: {kurum.short_name or kurum.name} -> {unique_filename}')
         
         return jsonify({
             'success': True,
@@ -170,7 +192,6 @@ def api_kurum_upload_logo():
 
 @api_bp.route('/kurum/<int:kurum_id>/alt-stratejiler', methods=['GET'])
 @login_required
-@csrf.exempt
 def api_kurum_alt_stratejiler(kurum_id):
     """Kurumun tüm alt stratejilerini getir (isteğe bağlı olarak süreçle ilgili olanları filtrele)
     
@@ -249,13 +270,17 @@ def api_kurum_alt_stratejiler(kurum_id):
 
 
 @api_bp.route('/kurum/update-logo', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_kurum_update_logo():
     """Kurum logo URL'sini güncelle"""
     try:
-        data = request.get_json()
-        logo_url = data.get('logo_url', '').strip()
+        if current_user.sistem_rol not in _LOGO_ROLES:
+            return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+
+        data = request.get_json(silent=True) or {}
+        logo_url = (data.get('logo_url') or '').strip()
+        if logo_url and not _is_valid_logo_url(logo_url):
+            return jsonify({'success': False, 'message': 'Geçersiz logo adresi!'}), 400
         
         if not logo_url:
             return jsonify({'success': False, 'message': 'Logo URL\'si boş olamaz!'}), 400
@@ -264,7 +289,7 @@ def api_kurum_update_logo():
         kurum.logo_url = logo_url
         db.session.commit()
         
-        current_app.logger.info(f'Kurum logo URL\'si güncellendi: {kurum.kisa_ad} -> {logo_url}')
+        current_app.logger.info(f'Kurum logo URL\'si güncellendi: {kurum.short_name or kurum.name} -> {logo_url}')
         
         return jsonify({
             'success': True,
@@ -279,7 +304,6 @@ def api_kurum_update_logo():
 
 
 @api_bp.route('/kurum/toggle-guide-system', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_kurum_toggle_guide_system():
     """Kurum için rehber sistemini aç/kapat"""
@@ -316,7 +340,6 @@ def api_kurum_toggle_guide_system():
 # PROJE YÖNETİMİ API ENDPOINT'LERİ
 # ============================================================================
 @api_bp.route('/user/layout', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_user_layout():
     """Kullanıcı layout tercihini kaydet"""
@@ -341,7 +364,6 @@ def api_user_layout():
 
 
 @api_bp.route('/user/theme', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_user_theme():
     """Kullanıcı tema tercihini kaydet"""
@@ -375,7 +397,6 @@ def api_user_theme():
         current_app.logger.error(f'Tema tercihi kaydetme hatası: {e}')
         return json_error(e, "[api_user_theme]", 500)
 @api_bp.route('/notifications', methods=['GET'])
-@csrf.exempt
 @login_required
 def api_notifications():
     """Kullanıcının bildirimlerini getir"""
@@ -420,7 +441,6 @@ def api_notifications():
 
 
 @api_bp.route('/notifications/<int:notification_id>/mark-read', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_notification_mark_read(notification_id):
     """Tek bir bildirimi okundu işaretle"""
@@ -441,7 +461,6 @@ def api_notification_mark_read(notification_id):
 
 
 @api_bp.route('/notifications/count', methods=['GET'])
-@csrf.exempt
 @login_required
 def api_notifications_count():
     """Okunmamış bildirim sayısını getir"""
@@ -462,7 +481,6 @@ def api_notifications_count():
 
 
 @api_bp.route('/notifications/mark-all-read', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_notifications_mark_all_read():
     """Tüm bildirimleri okundu işaretle"""
@@ -867,7 +885,6 @@ def api_rol_matrisi2():
 
 
 @api_bp.route('/rol-matrisi2/update', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_rol_matrisi2_update():
     """Kullanıcı bazlı yetki güncelleme (v2)"""
@@ -921,7 +938,6 @@ def api_rol_matrisi2_update():
 # ============================================
 
 @api_bp.route('/admin/users/update/<int:user_id>', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_admin_update_user(user_id):
     """Admin panel aracılığıyla kullanıcı bilgilerini güncelle"""
@@ -1026,7 +1042,6 @@ def api_admin_update_user(user_id):
 
 # EVM API
 @api_bp.route('/admin/users/add', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_admin_add_user():
     """Yeni kullanıcı ekle (admin veya kurum_yoneticisi)."""

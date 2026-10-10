@@ -11,10 +11,14 @@ from pathlib import Path
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 try:
     sys.stdout.reconfigure(encoding="utf-8")
-except Exception:
-    pass
+except Exception as e:
+    logger.error(f"benchmark_tomofil failed: {e}")
 
 from app import create_app
 from extensions import db

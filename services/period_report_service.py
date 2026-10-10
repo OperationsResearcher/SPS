@@ -8,6 +8,9 @@ from io import BytesIO
 from app.models import db
 from app.models.process import Process, ProcessKpi, KpiData
 from app.models.core import Tenant
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def generate_period_report(tenant_id: int, year: int, compare_year: int | None = None) -> BytesIO:
@@ -96,13 +99,13 @@ def generate_period_report(tenant_id: int, year: int, compare_year: int | None =
                 vals = []
                 for r in rows:
                     try: vals.append(float(r.actual_value))
-                    except (TypeError, ValueError): pass
+                    except (TypeError, ValueError) as e: logger.warning(f"_avg failed: {e}")
                 return round(sum(vals) / len(vals), 2) if vals else None
 
             avg_curr = _avg(kpi.id, year)
             try:
                 target = float(kpi.target_value or 0)
-                ratio  = round((avg_curr / target) * 100, 1) if avg_curr and target else None
+                ratio  = round((avg_curr / target) * 100, 1) if avg_curr is not None and target else None
             except (TypeError, ValueError):
                 ratio = None
 

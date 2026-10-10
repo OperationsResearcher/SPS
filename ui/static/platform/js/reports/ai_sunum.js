@@ -13,16 +13,16 @@
       document.getElementById('loading').style.display='none';
       document.getElementById('content').style.display='block';
       const p = j.preview;
-      document.getElementById('header-title').textContent = `${p.tenant_name} — ${p.plan_year || 'Yıllık'} Sunumu`;
-      document.getElementById('header-meta').textContent = `${p.slides.length} slayt · ~${p.estimated_size_kb} KB · AI özet (Gemini varsa LLM, yoksa şablon)`;
+      document.getElementById('header-title').textContent = `${p.tenant_name} — ${p.plan_year || t('Yıllık')} ${t('Sunumu')}`;
+      document.getElementById('header-meta').textContent = `${t('%(n)s slayt', {n: p.slides.length})} · ~${p.estimated_size_kb} KB · ${t('AI özet (Gemini varsa LLM, yoksa şablon)')}`;
 
       const d = p.data_points;
       document.getElementById('data-points').innerHTML = [
-        dpItem('Strateji', d.strategies),
-        dpItem('Süreç', d.processes),
-        dpItem('Stratejik Girişim', d.initiatives),
-        dpItem('Çalışan', d.users),
-        dpItem('KPI Ölçüm', d.kpi_measurements.toLocaleString('tr-TR')),
+        dpItem(t('Strateji'), d.strategies),
+        dpItem(t('Süreç'), d.processes),
+        dpItem(t('Stratejik Girişim'), d.initiatives),
+        dpItem(t('Çalışan'), d.users),
+        dpItem(t('KPI Ölçüm'), d.kpi_measurements.toLocaleString('tr-TR')),
       ].join('');
 
       document.getElementById('slides').innerHTML = p.slides.map(s => `
@@ -35,7 +35,7 @@
         </div>`).join('');
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err = document.getElementById('error'); err.style.display='block'; err.textContent='Hata: '+e.message;
+      const err = document.getElementById('error'); err.style.display='block'; err.textContent=t('Hata')+': '+e.message;
     }
   }
 
@@ -43,11 +43,11 @@
     const btn = document.getElementById('dl-btn');
     const orig = btn.innerHTML;
     btn.disabled = true;
-    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Üretiliyor… (10-30sn)';
+    btn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> ' + t('Üretiliyor… (10-30sn)');
     try {
       const r = await fetch('/k-report/api/ai-presentation/generate', {method:'GET', credentials:'same-origin'});
       if (!r.ok) {
-        const j = await r.json().catch(() => ({message:'Üretim başarısız'}));
+        const j = await r.json().catch(() => ({message:t('Üretim başarısız')}));
         throw new Error(j.message || ('HTTP ' + r.status));
       }
       const blob = await r.blob();
@@ -60,10 +60,10 @@
       document.body.appendChild(a);
       a.click();
       setTimeout(() => { document.body.removeChild(a); URL.revokeObjectURL(url); }, 100);
-      btn.innerHTML = '<i class="fas fa-check"></i> İndirildi';
+      btn.innerHTML = '<i class="fas fa-check"></i> ' + t('İndirildi');
       setTimeout(() => { btn.innerHTML = orig; btn.disabled = false; }, 2500);
     } catch (e) {
-      Swal.fire({icon:'error', title:'Hata', text:e.message});
+      Swal.fire({icon:'error', title:t('Hata'), text:e.message});
       btn.innerHTML = orig;
       btn.disabled = false;
     }

@@ -3,7 +3,7 @@
 
   function renderResult(j){
     const el = document.getElementById('result');
-    if(!j.success){ el.innerHTML = '<div style="color:#dc2626;padding:30px;text-align:center;">Hata: '+esc(j.message||'')+'</div>'; return; }
+    if(!j.success){ el.innerHTML = '<div style="color:#dc2626;padding:30px;text-align:center;">'+t('Hata')+': '+esc(j.message||'')+'</div>'; return; }
     let html = `<div style="font-size:11px;color:#7c3aed;font-weight:700;text-transform:uppercase;letter-spacing:0.05em;margin-bottom:8px;">${esc(j.summary||'')}</div>`;
     if(j.type === 'table'){
       html += '<table style="width:100%;border-collapse:collapse;font-size:12.5px;"><thead><tr style="background:#f8fafc;border-bottom:2px solid #e2e8f0;">';
@@ -15,7 +15,7 @@
         html += '</tr>';
       });
       html += '</tbody></table>';
-      if(!j.rows || j.rows.length===0) html += '<div style="text-align:center;padding:30px;color:#94a3b8;font-style:italic;">Veri bulunamadı.</div>';
+      if(!j.rows || j.rows.length===0) html += '<div style="text-align:center;padding:30px;color:#94a3b8;font-style:italic;">' + t('Veri bulunamadı.') + '</div>';
     } else if(j.type === 'text'){
       html += `<div style="font-size:14px;color:#0f172a;line-height:1.7;background:#faf5ff;padding:16px;border-radius:8px;border-left:4px solid #7c3aed;">${esc(j.text)}</div>`;
     }
@@ -31,8 +31,8 @@
 
   async function runFree(){
     const q = document.getElementById('free-q').value.trim();
-    if(!q){ Swal.fire({icon:'info',title:'Soru gerekli',text:'Lütfen bir soru yazın.',timer:1800,showConfirmButton:false}); return; }
-    document.getElementById('result').innerHTML = '<div style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:20px;"></i> AI düşünüyor…</div>';
+    if(!q){ Swal.fire({icon:'info',title:t('Soru gerekli'),text:t('Lütfen bir soru yazın.'),timer:1800,showConfirmButton:false}); return; }
+    document.getElementById('result').innerHTML = '<div style="text-align:center;padding:60px;color:#64748b;"><i class="fas fa-spinner fa-spin" style="font-size:20px;"></i> ' + t('AI düşünüyor…') + '</div>';
     const r = await fetch('/k-report/api/nlp-query?query=' + encodeURIComponent(q), {credentials:'same-origin'});
     const j = await r.json();
     renderResult(j);
