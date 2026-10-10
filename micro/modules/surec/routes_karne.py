@@ -3,6 +3,7 @@
 from __future__ import annotations
 from flask_babel import gettext as _
 
+import json
 from datetime import datetime, timezone, date, timedelta
 from io import BytesIO
 
@@ -42,8 +43,7 @@ from app.utils.process_utils import (
     validate_same_tenant_sub_strategies,
 )
 from utils.karne_hesaplamalar import (
-    hesapla_basari_puani as _hesapla_basari_puani,
-    parse_basari_puani_araliklari as _parse_bpa,
+    hesapla_basari_puani_ham as _hesapla_basari_puani_ham,
 )
 
 from app_platform.modules.surec.permissions import (
@@ -69,6 +69,9 @@ from micro.modules.surec.helpers import (
     _user_display_name,
     _users_pick_json,
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 # ──────────────────────────────────────────────────
 # API — Yıl değişimi: aynı kod → hedef yılın process_id'si
@@ -288,55 +291,55 @@ def surec_api_karne(process_id):
     else:
         _tracks_map = {}
 
-    def _parse_float(v):
-        try:
-            return float(v) if v not in (None, "") else None
-        except (ValueError, TypeError):
-            return None
+    from app.services.score_engine_service import (
+        _parse_float, aggregate_actuals, entry_in_scope, _score_pgs,
+    )
+    from app.utils.tr_time import today_tr
+
+    _as_of = today_tr()
+
+    def _fmt(v):
+        return str(round(float(v), 6))
 
     def _aggregate(entries_with_keys, method):
+        """Dönem hücreleri: motorun aggregate_actuals'ı (en yeni önce)."""
         by_key = {}
         for key, val_str, dt in entries_with_keys:
-            by_key.setdefault(key, []).append((val_str, _parse_float(val_str), dt))
+            by_key.setdefault(key, []).append((_parse_float(val_str), dt))
         result = {}
         for key, items in by_key.items():
-            m = (method or "").lower()
-            numeric = [(v, d) for _, v, d in items if v is not None]
-            if m in ("toplama", "toplam") and numeric:
-                result[key] = str(sum(v for v, _ in numeric))
-            elif m == "ortalama" and numeric:
-                result[key] = str(round(sum(v for v, _ in numeric) / len(numeric), 2))
-            else:
-                last = max(items, key=lambda x: x[2] or date(1900, 1, 1))
-                result[key] = last[0]
+            items.sort(key=lambda x: x[1] or date(1900, 1, 1), reverse=True)
+            agg = aggregate_actuals([v for v, _ in items], method)
+            if agg is not None:
+                result[key] = _fmt(agg)
         return result
 
-    def _rollup_year_actual(method: str | None, raw_rows: list) -> float | None:
-        """Yıl içindeki ham PGV satırlarından tek özet değer (PGV yoksa None)."""
-        m = (method or "").lower()
-        raw_nums = [_parse_float(e.actual_value) for e in raw_rows]
-        raw_nums = [x for x in raw_nums if x is not None]
-        if m in ("toplama", "toplam"):
-            return float(sum(raw_nums)) if raw_nums else None
-        if m == "ortalama":
-            return round(sum(raw_nums) / len(raw_nums), 6) if raw_nums else None
-        if raw_rows:
-            last_e = max(raw_rows, key=lambda e: e.data_date or date(1900, 1, 1))
-            return _parse_float(last_e.actual_value)
-        return None
+    def _rollup_year_actual(method, raw_rows: list):
+        """Yıl özeti: motorla aynı kesim (entry_in_scope) + aggregate_actuals."""
+        rows = [e for e in raw_rows if entry_in_scope(e, _as_of)]
+        rows.sort(key=lambda e: e.data_date or date(1900, 1, 1), reverse=True)
+        return aggregate_actuals([_parse_float(e.actual_value) for e in rows], method)
+
+    # Cari yıl özeti/skoru: motorun kendi çekirdeği (klon PG zinciri dahil)
+    _engine_rows = _score_pgs(kpis, year, _as_of, _plan_year_obj, _kpi_cfg_map) if kpis else {}
 
     kpi_list = []
     for k in kpis:
-        entries = _kpi_data_map.get((k.id, year), [])
+        # Karar 6 (Faz 1B): yıl özeti ve dönem hücreleri YILLIK config yöntemiyle hesaplanır
+        # (eskiden PG'nin kendi yöntemi kullanılıyordu; karne ile skor motoru ayrışıyordu).
+        _method_yil = _kpi_cfg_map.get(k.id, {}).get(
+            "data_collection_method", k.data_collection_method or "Ortalama")
+        entries = [e for e in _kpi_data_map.get((k.id, year), []) if entry_in_scope(e, _as_of)]
         entries_with_keys = []
         for e in entries:
             for key in data_date_to_period_keys(e.data_date, year):
                 entries_with_keys.append((key, e.actual_value, e.data_date))
-        entries_by_period = _aggregate(entries_with_keys, k.data_collection_method)
+        entries_by_period = _aggregate(entries_with_keys, _method_yil)
 
         prev_rows = _kpi_data_map.get((k.id, prev_y), [])
-        year_rollup = _rollup_year_actual(k.data_collection_method, entries)
-        prev_rollup = _rollup_year_actual(k.data_collection_method, prev_rows)
+        _eng = _engine_rows.get(k.id) or {}
+        year_rollup = _eng.get("actual")
+        prev_rollup = _rollup_year_actual(_method_yil, prev_rows)
         prev_from_pgv = prev_rollup is not None
 
         strategy_title = ""
@@ -360,11 +363,13 @@ def surec_api_karne(process_id):
         _config_source = _ycfg.get("_config_source", "process_kpi")
 
         # ── Başarı puanı: ham gerçekleşen değer ile aralık karşılaştırması ──────
-        _basari_puani = None
+        # Karar 1-2 (Faz 1B): hem eski (1-5) hem bant (0-100) format; ölçek istemciye bildirilir.
+        _basari_puani, _basari_olcek = None, None
         if year_rollup is not None and _bpa:
             try:
-                _bpa_dict = _parse_bpa(_bpa) if isinstance(_bpa, str) else _bpa
-                _basari_puani = _hesapla_basari_puani(year_rollup, _bpa_dict, _direction or "Increasing")
+                _bpa_str = _bpa if isinstance(_bpa, str) else json.dumps(_bpa)
+                _basari_puani, _basari_olcek = _hesapla_basari_puani_ham(
+                    year_rollup, _bpa_str, _direction or "Increasing")
             except Exception as e:
                 current_app.logger.warning(f"[surec_api_karne] suppressed: {e}")
 
@@ -388,10 +393,12 @@ def surec_api_karne(process_id):
             "sub_strategy_code": (sub_st.code or "").strip() if sub_st else "",
             "basari_puani_araliklari": _bpa,
             "basari_puani": _basari_puani,
+            "basari_olcek": _basari_olcek,
             "is_favorite": k.id in favorite_kpi_ids,
             "is_included": _is_included,
             "config_source": _config_source,
             "entries": entries_by_period,
+            "achievement": _eng.get("score"),
             "year_rollup": round(float(year_rollup), 6) if year_rollup is not None else None,
             "onceki_yil_ortalamasi": round(float(_oy_raw), 6) if _oy_raw is not None else None,
             "prev_year_from_pgv": prev_from_pgv,
@@ -541,14 +548,14 @@ def _karne_heuristik_ozet(p, year, skor, durum, detay, recs):
         try:
             parts.append(f"{ad} {year} sağlık skoru %{float(skor):.0f}"
                          + (f" ({durum})." if durum else "."))
-        except (TypeError, ValueError):
-            pass
+        except (TypeError, ValueError) as e:
+            logger.warning(f"_karne_heuristik_ozet failed: {e}")
     ulasma = detay.get("pg_hedef_ulasma_orani")
     if ulasma is not None:
         try:
             parts.append(f"PG hedef ulaşma oranı %{float(ulasma):.0f}.")
-        except (TypeError, ValueError):
-            pass
+        except (TypeError, ValueError) as e:
+            logger.warning(f"_karne_heuristik_ozet failed: {e}")
     pg_sayisi = detay.get("pg_sayisi") or 0
     veri = detay.get("veri_girilen_pg")
     if pg_sayisi and veri is not None and veri < pg_sayisi:

@@ -18,12 +18,16 @@ if str(PROJECT_ROOT) not in sys.path:
     sys.path.insert(0, str(PROJECT_ROOT))
 
 # Audit log'u devre dışı bırak (request context yok)
+import logging
+
+logger = logging.getLogger(__name__)
+
 try:
     import services.audit_service as audit_svc
     audit_svc._create_log = lambda mapper, connection, target, action, changes: None
     audit_svc._register_model = lambda model_cls: None
-except Exception:
-    pass
+except Exception as err:
+    logger.error(f"populate_technova_perfect_set failed: {err}")
 
 from __init__ import create_app
 from extensions import db
@@ -375,8 +379,8 @@ def _link_processes_strategy_and_users(kurum_id, procs, alt_by_ana, users):
             if (i + j) % 4 == 0 or (i + j) % 4 == 1:
                 try:
                     db.session.execute(surec_alt_stratejiler.insert().values(surec_id=p.id, alt_strateji_id=alt.id))
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.error(f"_link_processes_strategy_and_users failed: {e}")
         # StrategyProcessMatrix: alt strateji - süreç (skor 3 veya 9)
         for alt in alt_list[:6]:
             try:
@@ -386,8 +390,8 @@ def _link_processes_strategy_and_users(kurum_id, procs, alt_by_ana, users):
                     relationship_strength=9 if (i + alt.id) % 3 == 0 else 3,
                     relationship_score=9 if (i + alt.id) % 3 == 0 else 3,
                 ))
-            except Exception:
-                pass
+            except Exception as e:
+                logger.error(f"_link_processes_strategy_and_users failed: {e}")
     db.session.commit()
 
 

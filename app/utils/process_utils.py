@@ -9,6 +9,9 @@ from datetime import date, datetime
 
 from app.models.process import Process
 from app.models.core import User, SubStrategy, Strategy
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def last_day_of_period(
@@ -48,8 +51,8 @@ def last_day_of_period(
             _, last = calendar.monthrange(year, m)
             day = max(1, min(pn, last))
             return date(year, m, day)
-    except (ValueError, TypeError):
-        pass
+    except (ValueError, TypeError) as e:
+        logger.warning(f"last_day_of_period failed: {e}")
     return None
 
 

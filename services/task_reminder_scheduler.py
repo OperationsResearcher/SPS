@@ -37,7 +37,9 @@ def check_task_reminders(app=None):
 
     try:
         with app.app_context():
-            now = datetime.utcnow()
+            # reminder_date istemciden yerel (Istanbul) duvar saati, naive gelir (D-006)
+            from app.utils.tr_time import now_tr
+            now = now_tr().replace(tzinfo=None)
             # 5 dakika öncesinden itibaren hatırlatmaları kontrol et
             check_window_start = now - timedelta(minutes=5)
             check_window_end = now + timedelta(minutes=1)
@@ -87,7 +89,7 @@ def init_scheduler(app):
         logger.warning("Scheduler zaten başlatılmış.")
         return scheduler
     
-    scheduler = BackgroundScheduler(daemon=True)
+    scheduler = BackgroundScheduler(daemon=True, timezone="Europe/Istanbul")
     
     # Her 5 dakikada bir hatırlatmaları kontrol et
     scheduler.add_job(

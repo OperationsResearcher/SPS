@@ -25,6 +25,7 @@ from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
 from flask_babel import gettext as _
+from app.utils.plan_year_filter import filter_by_plan_year
 
 # ─── Rapor 1: Veri Kalitesi ──────────────────────────────────────────────────
 
@@ -59,7 +60,7 @@ def raporlar_api_veri_kalitesi():
         active_py = _gpy(tid, year_param)
     else:
         active_py = get_active_plan_year_for_user(current_user)
-    py_filter = (Process.plan_year_id == active_py.id) if active_py else True
+    py_filter = (or_(Process.plan_year_id == active_py.id, Process.plan_year_id.is_(None))) if active_py else True  # HATA-10
 
     # Tüm aktif PG'ler (aktif plan yılındaki süreçlere bağlı) — N+1 önlemek için
     # process'i eager yükle (sonradan k.process.name erişiliyor)
@@ -1153,14 +1154,15 @@ def raporlar_api_ai_sunum_generate():
                 "weight_pct": round((weights.get(s.id, 0) or 0) / total_w * 100, 1),
             })
 
-    proc_count = Process.query.filter_by(
-        tenant_id=tid, is_active=True,
-        plan_year_id=active_py.id if active_py else None,
+    _py_id = active_py.id if active_py else None
+    proc_count = filter_by_plan_year(
+        Process.query.filter_by(tenant_id=tid, is_active=True), Process, _py_id
     ).count()
-    kpi_count = ProcessKpi.query.join(Process).filter(
-        Process.tenant_id == tid,
-        Process.plan_year_id == (active_py.id if active_py else None),
-        ProcessKpi.is_active.is_(True),
+    kpi_count = filter_by_plan_year(
+        ProcessKpi.query.join(Process).filter(
+            Process.tenant_id == tid,
+            ProcessKpi.is_active.is_(True),
+        ), Process, _py_id,
     ).count()
     initiatives = Initiative.query.filter_by(tenant_id=tid, is_active=True).all()
     user_count = User.query.filter_by(tenant_id=tid, is_active=True).count()

@@ -65,6 +65,13 @@ _GATED_PREFIX_MODULE = [
     # (legacy redirect 307 ile yeni adrese gider ama doğrudan istek gelebilir).
     ("/k-report", "k_rapor"),
     ("/k-rapor", "k_rapor"),
+    # Dalga 1 (paket B): ayrı blueprint / API yüzeyleri. Yalnız eşlemesi bilinen
+    # yollar; bilinmeyen yollar mevcut gibi serbest (kilitleme riski yok).
+    ("/api/v1/processes", "surec"),
+    ("/api/v1/kpi-data", "surec"),
+    ("/api/projeler", "proje"),
+    ("/api/surec", "surec"),
+    ("/api/faaliyet", "surec"),
 ]
 
 
@@ -93,7 +100,6 @@ def _match_prefix(path, table):
     return None
 
 
-@app_bp.before_request
 def _enforce_package_module_gating():
     """Paket + rol/liderlik kapsamı dışındaki modül sayfalarını engelle.
 
@@ -128,14 +134,21 @@ def _enforce_package_module_gating():
         return redirect(url_for("app_bp.masaustu"))
 
     # ── Paket kapısı (yalnız SAYFA istekleri — mevcut davranış korunur) ──
-    if pkg_mid is not None and not is_api and request.method == "GET":
+    if pkg_mid is not None:
+        # Yeni kapsanan istekler (POST/XHR/API): paketsiz kurum mevcut gibi serbest
+        # (kilitleme riski); yalnız eski kapsam (GET sayfa) paketsizde de denetlenir.
+        legacy_scope = (not is_api) and request.method == "GET"
+        has_pkg = bool(getattr(getattr(current_user, "tenant", None), "package_id", None))
+        if not legacy_scope and not has_pkg:
+            pkg_mid = None
+    if pkg_mid is not None:
         try:
             from app_platform.core.module_registry import get_accessible_modules
             allowed = {m["id"] for m in get_accessible_modules(current_user)}
         except Exception:
             allowed = None  # çözülemezse engelleme (fail-open)
         if allowed is not None and pkg_mid not in allowed:
-            return _deny("Bu bölüm mevcut paketinizde yer almıyor.")
+            return _deny("Bu modül paketinizde yok.")
 
     # ── Rol/liderlik kapısı (sayfa + API) ──
     if role_mid is not None:
@@ -149,3 +162,8 @@ def _enforce_package_module_gating():
 
     return None
 
+
+
+def register_gating(app):
+    """Kapıyı uygulama genelinde (tüm blueprint'ler) kaydet."""
+    app.before_request(_enforce_package_module_gating)

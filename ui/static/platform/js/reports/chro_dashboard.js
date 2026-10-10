@@ -9,11 +9,11 @@
       document.getElementById('content').style.display='block';
       const m=j.metrics;
       document.getElementById('kpis').innerHTML=[
-        stat('Çalışan',m.total_users,'#0f172a','','raporlar_chro_dashboard.calisan'),
-        stat('Departman',m.total_departments,'#db2777','','raporlar_chro_dashboard.departman'),
-        stat('Bireysel PG',m.total_pgs,'#8b5cf6',m.users_with_pg+' kişide','raporlar_chro_dashboard.bireysel_pg'),
-        stat('Ort. PG / Kişi',m.avg_pg_per_user,'#0ea5e9','','raporlar_chro_dashboard.ort_pg_kisi'),
-        stat('2FA Oranı','%'+m.totp_pct,m.totp_pct>=80?'#10b981':m.totp_pct>=40?'#f59e0b':'#dc2626','','raporlar_chro_dashboard.2fa_orani'),
+        stat(t('Çalışan'),m.total_users,'#0f172a','','raporlar_chro_dashboard.calisan'),
+        stat(t('Departman'),m.total_departments,'#db2777','','raporlar_chro_dashboard.departman'),
+        stat(t('Bireysel PG'),m.total_pgs,'#8b5cf6',t('%(n)s kişide', {n: m.users_with_pg}),'raporlar_chro_dashboard.bireysel_pg'),
+        stat(t('Ort. PG / Kişi'),m.avg_pg_per_user,'#0ea5e9','','raporlar_chro_dashboard.ort_pg_kisi'),
+        stat(t('2FA Oranı'),'%'+m.totp_pct,m.totp_pct>=80?'#10b981':m.totp_pct>=40?'#f59e0b':'#dc2626','','raporlar_chro_dashboard.2fa_orani'),
       ].join('');
       const maxD = Math.max(...j.departments.map(d=>d.count),1);
       document.getElementById('depts').innerHTML = j.departments.map(d => `
@@ -29,7 +29,7 @@
           <span style="color:#0f172a;font-weight:500;">${esc(r.role)}</span>
           <span style="font-weight:700;color:#db2777;">${r.count}</span>
         </div>`).join('');
-      document.getElementById('top-users').innerHTML = j.top_users_by_pg.length===0?'<div style="color:#94a3b8;font-style:italic;font-size:12.5px;">Bireysel PG\'si olan kullanıcı yok.</div>':
+      document.getElementById('top-users').innerHTML = j.top_users_by_pg.length===0?'<div style="color:#94a3b8;font-style:italic;font-size:12.5px;">' + t("Bireysel PG'si olan kullanıcı yok.") + '</div>':
         '<div style="display:grid;gap:6px;">' + j.top_users_by_pg.map((u,i) => `
           <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#f8fafc;border-radius:6px;font-size:12.5px;">
             <div style="width:24px;height:24px;border-radius:50%;background:#8b5cf6;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">${i+1}</div>
@@ -39,16 +39,16 @@
             </div>
             <div style="font-weight:700;color:#8b5cf6;">${u.pg_count}</div>
           </div>`).join('') + '</div>';
-      document.getElementById('most-loaded').innerHTML = j.most_loaded_in_processes.length===0?'<div style="color:#94a3b8;font-style:italic;font-size:12.5px;">Süreç üyeliği verisi yok.</div>':
+      document.getElementById('most-loaded').innerHTML = j.most_loaded_in_processes.length===0?'<div style="color:#94a3b8;font-style:italic;font-size:12.5px;">' + t('Süreç üyeliği verisi yok.') + '</div>':
         '<div style="display:grid;gap:6px;">' + j.most_loaded_in_processes.map((u,i) => `
           <div style="display:flex;align-items:center;gap:10px;padding:8px 10px;background:#f8fafc;border-radius:6px;font-size:12.5px;">
             <div style="width:24px;height:24px;border-radius:50%;background:#0d9488;color:#fff;display:flex;align-items:center;justify-content:center;font-weight:700;font-size:11px;flex-shrink:0;">${i+1}</div>
             <div style="flex:1;font-weight:600;color:#0f172a;">${esc(u.name)}</div>
-            <div style="font-weight:700;color:#0d9488;">${u.process_count} süreç</div>
+            <div style="font-weight:700;color:#0d9488;">${u.process_count} ${t('süreç')}</div>
           </div>`).join('') + '</div>';
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

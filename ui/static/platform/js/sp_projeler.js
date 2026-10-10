@@ -18,9 +18,17 @@
   let tasksCache = {}; // project_id → tasks[]
 
   // ── Yardımcılar ─────────────────────────────────────────────────────────────
+  function getCsrf() {
+    const m = document.querySelector('meta[name="csrf-token"]');
+    return m ? m.content : "";
+  }
+
   function apiFetch(url, opts) {
+    const method = ((opts && opts.method) || "GET").toUpperCase();
+    const headers = { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" };
+    if (method !== "GET") headers["X-CSRFToken"] = getCsrf();
     return fetch(url, {
-      headers: { "Content-Type": "application/json", "X-Requested-With": "XMLHttpRequest" },
+      headers,
       ...opts,
     }).then(r => r.json());
   }
@@ -149,7 +157,7 @@
 
   function deleteProject(id) {
     fetch(PROJE_DEL_BASE + id, {
-      method: "DELETE", headers: { "X-Requested-With": "XMLHttpRequest" }
+      method: "DELETE", headers: { "X-Requested-With": "XMLHttpRequest", "X-CSRFToken": getCsrf() }
     }).then(r => r.json()).then(d => {
       if (d.success) { toast(t("Proje silindi.")); loadProjects(); }
       else toast(d.message || t("Hata."), "error");

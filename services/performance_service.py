@@ -16,6 +16,9 @@ from flask import current_app
 from sqlalchemy import or_, and_
 from sqlalchemy.orm import joinedload
 from app.models.legacy_bridge import BireyselPerformansGostergesi, PerformansGostergeVeri
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 # ============================================================================
@@ -502,8 +505,8 @@ def hesapla_durum(
                 "[hesapla_durum] hesaplanamadı (hedef=%r gerçekleşen=%r): %s",
                 hedef_deger, gerceklesen_deger, e,
             )
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"hesapla_durum failed: {err}")
         return None, None
 
 

@@ -108,7 +108,7 @@ def _varlik_kolonlari(conn, tablo: str) -> set[str]:
     """), {"t": tablo}).fetchall()}
 
 
-def rapor_ve_uygula(calistir: bool) -> int:
+def rapor_ve_uygula(calistir: bool, tenant_id: int | None = None) -> int:
     app = create_app()
     with app.app_context():
         conn = db.session.connection()
@@ -117,6 +117,10 @@ def rapor_ve_uygula(calistir: bool) -> int:
 
         toplam_tasinan = 0
         toplam_atlanan = 0
+        # --tenant: yalnız o kurumun plan yıllarına ait config'ler
+        tf = (" AND cfg.plan_year_id IN (SELECT id FROM plan_years "
+              "WHERE tenant_id = :t)") if tenant_id is not None else ""
+        P = {"t": tenant_id} if tenant_id is not None else {}
 
         for cfg_tab, var_tab, fk, zincir, alanlar in GOCLER:
             var_kolon = _varlik_kolonlari(conn, var_tab)
@@ -125,7 +129,7 @@ def rapor_ve_uygula(calistir: bool) -> int:
             tasinabilir = [(c, v) for c, v in ciftler if v in var_kolon]
             atlanan_alan = [c for c, v in ciftler if v not in var_kolon]
 
-            n = conn.execute(text(f"SELECT COUNT(*) FROM {cfg_tab}")).scalar()
+            n = conn.execute(text(f"SELECT COUNT(*) FROM {cfg_tab} cfg WHERE TRUE{tf}"), P).scalar()
             if not n:
                 print(f"── {cfg_tab}: boş, atlandı\n")
                 continue
@@ -141,8 +145,8 @@ def rapor_ve_uygula(calistir: bool) -> int:
             farkli = conn.execute(text(f"""
                 SELECT COUNT(*) FROM {cfg_tab} cfg
                   JOIN {var_tab} v ON v.id = cfg.{fk}
-                 WHERE {fark_kosul}
-            """)).scalar()
+                 WHERE ({fark_kosul}){tf}
+            """), P).scalar()
 
             print(f"── {cfg_tab}")
             print(f"   toplam config          {n:>5}")
@@ -175,12 +179,12 @@ def rapor_ve_uygula(calistir: bool) -> int:
                       JOIN var_yil hedef  ON hedef.kok_id = kaynak.kok_id
                                          AND hedef.plan_year_id = cfg.plan_year_id
                       JOIN {var_tab} v ON v.id = cfg.{fk}
-                     WHERE {fark_kosul}
+                     WHERE ({fark_kosul}){tf}
                 )
             """
 
             eslesen = conn.execute(text(
-                hedef_sql + " SELECT COUNT(*) FROM esles")).scalar()
+                hedef_sql + " SELECT COUNT(*) FROM esles"), P).scalar()
             atlanan = farkli - eslesen
             print(f"   hedef kopyası çözülen  {eslesen:>5}")
             if atlanan:
@@ -194,7 +198,7 @@ def rapor_ve_uygula(calistir: bool) -> int:
                     {hedef_sql}
                     UPDATE {var_tab} t SET {set_ifade}
                       FROM esles k WHERE t.id = k.var_id
-                """))
+                """), P)
                 print(f"   [OK] {eslesen} satır varlığa taşındı")
             print()
 
@@ -223,5 +227,7 @@ def rapor_ve_uygula(calistir: bool) -> int:
 if __name__ == "__main__":
     ap = argparse.ArgumentParser(description="Faz 1.4 — override göçü")
     ap.add_argument("--calistir", action="store_true")
+    ap.add_argument("--tenant", type=int, default=None,
+                    help="Yalnız bu kurum (tenant_id); verilmezse tüm kurumlar")
     args = ap.parse_args()
-    sys.exit(rapor_ve_uygula(args.calistir))
+    sys.exit(rapor_ve_uygula(args.calistir, args.tenant))

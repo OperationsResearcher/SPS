@@ -14,11 +14,11 @@
 
     const st = y.stats;
     document.getElementById('year-stats').innerHTML = `
-      <div><b style="color:#0f172a;">${st.strategy_count}</b> strateji</div>
-      <div><b style="color:#0f172a;">${st.sub_count}</b> alt strateji</div>
-      <div><b style="color:#0f172a;">${st.process_count}</b> süreç</div>
+      <div><b style="color:#0f172a;">${st.strategy_count}</b> ${t('strateji')}</div>
+      <div><b style="color:#0f172a;">${st.sub_count}</b> ${t('alt strateji')}</div>
+      <div><b style="color:#0f172a;">${st.process_count}</b> ${t('süreç')}</div>
       <div><b style="color:#0f172a;">${st.kpi_count}</b> PG</div>
-      <div><b style="color:#0f172a;">${st.measurement_count.toLocaleString('tr-TR')}</b> ölçüm</div>`;
+      <div><b style="color:#0f172a;">${st.measurement_count.toLocaleString('tr-TR')}</b> ${t('ölçüm')}</div>`;
 
     // Strateji ağacı renderı
     let html = '<div style="display:grid;grid-template-columns:repeat(auto-fit, minmax(280px, 1fr));gap:16px;">';
@@ -50,8 +50,8 @@
         k: y.stats.kpi_count - prev.stats.kpi_count,
       };
       const parts = [];
-      if (delta.s !== 0) parts.push((delta.s > 0 ? '+' : '') + delta.s + ' strateji');
-      if (delta.p !== 0) parts.push((delta.p > 0 ? '+' : '') + delta.p + ' süreç');
+      if (delta.s !== 0) parts.push((delta.s > 0 ? '+' : '') + delta.s + ' ' + t('strateji'));
+      if (delta.p !== 0) parts.push((delta.p > 0 ? '+' : '') + delta.p + ' ' + t('süreç'));
       if (delta.k !== 0) parts.push((delta.k > 0 ? '+' : '') + delta.k + ' PG');
       if (parts.length) {
         const strip = document.getElementById('diff-strip');
@@ -75,14 +75,14 @@
   function startPlay() {
     if (playing) return;
     playing = true;
-    document.getElementById('play-btn').innerHTML = '<i class="fas fa-pause"></i> Durdur';
+    document.getElementById('play-btn').innerHTML = '<i class="fas fa-pause"></i> ' + t('Durdur');
     if (idx === years.length - 1) idx = 0;  // başa sar
     playTimer = setInterval(tick, 1500);
   }
 
   function stopPlay() {
     playing = false;
-    document.getElementById('play-btn').innerHTML = '<i class="fas fa-play"></i> Oynat';
+    document.getElementById('play-btn').innerHTML = '<i class="fas fa-play"></i> ' + t('Oynat');
     if (playTimer) clearInterval(playTimer);
     playTimer = null;
   }
@@ -95,7 +95,7 @@
       if (!years.length) {
         document.getElementById('loading').style.display='none';
         document.getElementById('error').style.display='block';
-        document.getElementById('error').textContent = 'Henüz plan yılı yok. Önce SP → Dönemler ekranından plan yılı oluşturun.';
+        document.getElementById('error').textContent = t('Henüz plan yılı yok. Önce SP → Dönemler ekranından plan yılı oluşturun.');
         return;
       }
       document.getElementById('loading').style.display='none';
@@ -112,7 +112,7 @@
       document.getElementById('loading').style.display='none';
       const err = document.getElementById('error');
       err.style.display='block';
-      err.textContent = 'Hata: ' + e.message;
+      err.textContent = t('Hata') + ': ' + e.message;
     }
   }
   load();

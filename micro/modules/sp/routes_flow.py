@@ -178,7 +178,7 @@ def sp_api_graph():
     try:
         from app.services.score_engine_service import compute_vision_score
         _graph_py = get_active_plan_year_for_user(current_user)
-        vision_score = compute_vision_score(tid, plan_year=_graph_py)
+        vision_score = compute_vision_score(tid, plan_year=_graph_py, persist_pg_scores=False)  # HATA-23: GET'te yazma yok
     except Exception as e:
         current_app.logger.warning(f"[sp_api_graph] score_engine: {e}")
         vision_score = None

@@ -7,6 +7,9 @@ from pathlib import Path
 
 import openpyxl
 from openpyxl.styles import Font
+import logging
+
+logger = logging.getLogger(__name__)
 
 ROOT = Path(__file__).resolve().parents[1]
 DB_PATH = ROOT / "instance" / "kokpitim.db"
@@ -52,8 +55,8 @@ def _quarter_from_row(data_date: str | None, period_type: str | None, period_no:
             s = str(data_date)[:10]
             y, m, _ = int(s[0:4]), int(s[5:7]), int(s[8:10])
             return (m - 1) // 3 + 1
-        except (ValueError, IndexError):
-            pass
+        except (ValueError, IndexError) as e:
+            logger.warning(f"_quarter_from_row failed: {e}")
     return ""
 
 

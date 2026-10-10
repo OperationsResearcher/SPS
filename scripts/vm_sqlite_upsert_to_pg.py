@@ -16,6 +16,9 @@ import os
 import sys
 import sqlite3
 import datetime
+import logging
+
+logger = logging.getLogger(__name__)
 
 sys.path.insert(0, os.path.dirname(os.path.dirname(os.path.abspath(__file__))))
 
@@ -285,8 +288,8 @@ def main():
             stats["errors"] += 1
             try:
                 pg_conn.rollback()
-            except Exception:
-                pass
+            except Exception as err:
+                logger.error(f"main failed: {err}")
             pg_cur = pg_conn.cursor()
 
     # FK kontrollerini geri ac
@@ -294,8 +297,8 @@ def main():
         try:
             pg_cur.execute("SET session_replication_role = 'DEFAULT'")
             pg_conn.commit()
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"main failed: {err}")
 
     # Sequence'leri guncelle (PG'de ID'ler SQLite'tan geldi, sequence geride kalabilir)
     print("\nSequence'ler guncelleniyor...")

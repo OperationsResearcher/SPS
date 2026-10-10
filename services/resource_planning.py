@@ -175,7 +175,13 @@ def check_task_overload(task_id, assigned_user_id, due_date):
         hours_per_day = estimated_time / 7  # 1 haftaya eşit dağıt
         
         # Çakışan görevleri bul
-        conflicting_tasks = Task.query.filter(
+        from app.models.core import User as _CoreUser
+        _au = _CoreUser.query.get(assigned_user_id)
+        _tenant_id = getattr(_au, 'tenant_id', None)
+        conflicting_tasks = Task.query.join(
+            Project, Project.id == Task.project_id
+        ).filter(
+            Project.tenant_id == _tenant_id,
             Task.assigned_to_id == assigned_user_id,
             Task.status != 'Tamamlandı',
             Task.id != task_id if task_id else True,

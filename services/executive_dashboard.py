@@ -228,21 +228,33 @@ def get_critical_risks(kurum_id, limit=5):
         
         # Aktif riskleri getir ve puanla (optimize edilmiş sorgu)
         # joinedload ile ilişkili verileri tek sorguda getir
-        from sqlalchemy.orm import joinedload
-        risks = ProjectRisk.query.options(
-            joinedload(ProjectRisk.project),
-            joinedload(ProjectRisk.created_by)
-        ).filter(
+        risks = ProjectRisk.query.filter(
             and_(
                 ProjectRisk.project_id.in_(project_ids),
-                ProjectRisk.status == 'Aktif'
+                ProjectRisk.status.notin_(['Closed', 'Mitigated'])
             )
         ).all()
+        _names = {p.id: p.name for p in Project.query.filter(Project.id.in_(project_ids)).all()}
+        _lvl = {'low': 1, 'medium': 3, 'high': 5, 'düşük': 1, 'orta': 3, 'yüksek': 5}
+
+        def _num(v):
+            try:
+                return int(v)
+            except (TypeError, ValueError):
+                return _lvl.get(str(v or '').strip().lower(), 1)
         
         # Riskleri puanla ve sırala
         risk_list = []
         for risk in risks:
-            risk_score = risk.impact * risk.probability
+            risk_score = _num(risk.impact) * _num(risk.probability)
+            if risk_score <= 6:
+                _level = 'Düşük'
+            elif risk_score <= 12:
+                _level = 'Orta'
+            elif risk_score < 20:
+                _level = 'Yüksek'
+            else:
+                _level = 'Kritik'
             risk_list.append({
                 'id': risk.id,
                 'title': risk.title,
@@ -250,15 +262,249 @@ def get_critical_risks(kurum_id, limit=5):
                 'impact': risk.impact,
                 'probability': risk.probability,
                 'risk_score': risk_score,
-                'risk_level': risk.risk_level,
+                'risk_level': _level,
                 'project_id': risk.project_id,
-                'project_name': risk.project.name if risk.project else 'Bilinmiyor',
-                'mitigation_plan': risk.mitigation_plan,
-                'created_by': f"{risk.created_by.first_name} {risk.created_by.last_name}" if risk.created_by else 'Bilinmiyor',
+                'project_name': _names.get(risk.project_id, 'Bilinmiyor'),
+                'mitigation_plan': '',
+                'created_by': 'Bilinmiyor',
                 'created_at': risk.created_at.isoformat() if risk.created_at else None
             })
         
         # Risk puanına göre sırala (yüksekten düşüğe)
+        risk_list.sort(key=lambda x: x['risk_score'], reverse=True)
+        
+        # İlk N riski döndür
+        return risk_list[:limit]
+    
+    except Exception as e:
+        return []
+
+
+def get_planning_efficiency(kurum_id):
+    """
+    Planlama Verimliliği Analizi
+    Proje bazlı: estimated_time vs actual_time karşılaştırması
+    """
+    try:
+        projects = Project.query.filter_by(kurum_id=kurum_id, is_archived=False).all()
+
+        # Tüm projelerin tamamlanmış görevlerini batch'le (N+1 önlemi)
+        from collections import defaultdict as _dd
+        _pids = [p.id for p in projects]
+        _tasks_by_pid = _dd(list)
+        if _pids:
+            for t in Task.query.filter(
+                Task.project_id.in_(_pids),
+                Task.status == 'Tamamlandı',
+                and_(
+                    Task.estimated_time.isnot(None),
+                    Task.actual_time.isnot(None),
+                    Task.estimated_time > 0,
+                ),
+            ).all():
+                _tasks_by_pid[t.project_id].append(t)
+
+        project_data = []
+
+        for project in projects:
+            completed_tasks = _tasks_by_pid.get(project.id, [])
+            if not completed_tasks:
+                continue
+            
+            total_estimated = sum(task.estimated_time for task in completed_tasks)
+            total_actual = sum(task.actual_time for task in completed_tasks)
+            
+            # Sapma yüzdesi (pozitif = fazla süre, negatif = az süre)
+            if total_estimated > 0:
+                deviation_percent = ((total_actual - total_estimated) / total_estimated) * 100
+            else:
+                deviation_percent = 0
+            
+            project_data.append({
+                'project_id': project.id,
+                'project_name': project.name,
+                'task_count': len(completed_tasks),
+                'estimated_time': round(total_estimated, 2),
+                'actual_time': round(total_actual, 2),
+                'deviation_percent': round(deviation_percent, 2),
+                'efficiency': 'İyi' if deviation_percent <= 10 else ('Orta' if deviation_percent <= 25 else 'Kötü')
+            })
+        
+        # Sapma yüzdesine göre sırala (en kötüden en iyiye)
+        project_data.sort(key=lambda x: x['deviation_percent'], reverse=True)
+        
+        return project_data
+    
+    except Exception as e:
+        return []
+
+
+def get_task_workload_distribution(kurum_id):
+    """
+    Bekleyen İş Yükü Dağılımı
+    Açık görevlerin durumlarına göre dağılımı
+    """
+    try:
+        projects = Project.query.filter_by(kurum_id=kurum_id).all()
+        project_ids = [p.id for p in projects]
+        
+        if not project_ids:
+            return {}
+        
+        # Açık görevleri durumlarına göre grupla
+        tasks = Task.query.filter(
+            and_(
+                Task.project_id.in_(project_ids),
+                Task.status != 'Tamamlandı'
+            )
+        ).all()
+        
+        status_distribution = {}
+        for task in tasks:
+            status = task.status or 'Belirtilmemiş'
+            status_distribution[status] = status_distribution.get(status, 0) + 1
+        
+        # Türkçe durum isimleri için mapping
+        status_labels = {
+            'Yapılacak': 'Yapılacak',
+            'Devam Ediyor': 'Devam Ediyor',
+            'Beklemede': 'Beklemede',
+            'Test': 'Test',
+            'İnceleme': 'İnceleme',
+            'Belirtilmemiş': 'Belirtilmemiş'
+        }
+        
+        # Formatlanmış veri
+        formatted_data = []
+        for status, count in status_distribution.items():
+            formatted_data.append({
+                'status': status_labels.get(status, status),
+                'count': count,
+                'percentage': round((count / len(tasks)) * 100, 2) if tasks else 0
+            })
+        
+        # Sayıya göre sırala
+        formatted_data.sort(key=lambda x: x['count'], reverse=True)
+        
+        return {
+            'total_tasks': len(tasks),
+            'distribution': formatted_data
+        }
+    
+    except Exception as e:
+        return {
+            'total_tasks': 0,
+            'distribution': []
+        }
+
+
+def get_personnel_workload_analysis(kurum_id):
+    """
+    Personel Yükü Analizi - Aktif görevleri olan personellerin görev sayısı
+    Hangi birim/kişi darboğazda? sorusuna yanıt verir
+    
+    Returns:
+        {
+            'by_user': [{'user_id': 1, 'user_name': '...', 'task_count': 5, 'department': '...'}, ...],
+            'by_department': {'IT': 15, 'İnsan Kaynakları': 8, ...}
+        }
+    """
+    try:
+        # Arşivlenmemiş projeler
+        projects = Project.query.filter_by(kurum_id=kurum_id, is_archived=False).all()
+        project_ids = [p.id for p in projects]
+        
+        if not project_ids:
+            return {
+                'by_user': [],
+                'by_department': {}
+            }
+        
+        # Aktif görevleri olan kullanıcılar (arşivlenmemiş görevler)
+        task_counts = db.session.query(
+            Task.assigned_to_id,
+            func.count(Task.id).label('task_count')
+        ).filter(
+            Task.project_id.in_(project_ids),
+            Task.status.in_(['Yapılacak', 'Devam Ediyor', 'Beklemede']),
+            Task.is_archived == False,
+            Task.assigned_to_id.isnot(None)
+        ).group_by(Task.assigned_to_id).all()
+        
+        # Kullanıcı bazlı analiz
+        by_user = []
+        for user_id, task_count in task_counts:
+            user = User.query.get(user_id)
+            if user:
+                by_user.append({
+                    'user_id': user_id,
+                    'user_name': f'{user.first_name} {user.last_name}',
+                    'task_count': task_count,
+                    'department': user.department or 'Belirtilmemiş'
+                })
+        
+        # Departman bazlı analiz
+        by_department = {}
+        for item in by_user:
+            dept = item['department']
+            if dept not in by_department:
+                by_department[dept] = 0
+            by_department[dept] += item['task_count']
+        
+        # Kullanıcıları görev sayısına göre sırala (en çok görevi olan üstte)
+        by_user.sort(key=lambda x: x['task_count'], reverse=True)
+        
+        return {
+            'by_user': by_user[:20],  # En fazla 20 kullanıcı göster
+            'by_department': by_department
+        }
+    except Exception as e:
+        if current_app:
+            current_app.logger.error(f'Personel yükü analizi hatası: {e}')
+        return {
+            'by_user': [],
+            'by_department': {}
+        }
+
+
+def get_executive_summary(kurum_id):
+    """
+    AI Destekli Yönetici Özeti
+    
+    Args:
+        kurum_id: Kurum ID
+    
+    Returns:
+        str: Özet metin
+    """
+    try:
+        from services.ai_executive_summary import generate_executive_summary
+        summary = generate_executive_summary(kurum_id)
+        return summary
+    except Exception as e:
+        return "Özet oluşturulurken bir hata oluştu."
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+        # Risk puanına göre sırala (yüksekten düşüğe)
         risk_list.sort(key=lambda x: x['risk_score'], reverse=True)
         
         # İlk N riski döndür

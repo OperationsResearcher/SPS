@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 from flask_login import login_required, current_user
-from extensions import csrf, db
+from extensions import db
 from sqlalchemy import or_, and_, text, delete, insert
 from sqlalchemy.orm import joinedload
 from app.utils.project_rbac import (
@@ -117,7 +117,6 @@ def api_surec_uyeler(surec_id: int):
 
 @api_bp.route('/surec/<int:surec_id>/performans-gostergesi/<int:pg_id>/dagit', methods=['POST'])
 @login_required
-@csrf.exempt
 def api_surec_pg_hedef_dagit(surec_id: int, pg_id: int):
     """Süreç PG hedefini seçili kullanıcılara dağıt (bireysel hedefler oluşturur/günceller)."""
     try:
@@ -249,27 +248,10 @@ def api_surec_saglik_skoru(surec_id):
 
 
 # Risk Yönetimi API Endpoint'leri
-@api_bp.route('/pg-veri/sil/<int:veri_id>', methods=['DELETE'])
-@csrf.exempt
-@login_required
-@role_required(['admin', 'kurum_yoneticisi', 'ust_yonetim'])
-def api_pg_veri_sil(veri_id):
-    """PG veri silme (mock/gerçek)."""
-    try:
-        veri = PerformansGostergeVeri.query.get(veri_id)
-        if not veri:
-            return jsonify({'success': True, 'message': 'Veri bulunamadı (mock)'}), 200
-        db.session.delete(veri)
-        db.session.commit()
-        return jsonify({'success': True, 'message': 'Veri silindi'})
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f"PG veri silme hatası: {e}", exc_info=True)
-        return json_error(e, "[api_pg_veri_sil]", 500)
+# GUV-07: DELETE /pg-veri/sil/<id> kaldırıldı — kurum kontrolü olmadan hard delete yapıyordu.
 
 
 @api_bp.route('/pg-veri/proje-gorevleri', methods=['GET'])
-@csrf.exempt
 @login_required
 def api_pg_veri_proje_gorevleri():
     """PG veri proje görevleri (mock)."""

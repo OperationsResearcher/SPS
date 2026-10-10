@@ -48,15 +48,37 @@ def sp_api_triggers_create():
     if not name or not ttype:
         return jsonify({"error": "name ve trigger_type zorunlu"}), 400
 
+    kpi_id = data.get("target_kpi_id") or None
+    if kpi_id is not None:
+        try:
+            kpi_id = int(kpi_id)
+        except (TypeError, ValueError):
+            return jsonify({"error": _("Geçersiz PG.")}), 400
+        from app.models.process import ProcessKpi, Process
+        owned = (
+            db.session.query(ProcessKpi.id)
+            .join(Process, Process.id == ProcessKpi.process_id)
+            .filter(ProcessKpi.id == kpi_id, Process.tenant_id == current_user.tenant_id)
+            .first()
+        )
+        if not owned:
+            return jsonify({"error": _("Geçersiz PG.")}), 400
+    try:
+        periods = int(data.get("consecutive_periods", 1))
+    except (TypeError, ValueError):
+        return jsonify({"error": _("Geçersiz dönem sayısı.")}), 400
+    if not 1 <= periods <= 24:
+        return jsonify({"error": _("Geçersiz dönem sayısı.")}), 400
+
     t = ReplanTrigger(
         tenant_id=current_user.tenant_id,
         name=name,
         description=data.get("description"),
         trigger_type=ttype,
-        target_kpi_id=data.get("target_kpi_id") or None,
+        target_kpi_id=kpi_id,
         threshold_value=data.get("threshold_value"),
         threshold_operator=data.get("threshold_operator"),
-        consecutive_periods=int(data.get("consecutive_periods") or 1),
+        consecutive_periods=periods,
         action=data.get("action") or "notify",
         severity=data.get("severity") or "medium",
     )

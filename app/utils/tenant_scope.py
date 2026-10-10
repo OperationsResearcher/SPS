@@ -131,6 +131,9 @@ def verify_tenant_resource(
 # Veri sızıntısını önleyen TEK katman bu. Test edilmeden değişiklik yapma.
 
 from typing import Optional
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 TENANT_TYPE_NORMAL  = "normal"
@@ -260,8 +263,8 @@ def default_landing_endpoint(user=None) -> str:
                 "[tenant_scope] rol çözümlenemedi (varsayılan panele düşüldü) "
                 "user=%s: %s", getattr(u, "id", None), e,
             )
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"default_landing_endpoint failed: {err}")
     return "app_bp.launcher"
 
 

@@ -17,12 +17,15 @@ from __future__ import annotations
 import re
 import sys
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Windows cp1254 encoding sorunu için stdout'u UTF-8'e zorla
 try:
     sys.stdout.reconfigure(encoding="utf-8")
-except Exception:
-    pass
+except Exception as err:
+    logger.error(f"build_tanitim_pdf failed: {err}")
 
 ROOT = Path(__file__).parent.parent.parent
 SCREENSHOTS_DIR = ROOT / "docs" / "test" / "screenshots"
@@ -401,8 +404,8 @@ def main():
         size = OUT_PDF.stat().st_size // 1024
         print(f"✓ PDF üretildi: {OUT_PDF} ({size} KB)")
         return True
-    except ImportError:
-        pass
+    except ImportError as err:
+        logger.debug(f"main failed: {err}")
     except Exception as e:
         print(f"Playwright PDF hatası: {e}")
 

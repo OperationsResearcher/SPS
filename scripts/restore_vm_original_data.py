@@ -138,11 +138,15 @@ for table, rows in by_table.items():
         print(f"  {table:<45} {ins+skip:>5} satır  ({ins} upsert, {skip} atlan)")
 
 # FK geri aç
+import logging
+
+logger = logging.getLogger(__name__)
+
 try:
     cur.execute("SET session_replication_role = 'origin'")
     conn.commit()
-except Exception:
-    pass
+except Exception as err:
+    logger.error(f"restore_vm_original_data failed: {err}")
 
 conn.close()
 print(f"\nTOPLAM: {ins_total} upsert, {skip_total} atlan")

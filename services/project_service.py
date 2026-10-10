@@ -18,6 +18,9 @@ from services.performance_service import (
     get_last_friday_of_year, get_ay_ceyreği, get_last_weekday_before_weekend,
     hesapla_durum
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def handle_task_completion(task: Task, old_status: Optional[str] = None) -> int:
@@ -74,6 +77,17 @@ def handle_task_completion(task: Task, old_status: Optional[str] = None) -> int:
             try:
                 # Bireysel PG'yi bul
                 bireysel_pg = BireyselPerformansGostergesi.query.get(impact.related_pg_id)
+                # Savunma derinliği (C-001): PG sahibi görevin projesiyle aynı kiracıda olmalı
+                if bireysel_pg is not None:
+                    from app.models.core import User as _CoreUser
+                    _owner = _CoreUser.query.get(bireysel_pg.user_id)
+                    _proj = getattr(task, 'project', None)
+                    if _owner is None or _proj is None or _owner.tenant_id != _proj.tenant_id:
+                        if current_app:
+                            current_app.logger.warning(
+                                f"Bireysel PG {impact.related_pg_id} farklı kiracıya ait; atlandı"
+                            )
+                        continue
                 if not bireysel_pg:
                     if current_app:
                         current_app.logger.warning(f"Bireysel PG {impact.related_pg_id} bulunamadı")
@@ -139,9 +153,9 @@ def handle_task_completion(task: Task, old_status: Optional[str] = None) -> int:
                         mevcut_deger = float(mevcut_veri.gerceklesen_deger) if mevcut_veri.gerceklesen_deger else 0
                         yeni_deger = mevcut_deger + float(impact_value)
                         impact_value = str(yeni_deger)
-                    except (ValueError, TypeError):
+                    except (ValueError, TypeError) as err:
                         # Dönüştürme hatası varsa, impact_value'yu olduğu gibi kullan
-                        pass
+                        logger.warning(f"handle_task_completion failed: {err}")
                 
                 # Yeni kayıt oluştur (eğer mevcut veri yoksa veya Toplam yöntemi kullanılıyorsa güncelle)
                 if not mevcut_veri:

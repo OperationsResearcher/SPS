@@ -22,6 +22,9 @@ from app.extensions import csrf
 from app.constants.roles import PLATFORM_ADMIN_ROLES
 from flask_babel import gettext as _
 from app.utils.error_handlers import json_error  # S6
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _is_admin() -> bool:
@@ -149,7 +152,8 @@ def admin_tools_yedekleme():
         current_app.logger.error(f"[admin_tools] yedekleme sayfa: {e}", exc_info=True)
         status, backups = None, []
     return render_template("platform/admin/yedekleme.html",
-                           status=status, backups=backups, confirm=_RESTORE_CONFIRM)
+                           status=status, backups=backups, confirm=_RESTORE_CONFIRM,
+                           is_local=_is_local())
 
 
 def _send_temp(path: str, download_name: str, mime: str):
@@ -157,8 +161,8 @@ def _send_temp(path: str, download_name: str, mime: str):
     def _cleanup(resp):
         try:
             os.remove(path)
-        except OSError:
-            pass
+        except OSError as e:
+            logger.error(f"_cleanup failed: {e}")
         return resp
     return send_file(path, as_attachment=True, download_name=download_name, mimetype=mime)
 
@@ -170,6 +174,9 @@ def admin_tools_yedekleme_indir_db():
     """Manuel: anlık tam DB yedeği üret → indir."""
     if not _is_admin():
         return jsonify({"error": "yetki yok"}), 403
+    # GUV-08: tam DB / kod yedeği web'den yalnız Yerel'de indirilir; Yayın/Test/Demo'da sunucu scriptleri kullanılır.
+    if not _is_local():
+        return jsonify({"error": "bu ortamda kilitli"}), 403
     import datetime
     try:
         from app.services import yedekleme_service as Y
@@ -189,6 +196,9 @@ def admin_tools_yedekleme_indir_kod():
     """Manuel: anlık tam kod yedeği üret → indir."""
     if not _is_admin():
         return jsonify({"error": "yetki yok"}), 403
+    # GUV-08: tam DB / kod yedeği web'den yalnız Yerel'de indirilir; Yayın/Test/Demo'da sunucu scriptleri kullanılır.
+    if not _is_local():
+        return jsonify({"error": "bu ortamda kilitli"}), 403
     import datetime
     try:
         from app.services import yedekleme_service as Y
@@ -207,6 +217,9 @@ def admin_tools_yedekleme_indir_dosya():
     """Mevcut otomatik yedek dosyasını indir (yalnız otomatik dizininden)."""
     if not _is_admin():
         return jsonify({"error": "yetki yok"}), 403
+    # GUV-08: tam DB / kod yedeği web'den yalnız Yerel'de indirilir; Yayın/Test/Demo'da sunucu scriptleri kullanılır.
+    if not _is_local():
+        return jsonify({"error": "bu ortamda kilitli"}), 403
     from app.services import yedekleme_service as Y
     name = os.path.basename(request.args.get("file", ""))  # path traversal koruması
     path = os.path.join(Y.auto_dir(current_app._get_current_object()), name)
@@ -239,6 +252,11 @@ def admin_tools_yedekleme_geri_yukle_db():
     """YIKICI: yüklenen .dump'tan DB'yi geri yükle. Admin + şifre + onay metni."""
     if not _is_admin():
         return jsonify({"error": "yetki yok"}), 403
+    # F-006: yikici islem web'den yalniz Yerel'de; Yayin/Test/Demo'da sunucu scriptleri.
+    if not _is_local():
+        current_app.logger.warning(
+            "[admin_tools] DB restore blocked in non-local env user=%s", current_user.id)
+        return jsonify({"error": "bu ortamda kilitli"}), 403
     pw = request.form.get("password", "")
     confirm = (request.form.get("confirmation") or "").strip()
     if confirm != _RESTORE_CONFIRM:
@@ -273,6 +291,14 @@ def admin_tools_yedekleme_geri_yukle_db():
         f.save(path)
         Y.restore_db(current_app._get_current_object(), path)
         os.remove(path)
+        try:
+            from app.utils.audit_logger import AuditLogger
+            AuditLogger.log(
+                action="DB_RESTORE", resource_type="GÜVENLİK", resource_id=None,
+                description=f"DB restored by {current_user.email} from {f.filename}",
+            )
+        except Exception as _audit_err:
+            current_app.logger.error("[audit] DB restore audit failed: %s", _audit_err)
         return jsonify({"success": True, "message": _("DB geri yükleme tamamlandı.")})
     except Exception as e:
         # S6: `f"Geri yükleme hatası: {e}"` pg_restore çıktısını (bağlantı

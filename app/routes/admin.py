@@ -20,6 +20,9 @@ from app.models.process import Process, ProcessKpi, ProcessSubStrategyLink
 from app.utils.process_utils import validate_process_parent_id, validate_same_tenant_user_ids, validate_same_tenant_sub_strategies, ensure_int_list, parse_optional_date
 from app.constants.roles import PLATFORM_ADMIN_ROLES
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)
 
 # Privilege escalation guard: non-Admin roller yalnızca bu whitelist'teki rolleri atayabilir.
 _ASSIGNABLE_ROLES = {
@@ -401,8 +404,8 @@ def admin_create_process():
     if data.get("weight") is not None and str(data.get("weight", "")).strip() != "":
         try:
             new_process.weight = min(100.0, max(0.0, float(data.get("weight"))))
-        except (ValueError, TypeError):
-            pass
+        except (ValueError, TypeError) as err:
+            logger.warning(f"admin_create_process failed: {err}")
 
     db.session.add(new_process)
     db.session.flush()
@@ -471,8 +474,8 @@ def admin_update_process(process_id):
     if data.get("weight") is not None and str(data.get("weight", "")).strip() != "":
         try:
             p.weight = min(100.0, max(0.0, float(data.get("weight"))))
-        except (ValueError, TypeError):
-            pass
+        except (ValueError, TypeError) as err:
+            logger.warning(f"admin_update_process failed: {err}")
 
     if "leader_ids" in data:
         ids = ensure_int_list(data.get("leader_ids"))

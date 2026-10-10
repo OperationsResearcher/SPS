@@ -14,6 +14,9 @@ from app.utils.errors import (
     ResourceNotFoundError,
     BusinessRuleError
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def json_error(e, log_prefix: str = "", status: int = 500, message: str = None):
@@ -42,8 +45,8 @@ def json_error(e, log_prefix: str = "", status: int = 500, message: str = None):
     try:
         current_app.logger.error("%s %s", log_prefix or "[hata]", e)
         current_app.logger.error(traceback.format_exc())
-    except Exception:
-        pass
+    except Exception as err:
+        logger.error(f"json_error failed: {err}")
     return jsonify({
         "success": False,
         "message": message or _("İşlem tamamlanamadı. Lütfen tekrar deneyin."),

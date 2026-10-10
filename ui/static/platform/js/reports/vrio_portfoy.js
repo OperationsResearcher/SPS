@@ -15,6 +15,13 @@
     "Rekabet Paritesi":"raporlar_vrio_portfoy.rekabet_paritesi_0",
     "Rekabetçi Dezavantaj":"raporlar_vrio_portfoy.rekabetci_dezavantaj_0"
   };
+  const BUCKET_LABEL = {
+    "Sürdürülebilir Rekabet Avantajı": t("Sürdürülebilir Rekabet Avantajı"),
+    "Kullanılmayan Avantaj": t("Kullanılmayan Avantaj"),
+    "Geçici Rekabet Avantajı": t("Geçici Rekabet Avantajı"),
+    "Rekabet Paritesi": t("Rekabet Paritesi"),
+    "Rekabetçi Dezavantaj": t("Rekabetçi Dezavantaj")
+  };
   async function load(){
     try {
       const j = await (await fetch('/k-report/api/vrio-portfoy',{credentials:'same-origin'})).json();
@@ -23,18 +30,18 @@
       document.getElementById('content').style.display='block';
       const s = j.summary;
       document.getElementById('summary').innerHTML = [
-        stat('Toplam Kaynak', s.total, '#0f172a', 'raporlar_vrio_portfoy.toplam_kaynak'),
-        stat('Sürdürülebilir', s.sustainable, '#10b981', 'raporlar_vrio_portfoy.surdurulebilir'),
-        stat('Geçici', s.temporary, '#0ea5e9', 'raporlar_vrio_portfoy.gecici'),
-        stat('Kullanılmayan', s.unused, '#f59e0b', 'raporlar_vrio_portfoy.kullanilmayan'),
-        stat('Dezavantaj', s.disadvantage, '#dc2626', 'raporlar_vrio_portfoy.dezavantaj'),
+        stat(t('Toplam Kaynak'), s.total, '#0f172a', 'raporlar_vrio_portfoy.toplam_kaynak'),
+        stat(t('Sürdürülebilir'), s.sustainable, '#10b981', 'raporlar_vrio_portfoy.surdurulebilir'),
+        stat(t('Geçici'), s.temporary, '#0ea5e9', 'raporlar_vrio_portfoy.gecici'),
+        stat(t('Kullanılmayan'), s.unused, '#f59e0b', 'raporlar_vrio_portfoy.kullanilmayan'),
+        stat(t('Dezavantaj'), s.disadvantage, '#dc2626', 'raporlar_vrio_portfoy.dezavantaj'),
       ].join('');
       document.getElementById('buckets').innerHTML = Object.entries(j.buckets).map(([name,items]) => {
         const col = bucketColors[name] || '#64748b';
         const bcode = bucketCodes[name] || '';
         return `<div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:16px;border-top:4px solid ${col};"${bcode?` data-card-code="${bcode}"`:''}>
-          <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:${col};margin:0 0 10px;">${esc(name)} <span style="background:${col};color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px;">${items.length}</span></h3>
-          ${items.length===0?'<div style="font-size:12px;color:#94a3b8;font-style:italic;">Boş</div>':items.map(r=>`
+          <h3 class="mc-card-title" style="font-size:13px;font-weight:700;color:${col};margin:0 0 10px;">${esc(BUCKET_LABEL[name] || name)} <span style="background:${col};color:#fff;font-size:11px;padding:2px 8px;border-radius:10px;margin-left:6px;">${items.length}</span></h3>
+          ${items.length===0?'<div style="font-size:12px;color:#94a3b8;font-style:italic;">' + t('Boş') + '</div>':items.map(r=>`
             <div style="padding:8px 10px;border:1px solid #e2e8f0;border-radius:6px;margin-bottom:6px;font-size:12.5px;">
               <div style="font-weight:600;color:#0f172a;">${esc(r.name)}</div>
               <div style="font-size:10.5px;color:#64748b;margin-top:2px;">
@@ -49,7 +56,7 @@
       }).join('');
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

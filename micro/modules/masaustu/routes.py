@@ -141,13 +141,24 @@ def masaustu():
     favori_pgs = []
     from app.services.score_engine_service import compute_pg_score
     from app.utils.numeric import safe_float
-    for _pg in favori_pg_kayitlari:
-        _son = (
-            KpiData.query
-            .filter_by(process_kpi_id=_pg.id, is_active=True)
-            .order_by(KpiData.year.desc(), KpiData.data_date.desc())
-            .first()
+    # PERF-12: favori PG başına ayrı sorgu yerine tek pencere-fonksiyonlu sorgu.
+    _son_map = {}
+    _fav_ids = [_p.id for _p in favori_pg_kayitlari]
+    if _fav_ids:
+        from sqlalchemy import func as _func
+        _rn = _func.row_number().over(
+            partition_by=KpiData.process_kpi_id,
+            order_by=(KpiData.year.desc(), KpiData.data_date.desc(), KpiData.id.desc()),
+        ).label("rn")
+        _sub = (
+            db.session.query(KpiData.id.label("kid"), _rn)
+            .filter(KpiData.process_kpi_id.in_(_fav_ids), KpiData.is_active.is_(True))
+            .subquery()
         )
+        for _d in KpiData.query.join(_sub, KpiData.id == _sub.c.kid).filter(_sub.c.rn == 1).all():
+            _son_map[_d.process_kpi_id] = _d
+    for _pg in favori_pg_kayitlari:
+        _son = _son_map.get(_pg.id)
         _hedef = safe_float(_son.target_value if _son and _son.target_value else _pg.target_value)
         _gercek = safe_float(_son.actual_value) if _son else None
         _hedef_orani = (

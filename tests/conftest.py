@@ -18,6 +18,20 @@ from config import TestingConfig
 def app():
     """Flask app fixture - function scope for test isolation."""
     app = create_app(TestingConfig)
+
+    # Tenant guard (enforce): testte dis app_context acik oldugu icin `g`
+    # istekler arasi paylasilir; guard onbellegi (g._tenant_guard_ids) onceki
+    # (anonim/fixture) baglamdan kalip oturumu dusurur. Prod'da her istek
+    # kendi g'sine sahiptir. Her istek basinda onbellegi sifirla.
+    def _reset_tenant_guard_cache():
+        from flask import g
+        g.pop("_tenant_guard_ids", None)
+        g.pop("_tenant_guard_lock", None)
+        g.pop("_login_user", None)
+
+    # Diger before_request kancalarindan (platform_core kapisi) ONCE calismali.
+    app.before_request_funcs.setdefault(None, []).insert(0, _reset_tenant_guard_cache)
+
     with app.app_context():
         db.create_all()
         yield app

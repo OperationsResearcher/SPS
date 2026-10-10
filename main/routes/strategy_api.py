@@ -3,6 +3,9 @@
 from main.routes._common import *  # noqa: F401,F403
 from main.routes import main_bp
 from main.deprecated import legacy_html_to_platform
+import logging
+
+logger = logging.getLogger(__name__)
 
 # ─────────────────────────────────────────────────────────────────────────────
 # DALGA 1 (2026-06-16): Legacy kurum kimlik + strateji yazma route'ları kaldırıldı.
@@ -23,7 +26,6 @@ from main.deprecated import legacy_html_to_platform
 
 @main_bp.route('/strategy/update_cell', methods=['POST'])
 @login_required
-@csrf.exempt  # AJAX için CSRF muafiyeti
 def update_strategy_cell():
     """Strateji-Süreç matris hücresini güncelle (Toggle: Yok->9->3->Sil)"""
     try:
@@ -289,14 +291,14 @@ def strategy_project_add():
         if start_date_str:
             try:
                 start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                pass
+            except ValueError as err:
+                logger.warning(f"strategy_project_add failed: {err}")
         
         if end_date_str:
             try:
                 end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                pass
+            except ValueError as err:
+                logger.warning(f"strategy_project_add failed: {err}")
         
         # Yeni proje oluştur
         new_project = Project(
@@ -377,14 +379,14 @@ def strategy_project_edit(id):
         if start_date_str:
             try:
                 start_date = datetime.strptime(start_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                pass
+            except ValueError as err:
+                logger.warning(f"strategy_project_edit failed: {err}")
         
         if end_date_str:
             try:
                 end_date = datetime.strptime(end_date_str, '%Y-%m-%d').date()
-            except ValueError:
-                pass
+            except ValueError as err:
+                logger.warning(f"strategy_project_edit failed: {err}")
         
         # Projeyi güncelle
         project.name = name
@@ -514,60 +516,6 @@ def strategy_project_clone(id):
 @main_bp.route('/strategy/kpi/add', methods=['POST'])
 @login_required
 def strategy_kpi_add():
-    """Yeni KPI ekle"""
-    try:
-        # Form verilerini al
-        name = request.form.get('name', '').strip()
-        process_id = request.form.get('process_id')
-        unit = request.form.get('unit', '').strip()
-        target_value_str = request.form.get('target_value', '').strip()
-        direction = request.form.get('direction', 'Artan')
-        description = request.form.get('description', '').strip()
-        
-        # Validasyon
-        if not name:
-            flash('Gösterge adı zorunludur.', 'error')
-            return redirect(url_for('main.strategy_kpis'))
-        
-        if not process_id:
-            flash('Süreç seçimi zorunludur.', 'error')
-            return redirect(url_for('main.strategy_kpis'))
-        
-        # Sürecin kullanıcının kurumuna ait olduğunu kontrol et
-        process = Process.query.filter_by(id=int(process_id), kurum_id=current_user.kurum_id).first()
-        if not process:
-            flash('Geçersiz süreç seçimi.', 'error')
-            return redirect(url_for('main.strategy_kpis'))
-        
-        # Hedef değeri parse et (String olarak saklanacak)
-        target_value_str_final = target_value_str if target_value_str else None
-        
-        # Direction'ı model formatına çevir
-        direction_model = 'Increasing' if direction == 'Artan' else 'Decreasing'
-        
-        # Yeni KPI oluştur
-        new_kpi = SurecPerformansGostergesi(
-            ad=name,
-            surec_id=int(process_id),
-            birim=unit if unit else None,
-            olcum_birimi=unit if unit else None,  # Eski alan
-            unit=unit if unit else None,  # V3.0 alanı
-            hedef_deger=target_value_str_final,
-            direction=direction_model,  # V3.0 alanı (Increasing/Decreasing)
-            aciklama=description if description else None
-        )
-        
-        db.session.add(new_kpi)
-        db.session.commit()
-        
-        flash('KPI başarıyla oluşturuldu.', 'success')
-        return redirect(url_for('main.strategy_kpis'))
-        
-    except Exception as e:
-        import traceback
-        current_app.logger.error(f'KPI oluşturma hatası: {str(e)}')
-        current_app.logger.error(f'Traceback: {traceback.format_exc()}')
-        db.session.rollback()
-        flash(f'KPI oluşturulurken hata oluştu: {str(e)}', 'error')
-        return redirect(url_for('main.strategy_kpis'))
-
+    """HATA-19: legacy uç kaldırıldı (hedef `main.strategy_kpis` endpoint'i yok, BuildError → 500 veriyordu).
+    Yeni PG ekleme: /k-plan/process/api/pi/add. url_for referansı (legacy şablon) kırılmasın diye 410 döner."""
+    return jsonify({'success': False, 'message': 'Bu uç kaldırıldı.'}), 410

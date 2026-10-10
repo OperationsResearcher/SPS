@@ -25,6 +25,9 @@ from flask_babel import gettext as _
 
 logger = logging.getLogger(__name__)
 
+# PERF-03: SDK varsayılanı ~600 sn; gunicorn 60 sn'de worker'ı öldürür.
+_LLM_TIMEOUT = float(os.environ.get("LLM_TIMEOUT_SECONDS", "40"))
+
 
 # ─── Provider çağırıcılar ────────────────────────────────────────────────────
 
@@ -76,6 +79,7 @@ def _call_gemini(api_key: str, model: str, prompt: str, system_prompt: Optional[
         resp = m.generate_content(
             full,
             generation_config=genai.types.GenerationConfig(max_output_tokens=max_output_tokens),
+            request_options={"timeout": _LLM_TIMEOUT},
         )
         usage = {}
         um = getattr(resp, "usage_metadata", None)
@@ -96,11 +100,28 @@ def _call_gemini(api_key: str, model: str, prompt: str, system_prompt: Optional[
         return None, {}
 
 
+
+def _provider_base_url(provider: str, base_url: Optional[str]) -> Optional[str]:
+    """Çağrıya geçirilecek base_url. openai (OpenAI-uyumlu / Yerel LLM) ve
+    openrouter base_url kabul eder; diğer sağlayıcılar kendi sabit uçlarını kullanır.
+    Önceden openai için base_url düşüyordu ve Yerel LLM çağrıları OpenAI'a gidiyordu."""
+    if provider == "openrouter":
+        return base_url or "https://openrouter.ai/api/v1"
+    if provider == "openai":
+        return base_url or None
+    return None
+
+
+def _base_url_allowed(base_url: str) -> tuple[bool, str]:
+    from app.utils.outbound_guard import validate_llm_base_url
+    allow = bool(current_app.config.get("LLM_ALLOW_PRIVATE_BASE_URL", False)) if current_app else False
+    return validate_llm_base_url(base_url, allow_private=allow)
+
 def _call_openai(api_key: str, model: str, prompt: str, system_prompt: Optional[str] = None,
                  base_url: Optional[str] = None, max_output_tokens: int = 2048) -> tuple[Optional[str], dict]:
     try:
         from openai import OpenAI
-        client = OpenAI(api_key=api_key, base_url=base_url or None)
+        client = OpenAI(api_key=api_key, base_url=base_url or None, timeout=_LLM_TIMEOUT, max_retries=1)
         msgs = []
         if system_prompt:
             msgs.append({"role": "system", "content": system_prompt})
@@ -146,7 +167,7 @@ def _call_anthropic(api_key: str, model: str, prompt: str, system_prompt: Option
                     max_output_tokens: int = 2048) -> tuple[Optional[str], dict]:
     try:
         from anthropic import Anthropic
-        client = Anthropic(api_key=api_key)
+        client = Anthropic(api_key=api_key, timeout=_LLM_TIMEOUT, max_retries=1)
         kwargs = {
             "model": model or "claude-haiku-4-5-20251001",
             "max_tokens": max_output_tokens,
@@ -186,7 +207,7 @@ def _call_groq(api_key: str, model: str, prompt: str, system_prompt: Optional[st
                max_output_tokens: int = 2048) -> tuple[Optional[str], dict]:
     try:
         from openai import OpenAI  # Groq OpenAI uyumlu
-        client = OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1")
+        client = OpenAI(api_key=api_key, base_url="https://api.groq.com/openai/v1", timeout=_LLM_TIMEOUT, max_retries=1)
         msgs = []
         if system_prompt:
             msgs.append({"role": "system", "content": system_prompt})
@@ -330,20 +351,26 @@ def call_llm(
             duration_ms=0,
         )
 
-    text, usage = caller(
+    call_kwargs = dict(
         api_key=resolved["api_key"],
         model=resolved["model"],
         prompt=prompt,
         system_prompt=system_prompt,
-        max_output_tokens=max_output_tokens,
-    ) if resolved["provider"] != "openrouter" else caller(
-        api_key=resolved["api_key"],
-        model=resolved["model"],
-        prompt=prompt,
-        system_prompt=system_prompt,
-        base_url=resolved["base_url"] or "https://openrouter.ai/api/v1",
         max_output_tokens=max_output_tokens,
     )
+    base_url = _provider_base_url(resolved["provider"], resolved["base_url"])
+    if base_url:
+        ok, why = _base_url_allowed(base_url)
+        if not ok:
+            current_app.logger.warning(
+                f"[llm_gateway] blocked tenant base_url (provider={resolved['provider']}): {why}")
+            return _result(
+                text=None, source="blocked_base_url", provider=resolved["provider"],
+                model=resolved["model"], usage={}, quota=None, quota_summary=None,
+                duration_ms=0,
+            )
+        call_kwargs["base_url"] = base_url
+    text, usage = caller(**call_kwargs)
 
     duration_ms = int((time.time() - t_start) * 1000)
 
@@ -400,11 +427,15 @@ def test_tenant_config(tenant_id: int) -> dict:
 
     import datetime as _dt
     try:
-        if provider == "openrouter":
+        base_url = _provider_base_url(provider, cfg.base_url)
+        if base_url:
+            ok, why = _base_url_allowed(base_url)
+            if not ok:
+                return {"success": False, "message": why}
             text, usage = caller(
                 plain, cfg.model, "Reply with single word: OK",
                 system_prompt=None,
-                base_url=cfg.base_url or "https://openrouter.ai/api/v1",
+                base_url=base_url,
                 max_output_tokens=10,
             )
         else:
@@ -426,5 +457,9 @@ def test_tenant_config(tenant_id: int) -> dict:
         cfg.last_test_status = "error"
         cfg.last_test_message = str(e)[:200]
         from extensions import db
+        db.session.rollback()  # HATA-17: abort edilmiş transaction'da commit sessizce kaybolur
+        cfg.last_test_at = _dt.datetime.now(_dt.timezone.utc)
+        cfg.last_test_status = "error"
+        cfg.last_test_message = str(e)[:200]
         db.session.commit()
         return {"success": False, "message": str(e)}

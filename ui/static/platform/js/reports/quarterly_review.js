@@ -9,13 +9,13 @@
       document.getElementById('content').style.display='block';
       const d=j.data;
       document.getElementById('header').innerHTML = `
-        <div style="font-size:11px;color:#065f46;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${d.year} ÇEYREK ${d.quarter}</div>
-        <div style="font-size:20px;font-weight:800;color:#0f172a;">Çeyreklik Review Toplantısı</div>
-        <div style="font-size:12.5px;color:#64748b;margin-top:4px;">${esc(d.period_start)} – ${esc(d.period_end)}${d.plan_year?' · Plan yılı '+d.plan_year:''}</div>`;
+        <div style="font-size:11px;color:#065f46;font-weight:700;text-transform:uppercase;letter-spacing:0.06em;margin-bottom:4px;">${d.year} ${t('ÇEYREK')} ${d.quarter}</div>
+        <div style="font-size:20px;font-weight:800;color:#0f172a;">${t('Çeyreklik Review Toplantısı')}</div>
+        <div style="font-size:12.5px;color:#64748b;margin-top:4px;">${esc(d.period_start)} – ${esc(d.period_end)}${d.plan_year?' · '+t('Plan yılı')+' '+d.plan_year:''}</div>`;
       document.getElementById('metrics').innerHTML = [
-        stat('Ölçüm Hacmi (Q)', d.metrics.measurements_q.toLocaleString('tr-TR'), '#16a34a', 'raporlar_quarterly_review.olcum_hacmi_q'),
-        stat('Yeni Stratejik Girişim', d.metrics.new_initiatives, '#0ea5e9', 'raporlar_quarterly_review.yeni_stratejik_girisim'),
-        stat('Tamamlanan Stratejik Girişim', d.metrics.completed_initiatives, '#10b981', 'raporlar_quarterly_review.tamamlanan_stratejik_girisim'),
+        stat(t('Ölçüm Hacmi (Q)'), d.metrics.measurements_q.toLocaleString('tr-TR'), '#16a34a', 'raporlar_quarterly_review.olcum_hacmi_q'),
+        stat(t('Yeni Stratejik Girişim'), d.metrics.new_initiatives, '#0ea5e9', 'raporlar_quarterly_review.yeni_stratejik_girisim'),
+        stat(t('Tamamlanan Stratejik Girişim'), d.metrics.completed_initiatives, '#10b981', 'raporlar_quarterly_review.tamamlanan_stratejik_girisim'),
       ].join('');
       document.getElementById('ai-text').textContent = d.ai_summary;
       document.getElementById('agenda').innerHTML = '<ol style="margin:0;padding-left:20px;font-size:12.5px;color:#0f172a;line-height:1.7;">' +
@@ -24,7 +24,7 @@
         d.prep_questions.map(q => '<li style="margin-bottom:6px;">' + esc(q) + '</li>').join('') + '</ul>';
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

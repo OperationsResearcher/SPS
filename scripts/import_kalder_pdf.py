@@ -13,13 +13,16 @@ Kullanım:
 import re
 import sys
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 
 if sys.platform == "win32":
     try:
         sys.stdout.reconfigure(encoding="utf-8")
         sys.stderr.reconfigure(encoding="utf-8")
-    except Exception:
-        pass
+    except Exception as e:
+        logger.error(f"import_kalder_pdf failed: {e}")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:

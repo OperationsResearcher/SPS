@@ -21,6 +21,9 @@ from __future__ import annotations
 
 import sqlite3
 from pathlib import Path
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def main() -> int:
@@ -98,8 +101,8 @@ def main() -> int:
     finally:
         try:
             con.execute("PRAGMA foreign_keys=ON")
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"main failed: {e}")
         con.close()
 
 

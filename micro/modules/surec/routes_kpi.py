@@ -136,6 +136,7 @@ def surec_api_kpi_add():
             notify_kpi_change(kpi, p_with_users, change_type="eklendi", actor=current_user)
             db.session.commit()
         except Exception as notif_err:
+            db.session.rollback()  # HATA-17
             current_app.logger.warning(f"[surec_api_kpi_add] notification: {notif_err}")
 
         try:
@@ -236,6 +237,7 @@ def surec_api_kpi_update(kpi_id):
             notify_kpi_change(kpi, p_with_users, change_type="güncellendi", actor=current_user)
             db.session.commit()
         except Exception as notif_err:
+            db.session.rollback()  # HATA-17
             current_app.logger.warning(f"[surec_api_kpi_update] notification: {notif_err}")
 
         try:

@@ -167,6 +167,10 @@ def demo_end():
     """Demo session'u sonlandırır, landing'e döner."""
     if not _demo_enabled():
         abort(404)
+    # GUV-25: GET, <img src=/demo/end> gibi üçüncü taraf tetiklemeleriyle paylaşılan
+    # Tomofil'i sıfırlatabiliyordu. Sıfırlama yalnız CSRF korumalı POST ile olur.
+    if request.method != "POST":
+        return redirect(url_for("app_bp.demo_landing"))
     was_active = flask_session.get("demo_session_active", False)
     tenant_key = flask_session.get("demo_tenant_key")
     if current_user.is_authenticated:

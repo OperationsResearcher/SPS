@@ -64,7 +64,15 @@ def sp_api_ai_config_save():
 
     cfg.provider = provider
     cfg.model = (d.get("model") or "").strip() or PROVIDERS[provider]["default_model"]
-    cfg.base_url = (d.get("base_url") or "").strip() or None
+    base_url = (d.get("base_url") or "").strip() or None
+    if base_url:
+        from app.utils.outbound_guard import validate_llm_base_url
+        ok, why = validate_llm_base_url(
+            base_url, allow_private=bool(current_app.config.get("LLM_ALLOW_PRIVATE_BASE_URL", False)))
+        if not ok:
+            db.session.rollback()
+            return jsonify({"error": why}), 400
+    cfg.base_url = base_url
     cfg.is_active = bool(d.get("is_active"))
     cfg.pii_mask_enabled = bool(d.get("pii_mask_enabled", True))
 

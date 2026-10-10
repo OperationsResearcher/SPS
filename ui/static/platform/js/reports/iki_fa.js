@@ -22,14 +22,14 @@
       const s=j.summary;
       const pctC = s.enable_pct>=80?'#10b981':s.enable_pct>=40?'#f59e0b':'#dc2626';
       document.getElementById('summary').innerHTML=[
-        stat('Toplam Kullanıcı',s.total_users,'#0f172a','raporlar_iki_fa.toplam_kullanici'),
-        stat('2FA Etkin',s.totp_enabled,'#10b981','raporlar_iki_fa.2fa_etkin'),
-        stat('2FA Yok',s.totp_disabled,'#dc2626','raporlar_iki_fa.2fa_yok'),
-        stat('Etkinlik %','%'+s.enable_pct,pctC,'raporlar_iki_fa.etkinlik'),
+        stat(t('Toplam Kullanıcı'),s.total_users,'#0f172a','raporlar_iki_fa.toplam_kullanici'),
+        stat(t('2FA Etkin'),s.totp_enabled,'#10b981','raporlar_iki_fa.2fa_etkin'),
+        stat(t('2FA Yok'),s.totp_disabled,'#dc2626','raporlar_iki_fa.2fa_yok'),
+        stat(t('Etkinlik %'),'%'+s.enable_pct,pctC,'raporlar_iki_fa.etkinlik'),
       ].join('');
       donut(s.totp_enabled, s.totp_disabled);
-      document.getElementById('donut-label').innerHTML = `<b>${s.totp_enabled}</b> kullanıcı 2FA etkin · <b>${s.totp_disabled}</b> etkin değil`;
-      document.getElementById('admins').innerHTML = s.admins_without_2fa===0?'<div style="color:#10b981;font-size:13px;">✓ Tüm yönetici hesaplarında 2FA etkin.</div>':
+      document.getElementById('donut-label').innerHTML = `<b>${s.totp_enabled}</b> ${t('kullanıcı 2FA etkin')} · <b>${s.totp_disabled}</b> ${t('etkin değil')}`;
+      document.getElementById('admins').innerHTML = s.admins_without_2fa===0?'<div style="color:#10b981;font-size:13px;">✓ ' + t('Tüm yönetici hesaplarında 2FA etkin.') + '</div>':
         '<div style="display:grid;gap:6px;">' + j.admins_without_2fa.map(a => `
           <div style="display:flex;align-items:center;gap:10px;padding:10px 14px;background:#fef2f2;border:1px solid #fecaca;border-radius:6px;font-size:12.5px;">
             <i class="fas fa-exclamation-triangle" style="color:#dc2626;"></i>
@@ -40,7 +40,7 @@
           </div>`).join('') + '</div>';
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

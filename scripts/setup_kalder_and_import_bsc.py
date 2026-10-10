@@ -29,12 +29,16 @@ import sys
 from datetime import date
 from pathlib import Path
 
+import logging
+
+logger = logging.getLogger(__name__)
+
 if sys.platform == 'win32':
     try:
         sys.stdout.reconfigure(encoding='utf-8')
         sys.stderr.reconfigure(encoding='utf-8')
-    except Exception:
-        pass
+    except Exception as err:
+        logger.error(f"setup_kalder_and_import_bsc failed: {err}")
 
 PROJECT_ROOT = Path(__file__).resolve().parents[1]
 if str(PROJECT_ROOT) not in sys.path:

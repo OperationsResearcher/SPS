@@ -4824,7 +4824,7 @@ msgstr "Everything looks fine. Have a great day!"
 #: ui/static/platform/js/twofa.js:73 ui/static/platform/js/twofa.js:170
 #: ui/static/platform/js/yonetim_paneli.js:10
 msgid "Hata"
-msgstr ""
+msgstr "Error"
 
 #: ui/static/platform/js/admin.js:46
 #: ui/static/platform/js/pg_tablo_modal.js:702
@@ -5676,7 +5676,7 @@ msgstr ""
 
 #: ui/static/platform/js/k_radar_ks.js:211
 msgid "alt strateji"
-msgstr ""
+msgstr "sub-strategy"
 
 #: ui/static/platform/js/k_radar_ks.js:213
 msgid "kapsam"
@@ -6146,7 +6146,7 @@ msgstr ""
 
 #: ui/static/platform/js/k_rapor.js:1483
 msgid "Boş"
-msgstr ""
+msgstr "Empty"
 
 #: ui/static/platform/js/k_rapor.js:1610
 #: ui/templates/platform/k_rapor/index.html:877
@@ -7589,7 +7589,7 @@ msgstr "Total Budget"
 
 #: ui/static/platform/js/reports/cmmi_heatmap.js:87
 msgid "Veri alınamadı"
-msgstr ""
+msgstr "Could not retrieve data"
 
 #: ui/static/platform/js/reports/kv_carpiklik.js:90
 #: ui/templates/platform/admin/sub_tenants_usage.html:78
@@ -7601,7 +7601,7 @@ msgstr "Plan Year"
 
 #: ui/static/platform/js/reports/mobile.js:25
 msgid "Bugün Bitiş"
-msgstr ""
+msgstr "Due Today"
 
 #: ui/templates/platform/_hierarchy_help.html:13
 msgid "Strateji Hiyerarşisi — Hangi Katmanda Neyi Yapıyoruz?"
@@ -19796,6 +19796,525 @@ msgstr "Period data detail"
 #: ui/templates/platform/surec/karne.html:911
 msgid "Veri düzenle"
 msgstr "Edit data"
+
+# Faz 0 (GUV) guvenlik mesajlari
+msgid "Geçersiz rol."
+msgstr "Invalid role."
+
+msgid "Geçersiz kurum."
+msgstr "Invalid organization."
+
+msgid "Bu işlem demo ortamında kapalıdır."
+msgstr "This action is disabled in the demo environment."
+
+msgid "Demo süresi doldu."
+msgstr "The demo session has expired."
+
+msgid "Bu ortamda web'den yedek indirme kilitli. Yedekler sunucu üzerinde tutulur."
+msgstr "Downloading backups from the web is locked in this environment. Backups are kept on the server."
+
+msgid "İç ağ adreslerine istek gönderilemez"
+msgstr "Requests to internal network addresses are not allowed"
+
+msgid "Adres çözümlenemedi"
+msgstr "The address could not be resolved"
+
+msgid "Adres gerekli"
+msgstr "An address is required"
+
+msgid "Geçersiz port"
+msgstr "Invalid port"
+
+msgid "SMTP portu 25, 465, 587 veya 2525 olmalıdır"
+msgstr "The SMTP port must be 25, 465, 587 or 2525"
+
+# i18n JS (reports) t() msgid'leri
+msgid "%(a)s kişi için karne (%(b)s aktif çalışandan)"
+msgstr "Scorecard for %(a)s people (of %(b)s active employees)"
+
+msgid "%(n)s kişide"
+msgstr "in %(n)s people"
+
+msgid "%(n)s slayt"
+msgstr "%(n)s slides"
+
+msgid "%(n)s ölçüm bugün girildi"
+msgstr "%(n)s measurements entered today"
+
+msgid "%(n)s öneri · Kaynak:"
+msgstr "%(n)s recommendations · Source:"
+
+msgid "%(y)s dönemi · %(n)s yıllık veri"
+msgstr "%(y)s period · %(n)s annual data points"
+
+msgid "%(y)s yılı"
+msgstr "%(y)s plan year"
+
+msgid "%(y)s yılı:"
+msgstr "%(y)s:"
+
+msgid "(başlık yok)"
+msgstr "(no title)"
+
+msgid "2FA Etkin"
+msgstr "2FA Enabled"
+
+msgid "2FA Yok"
+msgstr "No 2FA"
+
+msgid "AI düşünüyor…"
+msgstr "AI is thinking…"
+
+msgid "AI erişimi durduruldu"
+msgstr "AI access suspended"
+
+msgid "AI henüz yeterli veri bulamadı ya da sistem yeterince olgunlaşmamış. Birkaç dönem veri toplandıktan sonra tekrar deneyin."
+msgstr "AI does not have enough data yet, or the system is not mature enough. Please try again after several periods of data have been collected."
+
+msgid "AI yanıt vermedi"
+msgstr "AI did not respond"
+
+msgid "AI yorumu hazırlanıyor…"
+msgstr "Preparing AI commentary…"
+
+msgid "AI özet (Gemini varsa LLM, yoksa şablon)"
+msgstr "AI summary (LLM via Gemini if available, otherwise template)"
+
+msgid "Aktif Darboğaz"
+msgstr "Active Bottlenecks"
+
+msgid "Aktif darboğaz yok."
+msgstr "No active bottlenecks."
+
+msgid "Analiz Edilen PG"
+msgstr "Analyzed KPIs"
+
+msgid "Analiz Edilen Süreç"
+msgstr "Analyzed Processes"
+
+msgid "Anomali Sayısı"
+msgstr "Anomaly Count"
+
+msgid "Anomali tespit edilmedi — KPI ölçümleriniz normal dağılımda."
+msgstr "No anomalies detected — your KPI measurements are within the normal distribution."
+
+msgid "Anomaly score:"
+msgstr "Anomaly score:"
+
+msgid "Atlanan (yetersiz veri)"
+msgstr "Skipped (insufficient data)"
+
+msgid "Bağlantı"
+msgstr "Links"
+
+msgid "Benchmark için lütfen sektörünüzü seçin:"
+msgstr "Please select your sector for benchmarking:"
+
+msgid "Bu yıl için override edilen hedef"
+msgstr "Target overridden for this year"
+
+msgid "Bugün Ölçüm"
+msgstr "Measurements Today"
+
+msgid "Bulgu Olan Süreç"
+msgstr "Processes with Findings"
+
+msgid "Bulgu olan süreç yok — Lean göstergeleriniz iyi durumda."
+msgstr "No processes with findings — your Lean indicators look good."
+
+msgid "Dezavantaj"
+msgstr "Disadvantage"
+
+msgid "Durdur"
+msgstr "Stop"
+
+msgid "Durum:"
+msgstr "Status:"
+
+msgid "Düşük (<50)"
+msgstr "Low (<50)"
+
+msgid "Esas:"
+msgstr "Base:"
+
+msgid "Etkinlik %"
+msgstr "Enablement %"
+
+msgid "Format"
+msgstr "Format"
+
+msgid "Geciken Faaliyet"
+msgstr "Overdue Activities"
+
+msgid "Genel Skor"
+msgstr "Overall Score"
+
+msgid "Geçici"
+msgstr "Temporary"
+
+msgid "Giren:"
+msgstr "Entered by:"
+
+msgid "Günaydın"
+msgstr "Good morning"
+
+msgid "Günlük limit doldu"
+msgstr "Daily limit reached"
+
+msgid "Güven"
+msgstr "Confidence"
+
+msgid "Harcanan Bütçe"
+msgstr "Budget Spent"
+
+msgid "Harcanan:"
+msgstr "Spent:"
+
+msgid "Hedef değeri"
+msgstr "Target value"
+
+msgid "Henüz plan yılı yok. Önce SP → Dönemler ekranından plan yılı oluşturun."
+msgstr "No plan year yet. First create a plan year from SP → Periods."
+
+msgid "Henüz veri girişi yok."
+msgstr "No data entries yet."
+
+msgid "Her sürecin PG'lerinden kaçına ölçüm girildiğinin oranı (dolu/toplam). %80+ yeşil (sağlıklı), %50-80 sarı (orta), %50 altı kırmızı (zayıf). Düşük oranlı süreçler veri girişi için öncelikli."
+msgstr "For each process, the share of its KPIs that have measurements entered (filled/total). 80%+ green (healthy), 50-80% yellow (medium), below 50% red (weak). Processes with low rates should be prioritized for data entry."
+
+msgid "Hizalanmamış"
+msgstr "Unaligned"
+
+msgid "Hiç PG revize edilmemiş — hedefler yıldan yıla aynı kalmış."
+msgstr "No KPI has been revised — targets have stayed the same across years."
+
+msgid "Hızlandır"
+msgstr "Accelerate"
+
+msgid "K-Vektör ağırlık:"
+msgstr "K-Vector weight:"
+
+msgid "KPI Ölçüm"
+msgstr "KPI Measurements"
+
+msgid "Kontrol Edilen PG"
+msgstr "KPIs Checked"
+
+msgid "Kullanılmayan"
+msgstr "Unused"
+
+msgid "Kurum sektörü sistemde kayıtlı değil; seçim oturuma özel."
+msgstr "The organization's sector is not recorded in the system; the selection applies to this session only."
+
+msgid "Lütfen bir soru yazın."
+msgstr "Please type a question."
+
+msgid "Metrik Sayısı"
+msgstr "Metric Count"
+
+msgid "OKR objesi yok."
+msgstr "No OKR objects."
+
+msgid "ORTA"
+msgstr "MEDIUM"
+
+msgid "Onay Bekliyor"
+msgstr "Pending Approval"
+
+msgid "Onaylanmış"
+msgstr "Approved"
+
+msgid "Ort. CMMI"
+msgstr "Avg. CMMI"
+
+msgid "Ort. PG / Kişi"
+msgstr "Avg. KPI / Person"
+
+msgid "Ort. Sağlık"
+msgstr "Avg. Health"
+
+msgid "Ort. Tamamlanma"
+msgstr "Avg. Completion"
+
+msgid "Orta Risk"
+msgstr "Medium Risk"
+
+msgid "Ortalama İlerleme"
+msgstr "Average Progress"
+
+msgid "PG ağırlığı"
+msgstr "KPI weight"
+
+msgid "Reddedilen"
+msgstr "Rejected"
+
+msgid "Revize edilen alanlar:"
+msgstr "Revised fields:"
+
+msgid "Revizyon Yapılan Yıl"
+msgstr "Years with Revisions"
+
+msgid "Risk Azalt"
+msgstr "Mitigate Risk"
+
+msgid "SEKTÖR"
+msgstr "SECTOR"
+
+msgid "SEKTÖR BELİRLENMEDİ"
+msgstr "SECTOR NOT SET"
+
+msgid "STRATEJİK YOLCULUK"
+msgstr "STRATEGIC JOURNEY"
+
+msgid "Sağlıklı"
+msgstr "Healthy"
+
+msgid "Sektör seçildiğinde benchmark verileri burada görünecek."
+msgstr "Benchmark data will appear here once a sector is selected."
+
+msgid "Sektör seçilmedi"
+msgstr "No sector selected"
+
+msgid "Sisteminizde sektör bilgisi girilmemiş."
+msgstr "No sector has been entered in your system."
+
+msgid "Skor Hesaplanan"
+msgstr "Scored"
+
+msgid "Son 3 başarı puanı:"
+msgstr "Last 3 achievement scores:"
+
+msgid "Son 7 Gün Tamamlanan"
+msgstr "Completed in Last 7 Days"
+
+msgid "Son 7 Gün Ölçüm"
+msgstr "Measurements in Last 7 Days"
+
+msgid "Son Yıl Toplam"
+msgstr "Latest Year Total"
+
+msgid "Sonlandır"
+msgstr "Terminate"
+
+msgid "Soru gerekli"
+msgstr "Question required"
+
+msgid "Sorunlu PG yok."
+msgstr "No problematic KPIs."
+
+msgid "Stratejik girişim yok."
+msgstr "No strategic initiatives."
+
+msgid "Sunumu"
+msgstr "Presentation"
+
+msgid "Sürdürülebilir"
+msgstr "Sustainable"
+
+msgid "Süre:"
+msgstr "Duration:"
+
+msgid "Süreç yok."
+msgstr "No processes."
+
+msgid "Süreç üyeliği verisi yok."
+msgstr "No process membership data."
+
+msgid "Süreçteki temel hedef"
+msgstr "Base target of the process"
+
+msgid "Tahmini boyut"
+msgstr "Estimated size"
+
+msgid "Tamamlanan Stratejik Girişim"
+msgstr "Completed Strategic Initiatives"
+
+msgid "Toplam Bireysel PG"
+msgstr "Total Individual KPIs"
+
+msgid "Toplam Bulgu"
+msgstr "Total Findings"
+
+msgid "Toplam Faaliyet"
+msgstr "Total Activities"
+
+msgid "Toplam Kaynak"
+msgstr "Total Resources"
+
+msgid "Toplam Plan Dönemi"
+msgstr "Total Plan Periods"
+
+msgid "Toplam Revizyon"
+msgstr "Total Revisions"
+
+msgid "Toplam Risk"
+msgstr "Total Risks"
+
+msgid "Toplam Stratejik Girişim"
+msgstr "Total Strategic Initiatives"
+
+msgid "Toplam bütçe:"
+msgstr "Total budget:"
+
+msgid "Toplam Çalışan"
+msgstr "Total Employees"
+
+msgid "Tüm yönetici hesaplarında 2FA etkin."
+msgstr "2FA is enabled for all manager accounts."
+
+msgid "Uyarı Sayısı"
+msgstr "Warning Count"
+
+msgid "Veri Yılı"
+msgstr "Data Years"
+
+msgid "Veri bulunamadı."
+msgstr "No data found."
+
+msgid "Yapısal değişim yok — istikrarlı plan."
+msgstr "No structural change — stable plan."
+
+msgid "Yeni Stratejik Girişim"
+msgstr "New Strategic Initiatives"
+
+msgid "Yeniden Odakla"
+msgstr "Refocus"
+
+msgid "YÜKSEK"
+msgstr "HIGH"
+
+msgid "Yönetici Sayısı"
+msgstr "Leader Count"
+
+msgid "Yönetici verisi yok."
+msgstr "No leader data."
+
+msgid "Yüksek RPN"
+msgstr "High RPN"
+
+msgid "Yüksek Öncelik"
+msgstr "High Priority"
+
+msgid "Yıl Aralığı"
+msgstr "Year Range"
+
+msgid "ZIP hazırlanıyor (10-60sn)…"
+msgstr "Preparing ZIP (10-60 sec)…"
+
+msgid "acil ilgilenilmesi gerekli"
+msgstr "urgent action required"
+
+msgid "ağırlık"
+msgstr "weight"
+
+msgid "bulgu"
+msgstr "findings"
+
+msgid "değişiklik yok"
+msgstr "no changes"
+
+msgid "düşük"
+msgstr "low"
+
+msgid "eksik alanlar var"
+msgstr "missing fields"
+
+msgid "en az 1 PG değişti"
+msgstr "at least 1 KPI changed"
+
+msgid "etkin değil"
+msgstr "not enabled"
+
+msgid "hedef · ağırlık · periyot"
+msgstr "target · weight · period"
+
+msgid "iyi"
+msgstr "good"
+
+msgid "kapsama"
+msgstr "coverage"
+
+msgid "kayıtlı tüm yıllar"
+msgstr "all recorded years"
+
+msgid "kullanıcı 2FA etkin"
+msgstr "users with 2FA enabled"
+
+msgid "kullanım"
+msgstr "usage"
+
+msgid "orta"
+msgstr "medium"
+
+msgid "revizyon"
+msgstr "revisions"
+
+msgid "sektör ort."
+msgstr "sector avg."
+
+msgid "son:"
+msgstr "last:"
+
+msgid "tam tanımlı"
+msgstr "fully defined"
+
+msgid "tıkla detaya git"
+msgstr "click for details"
+
+msgid "ÇEYREK"
+msgstr "QUARTER"
+
+msgid "Çeyreklik Review Toplantısı"
+msgstr "Quarterly Review Meeting"
+
+msgid "Çözülmüş"
+msgstr "Resolved"
+
+msgid "Ölçüm Hacmi (Q)"
+msgstr "Measurement Volume (Q)"
+
+msgid "Ölçüm periyodu"
+msgstr "Measurement period"
+
+msgid "Önümüzdeki 7 Gün"
+msgstr "Next 7 Days"
+
+msgid "Üretiliyor (10-30sn)…"
+msgstr "Generating (10-30 sec)…"
+
+msgid "Üretiliyor…"
+msgstr "Generating…"
+
+msgid "Üretiliyor… (10-30sn)"
+msgstr "Generating… (10-30 sec)"
+
+msgid "Üretim başarısız"
+msgstr "Generation failed"
+
+msgid "ölçüm"
+msgstr "measurements"
+
+msgid "İdeal"
+msgstr "Ideal"
+
+msgid "İlerleme:"
+msgstr "Progress:"
+
+msgid "İlk Yıla Göre"
+msgstr "vs First Year"
+
+msgid "İndirildi"
+msgstr "Downloaded"
+
+msgid "İyi (≥70)"
+msgstr "Good (≥70)"
+
+msgid "Şu an erken uyarı yok — tüm PG'ler kabul edilebilir performansta."
+msgstr "No early warnings right now — all KPIs are performing acceptably."
+
+msgid "— Sektör seçin —"
+msgstr "— Select sector —"
+
 
 #~ msgid "Kritik KPI:"
 #~ msgstr "Critical KPI:"

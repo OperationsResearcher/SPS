@@ -23,6 +23,7 @@ from app.services.plan_year_service import get_active_plan_year_for_user, list_p
 from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
+from .helpers import rapor_rol_gerekli
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 2 — PERSONA DASHBOARDS + AI ÜRÜNLERİ
@@ -32,6 +33,7 @@ from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
 
 @app_bp.route("/k-report/cfo-dashboard")
 @login_required
+@rapor_rol_gerekli("yonetim")
 @require_module("k_rapor")
 def raporlar_cfo_dashboard():
     return render_template("platform/raporlar/cfo_dashboard.html")
@@ -39,6 +41,7 @@ def raporlar_cfo_dashboard():
 
 @app_bp.route("/k-report/api/cfo-dashboard")
 @login_required
+@rapor_rol_gerekli("yonetim")
 @require_module("k_rapor")
 def raporlar_api_cfo_dashboard():
     from app.models.llm_usage import LLMUsageLog
@@ -98,7 +101,7 @@ def raporlar_api_cfo_dashboard():
     strat_budgets = []
     for sid, d in by_strategy.items():
         if sid:
-            s = db.session.get(Strategy, sid)
+            s = Strategy.query.filter_by(id=sid, tenant_id=tid).first()
             label = f"{s.code} {s.title}" if s else f"#{sid}"
         else:
             label = "(stratejisiz)"
@@ -288,7 +291,7 @@ def raporlar_api_chro_dashboard():
     most_loaded = sorted(process_membership.items(), key=lambda x: -x[1])[:5]
     most_loaded_users = []
     for uid, cnt in most_loaded:
-        u = db.session.get(User, uid)
+        u = User.query.filter_by(id=uid, tenant_id=tid).first()
         if u:
             most_loaded_users.append({
                 "id": uid, "name": f"{u.first_name or ''} {u.last_name or ''}".strip() or u.email,

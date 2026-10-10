@@ -52,6 +52,15 @@ def ayarlar_eposta_save():
             cfg = TenantEmailConfig(tenant_id=current_user.tenant_id)
             db.session.add(cfg)
 
+        if bool(data.get("use_custom_smtp", False)) and (data.get("smtp_host") or "").strip():
+            from app.utils.outbound_guard import validate_smtp_target
+            ok_t, err_t = validate_smtp_target(
+                (data.get("smtp_host") or "").strip(), data.get("smtp_port") or 587
+            )
+            if not ok_t:
+                db.session.rollback()
+                return jsonify({"success": False, "message": _(err_t)}), 400
+
         cfg.use_custom_smtp          = bool(data.get("use_custom_smtp", False))
         cfg.smtp_host                = (data.get("smtp_host") or "").strip() or None
         cfg.smtp_port                = int(data.get("smtp_port") or 587)

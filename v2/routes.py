@@ -1,5 +1,6 @@
 # -*- coding: utf-8 -*-
 from flask import render_template
+from flask import current_app
 from flask_login import login_required, current_user
 from . import v2_bp
 

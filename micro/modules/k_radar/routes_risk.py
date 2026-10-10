@@ -19,6 +19,9 @@ from micro.modules.k_radar.routes_common import _required_tenant_id as _rtid
 from extensions import db
 from app.models.k_radar_domain import RiskHeatmapItem
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _is_manager() -> bool:
@@ -188,13 +191,13 @@ def k_radar_api_risk_modify(risk_id):
     if "probability" in payload:
         try:
             risk.probability = max(1, min(5, int(payload["probability"])))
-        except (ValueError, TypeError):
-            pass
+        except (ValueError, TypeError) as e:
+            logger.warning(f"k_radar_api_risk_modify failed: {e}")
     if "impact" in payload:
         try:
             risk.impact = max(1, min(5, int(payload["impact"])))
-        except (ValueError, TypeError):
-            pass
+        except (ValueError, TypeError) as e:
+            logger.warning(f"k_radar_api_risk_modify failed: {e}")
     if "status" in payload:
         risk.status = payload["status"]
     # Kaynak düzeltilebilir ama KALDIRILAMAZ (katman ilkesi: her risk bir

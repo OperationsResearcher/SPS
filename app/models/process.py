@@ -529,6 +529,14 @@ class IndividualPerformanceIndicator(db.Model):
     
     __table_args__ = (
         db.Index('idx_indiv_pg_user_source', 'user_id', 'source'),
+        # HATA-24: aynı kullanıcı aynı süreç PG'sini iki kez aktif bireysel PG
+        # yapamaz (çift tıklama). Kısmi: pasif (silinmiş) kayıtlar serbest.
+        db.Index(
+            'ux_indiv_pg_user_source_kpi_active', 'user_id', 'source_process_kpi_id',
+            unique=True,
+            postgresql_where=db.text('is_active AND source_process_kpi_id IS NOT NULL'),
+            sqlite_where=db.text('is_active AND source_process_kpi_id IS NOT NULL'),
+        ),
     )
     
     id = db.Column(db.Integer, primary_key=True)

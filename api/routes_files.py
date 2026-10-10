@@ -9,7 +9,7 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 from flask_login import login_required, current_user
-from extensions import csrf, db
+from extensions import db
 from sqlalchemy import or_, and_, text, delete, insert
 from sqlalchemy.orm import joinedload
 from app.utils.project_rbac import (
@@ -68,7 +68,6 @@ from app.utils.error_handlers import json_error  # S6
 
 
 @api_bp.route('/projeler/<int:project_id>/dosyalar', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 def api_proje_dosyalar(project_id):
     """Proje dosyalarını getir veya yeni dosya yükle"""
@@ -83,32 +82,22 @@ def api_proje_dosyalar(project_id):
             # Dosyaları getir
             # Sadece aktif dosyaları getir (soft-delete) - en son versiyonları göster
             files = ProjectFile.query.filter_by(
-                project_id=project_id,
-                is_active=True
-            ).order_by(ProjectFile.file_name, ProjectFile.version.desc()).all()
-            
-            # Aynı isimde birden fazla versiyon varsa sadece en son versiyonu göster
-            unique_files = {}
-            for file in files:
-                if file.file_name not in unique_files:
-                    unique_files[file.file_name] = file
-            
-            files = list(unique_files.values())
-            files.sort(key=lambda x: x.created_at, reverse=True)
-            
+                project_id=project_id
+            ).order_by(ProjectFile.created_at.desc(), ProjectFile.id.desc()).all()
+
             file_list = []
             for file in files:
-                user = User.query.get(file.user_id)
+                user = User.query.get(file.uploader_id)
                 user_name = f"{user.first_name} {user.last_name}" if user and user.first_name else (user.username if user else 'Bilinmiyor')
-                
+
                 file_list.append({
                     'id': file.id,
-                    'file_name': file.file_name,
+                    'file_name': file.filename,
                     'file_path': file.file_path,
-                    'file_size': file.file_size,
+                    'file_size': None,
                     'file_type': file.file_type,
-                    'description': file.description,
-                    'version': file.version if hasattr(file, 'version') else 1,
+                    'description': None,
+                    'version': 1,
                     'user_name': user_name,
                     'created_at': file.created_at.isoformat() if file.created_at else None
                 })
@@ -157,6 +146,7 @@ def api_proje_dosyalar(project_id):
             
             uploaded_count = 0
             errors = []
+            saved_paths = []
             
             # MIME type validasyonu için import
             from utils.file_validation import validate_uploaded_file
@@ -164,62 +154,46 @@ def api_proje_dosyalar(project_id):
             for file in files:
                 if not file or not file.filename:
                     continue
-                
+
+                file_path = None
+                filename = file.filename
                 try:
                     # Güvenli dosya validasyonu (extension + MIME type + boyut)
                     is_valid, error_msg, mime_type = validate_uploaded_file(file, max_size=MAX_FILE_SIZE)
                     if not is_valid:
                         errors.append(f"'{file.filename}': {error_msg}")
                         continue
-                    
+
                     filename = secure_filename(file.filename)
-                    
+
                     # Unique filename oluştur
                     unique_filename = f"{uuid.uuid4().hex}_{filename}"
                     file_path = os.path.join(upload_folder, unique_filename)
-                    
-                    # Dosyayı kaydet
-                    file.save(file_path)
-                    
-                    # Dosya boyutunu al
-                    file_size = os.path.getsize(file_path)
-                    
+
                     # MIME type'ı kullan (validasyon fonksiyonundan gelen)
-                    file_type = mime_type or 'application/octet-stream'
-                    
-                    # Aynı isimde dosya var mı kontrol et (versiyonlama için)
-                    existing_file = ProjectFile.query.filter_by(
-                        project_id=project_id,
-                        file_name=filename,
-                        is_active=True
-                    ).order_by(ProjectFile.version.desc()).first()
-                    
-                    # Versiyon belirle
-                    version = 1
-                    parent_file_id = None
-                    if existing_file:
-                        version = existing_file.version + 1
-                        parent_file_id = existing_file.id
-                    
-                    # Veritabanına kaydet
+                    file_type = (mime_type or 'application/octet-stream')[:50]
+
+                    # Önce DB kaydı (flush), sonra diske yaz; başarısızlıkta dosya silinir
                     project_file = ProjectFile(
                         project_id=project_id,
-                        user_id=current_user.id,
-                        file_name=filename,
+                        uploader_id=current_user.id,
+                        filename=filename,
                         file_path=f'/static/uploads/project_files/{unique_filename}',
-                        file_size=file_size,
-                        file_type=file_type or 'application/octet-stream',
-                        description=description if description else None,
-                        version=version,
-                        parent_file_id=parent_file_id,
-                        is_active=True,
-                        scope='PROJECT',  # Proje dosyası
-                        category=None  # Proje dosyaları için kategori yok
+                        file_type=file_type,
                     )
                     db.session.add(project_file)
+                    db.session.flush()
+
+                    file.save(file_path)
+                    saved_paths.append(file_path)
                     uploaded_count += 1
-                    
+
                 except Exception as e:
+                    if file_path and os.path.exists(file_path):
+                        try:
+                            os.remove(file_path)
+                        except OSError:
+                            pass
                     current_app.logger.error(f"Dosya yükleme hatası ({filename}): {str(e)}")
                     errors.append(f"'{filename}': {str(e)}")
                     continue
@@ -229,8 +203,16 @@ def api_proje_dosyalar(project_id):
                 error_message = 'Hiç dosya yüklenemedi. ' + '; '.join(errors) if errors else 'Dosya yükleme hatası'
                 return jsonify({'success': False, 'message': error_message}), 400
             
-            db.session.commit()
-            
+            try:
+                db.session.commit()
+            except Exception:
+                for _p in saved_paths:
+                    try:
+                        os.remove(_p)
+                    except OSError:
+                        pass
+                raise
+
             # Başarılı yüklemeler + hatalar varsa uyarı
             message = f'{uploaded_count} dosya başarıyla yüklendi.'
             if errors:
@@ -248,7 +230,6 @@ def api_proje_dosyalar(project_id):
 
 
 @api_bp.route('/dokuman-merkezi', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 def api_dokuman_merkezi():
     """Kurumsal dosya yönetimi API — UYGULANMADI (501).
@@ -415,58 +396,29 @@ def _api_dokuman_merkezi_olu_govde():
 @api_bp.route('/dokuman-merkezi/<int:file_id>/indir', methods=['GET'])
 @login_required
 def api_dokuman_merkezi_indir(file_id):
-    """Kurumsal dosyayı indir"""
-    try:
-        corporate_file = ProjectFile.query.get_or_404(file_id)
-        
-        # Kurumsal dosya kontrolü
-        if corporate_file.scope != 'CORPORATE' and corporate_file.project_id is not None:
-            return jsonify({'success': False, 'message': 'Bu dosya kurumsal dosya değil'}), 403
-        
-        # Dosya yolunu kontrol et
-        file_path = corporate_file.file_path.lstrip('/')
-        if not os.path.exists(file_path):
-            return jsonify({'success': False, 'message': 'Dosya bulunamadı'}), 404
-        
-        return send_file(file_path, as_attachment=True, download_name=corporate_file.file_name)
-    
-    except Exception as e:
-        current_app.logger.error(f'Kurumsal dosya indirme hatası: {e}')
-        return json_error(e, "[api_dokuman_merkezi_indir]", 500)
+    """Kurumsal dosya indir — KAPALI (501), GV-001.
+
+    Eski gövde kiracı (tenant) kontrolü yapmıyordu: `ProjectFile` modelinde
+    tenant alanı yok ve yalnız var olmayan `scope` alanı kontrol ediliyordu
+    (her çağrıda 500). Model genişletilirse uç kiracılar arası dosya
+    sızdırırdı. Doküman merkezi tasarlanınca kiracı kontrolüyle yeniden yazılmalı.
+    """
+    current_app.logger.warning(
+        "[api_dokuman_merkezi_indir] closed endpoint called — user=%s file=%s",
+        getattr(current_user, "id", None), file_id)
+    return jsonify({'success': False,
+                    'message': _('Doküman merkezi henüz kullanıma açılmadı.')}), 501
 
 
 @api_bp.route('/dokuman-merkezi/<int:file_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
 def api_dokuman_merkezi_sil(file_id):
-    """Kurumsal dosyayı sil (soft delete)"""
-    try:
-        # Yetki kontrolü - Sadece yöneticiler silebilir
-        if current_user.sistem_rol not in ['admin', 'kurum_yoneticisi']:
-            return jsonify({'success': False, 'message': 'Kurumsal dosya silmek için yönetici yetkisi gereklidir'}), 403
-        
-        corporate_file = ProjectFile.query.get_or_404(file_id)
-        
-        # Kurumsal dosya kontrolü
-        if corporate_file.scope != 'CORPORATE' and corporate_file.project_id is not None:
-            return jsonify({'success': False, 'message': 'Bu dosya kurumsal dosya değil'}), 403
-        
-        # Soft delete
-        corporate_file.is_active = False
-        corporate_file.deleted_at = datetime.utcnow()
-        corporate_file.deleted_by_id = current_user.id
-        
-        db.session.commit()
-        
-        return jsonify({
-            'success': True,
-            'message': 'Dosya başarıyla silindi'
-        })
-    
-    except Exception as e:
-        db.session.rollback()
-        current_app.logger.error(f'Kurumsal dosya silme hatası: {e}')
-        return json_error(e, "[api_dokuman_merkezi_sil]", 500)
+    """Kurumsal dosya sil — KAPALI (501), GV-001. Bkz. api_dokuman_merkezi_indir."""
+    current_app.logger.warning(
+        "[api_dokuman_merkezi_sil] closed endpoint called — user=%s file=%s",
+        getattr(current_user, "id", None), file_id)
+    return jsonify({'success': False,
+                    'message': _('Doküman merkezi henüz kullanıma açılmadı.')}), 501
 
 
 @api_bp.route('/projeler/<int:project_id>/dosyalar/<int:file_id>/indir', methods=['GET'])
@@ -483,19 +435,18 @@ def api_proje_dosya_indir(project_id, file_id):
         
         # Dosya yolunu oluştur
         file_path = project_file.file_path.lstrip('/')
-        absolute_path = os.path.join('static', 'uploads', 'project_files', os.path.basename(project_file.file_path))
+        absolute_path = os.path.abspath(os.path.join('static', 'uploads', 'project_files', os.path.basename(project_file.file_path)))
         
         if not os.path.exists(absolute_path):
             return jsonify({'success': False, 'message': 'Dosya bulunamadı'}), 404
         
-        return send_file(absolute_path, as_attachment=True, download_name=project_file.file_name)
+        return send_file(absolute_path, as_attachment=True, download_name=project_file.filename)
     except Exception as e:
         current_app.logger.error(f'Dosya indirme hatası: {e}')
         return json_error(e, "[api_proje_dosya_indir]", 500)
 
 
 @api_bp.route('/projeler/<int:project_id>/dosyalar/<int:file_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
 def api_proje_dosya_sil(project_id, file_id):
     """Proje dosyasını soft-delete ile sil"""
@@ -510,15 +461,23 @@ def api_proje_dosya_sil(project_id, file_id):
         # Sadece yönetici veya dosyayı yükleyen silebilir
         from app.utils.project_rbac import _get_user_project_role
         user_role = _get_user_project_role(project, current_user.id)
-        if user_role != 'manager' and project_file.user_id != current_user.id:
+        if user_role != 'manager' and project_file.uploader_id != current_user.id:
             return jsonify({'success': False, 'message': 'Bu dosyayı silme yetkiniz yok'}), 403
-        
-        # Soft-delete: is_active = False yap
-        project_file.is_active = False
-        project_file.deleted_at = datetime.utcnow()
-        project_file.deleted_by_id = current_user.id
-        
+
+        # Modelde is_active/deleted_at yok: kayıt silinir; fiziksel dosya
+        # başka kayıt (klon) tarafından kullanılmıyorsa temizlenir.
+        stored_path = project_file.file_path
+        db.session.delete(project_file)
+        db.session.flush()
+        still_used = ProjectFile.query.filter_by(file_path=stored_path).first()
         db.session.commit()
+        if not still_used and stored_path:
+            try:
+                _abs = os.path.join('static', 'uploads', 'project_files', os.path.basename(stored_path))
+                if os.path.exists(_abs):
+                    os.remove(_abs)
+            except OSError as _e:
+                current_app.logger.warning(f'Dosya diskten silinemedi: {_e}')
         
         return jsonify({
             'success': True,

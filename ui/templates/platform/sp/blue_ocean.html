@@ -161,10 +161,10 @@
     }
     list.innerHTML = j.items.map(c => `
       <div class="mc-card" data-card-code="sp_blue_ocean.tuval_listesi" style="padding:14px;margin-bottom:8px;cursor:pointer;" onclick="bo_open(${c.id})">
-        <div class="mc-card-title" style="font-size:14px;font-weight:600;color:var(--text-default);">${c.name}</div>
+        <div class="mc-card-title" style="font-size:14px;font-weight:600;color:var(--text-default);">${mcEsc(c.name)}</div>
         <div style="font-size:12px;color:#64748b;margin-top:4px;">
-          ${c.industry || ''} • ${c.factor_count} ${t("faktör")} • ${c.errc_count} ${t("ERRC öğesi")}
-          ${c.competitor_names.length ? '• ' + t("Rakip") + ': ' + c.competitor_names.join(', ') : ''}
+          ${mcEsc(c.industry || '')} • ${c.factor_count} ${t("faktör")} • ${c.errc_count} ${t("ERRC öğesi")}
+          ${c.competitor_names.length ? '• ' + t("Rakip") + ': ' + mcEsc(c.competitor_names.join(', ')) : ''}
         </div>
       </div>
     `).join('');
@@ -185,9 +185,9 @@
     det.style.display = 'block';
     det.innerHTML = `
       <div class="mc-card" data-card-code="sp_blue_ocean.tuval_detay" style="padding:20px;margin-bottom:16px;">
-        <h3 class="mc-card-title" style="margin:0;">${j.canvas.name}</h3>
-        <div style="color:#64748b;font-size:13px;margin-top:4px;">${j.canvas.industry || ''}</div>
-        ${j.canvas.description ? `<p style="margin-top:8px;color:#475569;">${j.canvas.description}</p>` : ''}
+        <h3 class="mc-card-title" style="margin:0;">${mcEsc(j.canvas.name)}</h3>
+        <div style="color:#64748b;font-size:13px;margin-top:4px;">${mcEsc(j.canvas.industry || '')}</div>
+        ${j.canvas.description ? `<p style="margin-top:8px;color:#475569;">${mcEsc(j.canvas.description)}</p>` : ''}
         <div style="margin-top:12px;display:flex;gap:8px;flex-wrap:wrap;">
           <button class="mc-btn mc-btn-secondary" onclick="bo_add_factor(${cid})"><i class="fas fa-plus"></i> ${t("Faktör Ekle")}</button>
           <button class="mc-btn mc-btn-secondary" onclick="bo_add_errc(${cid})"><i class="fas fa-th-large"></i> ${t("ERRC Öğesi Ekle")}</button>
@@ -212,7 +212,7 @@
                   <div style="font-weight:600;">${titles[a]}</div>
                   <button class="mc-btn mc-btn-secondary" style="padding:2px 8px;font-size:11px;" onclick="bo_add_errc(${cid}, '${a}')"><i class="fas fa-plus"></i> ${t("Ekle")}</button>
                 </div>
-                ${errcGroups[a].map(e => `<div style="background:#fff;padding:6px;border-radius:4px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between;gap:6px;"><span>${e.text}${e.impact?` <span style="font-size:10px;color:#64748b;">[${impactLabels[e.impact]||e.impact}]</span>`:''}</span></div>`).join('') || `<div style="color:#64748b;font-size:12px;">— ${t("Boş")}</div>`}
+                ${errcGroups[a].map(e => `<div style="background:#fff;padding:6px;border-radius:4px;margin-bottom:4px;font-size:12px;display:flex;justify-content:space-between;gap:6px;"><span>${mcEsc(e.text)}${e.impact?` <span style="font-size:10px;color:#64748b;">[${mcEsc(impactLabels[e.impact]||e.impact)}]</span>`:''}</span></div>`).join('') || `<div style="color:#64748b;font-size:12px;">— ${t("Boş")}</div>`}
               </div>
             `;
           }).join('')}
@@ -269,8 +269,8 @@
     rows.innerHTML = competitors.length
       ? competitors.map(c => `
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <label style="flex:1;font-size:13px;color:#475569;">${c}</label>
-            <input type="number" min="0" max="10" step="0.5" class="bo-comp-input mc-form-input" data-name="${c}" placeholder="0-10" style="width:110px;">
+            <label style="flex:1;font-size:13px;color:#475569;">${mcEsc(c)}</label>
+            <input type="number" min="0" max="10" step="0.5" class="bo-comp-input mc-form-input" data-name="${mcEsc(c)}" placeholder="0-10" style="width:110px;">
           </div>
         `).join('')
       : '<div style="font-size:12px;color:#94a3b8;font-style:italic;">'+t("Canvas'a rakip eklenmemiş — yalnız kendi puanı girilecek.")+'</div>';

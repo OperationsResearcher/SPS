@@ -271,15 +271,20 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
         "WHERE p.tenant_id=:t AND k.is_active=true " + p_py_clause + ") "
         "AND is_active=true",
         {"t": tenant_id, **py_params})
-    on_target_pct = _scalar("""
-        SELECT COALESCE(
-          sum(CASE WHEN kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$' AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
-                     AND kd.actual_value::float >= kd.target_value::float THEN 1 ELSE 0 END) * 100.0 /
-          NULLIF(sum(CASE WHEN kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$' AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$' THEN 1 ELSE 0 END), 0),
-        0)
-        FROM kpi_data kd JOIN process_kpis k ON kd.process_kpi_id=k.id JOIN processes p ON k.process_id=p.id
-        WHERE p.tenant_id=:t AND kd.is_active=true
-    """, {"t": tenant_id})
+    # A-012: K7.1 PG hedef başarısı — motorun PG başarısı (yön, yıl, yıllık hedef, parse);
+    # birim PG (satır değil): skoru >= 100 olan PG / ölçülmüş PG.
+    on_target_pct = 0.0
+    try:
+        from app.services import pg_year_scores as _pys
+        from app.models.plan_year import PlanYear as _PY
+        from app.utils.tr_time import today_tr as _today_tr
+        _py = db.session.get(_PY, plan_year_id) if plan_year_id else None
+        _yr = _py.year if _py else _today_tr().year
+        _rows, _pgs = _pys.score_rows(tenant_id, _yr)
+        _tot, _on, _cmp = _pys.on_target_stats(_rows, [p.id for p in _pgs])
+        on_target_pct = (_on * 100.0 / _cmp) if _cmp else 0.0
+    except Exception as e:
+        logger.warning("efqm K7.1 motor hesabı başarısız: %s", e)
 
     # OKR
     okr_count = _scalar("""SELECT count(*) FROM okr_objectives WHERE tenant_id=:t AND is_active=true""",
@@ -381,8 +386,8 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
                 kpi_327 = {"id": row.id, "name": row.name,
                            "target": tgt, "latest": act,
                            "gap": (act - tgt) if act is not None else None}
-            except (ValueError, TypeError):
-                pass
+            except (ValueError, TypeError) as e:
+                logger.warning(f"compute_efqm_assessment failed: {e}")
     except Exception as _e:
         logger.error("[efqm] KPI-327 özdeğerlendirme verisi alınamadı (tenant=%s): %s", tenant_id, _e)
 
@@ -793,8 +798,8 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
                 plan_year_label = (py_row.name or "").strip() or (
                     str(plan_year_year) if plan_year_year else None
                 )
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"compute_efqm_assessment failed: {e}")
 
     return {
         "tenant_id": tenant_id,

@@ -3,13 +3,6 @@ Flask Extensions
 Tüm Flask extension'ları burada initialize edilir
 """
 
-from flask_migrate import Migrate
-from flask_login import LoginManager
-from flask_wtf.csrf import CSRFProtect
-from flask_limiter import Limiter
-from flask_limiter.util import get_remote_address
-from flask_talisman import Talisman
-from flask_caching import Cache
 
 # Database — tek kaynak: kök extensions.py (db.init_app app/__init__.py içinde)
 from extensions import db  # noqa: F401
@@ -26,30 +19,21 @@ from extensions import db  # noqa: F401
 # İki Cache nesnesi tutmak B2'deki "kopya ayrışması" hatasının aynısıydı.
 from extensions import cache  # noqa: F401
 
-migrate = Migrate()
-
-# Authentication
-login_manager = LoginManager()
-login_manager.login_view = "public_login"
-login_manager.login_message = 'Lütfen giriş yapın.'
-
-# CSRF Protection
-csrf = CSRFProtect()
-
-# Rate Limiting
-limiter = Limiter(
-    key_func=get_remote_address,
-    default_limits=["200 per day", "50 per hour"],
-    storage_uri="memory://"
-)
-
-# Caching — yukarıda kök extensions.py'den import edildi (tek nesne).
-
-# Security Headers
-talisman = Talisman()
+# KOD-01 (Faz 2.1): csrf / login_manager / migrate / limiter / talisman da TEK kaynaktan —
+# kök extensions.py. Eskiden burada ve app/__init__.py'de ayrı kopyalar vardı; kökteki
+# `@csrf.exempt` decorator'ları init edilmemiş nesneye yazıldığı için 75 uçta etkisizdi.
+from extensions import csrf, login_manager, migrate, limiter, talisman  # noqa: F401
 
 # WebSocket — flask_socketio ağır bağımlılık zinciri (requests/ssl) tetikler; yalnızca init_socketio(app) ile yüklenir.
 socketio = None
+
+
+def _socketio_cors_origins():
+    import os
+    raw = (os.environ.get("SOCKETIO_CORS_ORIGINS") or "").strip()
+    if not raw:
+        return None
+    return "*" if raw == "*" else [o.strip() for o in raw.split(",") if o.strip()]
 
 
 def init_socketio(app):
@@ -61,7 +45,9 @@ def init_socketio(app):
 
     socketio = SocketIO(
         app,
-        cors_allowed_origins="*",
+        # GUV-16: "*" yerine varsayılan aynı-origin. Ayrı origin gerekirse
+        # SOCKETIO_CORS_ORIGINS="https://a.example,https://b.example" ("*" da verilebilir).
+        cors_allowed_origins=_socketio_cors_origins(),
         async_mode="threading",
         logger=True,
         engineio_logger=False,

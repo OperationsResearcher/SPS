@@ -3,6 +3,14 @@
    (Alpine.js kaldırıldı — TASK-236, CSP unsafe-eval)
    ═══════════════════════════════════════════════════════ */
 
+/* Ortak HTML kaçış (saklı XSS önlemi): kullanıcı verisini innerHTML'e basmadan önce */
+window.mcEsc = function (s) {
+    if (s === null || s === undefined) return '';
+    return String(s).replace(/[&<>"']/g, function (c) {
+        return {'&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;'}[c];
+    });
+};
+
 /* ── Tema (dark mode) — eski microApp() davranışı birebir ── */
 (function () {
     'use strict';
@@ -321,3 +329,160 @@ var MicroUI = {
     global.formatLocalDateTime = formatLocalDateTime;
     global.formatLocalDate = formatLocalDate;
 })(window);
+/**
+ * Başarı puanı rozeti (Karar 2, Faz 1B). Ölçeğe göre renk:
+ *   '1-5'   → ≥4 yeşil, ≥3 sarı, altı kırmızı   (eski aralık formatı)
+ *   '0-100' → ≥90 yeşil, ≥70 sarı, altı kırmızı (bant formatı)
+ * Sunucu puanı yoksa "—" (JS yedek hesabı kaldırıldı — Karar 3).
+ */
+(function () {
+  "use strict";
+  function esc(v) {
+    return String(v).replace(/[&<>"']/g, function (c) {
+      return { "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c];
+    });
+  }
+  window.kkBasariPuanHtml = function (puan, olcek) {
+    if (puan == null || puan === "" || Number.isNaN(Number(puan))) return "—";
+    var n = Number(puan);
+    var yuzluk = olcek === "0-100";
+    var ok = yuzluk ? 90 : 4;
+    var warn = yuzluk ? 70 : 3;
+    var cls = n >= ok ? "micro-pg-ok" : n >= warn ? "micro-pg-warn" : "micro-pg-bad";
+    var goster = Number.isInteger(n) ? String(n) : n.toFixed(1);
+    return '<span class="' + cls + ' fw-bold" title="' + esc(yuzluk ? "0-100" : "1-5") + '">' + esc(goster) + "</span>";
+  };
+})();
+
+/* ── Modal erişilebilirliği (E-018 / Dalga 4-A) ──────────────────────────
+ * .mc-modal-overlay öğelerine role/aria-modal/aria-labelledby, kapat butonuna
+ * aria-label; açılınca odak içeri alınır (focus-trap), Escape kapat butonunu
+ * tetikler, kapanınca odak açan öğeye döner. Modal açma/kapama kodu değişmez:
+ * görünürlük (display) gözlemlenir. */
+(function () {
+    'use strict';
+    var OVERLAY = '.mc-modal-overlay';
+    var FOCUSABLE = 'a[href], button:not([disabled]), input:not([disabled]):not([type="hidden"]), select:not([disabled]), textarea:not([disabled]), [tabindex]:not([tabindex="-1"])';
+    var states = new WeakMap();   // overlay -> { open: bool, returnFocus: el|null }
+    var stack = [];               // açık overlay'ler (son = en üstte)
+    var idSeq = 0;
+
+    function tr(s) { return (typeof window.t === 'function') ? window.t(s) : s; }
+
+    function isOpen(el) {
+        return window.getComputedStyle(el).display !== 'none';
+    }
+
+    function visibleFocusables(el) {
+        return Array.prototype.filter.call(el.querySelectorAll(FOCUSABLE), function (n) {
+            return n.getClientRects().length > 0;
+        });
+    }
+
+    function decorate(overlay) {
+        if (!overlay.querySelector('[role="dialog"]')) {
+            overlay.setAttribute('role', 'dialog');
+            overlay.setAttribute('aria-modal', 'true');
+        }
+        var title = overlay.querySelector('.mc-modal-header h3');
+        if (title && !overlay.hasAttribute('aria-labelledby')) {
+            if (!title.id) title.id = 'mc-modal-title-' + (++idSeq);
+            overlay.setAttribute('aria-labelledby', title.id);
+        }
+        Array.prototype.forEach.call(overlay.querySelectorAll('.mc-modal-close:not([aria-label])'), function (b) {
+            b.setAttribute('aria-label', tr('Kapat'));
+        });
+    }
+
+    function onOpen(overlay) {
+        var st = states.get(overlay);
+        st.returnFocus = document.activeElement && document.activeElement !== document.body ? document.activeElement : null;
+        stack.push(overlay);
+        // Modal kendi odağını zaten koyduysa (ör. ilk input) dokunma
+        if (!overlay.contains(document.activeElement)) {
+            var first = visibleFocusables(overlay)[0];
+            if (first) first.focus();
+        }
+    }
+
+    function onClose(overlay) {
+        var st = states.get(overlay);
+        stack = stack.filter(function (o) { return o !== overlay; });
+        var rf = st.returnFocus;
+        st.returnFocus = null;
+        if (rf && document.contains(rf) && !overlay.contains(rf) &&
+            (!document.activeElement || document.activeElement === document.body || overlay.contains(document.activeElement))) {
+            try { rf.focus(); } catch (e) { /* odak hedefi artık odaklanılabilir değil */ }
+        }
+    }
+
+    function sync(overlay) {
+        if (!overlay.classList.contains('mc-modal-overlay')) return;
+        decorate(overlay);
+        var st = states.get(overlay);
+        if (!st) { st = { open: false, returnFocus: null }; states.set(overlay, st); }
+        var open = isOpen(overlay);
+        if (open && !st.open) { st.open = true; onOpen(overlay); }
+        else if (!open && st.open) { st.open = false; onClose(overlay); }
+    }
+
+    function scan(root) {
+        if (!root || root.nodeType !== 1) return;
+        if (root.classList && root.classList.contains('mc-modal-overlay')) sync(root);
+        Array.prototype.forEach.call(root.querySelectorAll ? root.querySelectorAll(OVERLAY) : [], sync);
+    }
+
+    function topmost() {
+        for (var i = stack.length - 1; i >= 0; i--) {
+            if (document.contains(stack[i]) && isOpen(stack[i])) return stack[i];
+        }
+        return null;
+    }
+
+    document.addEventListener('keydown', function (e) {
+        var top = topmost();
+        if (!top) return;
+        if (e.key === 'Escape') {
+            var closeBtn = Array.prototype.filter.call(top.querySelectorAll('.mc-modal-close'), function (b) {
+                return b.getClientRects().length > 0;
+            })[0];
+            if (closeBtn) { e.preventDefault(); closeBtn.click(); }
+            return;
+        }
+        if (e.key !== 'Tab') return;
+        var items = visibleFocusables(top);
+        if (!items.length) { e.preventDefault(); return; }
+        var first = items[0], last = items[items.length - 1];
+        var active = document.activeElement;
+        var inside = top.contains(active);
+        if (e.shiftKey) {
+            if (!inside || active === first) { e.preventDefault(); last.focus(); }
+        } else {
+            if (!inside || active === last) { e.preventDefault(); first.focus(); }
+        }
+    }, true);
+
+    var observer = new MutationObserver(function (mutations) {
+        mutations.forEach(function (m) {
+            if (m.type === 'childList') {
+                Array.prototype.forEach.call(m.addedNodes, scan);
+            } else if (m.type === 'attributes') {
+                sync(m.target);
+            }
+        });
+    });
+
+    function init() {
+        scan(document.body);
+        observer.observe(document.body, {
+            childList: true, subtree: true,
+            attributes: true, attributeFilter: ['class', 'style']
+        });
+    }
+
+    if (document.readyState === 'loading') {
+        document.addEventListener('DOMContentLoaded', init);
+    } else {
+        init();
+    }
+})();

@@ -3,6 +3,7 @@
 from __future__ import annotations
 from flask_babel import gettext as _
 
+import json
 from datetime import datetime, timezone, date, timedelta
 from io import BytesIO
 
@@ -80,6 +81,9 @@ from micro.modules.surec.helpers import (
     _user_display_name,
     _users_pick_json,
 )
+import logging
+
+logger = logging.getLogger(__name__)
 
 @app_bp.route("/k-plan/process/api/kpi-data/add", methods=["POST"])
 @login_required
@@ -153,6 +157,25 @@ def surec_api_kpi_data_add():
         else:
             cross_year_notice = None
 
+        # HATA-18: çift tıklama / ağ tekrarı. Aynı kullanıcının, aynı PG+tarih+dönem
+        # için AYNI değeri son birkaç saniye içinde girdiği kayıt varsa yenisini açma.
+        # (DB unique kısıtı konmadı: "toplama" yöntemli PG'lerde bir dönemde birden
+        # çok kayıt meşrudur — Tomofil ~40 bin kayıt.)
+        _esik = datetime.now(timezone.utc).replace(tzinfo=None) - timedelta(seconds=10)
+        _dup = KpiData.query.filter(
+            KpiData.process_kpi_id == kpi.id,
+            KpiData.year == year_val,
+            KpiData.data_date == data_date_val,
+            KpiData.user_id == current_user.id,
+            KpiData.is_active.is_(True),
+            KpiData.actual_value == str(data.get("actual_value", "")),
+            KpiData.created_at >= _esik,
+            KpiData.period_type == pt,
+            KpiData.period_no == pn,
+        ).first()
+        if _dup is not None:
+            return jsonify({"success": True, "message": "Veri kaydedildi.", "duplicate_ignored": True})
+
         entry = None
         for attempt in (1, 2):
             # Sprint 19.1: SAVEPOINT ile atomic KpiData + KpiDataAudit
@@ -197,7 +220,7 @@ def surec_api_kpi_data_add():
                 raise
 
         try:
-            from app.services.score_engine_service import recalc_on_pg_data_change
+            from app.services.pg_year_scores import recalc_after_data_change as recalc_on_pg_data_change  # A-016
             recalc_on_pg_data_change(current_user.tenant_id, year_val)
         except Exception as svc_err:
             current_app.logger.warning(f"[surec_api_kpi_data_add] score_engine: {svc_err}")
@@ -410,17 +433,21 @@ def surec_api_kpi_data_update(data_id):
     old_desc = entry.description or ""
     old_target = entry.target_value or ""
 
-    if "actual_value" in data:
-        entry.actual_value = str(data["actual_value"]) if data.get("actual_value") is not None else ""
-    if "description" in data:
-        entry.description = data["description"]
-    if "target_value" in data:
-        entry.target_value = data["target_value"]
+    def _apply_changes():
+        # HATA-01: rollback nesneyi DB'deki eski hale döndürür; retry'da
+        # değerlerin yeniden atanması gerekir, bu yüzden döngü içinden de çağrılır.
+        if "actual_value" in data:
+            entry.actual_value = str(data["actual_value"]) if data.get("actual_value") is not None else ""
+        if "description" in data:
+            entry.description = data["description"]
+        if "target_value" in data:
+            entry.target_value = data["target_value"]
+        # K1: hedef veya gerçekleşen değiştiyse skor da yeniden üretilmeli —
+        # aksi halde satırda eski (artık yanlış) skor kalırdı.
+        if "actual_value" in data or "target_value" in data:
+            uygula_kpi_data_skoru(entry, entry.process_kpi)
 
-    # K1: hedef veya gerçekleşen değiştiyse skor da yeniden üretilmeli —
-    # aksi halde satırda eski (artık yanlış) skor kalırdı.
-    if "actual_value" in data or "target_value" in data:
-        uygula_kpi_data_skoru(entry, entry.process_kpi)
+    _apply_changes()
 
     new_actual = entry.actual_value or ""
     new_desc = entry.description or ""
@@ -437,6 +464,8 @@ def surec_api_kpi_data_update(data_id):
     try:
         for attempt in (1, 2):
             try:
+                if attempt == 2:
+                    _apply_changes()
                 if changed_labels:
                     _hedef_degisti = "hedef" in changed_labels
                     db.session.add(KpiDataAudit(
@@ -462,11 +491,10 @@ def surec_api_kpi_data_update(data_id):
                     is_pk_duplicate(e, "kpi_data") or _is_kpi_data_audit_pk_duplicate(e)
                 ):
                     sync_kpi_data_related_sequences()
-                    db.session.commit()
                     continue
                 raise
         try:
-            from app.services.score_engine_service import recalc_on_pg_data_change
+            from app.services.pg_year_scores import recalc_after_data_change as recalc_on_pg_data_change  # A-016
             recalc_on_pg_data_change(current_user.tenant_id, entry.year)
         except Exception as svc_err:
             current_app.logger.warning(f"[surec_api_kpi_data_update] score_engine: {svc_err}")
@@ -535,7 +563,7 @@ def surec_api_kpi_data_delete(data_id):
                     continue
                 raise
         try:
-            from app.services.score_engine_service import recalc_on_pg_data_change
+            from app.services.pg_year_scores import recalc_after_data_change as recalc_on_pg_data_change  # A-016
             recalc_on_pg_data_change(current_user.tenant_id, entry.year)
         except Exception as svc_err:
             current_app.logger.warning(f"[surec_api_kpi_data_delete] score_engine: {svc_err}")
@@ -632,10 +660,12 @@ def surec_api_kpi_data_detail():
 @login_required
 def surec_api_kpi_score_detail(kpi_id: int):
     """KPI başarı puanı hesaplama detayını döner (şeffaflık için)."""
-    from utils.karne_hesaplamalar import (
-        hesapla_basari_puani as _hesapla,
-        parse_basari_puani_araliklari as _parse_bpa,
+    from app.services.plan_year_service import get_kpi_configs_bulk, get_plan_year
+    from app.services.score_engine_service import (
+        _parse_float, _score_pgs, entry_in_scope, normalize_aggregation_method,
     )
+    from app.utils.tr_time import today_tr
+    from app.utils.karne_hesaplamalar import hesapla_basari_puani_ham
     kpi = ProcessKpi.query.filter_by(id=kpi_id, is_active=True).first()
     if not kpi:
         return jsonify({"success": False, "message": _("KPI bulunamadı.")}), 404
@@ -644,38 +674,39 @@ def surec_api_kpi_score_detail(kpi_id: int):
         return jsonify({"success": False, "message": "Yetkisiz."}), 403
 
     year = request.args.get("year", date.today().year, type=int)
-    entries = (
-        KpiData.query
-        .filter_by(process_kpi_id=kpi_id, year=year, is_active=True)
-        .order_by(KpiData.data_date.desc())
-        .limit(12)
-        .all()
-    )
+    # Karar 6 (Faz 1B): karne ile AYNI hesap — yıllık config yöntemi, tüm kayıtlar
+    # (eskiden `.limit(12)` ve PG'nin kendi yöntemi kullanılıyordu).
+    _py = get_plan_year(proc.tenant_id, year)
+    cfg = get_kpi_configs_bulk([kpi], _py).get(kpi.id) or {}
+    method_raw = cfg.get("data_collection_method") or kpi.data_collection_method or "Ortalama"
+    direction = cfg.get("direction") or kpi.direction or "Increasing"
+    bpa_raw = cfg.get("basari_puani_araliklari", kpi.basari_puani_araliklari)
 
-    actual_values = []
-    for e in entries:
-        try:
-            actual_values.append(float(e.actual_value))
-        except (TypeError, ValueError):
-            pass
+    _as_of = today_tr()
+    entries = [
+        e for e in (
+            KpiData.query
+            .filter_by(process_kpi_id=kpi_id, year=year, is_active=True)
+            .order_by(KpiData.data_date.desc())
+            .all()
+        ) if entry_in_scope(e, _as_of)
+    ]
+    actual_values = [v for v in (_parse_float(e.actual_value) for e in entries) if v is not None]
 
-    method = (kpi.data_collection_method or "Ortalama").lower()
-    if method in ("toplama", "toplam") and actual_values:
-        rollup = sum(actual_values)
-    elif method == "ortalama" and actual_values:
-        rollup = round(sum(actual_values) / len(actual_values), 4)
-    elif actual_values:
-        rollup = actual_values[0]
-    else:
-        rollup = None
+    method = normalize_aggregation_method(method_raw)
+    # Tek hesap yolu: motorun çekirdeği (yıllık config, tarih kesimi, klon zinciri)
+    _eng = _score_pgs([kpi], year, _as_of, _py, {kpi.id: cfg} if cfg else {})[kpi.id]
+    rollup = _eng["actual"]
+    achievement_score = _eng["score"]
+    if rollup is not None:
+        rollup = round(rollup, 4)
 
-    bpa_raw = kpi.basari_puani_araliklari
-    score = None
-    bpa_parsed = None
+    score, score_scale, bpa_parsed = None, None, None
     if rollup is not None and bpa_raw:
         try:
-            bpa_parsed = _parse_bpa(bpa_raw) if isinstance(bpa_raw, str) else bpa_raw
-            score = _hesapla(rollup, bpa_parsed, kpi.direction or "Increasing")
+            bpa_str = bpa_raw if isinstance(bpa_raw, str) else json.dumps(bpa_raw)
+            score, score_scale = hesapla_basari_puani_ham(rollup, bpa_str, direction)
+            bpa_parsed = json.loads(bpa_str)
         except Exception as e:
             current_app.logger.warning(f"[surec_api_kpi_score_detail] suppressed: {e}")
 
@@ -696,10 +727,12 @@ def surec_api_kpi_score_detail(kpi_id: int):
         "actual_values": actual_values[:6],
         "rollup_value": rollup,
         "rollup_method": method,
+        "achievement": achievement_score,
         "basari_puani_araliklari": bpa_parsed,
         "score": score,
+        "score_scale": score_scale,
         "explanation": (
-            f"Son {len(actual_values)} veri {method} yöntemiyle birleştirildi → "
+            f"{len(actual_values)} veri {method} yöntemiyle birleştirildi → "
             f"{'%0.2f' % rollup if rollup is not None else '?'} {kpi.unit or ''}. "
             f"Başarı puanı aralıkları kullanılarak puan hesaplandı: {score if score is not None else 'Hesaplanamadı'}."
         ) if actual_values else "Bu KPI için henüz veri girilmemiş.",

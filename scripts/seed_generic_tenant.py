@@ -35,11 +35,15 @@ from datetime import date, datetime, timezone
 from pathlib import Path
 
 # UTF-8 stdout
+import logging
+
+logger = logging.getLogger(__name__)
+
 try:
     sys.stdout.reconfigure(encoding="utf-8")
     sys.stderr.reconfigure(encoding="utf-8")
-except Exception:
-    pass
+except Exception as e:
+    logger.error(f"seed_generic_tenant failed: {e}")
 
 ROOT = Path(__file__).resolve().parent.parent
 sys.path.insert(0, str(ROOT))
@@ -639,8 +643,8 @@ def seed(args):
             if p_id:
                 try:
                     db.session.execute(process_members.insert().values(process_id=p_id, user_id=uid))
-                except Exception:
-                    pass
+                except Exception as e:
+                    logger.error(f"seed failed: {e}")
     db.session.flush()
     print(f"  [OK] Process owners + leaders + members")
 

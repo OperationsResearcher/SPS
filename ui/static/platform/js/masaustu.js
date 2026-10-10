@@ -294,7 +294,7 @@
           if (loadingEl) loadingEl.style.display = "none";
           successCallback(data.events || []);
         } catch (err) {
-          if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">${t("Takvim yüklenemedi:")} ${String(err.message || err)}</span>`;
+          if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">${t("Takvim yüklenemedi:")} ${escAttr(String(err.message || err))}</span>`;
           failureCallback(err);
         }
       },
@@ -393,7 +393,7 @@
             </p>
             <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
           d.kpis_below_target.forEach(k => {
-            html += `<li><strong>${k.kpi_name}</strong> (${k.process_name}) — ${t("Gerçekleşen:")} ${k.actual} / ${t("Hedef:")} ${k.target} <span style="color:#ef4444;">(${k.ratio_pct}%)</span></li>`;
+            html += `<li><strong>${escAttr(k.kpi_name)}</strong> (${escAttr(k.process_name)}) — ${t("Gerçekleşen:")} ${escAttr(k.actual)} / ${t("Hedef:")} ${escAttr(k.target)} <span style="color:#ef4444;">(${escAttr(k.ratio_pct)}%)</span></li>`;
           });
           html += `</ul></div>`;
         }
@@ -405,7 +405,7 @@
             </p>
             <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
           d.overdue_activities.forEach(a => {
-            html += `<li>${a.name} — <span style="color:#ef4444;">${a.days_overdue} ${t("gün gecikti")}</span></li>`;
+            html += `<li>${escAttr(a.name)} — <span style="color:#ef4444;">${escAttr(a.days_overdue)} ${t("gün gecikti")}</span></li>`;
           });
           html += `</ul></div>`;
         }
@@ -417,7 +417,7 @@
             </p>
             <ul style="margin:0; padding-left:16px; font-size:12px; color:#475569;">`;
           d.overdue_projects.forEach(p => {
-            html += `<li>${p.name} — <span style="color:#ef4444;">${p.days_overdue} ${t("gün gecikti")}</span></li>`;
+            html += `<li>${escAttr(p.name)} — <span style="color:#ef4444;">${escAttr(p.days_overdue)} ${t("gün gecikti")}</span></li>`;
           });
           html += `</ul></div>`;
         }

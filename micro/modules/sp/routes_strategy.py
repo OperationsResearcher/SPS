@@ -44,8 +44,10 @@ from app.constants.roles import PRIVILEGED_ROLES as _PRIVILEGED_ROLES_SET
 # Legacy sistem rolleri de dahil (sistem_rol dönüşümü)
 _SP_ROLES = _PRIVILEGED_ROLES_SET | {"admin", "kurum_yoneticisi", "ust_yonetim"}
 from micro.modules.sp.helpers import (
+    sp_plan_year_open,
     _check_sp_role,
     sp_manage_required,
+    sp_plan_year_open,
     _plan_year_to_dict,
     _plan_project_to_dict,
     _plan_task_to_dict,
@@ -78,6 +80,7 @@ def sp_api_strategies_list():
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_add_strategy():
     """Ana strateji ekle."""
     data = request.get_json() or {}
@@ -127,6 +130,7 @@ def sp_add_strategy():
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_update_strategy(strategy_id):
     """Ana strateji güncelle."""
     st = Strategy.query.filter_by(
@@ -165,6 +169,7 @@ def sp_update_strategy(strategy_id):
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_delete_strategy(strategy_id):
     """Ana strateji sil (soft delete)."""
     st = Strategy.query.filter_by(
@@ -187,6 +192,7 @@ def sp_delete_strategy(strategy_id):
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_add_sub_strategy():
     """Alt strateji ekle."""
     data = request.get_json() or {}
@@ -242,6 +248,7 @@ def sp_add_sub_strategy():
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_update_sub_strategy(sub_id):
     """Alt strateji güncelle."""
     sub = SubStrategy.query.join(Strategy).filter(
@@ -277,6 +284,7 @@ def sp_update_sub_strategy(sub_id):
 @csrf.exempt
 @login_required
 @sp_manage_required
+@sp_plan_year_open
 def sp_delete_sub_strategy(sub_id):
     """Alt strateji soft delete."""
     sub = SubStrategy.query.join(Strategy).filter(

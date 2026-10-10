@@ -6,6 +6,7 @@ Eski proje uyumluluğu için taşınmıştır.
 """
 import json
 import logging
+import re
 from typing import Optional, Dict, Any, Union, Tuple, List
 
 _log = logging.getLogger(__name__)
@@ -161,67 +162,88 @@ def _coerce_aralik_str_for_hesap(v: Any) -> Optional[str]:
     return ar
 
 
-def parse_aralik_degeri(aralik_str: str) -> Optional[tuple]:
-    """
-    Aralık string'ini parse eder (örn: "40-49", "%80-89", "400.000-449.000")
+def _sayi_tr(x: str) -> float:
+    """Türkçe sayı: '.' + tam 3 hane = binlik ('400.000'), aksi halde ondalık ('4.5').
 
-    Args:
-        aralik_str: Aralık string'i
+    ',' her zaman ondalık ayraçtır. Önceki sürüm TÜM noktaları siliyordu:
+    "4.5-9.5" → (45, 95) (HATA-07)."""
+    x = x.strip()
+    if re.fullmatch(r"-?\d{1,3}(\.\d{3})+(,\d+)?", x):
+        x = x.replace(".", "")
+    return float(x.replace(",", "."))
 
-    Returns:
-        Tuple: (min_deger, max_deger) veya None
-    """
-    if not aralik_str or aralik_str.strip() in ('-', ''):
+
+_RE_TEK_SINIR_ONDE = re.compile(r"^-\s*(\d[\d.,]*)$")     # "-4"   (tek sayı, önde tire)
+_RE_TEK_SINIR_SONDA = re.compile(r"^(\d[\d.,]*)\s*[-+]$")  # "20-", "20+"
+_RE_IKI_SINIR = re.compile(r"^(-?\d[\d.,]*)\s*-\s*(-?\d[\d.,]*)$")
+
+
+def _aralik_coz(aralik_str: str):
+    """Ham çözümleme. Dönüş: None | ('acik', N, onde_tire) | ('kapali', lo, hi).
+
+    'acik' = tek sınırlı bant ("-4", "79-", "20+"). Yönünü bandın KONUMU belirler
+    (bkz. bantlari_coz); ham parse_aralik_degeri eski davranışı korur."""
+    if not aralik_str or aralik_str.strip() in ("-", ""):
         return None
-
-    # Türkçe sayı biçimi: '.' binlik ayraç, ',' ondalık ayraç.
-    # Binlik noktalarını kaldır, ondalık virgülünü standart noktaya çevir.
-    # (Önceki sürüm hem ',' hem '.' siliyordu → "4,5"/"4.5" gibi ondalık aralık
-    #  sınırları "45"e dönüşüp yanlış başarı puanı veriyordu.)
-    temiz_str = (
-        aralik_str.strip()
-        .replace('%', '')
-        .replace('TL', '')
-        .replace('.', '')
-        .replace(',', '.')
-        .strip()
-    )
-
-    # İki-sayılı aralık (negatif sınırlar dahil): "-50--10", "-10-5", "4.5-9.5", "40-49".
-    # Önceki split-tabanlı mantık negatif alt sınırlı aralıkları parse edemiyordu.
-    import re as _re
-    _m = _re.match(r'^(-?\d+\.?\d*)\s*-\s*(-?\d+\.?\d*)$', temiz_str)
-    if _m:
-        try:
-            return (float(_m.group(1)), float(_m.group(2)))
-        except ValueError:
-            return None
-
-    if temiz_str.startswith('-'):
-        try:
-            deger = float(temiz_str)
-            return (deger, None)
-        except ValueError:
-            return None
-
-    if '-' in temiz_str:
-        parts = temiz_str.split('-')
-        if len(parts) == 2:
-            try:
-                min_val = float(parts[0].strip())
-                max_val_str = parts[1].strip()
-                if max_val_str:
-                    max_val = float(max_val_str)
-                    return (min_val, max_val)
-                return (min_val, None)
-            except ValueError:
-                return None
-
+    t = aralik_str.strip().replace("%", "").replace("TL", "").strip()
+    if not t or t == "-":
+        return None
     try:
-        deger = float(temiz_str)
-        return (deger, deger)
+        m = _RE_TEK_SINIR_ONDE.match(t)
+        if m:
+            return ("acik", _sayi_tr(m.group(1)), True)
+        m = _RE_TEK_SINIR_SONDA.match(t)
+        if m:
+            return ("acik", _sayi_tr(m.group(1)), False)
+        m = _RE_IKI_SINIR.match(t)
+        if m:
+            return ("kapali", _sayi_tr(m.group(1)), _sayi_tr(m.group(2)))
+        v = _sayi_tr(t)
+        return ("kapali", v, v)
     except ValueError:
         return None
+
+
+def parse_aralik_degeri(aralik_str: str) -> Optional[tuple]:
+    """Aralık string'ini (min, max) olarak çözer (örn: "40-49", "%80-89", "400.000-449.000").
+
+    Tek sınırlı bantlar bu ham fonksiyonda eski anlamını korur ("-5" → (-5, None),
+    "90-" / "20+" → (90, None)). Puan hesabı bunu KULLANMAZ; bandın konumuna göre
+    çözen bantlari_coz kullanılır."""
+    r = _aralik_coz(aralik_str)
+    if r is None:
+        return None
+    if r[0] == "acik":
+        return (-r[1] if r[2] else r[1], None)
+    return (r[1], r[2])
+
+
+def bantlari_coz(basari_puani_araliklari: Optional[Dict[int, Any]], direction: str = 'Increasing') -> Dict[int, tuple]:
+    """{puan: (min, max)} — None = sınırsız. Tek sınırlı bantlar KONUMA göre çözülür (Karar 1).
+
+    Artan yönde en kötü (en düşük puanlı) bant "N ve altı", en iyi bant "N ve üstü";
+    azalan yönde tersi. Örnek KMF: {"1":"-4",…,"5":"20-"} → 1: (None, 4), 5: (20, None).
+    Eski davranış "-4"ü (-4, sınırsız) okuyordu; 1 puanlık bant her değeri yakalıyordu."""
+    ham = {}
+    for puan, raw in (basari_puani_araliklari or {}).items():
+        r = _aralik_coz(_coerce_aralik_str_for_hesap(raw) or "")
+        if r is not None:
+            try:
+                ham[int(puan)] = r
+            except (TypeError, ValueError):
+                continue
+    if not ham:
+        return {}
+    en_kotu, en_iyi = min(ham), max(ham)
+    artan = (direction or '').strip().lower() != 'decreasing'
+    out: Dict[int, tuple] = {}
+    for puan, r in ham.items():
+        if r[0] == "kapali":
+            out[puan] = (r[1], r[2])
+            continue
+        alta_dogru = (puan == en_kotu) if artan else (puan == en_iyi)
+        out[puan] = (None, r[1]) if alta_dogru else (r[1], None)
+    return out
 
 
 def deger_aralikta_mi(deger: Union[int, float], aralik: Optional[tuple]) -> bool:
@@ -240,10 +262,9 @@ def deger_aralikta_mi(deger: Union[int, float], aralik: Optional[tuple]) -> bool
 
     min_val, max_val = aralik
 
-    if max_val is None:
-        return deger >= min_val
-
-    return min_val <= deger <= max_val
+    if min_val is not None and deger < min_val:
+        return False
+    return max_val is None or deger <= max_val
 
 
 def hesapla_basari_puani(
@@ -273,44 +294,40 @@ def hesapla_basari_puani(
     except (ValueError, TypeError):
         return None
 
-    aralik_puan_ciftleri = []
-    for puan, raw in basari_puani_araliklari.items():
-        aralik_str = _coerce_aralik_str_for_hesap(raw)
-        if aralik_str is None:
-            continue
-        aralik = parse_aralik_degeri(aralik_str)
-        if aralik is not None:
-            aralik_puan_ciftleri.append((puan, aralik))
-
-    if not aralik_puan_ciftleri:
+    bantlar = bantlari_coz(basari_puani_araliklari, direction)
+    if not bantlar:
         return None
 
-    if direction == 'Decreasing':
-        aralik_puan_ciftleri.sort(key=lambda x: x[0], reverse=True)
-    else:
-        aralik_puan_ciftleri.sort(key=lambda x: x[0])
+    azalan = (direction or '').strip().lower() == 'decreasing'
+    # Artan: en düşük puan önce; azalan: en yüksek puan önce (eski sıralama korunur)
+    sirali = sorted(bantlar.items(), reverse=azalan)
 
-    for puan, aralik in aralik_puan_ciftleri:
+    for puan, aralik in sirali:
         if deger_aralikta_mi(gerceklesen, aralik):
             return puan
 
-    if direction == 'Decreasing':
-        if aralik_puan_ciftleri:
-            _, (min_val, max_val) = aralik_puan_ciftleri[-1]
-            if max_val is not None and gerceklesen > max_val:
-                return 1
-            if gerceklesen < min_val:
-                return 5
+    # Hiçbir banda düşmedi: uç değer yedek kuralı (değişmedi)
+    _, (son_min, son_max) = sirali[-1]
+    _, (ilk_min, _ilk_max) = sirali[0]
+    if azalan:
+        if son_max is not None and gerceklesen > son_max:
+            return 1
+        if son_min is not None and gerceklesen < son_min:
+            return 5
     else:
-        if aralik_puan_ciftleri:
-            _, (min_val, _) = aralik_puan_ciftleri[0]
-            _, (_, max_val) = aralik_puan_ciftleri[-1]
-            if max_val is not None and gerceklesen > max_val:
-                return 5
-            if gerceklesen < min_val:
-                return 1
+        if son_max is not None and gerceklesen > son_max:
+            return 5
+        if ilk_min is not None and gerceklesen < ilk_min:
+            return 1
 
-    return 3
+    # A-004: bantlar arasında kalan değer (ör. {'80-99','100-'} için 99.5):
+    # uydurma 3 yerine, değerin ALTINDA kalan en yakın bandın puanı (tam sayı
+    # bantlarda ondalık gerçekleşen, bir alt banda aittir). Alt bant yoksa None.
+    alt = [(ar[1], puan) for puan, ar in bantlar.items()
+           if ar[1] is not None and ar[1] < gerceklesen]
+    if alt:
+        return max(alt)[1]
+    return None
 
 
 def hesapla_basari_puani_ham(
@@ -365,7 +382,7 @@ def hesapla_agirlikli_basari_puani(
 
     Args:
         basari_puani: Başarı puanı (1-5)
-        agirlik: Ağırlık (0-1 arası float veya 0-100 arası integer)
+        agirlik: Ağırlık YÜZDE olarak (0-100); her zaman /100 uygulanır
 
     Returns:
         float: Ağırlıklı başarı puanı veya None
@@ -374,12 +391,9 @@ def hesapla_agirlikli_basari_puani(
         return None
 
     try:
-        if agirlik > 1:
-            agirlik_normalized = agirlik / 100.0
-        else:
-            agirlik_normalized = float(agirlik)
-
-        return float(basari_puani) * agirlik_normalized
+        # A-005: ağırlık birimi TEK: yüzde (0-100). Eskiden >1 ise /100,
+        # <=1 ise olduğu gibi çarpılıyordu (1 -> %100, 2 -> %2).
+        return float(basari_puani) * (float(agirlik) / 100.0)
     except (ValueError, TypeError):
         return None
 

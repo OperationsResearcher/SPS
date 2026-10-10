@@ -18,6 +18,9 @@ from app.services.k_vektor_config_service import (
 )
 from app_platform.modules.kurum.kurum_overview import build_kurum_overview
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)
 
 _KURUM_ROLES = ("tenant_admin", "executive_manager")
 
@@ -152,8 +155,8 @@ def kurum_ayarlar():
                 if old.startswith(f"{tenant.id}.") and old != fname:
                     try:
                         os.remove(os.path.join(folder, old))
-                    except OSError:
-                        pass
+                    except OSError as err:
+                        logger.error(f"kurum_ayarlar failed: {err}")
 
             with open(dest, "wb") as out:
                 out.write(blob)

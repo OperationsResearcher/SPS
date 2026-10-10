@@ -2,7 +2,7 @@
 """Paylaşılan import ve yardımcılar — main route paketi."""
 from flask import render_template, redirect, url_for, current_app, jsonify, request, flash, send_file
 from flask_login import login_required, current_user
-from extensions import csrf, db
+from extensions import db
 from app.models.portfolio_project import (
     Project,
     Task,

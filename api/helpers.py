@@ -7,7 +7,6 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 from flask_login import login_required, current_user
-from extensions import csrf
 from app.utils.project_rbac import project_access_required, project_manager_required, project_member_required, project_observer_allowed, role_required
 
 
@@ -76,8 +75,8 @@ def _resolve_project_leader_ids_api(data: dict, kurum_id: int) -> list:
     elif data.get("manager_id") is not None:
         try:
             out.append(int(data["manager_id"]))
-        except (TypeError, ValueError):
-            pass
+        except (TypeError, ValueError) as e:
+            logger.warning(f"_resolve_project_leader_ids_api failed: {e}")
     seen_ids = set()
     result: list = []
     for uid in out:
@@ -123,6 +122,9 @@ import uuid
 import mimetypes
 import json
 import re
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _notify_project_team_changes_api(

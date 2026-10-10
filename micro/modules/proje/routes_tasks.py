@@ -25,6 +25,9 @@ from app_platform.services.notification_triggers import (
 )
 from app.utils.audit_logger import AuditLogger
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 @app_bp.route("/k-plan/project/<int:project_id>/task/new", methods=["GET", "POST"])
@@ -69,8 +72,8 @@ def project_task_new(project_id: int):
     if request.form.get("due_date"):
         try:
             due = datetime.strptime(request.form.get("due_date"), "%Y-%m-%d").date()
-        except ValueError:
-            pass
+        except ValueError as err:
+            logger.warning(f"project_task_new failed: {err}")
 
     task = Task(
         project_id=project_id,
@@ -135,13 +138,13 @@ def project_task_quick_add():
     if raw_start:
         try:
             start_d = datetime.strptime(str(raw_start)[:10], "%Y-%m-%d").date()
-        except ValueError:
-            pass
+        except ValueError as err:
+            logger.warning(f"project_task_quick_add failed: {err}")
     if raw_due:
         try:
             due_d = datetime.strptime(str(raw_due)[:10], "%Y-%m-%d").date()
-        except ValueError:
-            pass
+        except ValueError as err:
+            logger.warning(f"project_task_quick_add failed: {err}")
     if start_d is None and due_d is not None:
         start_d = due_d
     if due_d is None and start_d is not None:
@@ -155,8 +158,8 @@ def project_task_quick_add():
             kpi = ProcessKpi.query.get(pk_int)
             if kpi and kpi.process.tenant_id == current_user.tenant_id:
                 process_kpi_id = pk_int
-        except (TypeError, ValueError):
-            pass
+        except (TypeError, ValueError) as err:
+            logger.warning(f"project_task_quick_add failed: {err}")
 
     aid = int(current_user.id)
     raw_aid = data.get("assignee_id")
@@ -166,8 +169,8 @@ def project_task_quick_add():
             assignee_user = CoreUser.query.get(tmp)
             if assignee_user and assignee_user.tenant_id == current_user.tenant_id:
                 aid = tmp
-        except (TypeError, ValueError):
-            pass
+        except (TypeError, ValueError) as err:
+            logger.warning(f"project_task_quick_add failed: {err}")
 
     task = Task(
         project_id=project_id,
@@ -283,8 +286,8 @@ def project_task_edit(project_id: int, task_id: int):
     if request.form.get("due_date"):
         try:
             task.due_date = datetime.strptime(request.form.get("due_date"), "%Y-%m-%d").date()
-        except ValueError:
-            pass
+        except ValueError as err:
+            logger.warning(f"project_task_edit failed: {err}")
     else:
         task.due_date = None
 

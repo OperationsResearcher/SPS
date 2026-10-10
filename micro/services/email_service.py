@@ -213,6 +213,10 @@ def test_smtp_connection(host, port, use_tls, use_ssl, username, password):
     SMTP bağlantısını test eder — ayarlar sayfasından çağrılır.
     Returns: (success: bool, message: str)
     """
+    from app.utils.outbound_guard import validate_smtp_target
+    ok_target, err_target = validate_smtp_target(host, port)
+    if not ok_target:
+        return False, err_target
     try:
         if use_ssl:
             context = ssl.create_default_context()
@@ -233,4 +237,6 @@ def test_smtp_connection(host, port, use_tls, use_ssl, username, password):
     except smtplib.SMTPConnectError:
         return False, f"Sunucuya bağlanılamadı: {host}:{port}"
     except Exception as e:
-        return False, str(e)
+        # Ham hata metni iç ağ bilgisi sızdırabilir (GUV-06): yalnız loga yaz.
+        current_app.logger.warning("[email_service] SMTP test hatası: %s", e)
+        return False, "Bağlantı kurulamadı. Sunucu adresini ve portu kontrol edin."

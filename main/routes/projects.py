@@ -395,6 +395,7 @@ def update_guide_preferences():
         
         return jsonify({'success': True})
     except Exception as e:
+        db.session.rollback()  # HATA-17
         current_app.logger.error(f'Guide preferences güncelleme hatası: {e}')
         return json_error(e, "[update_guide_preferences]", 500)
 
@@ -419,6 +420,7 @@ def update_guide_settings():
         
         return jsonify({'success': True})
     except Exception as e:
+        db.session.rollback()  # HATA-17
         current_app.logger.error(f'Guide settings güncelleme hatası: {e}')
         return json_error(e, "[update_guide_settings]", 500)
 
@@ -433,6 +435,7 @@ def reset_walkthroughs():
         
         return jsonify({'success': True})
     except Exception as e:
+        db.session.rollback()  # HATA-17
         current_app.logger.error(f'Walkthrough sıfırlama hatası: {e}')
         return json_error(e, "[reset_walkthroughs]", 500)
 

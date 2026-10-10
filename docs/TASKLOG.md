@@ -2,6 +2,271 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-316 | 2026-10-10 | ✅ Tamamlandı (Dalga 4 — kalite; yalnız Yerel; commit yok)
+
+**Görev:** Derin denetim Dalga 4: modal erişilebilirliği, rapor JS i18n, testlerde tenant guard
+**Modül:** frontend ortak, raporlar JS, i18n, test altyapısı
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/app.js` → merkezi modal a11y (role=dialog, aria-modal, focus-trap, Escape, odak iadesi)
+- `ui/templates/platform/base.html` → ikon butonlara aria-label
+- `ui/static/platform/js/reports/*.js` (33 dosya) → kullanıcı metinleri t() ile
+- `translations/en/LC_MESSAGES/messages.po/.mo` → 162 yeni msgid + 5 boş çeviri; yalnız EN derlendi
+- `config.py` (TestingConfig) → TENANT_GUARD_MODE=enforce; `tests/conftest.py` → istek başında g önbelleği sıfırlama
+
+### Yapılan İşlem
+3 paralel paket. Tam paket: 1066 passed, 1 skipped, 1 xfailed, 0 failed (guard enforce ile).
+
+### Notlar
+- Bu turda YAPILMAYANLAR: CSP unsafe-inline kaldırma (99 inline script + 190 handler, ayrı proje); ölü JS/şablon ve `Kalder/` kopyasının silinmesi (kullanıcı onayı gerekir).
+- messages.po'da önceden commit edilmemiş "Faz 0 (GUV)" bloğu da derlendi.
+- Modal Tab/Escape ve EN arayüz tarayıcıda denenmedi.
+
+## TASK-315 | 2026-10-10 | ✅ Tamamlandı (Dalga 3 — tek hesap motoru; yalnız Yerel; commit yok)
+
+**Görev:** Derin denetim Dalga 3: hesaplama doğruluğu, tüm ekranlar tek motora bağlandı
+**Modül:** score_engine, karne, health, bireysel, k_rapor, EFQM, SP exec advisor, api/v1
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/score_engine_service.py` → parse_tr_number (Türkçe zorunlu, belirsizde None), achievement (tek yön kuralı), weighted_average, entry_in_scope (dönem kesimi), yıllık config is_included/weight, soft delete filtresi, ölçülmemiş = None (A-001..A-007, A-011)
+- `app/utils/karne_hesaplamalar.py` → bant boşluğu alt banda (A-004), ağırlık hep yüzde (A-005)
+- `micro/modules/surec/routes_karne.py`, `routes_kpi_data.py`, `app/services/process_health_service.py`, `micro/modules/bireysel/routes.py`, `ui/static/platform/js/surec.js` → motora bağlandı (A-006..A-010)
+- `app/services/pg_year_scores.py` (yeni), `micro/modules/k_rapor/routes.py`, `app/services/efqm_assessment.py`, `micro/modules/sp/routes_exec_advisor.py` → motora bağlandı (A-009, A-012, B-005)
+- `calculated_score` yalnız cari yıl için yazılıyor (A-016); `micro/modules/api/routes.py` api/v1 kpi-data Türkçe sayı + tarih/yıl (A-014)
+- `tests/test_dalga3_*.py` → 3 yeni test dosyası; 3 eski test yeni doğru davranışa güncellendi
+
+### Yapılan İşlem
+Önce motor çekirdeği, sonra 2 paralel bağlama paketi. Tam paket: 1066 passed, 1 skipped, 1 xfailed, 0 failed.
+
+### Notlar
+- Yerel DB ölçümü: 366.668 kpi_data kaydında Türkçe kurala göre belirsiz değer 0; ağırlık kolonlarında 0-1 arası değer 0 → veri düzeltmesi gerekmedi.
+- Ajan kararları (kullanıcı teyidi bekler): negatif hedefli PG puanlanmaz (None); çocuklu süreçte alt süreç ortalaması ile kendi PG'leri 50/50.
+- Davranış değişiklikleri: karnede ölçülmemiş hücre artık "0" değil, yok; api/v1 boş değer 400. Test ortamında tarayıcı kontrolü gerekir.
+- Kanban hâlâ JS'te hesaplıyor (yön hatası düzeltildi); backend achievement'a geçiş sonraki iş.
+
+## TASK-314 | 2026-10-10 | ✅ Tamamlandı (Dalga 2 — kırık işlevler; yalnız Yerel; commit yok)
+
+**Görev:** Derin denetim Dalga 2: modelde olmayan alanlar, bildirim/zamanlayıcı, CSRF
+**Modül:** proje, bildirim, scheduler, admin, sp, legacy PG
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `services/task_activity_service.py` → TaskActivity model alanlarına uyduruldu; commit/rollback kaldırıldı (D-001: görev PUT artık kalıcı)
+- `api/routes_projects.py`, `api/routes_files.py`, `services/project_cloning.py`, `services/executive_dashboard.py` → risk/dosya/klon model uyumu (D-002..D-004)
+- `app/models/portfolio_project.py` → ProjectRisk.risk_score / risk_level hesaplanan özellik (kolon değil)
+- `services/notification_service.py`, `services/early_warning_service.py` → modern notifications tablosu, begin_nested, tenant_id, günlük tekilleştirme (D-005, D-009, D-010)
+- `app/__init__.py`, `config.py`, `app/utils/scheduler_leader.py`, K-Radar zamanlama → hatırlatma zamanlayıcıları `REMINDER_SCHEDULERS_ENABLED` (vars. KAPALI) + lider; İstanbul saati (D-006, D-008)
+- `micro/modules/admin/routes.py`, `micro/modules/sp/helpers.py`, `services/timesheet_service.py` → D-007, D-022, D-021
+- `main/routes/pages.py`, `app/services/process_performance_service.py` → legacy PG GET/add 500 düzeltildi; alt strateji SubStrategy ile kalıcı yazılıyor
+- `ui/static/platform/js/sp_projeler.js`, `reports/sektor_benchmark.js`, `admin_setup_import.js` → X-CSRFToken (E-010)
+- `tests/test_dalga2_*.py` → 4 yeni test dosyası
+
+### Yapılan İşlem
+4 paralel paket. Tam paket: 1003 passed, 1 skipped, 1 xfailed, 0 failed.
+
+### Notlar
+- Proje dosyası silme hard delete (ProjectFile'da is_active yok; migration gerekir).
+- Hatırlatma e-posta gönderimi hâlâ yalnız log (stub) → Ö-01 kapsamında.
+- E-010 CSRF düzeltmesi tarayıcıda denenmedi → Test smoke listesine.
+
+## TASK-313 | 2026-10-10 | ✅ Tamamlandı (Dalga 1 — güvenlik; yalnız Yerel; commit yok)
+
+**Görev:** Derin denetim Dalga 1: güvenlik ve veri bütünlüğü düzeltmeleri (reports/audit/derin/)
+**Modül:** admin, platform_core (paket kapısı), api/projeler, sp, raporlar, k_rapor, main/pages, socketio, frontend
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `api/routes_admin.py` → logo ile dosya silme kapatıldı (C-005), rol kapısı
+- `micro/modules/admin/routes.py`, `routes_admin_tools.py` → paket/lisans alanları yalnız admin (F-001), rol hiyerarşisi (F-005/F-015), alt kurum POST kapısı (F-008), DB geri yükleme yalnız yerel + audit (F-006)
+- `platform_core/__init__.py`, `app/__init__.py` → paket kapısı tüm metod ve API isteklerinde (F-002/F-004); paketsiz kurum serbest (F-011 ayrı karar)
+- `api/routes_projects.py`, `services/project_service.py`, `services/resource_planning.py` → proje API rol kapısı (F-003), PG/kullanıcı kiracı doğrulaması (C-001/C-002)
+- `micro/modules/sp/*`, `micro/modules/raporlar/*`, `micro/modules/k_rapor/routes.py`, `app/services/replan_trigger_service.py` → rapor rol kapıları (B-002/B-003), kiracı doğrulaması (B-001/B-009), mühürlü yıl 409 (B-004)
+- `main/routes/pages.py` → PG/faaliyet soft delete (D-017), alt strateji kurum kontrolü (C-003)
+- `app/socketio_events.py` → oda üyelik kontrolü, e-posta yayını kaldırıldı (D-012)
+- `ui/static/platform/js/app.js` + 6 SP/masaüstü şablonu + `static/js/admin_kule.js` + `app/routes/core.py` → mcEsc ile 29 alan kaçışlandı (E-001..E-007)
+- `tests/test_dalga1_*.py` → 6 yeni test dosyası
+
+### Yapılan İşlem
+6 paralel paket. Tam paket: 984 passed, 1 skipped, 1 xfailed, 0 failed.
+
+### Notlar
+- Açık kalan: K-Radar risk/olgunluk uçları (B-009 kalan), Ticket.subject String(50), paketsiz kurum fail-open (F-011).
+- Legacy PG GET/add zaten 500 veriyor (olmayan ilişki) → Dalga 2.
+
+## TASK-312 | 2026-10-10 | ✅ Tamamlandı (yalnız Yerel; commit yok)
+
+**Görev:** Uçtan uca denetim (reports/audit/) + P0/P1 güvenlik düzeltmeleri + pazarlama/rekabet PDF raporu
+**Modül:** api/files, llm_gateway, auth, şifre sıfırlama, genel (except-pass)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `api/routes_files.py` → doküman merkezi indir/sil uçları 501 (GV-001: kiracı kontrolü yoktu)
+- `app/utils/outbound_guard.py` → `validate_llm_base_url` (metadata/link-local hep red; özel ağ yalnız bayrakla)
+- `app/services/llm_gateway.py` → base_url doğrulaması; openai sağlayıcısında base_url artık iletiliyor (Yerel LLM çağrıları OpenAI'a gidiyordu)
+- `micro/modules/sp/routes_tenant_ai.py` → kayıtta base_url doğrulaması (400)
+- `config.py` → `LLM_ALLOW_PRIVATE_BASE_URL` (vars. kapalı)
+- `app/routes/auth.py` → açık yönlendirme `/\evil.com`, `//evil.com` engeli (GV-006); audit fallback'te sessiz pass kaldırıldı
+- `app/routes/password_reset.py` + `templates/auth/*` + `app/__init__.py` + `login.html` → "Şifremi unuttum" akışı
+- 74 dosya → `except …: pass` blokları loglamaya çevrildi (KQ-003)
+- `pytest.ini`, `requirements-test.txt` → pytest-timeout, timeout=120
+- `tests/test_guvenlik_p0_ekim2026.py`, `tests/test_password_reset.py` → yeni testler
+- `reports/audit/00-13*.md`, `docs/ekim2026/Kokpitim-Pazarlama-Rekabet-Raporu-2026-10.pdf` → raporlar
+
+### Yapılan İşlem
+Denetim raporlarındaki doğrulanmış P0 bulguları kapatıldı. Tam test paketi: 910 passed, 1 skipped, 1 xfailed, 0 failed (250 sn).
+
+### Notlar
+- Test/Yayın env: `LLM_ALLOW_PRIVATE_BASE_URL` TANIMLANMAMALI (bulut). Yerel LLM kullanan kurum varsa base_url'i genel IP olmalı ya da kayıt 400 alır.
+- Şifre sıfırlama metinleri `.po`'ya eklenmedi (EN'de Türkçe görünür); gerçek SMTP ile denenmedi.
+- Off-site yedek (P0-3) sunucu tarafı iş; bu görevde yapılmadı.
+
+## TASK-311 | 2026-10-06 | ✅ Tamamlandı (yalnız Yerel; Yayın'a dokunulmadı; commit yok)
+
+**Görev:** KMF (tenant 16) Yayın verisini Yerel'e birebir al + "PG ağırlığı yıllar arası kayıyor / mühür korumuyor" şikâyetini Yerel KMF'de düzelt (Faz 1.2 / 1.5 / 1.4)
+**Modül:** ops scriptleri / yıl bazlı program / surec
+**Durum:** ✅ Tamamlandı — Yerel KMF; Yayın'da uygulanması AÇIK
+
+### Değiştirilen Dosyalar
+- `scripts/ops/yilbazli_faz1_2_clone_zinciri.py` → `--tenant` filtresi eklendi
+- `scripts/ops/yilbazli_faz1_4_override_goc.py` → `--tenant` filtresi eklendi (yıl config'i `plan_year_id` üzerinden kuruma bağlı)
+- Uygulama kodu değişmedi; DB verisi (Yerel KMF) değişti.
+
+### Yapılan İşlem
+1. **Yayın → Yerel KMF:** Yayın tam `pg_dump` (sunucu `/opt/kokpitim/backups/kmf_oncesi_20261006_073518/`, yerel `backups/yayin/`, sha256 eşleşti) + Yayın KMF kurum dışa aktarımı (`export_tenant_json`, yalnız okuma). Yerel KMF silinip `restore_tenant_data` + eksik satır tamamlama turu ile yüklendi. Sonuç Yayın ile aynı: 10 kullanıcı, 11 süreç, 187 PG, 745 PGV, kpi_data 1000. Tek fark audit_logs 1882 / 1879. Yayın'a hiçbir yazma yapılmadı. Yön kuralı: Yayın esas, yerel veri değersiz.
+2. **Kök neden (şikâyet):** KMF'de 146/187 PG `plan_year_id` NULL, 0 yıl kopyası (`source_kpi_id`). Tüm yıllar tek ProcessKpi kaydını paylaşıyor; ağırlık değişince tüm yıllar değişiyor. Mühür yılsız kaydı korumuyor (`muhur_engeli` NULL yılda None döner). Mühür bir kilittir, snapshot değil (`close_plan_year`).
+3. **Düzeltme (Yerel KMF):** Faz 1.2 (`--tenant 16`): yılsız kayıtlar 2020'ye bağlandı, 2021-2026 klonlandı. Faz 1.5: 785 PGV yılın PG kopyasına bağlandı (PGV 745 değişmedi). Faz 1.4 (`--tenant 16`): 18 `kpi_year_configs` kaydı (is_included=FALSE) kopyalara taşındı, kalan fark 0.
+4. **Doğrulama:** 2026 kopyasında ağırlık 77 yapılınca 2025 etkilenmedi (test geri alındı); mühürlü 2024 PG'sine yazma 423 ile engellendi.
+
+### Notlar
+- Yerel yedekler: `backups/yayin/yerel_KMF_ONCESI_*`, `yerel_FAZ12_ONCESI_*`, `yerel_FAZ15_ONCESI_*`, `yerel_FAZ14_ONCESI_*`.
+- Geçmiş yılların eski ağırlıkları KURTARILMAYACAK (kullanıcı kararı); en eski tam yedek 2026-06-08 ve o tarihte bile ~22 KMF PG'sinin ağırlığı bugünden farklı.
+- AÇIK: Yayın'da KMF hâlâ eski yapıda (yılsız PG). Düzelme bu geçişin Yayın'da uygulanmasına bağlı; "yayına çıkalım" ve L paketleri kuralı gereği ajan göndermez.
+- AÇIK: Yerelde 139 KMF PGV'si yanlış yıl görünüyor (yılın kopyası olmayan, büyük olasılıkla pasif PG'ler; Faz 1.5 K14 istisnası; pasifliği teyit edilmedi).
+- Override tabloları (`*_year_configs`) düşürülmedi (ayrı migration). `--tenant` değişiklikleri commit edilmedi.
+
+## TASK-310 | 2026-10-03 | ✅ Tamamlandı (Faz 2.1; commit yok)
+
+**Görev:** Eklenti nesnelerini tek kaynağa indir (KOD-01/05); etkisiz `@csrf.exempt` decorator'larını kaldır
+**Modül:** extensions / app factory / api / main / micro
+**Durum:** ✅ Tamamlandı — tam suite geçti (887)
+
+### Değiştirilen Dosyalar
+- `extensions.py` (tek kaynak, `session_protection='basic'`), `app/extensions.py` (re-export), `app/__init__.py` (yerel Migrate/LoginManager kaldırıldı)
+- 14 dosyada 75 etkisiz `@csrf.exempt` kaldırıldı (api/*, main/routes/*, micro shared auth/scheduled_reports, performance_routes)
+- `docs/ekim2026/csrf_exempt_envanteri.txt`, `FAZ2-ILERLEME.md`, `tests/test_extensions_tek_nesne.py`
+
+### Notlar
+Fiilen exempt uç sayısı 53 → 53 (değişmedi). Birleştirme decorator temizliğinden ÖNCE yapılsaydı 75 uç CSRF'siz kalırdı.
+
+## TASK-309 | 2026-09-30 | ✅ Tamamlandı (Faz 1C + 1D; commit yok)
+
+**Görev:** Düzeltme Planı Faz 1C (veri bütünlüğü) ve 1D (dayanıklılık/performans) — `claude/duzeltme-faz1-dogruluk`
+**Modül:** surec / bireysel / raporlar / k_rapor / skor motoru / llm_gateway / bildirim
+**Durum:** ✅ Tamamlandı — tam suite 884 geçti. Ayrıntı: docs/ekim2026/FAZ1C-SONUC.md, FAZ1D-SONUC.md
+
+### Değiştirilen Dosyalar
+- `micro/modules/surec/routes_kpi_data.py` → HATA-01 retry'da değer yeniden atama; HATA-18 10 sn tekrar koruması
+- `app/models/process.py`, `migrations/versions/ux01a2b3c4d5_indiv_pg_unique_active.py`, `micro/modules/bireysel/routes.py` → HATA-24 kısmi unique indeks (tek head: ux01a2b3c4d5)
+- `micro/modules/raporlar/routes_faz0/1/3/5.py`, `micro/modules/k_rapor/routes.py` → HATA-10 NULL plan yılı dahil
+- `micro/modules/surec/routes_kpi.py`, `app/services/llm_gateway.py`, `services/notification_service.py`, `main/routes/projects.py` → HATA-17 rollback
+- `main/routes/strategy_api.py` (410), `ui/static/platform/js/command_palette.js`, `app/utils/query_optimizer.py` (silindi), `app/utils/error_tracking.py` → HATA-19/20/25/26
+- `app/utils/tr_time.py` (yeni), `score_engine_service.py`, `date_sovereign.py` → HATA-21; `routes_flow.py`, `routes_faz5.py` → HATA-23
+- `micro/services/notification_triggers.py` → PERF-02 async e-posta; `llm_gateway.py` → PERF-03 timeout
+- `app/i18n.py` (PERF-04), `score_engine_service.py` (PERF-06), `masaustu/routes.py` (PERF-12), `sp/helpers.py` (PERF-13)
+- KOD-03 `_` importları; KOD-04 `process_performance_service` + `performance_routes` ölü uçlar silindi, `ruff.toml` istisnası kalktı
+- Testler: test_pgv_veri_butunlugu, test_plan_year_null_guard, test_score_engine_zincir, test_js_i18n_map_onbellek, test_masaustu_favori_pg
+
+### Notlar
+KpiData'ya DB unique kısıtı KONMADI (Tomofil günlük veri, ~40 bin meşru çoklu kayıt). KMF'de 19 fazla kayıt için karar kullanıcıda. PERF-05/07 Faz 2'ye ertelendi.
+
+## TASK-308 | 2026-09-30 | ✅ Tamamlandı (Faz 1B; commit yok)
+
+**Görev:** Düzeltme Planı Faz 1B — onaylanan 6 karar: açık uçlu aralıklar, bant puanı (0-100), JS yedek hesabı kaldırma, hedef 0 kuralı, azalan+0 kuralı, tek hesap yolu (`claude/duzeltme-faz1-dogruluk`)
+**Modül:** surec / karne / k_rapor / skor motoru
+**Durum:** ✅ Tamamlandı — tam suite 872 geçti; 1C/1D başlamadı
+
+### Değiştirilen Dosyalar
+- `app/utils/karne_hesaplamalar.py` → `bantlari_coz` (konuma duyarlı açık uçlu bant), `_aralik_coz`, `_sayi_tr` (ondalık nokta), `N+`, `min=None` desteği
+- `app/services/score_engine_service.py` → `aggregate_actuals` (tek özet), `compute_pg_score` hedef 0 kuralı, 100 kayıt sınırı kalktı
+- `micro/modules/surec/routes_karne.py` → yıllık config yöntemi, `hesapla_basari_puani_ham` + `basari_olcek`
+- `micro/modules/surec/routes_kpi_data.py` → score-detail karne ile aynı hesap (limit(12) kalktı)
+- `micro/modules/k_rapor/routes.py` (3 yer), `sp/routes_analysis.py`, `app/services/process_health_service.py` → `compute_pg_score`
+- `services/period_report_service.py` → ortalaması 0 olan PG "Veri Yok" olmasın
+- `ui/static/platform/js/app.js` (`kkBasariPuanHtml`), `pg_tablo_modal.js`, `surec.js` → JS yedek hesabı kaldırıldı, ölçeğe duyarlı rozet
+- `scripts/ops/karne_kiyas.py` → yeni koda uyarlandı (doğrulama aracı)
+- Testler: `test_karne_acik_uclu_bantlar`, `test_pg_puan_kurallari`, `test_karne_api_puan` (yeni)
+- `docs/ekim2026/FAZ1B-SONUC.md`, `kiyas_yayin_1b/`, `kiyas_yerel_1b/`
+
+### Yapılan İşlem
+Test-önce: her karar için KMF/Tomofil gerçek tanımlarından vakalar yazıldı. Sonra kod değişti, ardından kıyas aracı Yayın anlık görüntüsünde yeniden koşuldu: KMF 47 yanlış puan → 0, Tomofil 206 puansız kayıt → 0, motor sınırı sapması → 0.
+
+### Notlar
+Eski `parse_aralik_degeri` ham davranışı korundu ("-5" → (-5,None)); yalnız puan hesabı konuma duyarlı. Yerel `kokpitim_yayin_analiz` DB'si analiz için açık; bitince silinmeli (gerçek müşteri verisi).
+
+## TASK-307 | 2026-09-30 | ✅ Tamamlandı (Faz 1A, onay bekliyor)
+
+**Görev:** Düzeltme Planı Faz 1A — KMF ve Tomofil için karne hesap yollarını karşılaştıran salt-okunur araç ve onay tablosu (`claude/duzeltme-faz1-dogruluk`)
+**Modül:** surec / karne (analiz)
+**Durum:** ✅ Tamamlandı — kod hatası düzeltmesi YOK, Faz 1B kullanıcı onayı bekliyor
+
+### Değiştirilen Dosyalar
+- `scripts/ops/karne_kiyas.py` → yeni: 5 hesap yolunu (karne, bant, motor, k_rapor, JS yedek) yan yana koşar; sınıflandırır; önerilen parser ile "bugünkü → önerilen" puan geçişini üretir
+- `docs/ekim2026/kiyas/karne_farklari.csv`, `karne_kiyas_ozet.md` → araç çıktısı (KMF 203, Tomofil 210 PG×yıl)
+- `docs/ekim2026/FAZ1A-ONAY-TABLOSU.md` → 6 karar, her biri rakam değişimi
+
+### Yapılan İşlem
+Yerel PostgreSQL'de salt-okunur çalıştırıldı. Rapordaki varsayımlar veriyle sınandı: HATA-05 bu iki kurumda 0 kayıt, HATA-06 küçük sapma (ort. 0,90 puan). Yeni bulgu: açık uçlu aralıklar ("-4", "79-", "20+") yanlış yönde okunuyor → KMF'de 45 PG×yıl kaydın karne puanı yanlış (çoğu 1). Tomofil'de 206 bant formatlı kayıtta karne puanı hiç üretilmiyor (HATA-02 doğrulandı).
+
+### Notlar
+- **Canlı doğrulama (2026-09-30):** Yayın'dan salt okunur pg_dump alındı (`backups/yayin/yayin_2026-09-30_1125.dump`, aynı zamanda Yayın yedeği), ayrı yerel DB `kokpitim_yayin_analiz`'e açıldı (ana yerel DB değişmedi). Kıyas KMF+Tomofil için yeniden koşuldu → `docs/ekim2026/kiyas_yayin/`. Bulgular doğrulandı (KMF 47 kayıt/15 PG). **Bulgu:** Yayın `alembic_version=bi01c4e5f6a7` = `Kalder/` klonunun `claude/kalder-yayin-stack` dalı; `main`'de yok. Faz 0 `gs01` migration'ı ile iki head riski (bkz. FAZ1A-ONAY-TABLOSU.md).
+Araç route modülünü import edemez (blueprint kayıt sonrası); k_rapor yön kuralı araçta birebir kopyalandı. Öneri parser'ı Faz 1B'de `app/utils/karne_hesaplamalar.py`'ye taşınacak.
+
+## TASK-306 | 2026-09-30 | ✅ Tamamlandı (Yerel, commit yok)
+
+**Görev:** Düzeltme Planı Faz 0 — acil güvenlik yamaları ve tek süreçli scheduler (`claude/duzeltme-faz0-guvenlik`)
+**Modül:** admin / k_rapor / ayarlar / auth / socketio / demo / altyapı
+**Durum:** ✅ Tamamlandı — tam suite 823 geçti (öncesi 760), yeni testler 63
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → GUV-01: admin olmayan `tenant_id`'yi kendi kurumuna sabitler; Admin için kurum doğrulanır; geçersiz `role_id` 400
+- `app/utils/outbound_guard.py` (yeni) + `app/services/slack_notification.py` + `micro/modules/k_rapor/routes.py` → GUV-05: https zorunlu, tüm IP'ler global, redirect kapalı; `notify-slack` rol kontrolü
+- `micro/services/email_service.py` + `micro/modules/shared/ayarlar/routes.py` → GUV-06: SMTP port allowlist (25/465/587/2525) + global IP; ham hata metni dönmez; kayıtta da doğrulama
+- `api/routes_process.py` → GUV-07: `DELETE /api/pg-veri/sil/<id>` kaldırıldı
+- `app/services/yedekleme_service.py` + `micro/modules/admin/routes_admin_tools.py` + `yedekleme.html` → GUV-08: `.env*`/`*.pem`/`*.key`/`*.dump`/`backups` arşive girmez; DB/kod yedeği web'den yalnız Yerel'de
+- `ui/static/platform/js/masaustu.js`, `reports/risk_heatmap.js` → GUV-09: kaçışlı çıktı
+- `app/utils/scheduler_leader.py` (yeni) + `app/__init__.py` → KOD-02/PERF-01: PG advisory lock ile tek lider; kilit düşünce başka worker devralır; `SCHEDULER_ENABLED=false`
+- `app/models/core.py` + `migrations/versions/gs01a2b3c4d5_users_session_version.py` + `app/__init__.py` + `shared/auth/routes.py` → GUV-11: `load_user` pasif kullanıcıyı reddeder; parola değişince `session_version` artar (before_update olayı)
+- `app/utils/login_throttle.py` + `app/utils/security.py` → GUV-12: sayaçlar Redis'te (yoksa bellek fallback, bellek sınırı); `FLASK_ENV` okuma hatası düzeltildi
+- `app/socketio_events.py` + `app/extensions.py` → GUV-16: süreç odasına kurum kontrolü, yayınlar için oda üyeliği şartı, bildirim sahipliği, istemci `tenant_id`'sine güvenilmez, CORS varsayılan aynı-origin
+- `app/middleware/demo_guard.py` (yeni) + `micro/modules/demo/routes.py` + `_banner.html` → GUV-25: demo oturumunda yönetim/SMTP/webhook/yedek uçları kapalı, süre dolumu sunucuda, `/demo/end` yalnız POST sıfırlar
+- `translations/en/...` → 10 yeni EN çeviri, `.mo` derlendi
+- Testler: `test_admin_users_add_tenant`, `test_outbound_guard`, `test_faz0_route_yuzeyi`, `test_scheduler_leader`, `test_session_lifecycle`, `test_socketio_tenant`, `test_demo_guard`, `test_login_throttle` (+5)
+
+### Yapılan İşlem
+Plan Faz 0'ın 11 iş paketi test-önce uygulandı (GUV-01 testte yeniden üretildi, sonra yamalandı). Scheduler kilidi gerçek yerel PostgreSQL'de doğrulandı: ikinci süreç kilidi alamıyor, lider bağlantısı kapanınca devralıyor.
+
+### Notlar
+- **Yerel DB:** `users.session_version` kolonu elle eklendi (`ADD COLUMN IF NOT EXISTS`), çünkü yerel `alembic_version` `Kalder/` kopyasının `bi01c4e5f6a7` revizyonunda; bu repodan `flask db upgrade` çalışmaz. Yayın/Test/Demo'ya giderken `gs01a2b3c4d5` migration'ı normal alembic ile uygulanır. **Yerel sunucu (5001) yeniden başlatılmalı.**
+- **Yeni env:** `SCHEDULER_ENABLED` (varsayılan true), `SOCKETIO_CORS_ORIGINS` (varsayılan aynı-origin). Throttle/limiter için Yayın'da Redis gerekir (yoksa uyarı loglanır, bellek fallback).
+- **Plandan sapmalar:** (1) GUV-01'de boş `role_id` hâlâ serbest (UI "Rol Seç" boş bırakılabiliyor), yalnız var olmayan `role_id` reddedilir. (2) GUV-08'de yalnız `.env` dışlaması değil, web'den DB/kod yedeği indirme Yayın/Test/Demo'da tamamen kapatıldı. (3) GUV-12'de e-posta kilit semantiği (IP'den bağımsız) korundu; "hedef hesabı kilitleyerek DoS" tasarım riski açık.
+- Repo geneli ruff hataları (228) arşiv klasörlerinden; `api/routes_*.py` içindeki 6 `_` hatası Faz 1'de (KOD-03).
+
+## TASK-305 | 2026-09-30 | ✅ Tamamlandı
+
+**Görev:** Uygulamanın uçtan uca detaylı analizi (güvenlik, kod kalitesi, performans, hata, UX, test/ops, ürün/özellik)
+**Modül:** Tümü (salt-okunur analiz)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `docs/ekim2026/KOKPITIM-DETAYLI-ANALIZ-EKIM2026.md` → yeni: 173 bulgu + 30 özellik önerisi, birleştirilmiş yol haritası
+
+### Yapılan İşlem
+7 paralel uzman ajanla salt-okunur analiz yapıldı. Kritik bulgular (GUV-01 kurumlar arası kullanıcı açma, KOD-01 çift CSRF nesnesi, D0 durumu) ana oturumda tekrar doğrulandı. Sentez bölümü + 7 ek tek dosyada; sır/şifre değerleri maskelendi.
+
+### Notlar
+Kod değişikliği yok. En acil: git'teki Yayın sırlarının döndürülmesi (GUV-02/OPS-01), GUV-01 yaması, scheduler'ın 8× çalışması (PERF-01). Rapor Bölüm 5'teki maddeler Yayın'da doğrulanmalı.
 ## TASK-311 | 2026-09-08 | ✅ Tamamlandı
 
 **Görev:** Yerel saat + mühür mesajı + launcher VGS — Yayın

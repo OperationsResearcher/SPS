@@ -43,6 +43,47 @@ def _is_manager():
     return current_user.role and current_user.role.name in _MANAGER_ROLES
 
 
+_ROLE_RANK = {"Admin": 40, "tenant_admin": 30, "executive_manager": 20, "standard_user": 10, "User": 10}
+
+
+def _role_rank(role_name):
+    return _ROLE_RANK.get(role_name or "", 0)
+
+
+def _can_manage_target(target):
+    """Islem yapan, hedef kullaniciyi yonetebilir mi (F-005/F-015).
+
+    Kendi hesabi serbest; Admin her seyi; digerleri yalniz KENDISINDEN DUSUK rolu yonetir.
+    """
+    if target.id == current_user.id:
+        return True
+    actor = current_user.role.name if current_user.role else ""
+    tgt = target.role.name if target.role else ""
+    if actor == "Admin":
+        return True
+    if tgt == "Admin":
+        return False
+    return _role_rank(tgt) < _role_rank(actor)
+
+
+@app_bp.before_request
+def _sub_tenant_write_guard():
+    """F-008: alt kurum olusturma / yonetici parola sifirlama / toggle yalniz
+    Admin + tenant_admin. Ust Yonetim (executive_manager) alt kurum yoneticisini devralamaz.
+    (routes_sub_tenants.py dosyasindaki kapiya ek, blueprint duzeyinde guvenlik agi.)"""
+    if request.method != "POST" or not request.path.startswith("/admin/api/sub-tenants"):
+        return None
+    if not current_user.is_authenticated:
+        return None  # login_required devralir
+    role = current_user.role.name if current_user.role else ""
+    if role not in ("Admin", "tenant_admin"):
+        current_app.logger.warning(
+            "[sub_tenant_guard] denied user=%s role=%s path=%s",
+            current_user.id, role, request.path)
+        return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
+    return None
+
+
 def _403():
     return jsonify({"success": False, "message": _("Bu işlem için yetkiniz yok.")}), 403
 
@@ -509,13 +550,26 @@ def admin_users_add():
 
     # Rol atama yetki kontrolü
     role = Role.query.get(data.get("role_id"))
+    if data.get("role_id") and not role:
+        return jsonify({"success": False, "message": _("Geçersiz rol.")}), 400
     if role:
         allowed = ASSIGNABLE_ROLES.get(current_user.role.name if current_user.role else "", [])
         if role.name not in allowed:
             return jsonify({"success": False, "message": _("Bu rolü atama yetkiniz yok.")}), 403
 
+    # GUV-01: Kurum yalnız platform Admin tarafından seçilebilir; diğer yöneticiler
+    # istek gövdesindeki tenant_id'yi ne verirse versin kendi kurumlarına yazar.
+    if _is_admin():
+        try:
+            tid = int(data.get("tenant_id") or current_user.tenant_id or 0)
+        except (TypeError, ValueError):
+            return jsonify({"success": False, "message": _("Geçersiz kurum.")}), 400
+        if tid and not db.session.get(Tenant, tid):
+            return jsonify({"success": False, "message": _("Kurum bulunamadı.")}), 400
+    else:
+        tid = int(current_user.tenant_id or 0)
+
     # tenant_admin tekil kontrolü
-    tid  = int(data.get("tenant_id") or current_user.tenant_id or 0)
     if role and role.name == "tenant_admin":
         existing = User.query.join(Role).filter(
             User.tenant_id == tid, Role.name == "tenant_admin", User.is_active.is_(True)
@@ -585,6 +639,10 @@ def admin_users_edit(user_id):
         return _403()
 
     u = User.query.get_or_404(user_id)
+    if not _can_manage_target(u):
+        current_app.logger.warning(
+            "[%s] hierarchy denied actor=%s target=%s", "admin_users_edit", current_user.id, u.id)
+        return jsonify({"success": False, "message": _("Bu kullanıcının hesabını yönetme yetkiniz yok.")}), 403
     if not _is_admin() and u.tenant_id != current_user.tenant_id:
         return _403()
     if (
@@ -639,6 +697,10 @@ def admin_users_toggle(user_id):
         return _403()
 
     u = User.query.get_or_404(user_id)
+    if not _can_manage_target(u):
+        current_app.logger.warning(
+            "[%s] hierarchy denied actor=%s target=%s", "admin_users_toggle", current_user.id, u.id)
+        return jsonify({"success": False, "message": _("Bu kullanıcının hesabını yönetme yetkiniz yok.")}), 403
     if not _is_admin() and u.tenant_id != current_user.tenant_id:
         return _403()
     if (
@@ -675,6 +737,10 @@ def admin_users_2fa_reset(user_id):
         return _403()
 
     u = User.query.get_or_404(user_id)
+    if not _can_manage_target(u):
+        current_app.logger.warning(
+            "[%s] hierarchy denied actor=%s target=%s", "admin_users_2fa_reset", current_user.id, u.id)
+        return jsonify({"success": False, "message": _("Bu kullanıcının hesabını yönetme yetkiniz yok.")}), 403
     # Tenant admin yalnızca kendi tenant'ında
     if not _is_admin() and u.tenant_id != current_user.tenant_id:
         return _403()
@@ -1015,12 +1081,18 @@ def admin_tenants_edit(tenant_id):
         t.website_url     = data.get("website_url") or None
         t.tax_office      = data.get("tax_office") or None
         t.tax_number      = data.get("tax_number") or None
-        t.max_user_count  = int(data["max_user_count"]) if data.get("max_user_count") else t.max_user_count
-        if data.get("license_end_date"):
-            from datetime import date
-            t.license_end_date = date.fromisoformat(data["license_end_date"])
-        if data.get("package_id"):
-            t.package_id = int(data["package_id"])
+        # Ticari alanlar (paket/lisans/kota) yalniz platform Admin (F-001)
+        if _is_admin():
+            t.max_user_count  = int(data["max_user_count"]) if data.get("max_user_count") else t.max_user_count
+            if data.get("license_end_date"):
+                from datetime import date
+                t.license_end_date = date.fromisoformat(data["license_end_date"])
+            if data.get("package_id"):
+                t.package_id = int(data["package_id"])
+        elif any(data.get(k) for k in ("max_user_count", "license_end_date", "package_id")):
+            current_app.logger.warning(
+                "[admin_tenants_edit] commercial fields ignored for non-admin user=%s tenant=%s",
+                current_user.id, tenant_id)
 
         # ── Bayi/Holding tipi değişimi (sadece Platform Admin) ──
         if "tenant_type" in data and _is_admin():
@@ -1117,8 +1189,8 @@ def admin_tenants_logo(tenant_id):
             if old.startswith(f"{tenant_id}.") and old != fname:
                 try:
                     os.remove(os.path.join(folder, old))
-                except OSError:
-                    pass
+                except OSError as err:
+                    logger.error(f"admin_tenants_logo failed: {err}")
         with open(dest, "wb") as out:
             out.write(blob)
         t.logo_path = fname
@@ -1345,8 +1417,8 @@ def admin_api_card_update(card_id):
         if "sira" in data:
             try:
                 card.sira = int(data.get("sira") or 0)
-            except (TypeError, ValueError):
-                pass
+            except (TypeError, ValueError) as err:
+                logger.warning(f"admin_api_card_update failed: {err}")
         if "component_code" in data:
             ccode = (data.get("component_code") or "").strip()
             if ccode:
@@ -1452,7 +1524,7 @@ def admin_components_sync():
             if slug not in _existing_endpoints:
                 db.session.add(RouteRegistry(
                     endpoint=slug,
-                    url_pattern=str(rule),
+                    url_rule=str(rule),
                     methods=",".join(sorted(rule.methods or [])),
                 ))
                 _existing_endpoints.add(slug)
@@ -1868,3 +1940,6 @@ from micro.modules.admin import routes_holding  # noqa: F401, E402  Sprint D
 from micro.modules.admin import routes_admin_tools  # noqa: F401, E402  Admin Araçları (Hata Kontrolü)
 from micro.modules.admin import routes_setup_import  # noqa: F401, E402  Kurulum İçe Aktarma (TASK-235)
 from flask_babel import gettext as _
+import logging
+
+logger = logging.getLogger(__name__)

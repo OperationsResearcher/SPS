@@ -21,21 +21,29 @@ def log_task_activity(task_id, user_id, action, field_name=None, old_value=None,
         new_value: Yeni değer (opsiyonel)
         description: İnsan okunabilir açıklama (opsiyonel)
     """
+    activity = None
     try:
+        details = {
+            'field': field_name,
+            'old': old_value,
+            'new': new_value,
+            'description': description,
+        }
         activity = TaskActivity(
             task_id=task_id,
             user_id=user_id,
-            action=action,
-            field_name=field_name,
-            old_value=json.dumps(old_value) if old_value is not None else None,
-            new_value=json.dumps(new_value) if new_value is not None else None,
-            description=description
+            activity_type=action,
+            details=json.dumps(details, ensure_ascii=False, default=str),
         )
+        # Yalnız add: commit/rollback çağıranın transaction'ına aittir.
         db.session.add(activity)
-        db.session.commit()
         return activity
     except Exception as e:
-        db.session.rollback()
+        try:
+            if activity is not None and activity in db.session:
+                db.session.expunge(activity)
+        except Exception:
+            pass
         if current_app:
             current_app.logger.error(f'Görev aktivite loglama hatası: {e}')
         return None

@@ -17,6 +17,9 @@ from sqlalchemy import text
 from extensions import db
 from werkzeug.security import generate_password_hash
 from playwright.sync_api import sync_playwright
+import logging
+
+logger = logging.getLogger(__name__)
 
 TEST_TENANT_NAME = "YeniTomofil"
 SYNTH_ADMIN_EMAIL = "admin@yenitomofil.local"
@@ -162,8 +165,8 @@ def _generate_beats(out_dir: str, run_id: str | None = None):
         try:
             import truststore
             truststore.inject_into_ssl()
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"_generate_beats failed: {err}")
         import edge_tts  # noqa: F401
     except Exception:
         if run_id:
@@ -359,8 +362,8 @@ def _add_log(run_id: str, message: str) -> None:
     except Exception:
         try:
             print(("[kilavuz_olusturucu] " + log_line).encode("ascii", "replace").decode("ascii"))
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"_add_log failed: {e}")
     with _LOCK:
         st = _RUNS.get(run_id)
         if st:
@@ -392,8 +395,8 @@ def _highlight_and_screenshot(page, selector: str, filepath: str) -> None:
     except Exception:
         try:
             page.screenshot(path=filepath)
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"_highlight_and_screenshot failed: {e}")
 
 
 def _login(page, base_url: str, email: str = SYNTH_ADMIN_EMAIL, pw: str = SYNTH_ADMIN_PW) -> None:
@@ -443,8 +446,8 @@ def _bulk_import(page, xlsx_path: str, screenshot: str | None = None) -> None:
     if screenshot:
         try:
             page.screenshot(path=screenshot)  # Swal modalı görünürken
-        except Exception:
-            pass
+        except Exception as e:
+            logger.error(f"_bulk_import failed: {e}")
     page.click(".swal2-confirm")
     page.wait_for_timeout(3500)  # upload + toast + tablo reload
 
@@ -657,8 +660,8 @@ def _run_kilavuz_process(app, run_id: str) -> None:
                 _beat("B09")
                 try:
                     os.remove(xlsx_path)
-                except OSError:
-                    pass
+                except OSError as err:
+                    logger.error(f"_run_kilavuz_process failed: {err}")
                 _add_log(run_id, f"Toplu içe aktarma ile {len(USERS_STD[2:])} Kurum Kullanıcısı eklendi")
             except Exception as e:
                 _add_log(run_id, f"⚠ Toplu içe aktarma atlandı: {str(e).splitlines()[0][:120]}")
@@ -718,8 +721,8 @@ def _run_kilavuz_process(app, run_id: str) -> None:
                     _add_log(run_id, "Bölüm 1 videosu (sesli) mp4 olarak hazır.")
                 try:
                     shutil.rmtree(narr_dir, ignore_errors=True)
-                except Exception:
-                    pass
+                except Exception as err:
+                    logger.error(f"_run_kilavuz_process failed: {err}")
             st["done"] += 1
             
             if _INCLUDE_DEFERRED:
@@ -809,8 +812,8 @@ def _run_kilavuz_process(app, run_id: str) -> None:
                     try:
                         page3.wait_for_selector("input[id^='ss-']", timeout=4000)
                         page3.locator("input[id^='ss-']").first.check()
-                    except Exception:
-                        pass
+                    except Exception as err:
+                        logger.error(f"_run_kilavuz_process failed: {err}")
                     _highlight_and_screenshot(page3, "#btn-surec-save", os.path.join(img_dir, "15_process_list.png"))
                     page3.click("#btn-surec-save")
                     time.sleep(3.0)

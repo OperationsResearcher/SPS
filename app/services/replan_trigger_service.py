@@ -26,14 +26,16 @@ def _eval_kpi_below_target(t: ReplanTrigger) -> Optional[dict]:
     if not t.target_kpi_id:
         return None
     rows = db.session.execute(text("""
-        SELECT data_date, actual_value, target_value
-        FROM kpi_data
-        WHERE process_kpi_id=:k AND is_active=true
-          AND actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
-          AND target_value ~ '^-?[0-9]+\\.?[0-9]*$'
-        ORDER BY data_date DESC
+        SELECT kd.data_date, kd.actual_value, kd.target_value
+        FROM kpi_data kd
+        JOIN process_kpis pk ON pk.id = kd.process_kpi_id
+        JOIN processes p ON p.id = pk.process_id
+        WHERE kd.process_kpi_id=:k AND p.tenant_id=:tid AND kd.is_active=true
+          AND kd.actual_value ~ '^-?[0-9]+\\.?[0-9]*$'
+          AND kd.target_value ~ '^-?[0-9]+\\.?[0-9]*$'
+        ORDER BY kd.data_date DESC
         LIMIT :n
-    """), {"k": t.target_kpi_id, "n": t.consecutive_periods}).fetchall()
+    """), {"k": t.target_kpi_id, "tid": t.tenant_id, "n": max(1, min(int(t.consecutive_periods or 1), 24))}).fetchall()
 
     if len(rows) < t.consecutive_periods:
         return None

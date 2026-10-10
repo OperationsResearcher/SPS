@@ -10,92 +10,42 @@ from app.models.legacy_bridge import db, TimeEntry, Task
 
 def start_time_entry(task_id, user_id, description=None):
     """
-    Zaman takibini başlat
-    
-    Args:
-        task_id: Görev ID
-        user_id: Kullanıcı ID
-        description: Açıklama (opsiyonel)
-    
-    Returns:
-        TimeEntry: Oluşturulan time entry
+    Canlı zaman sayacı başlatma: TimeEntry modelinde start/end alanı yok
+    (yalnız duration_minutes + date), bu yüzden çalışan sayaç tutulamaz.
+    Güvenle atlanır ve loglanır.
     """
-    try:
-        # Kullanıcının başka bir aktif time entry'si var mı kontrol et
-        active_entry = TimeEntry.query.filter_by(
-            user_id=user_id,
-            end_time=None
-        ).first()
-        
-        if active_entry:
-            # Önceki entry'yi durdur
-            active_entry.end_time = datetime.utcnow()
-            if active_entry.start_time:
-                duration = (active_entry.end_time - active_entry.start_time).total_seconds() / 60
-                active_entry.duration_minutes = int(duration)
-        
-        # Yeni time entry oluştur
-        time_entry = TimeEntry(
-            task_id=task_id,
-            user_id=user_id,
-            start_time=datetime.utcnow(),
-            description=description
-        )
-        db.session.add(time_entry)
-        db.session.commit()
-        
-        return time_entry
-    except Exception as e:
-        db.session.rollback()
-        if current_app:
-            current_app.logger.error(f'Zaman takibi başlatma hatası: {e}')
-        return None
+    if current_app:
+        current_app.logger.warning(
+            'start_time_entry atlandi: TimeEntry modelinde start_time/end_time yok (task=%s user=%s)',
+            task_id, user_id)
+    return None
 
 
 def stop_time_entry(time_entry_id=None, user_id=None):
-    """
-    Zaman takibini durdur
-    
-    Args:
-        time_entry_id: Time entry ID (opsiyonel)
-        user_id: Kullanıcı ID (opsiyonel - aktif entry bulmak için)
-    
-    Returns:
-        TimeEntry: Durdurulan time entry
-    """
+    """Sayaç durdurma: bkz. start_time_entry (model desteklemiyor, atlanır)."""
+    if current_app:
+        current_app.logger.warning(
+            'stop_time_entry atlandi: TimeEntry modelinde start_time/end_time yok')
+    return None
+
+
+def add_manual_time_entry(task_id, user_id, duration_minutes, entry_date=None, description=None):
+    """Elle süre kaydı ekle (modelin gerçek alanlarıyla)."""
     try:
-        if time_entry_id:
-            time_entry = TimeEntry.query.get(time_entry_id)
-        elif user_id:
-            time_entry = TimeEntry.query.filter_by(
-                user_id=user_id,
-                end_time=None
-            ).first()
-        else:
-            return None
-        
-        if not time_entry or time_entry.end_time:
-            return None
-        
-        time_entry.end_time = datetime.utcnow()
-        if time_entry.start_time:
-            duration = (time_entry.end_time - time_entry.start_time).total_seconds() / 60
-            time_entry.duration_minutes = int(duration)
-        
-        # Task'ın actual_time'ını güncelle
-        task = Task.query.get(time_entry.task_id)
-        if task:
-            if task.actual_time:
-                task.actual_time += duration / 60  # Saate çevir
-            else:
-                task.actual_time = duration / 60
-        
+        entry = TimeEntry(
+            task_id=task_id,
+            user_id=user_id,
+            duration_minutes=int(duration_minutes),
+            description=description,
+            date=entry_date or datetime.utcnow().date(),
+        )
+        db.session.add(entry)
         db.session.commit()
-        return time_entry
+        return entry
     except Exception as e:
         db.session.rollback()
         if current_app:
-            current_app.logger.error(f'Zaman takibi durdurma hatası: {e}')
+            current_app.logger.error(f'Manuel zaman kaydi hatasi: {e}')
         return None
 
 
@@ -134,9 +84,9 @@ def get_user_timesheet(user_id, start_date, end_date):
     try:
         entries = TimeEntry.query.filter(
             TimeEntry.user_id == user_id,
-            TimeEntry.start_time >= datetime.combine(start_date, datetime.min.time()),
-            TimeEntry.start_time <= datetime.combine(end_date, datetime.max.time())
-        ).order_by(TimeEntry.start_time.desc()).all()
+            TimeEntry.date >= start_date,
+            TimeEntry.date <= end_date
+        ).order_by(TimeEntry.date.desc()).all()
         
         return entries
     except Exception as e:
@@ -166,9 +116,9 @@ def get_project_timesheet(project_id, start_date, end_date):
         
         entries = TimeEntry.query.filter(
             TimeEntry.task_id.in_(task_ids),
-            TimeEntry.start_time >= datetime.combine(start_date, datetime.min.time()),
-            TimeEntry.start_time <= datetime.combine(end_date, datetime.max.time())
-        ).order_by(TimeEntry.start_time.desc()).all()
+            TimeEntry.date >= start_date,
+            TimeEntry.date <= end_date
+        ).order_by(TimeEntry.date.desc()).all()
         
         return entries
     except Exception as e:

@@ -26,6 +26,7 @@ from app.services.score_engine_service import compute_process_scores_internal
 
 from .helpers import _tid_or_none, MUDA_MAX_PROCESSES
 from flask_babel import gettext as _
+from app.utils.plan_year_filter import filter_by_plan_year
 
 # ═══════════════════════════════════════════════════════════════════════════
 # FAZ 5 — BÜYÜK ALTYAPI (MVP'ler)
@@ -56,7 +57,7 @@ def raporlar_api_mobile_snapshot():
         from app.services.score_engine_service import compute_vision_score
         today = _date.today()
         v = compute_vision_score(tid, active_py.year if active_py else today.year,
-                                       today, plan_year=active_py)
+                                       today, persist_pg_scores=False, plan_year=active_py)  # HATA-23
         vision = v.get('vision_score') if isinstance(v, dict) else v
     except Exception as e:
         current_app.logger.warning(f"[mobile-snapshot] vision_score hesaplanamadı: {e}")
@@ -195,7 +196,7 @@ def raporlar_api_bi_strategies_json():
     py_id = active_py.id if active_py else None
 
     strat_q = Strategy.query.options(selectinload(Strategy.sub_strategies)).filter_by(tenant_id=tid, is_active=True)
-    if py_id: strat_q = strat_q.filter_by(plan_year_id=py_id)
+    strat_q = filter_by_plan_year(strat_q, Strategy, py_id)
 
     out = []
     for s in strat_q.order_by(Strategy.code).all():
@@ -239,7 +240,7 @@ def raporlar_api_ml_anomaly():
         Process.tenant_id == tid, Process.is_active.is_(True),
         ProcessKpi.is_active.is_(True),
     )
-    if py_id: kpis_q = kpis_q.filter(Process.plan_year_id == py_id)
+    kpis_q = filter_by_plan_year(kpis_q, Process, py_id)
     kpis = kpis_q.all()
 
     # İlk 200 PG için son 24 ölçümü tek sorguda topla (N+1 önlemi: 200 → 1)
@@ -339,7 +340,7 @@ def raporlar_api_onay_zinciri():
 
         owner = None
         if i.owner_user_id:
-            u = db.session.get(User, i.owner_user_id)
+            u = User.query.filter_by(id=i.owner_user_id, tenant_id=tid).first()
             owner = f"{u.first_name or ''} {u.last_name or ''}".strip() or u.email if u else None
 
         priority_tr = {
@@ -419,42 +420,17 @@ def raporlar_api_pg_proje_etki():
 
         # Süreç başına PG sayısı + hedef üstü/altı dağılım
         if all_proc_ids:
-            # H-33 fix: ANY(:ids) ve FILTER(WHERE EXISTS...) PostgreSQL-only
-            # → SQLite'ta bu endpoint anlamlı veri üretemiyor, dialect guard ekle
-            from sqlalchemy import inspect as _sqlinspect
-            if _sqlinspect(_db.engine).dialect.name == 'postgresql':
-                from sqlalchemy.dialects.postgresql import array as _pgarray
-                pg_rows = _db.session.execute(_t(r"""
-                    SELECT
-                      p.id AS proc_id,
-                      count(DISTINCT k.id) AS pg_total,
-                      count(DISTINCT k.id) FILTER (
-                        WHERE EXISTS (
-                          SELECT 1 FROM kpi_data kd
-                          WHERE kd.process_kpi_id=k.id AND kd.is_active=true
-                            AND kd.actual_value ~ '^-?[0-9]+\.?[0-9]*$'
-                            AND kd.target_value ~ '^-?[0-9]+\.?[0-9]*$'
-                            AND kd.actual_value::float >= kd.target_value::float
-                        )
-                      ) AS pg_on_target
-                    FROM processes p
-                    JOIN process_kpis k ON k.process_id = p.id AND k.is_active=true
-                    WHERE p.id = ANY(:ids)
-                    GROUP BY p.id
-                """), {"ids": list(all_proc_ids)}).fetchall()
-            else:
-                # SQLite (Yerel geliştirme): basit ORM sorgusu, regex kontrol yok
-                pg_rows = _db.session.execute(_t("""
-                    SELECT
-                      p.id AS proc_id,
-                      count(DISTINCT k.id) AS pg_total,
-                      0 AS pg_on_target
-                    FROM processes p
-                    JOIN process_kpis k ON k.process_id = p.id AND k.is_active=1
-                    WHERE p.id IN :ids
-                    GROUP BY p.id
-                """), {"ids": tuple(all_proc_ids)}).fetchall()
-            pg_by_proc = {r.proc_id: {"total": int(r.pg_total or 0), "on_target": int(r.pg_on_target or 0)} for r in pg_rows}
+            # B-005: skor motordan; PG başına tek değer (yön + yıl + yıllık hedef)
+            from app.services import pg_year_scores as _pys
+            score_map, _pgs = _pys.score_rows(tid, resolve_request_year())
+            pgs_by_proc = {}
+            for _pg in _pgs:
+                if _pg.process_id in all_proc_ids:
+                    pgs_by_proc.setdefault(_pg.process_id, set()).add(_pg.id)
+            pg_by_proc = {}
+            for _pid, _ids in pgs_by_proc.items():
+                _tot, _on, _cmp = _pys.on_target_stats(score_map, _ids)
+                pg_by_proc[_pid] = {"total": _tot, "on_target": _on}
         else:
             pg_by_proc = {}
 

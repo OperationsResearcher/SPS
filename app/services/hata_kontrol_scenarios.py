@@ -11,6 +11,9 @@ from __future__ import annotations
 
 import re as _re
 import time
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def _result(name, steps):
@@ -28,8 +31,8 @@ def scenario_blue_ocean(page, base_url):
         page.goto(base_url + "/sp/blue-ocean", wait_until="domcontentloaded", timeout=20000)
         try:
             page.wait_for_load_state("networkidle", timeout=3000)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"scenario_blue_ocean failed: {err}")
         ok_page = ("/sp/blue-ocean" in page.url) and page.locator("#bo-new").count() > 0
         step("Mavi Okyanus sayfası açıldı", ok_page)
         if not ok_page:
@@ -83,8 +86,8 @@ def scenario_sp_strateji(page, base_url):
         page.goto(base_url + "/sp", wait_until="domcontentloaded", timeout=120000)
         try:
             page.wait_for_load_state("networkidle", timeout=10000)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"scenario_sp_strateji failed: {err}")
         page.wait_for_selector("#btn-strategy-add, #btn-strategy-add-empty", state="visible", timeout=20000)
         step("SP sayfası açıldı", True)
 
@@ -130,8 +133,8 @@ def scenario_sp_kimlik(page, base_url):
             page.goto(base_url + "/sp", wait_until="domcontentloaded", timeout=120000)
             try:
                 page.wait_for_load_state("networkidle", timeout=10000)
-            except Exception:
-                pass
+            except Exception as err:
+                logger.error(f"scenario_sp_kimlik failed: {err}")
             try:
                 page.wait_for_selector(trig, state="visible", timeout=20000)
             except Exception:
@@ -184,8 +187,8 @@ def scenario_surec_zinciri(page, base_url):
         page.goto(base_url + "/process", wait_until="domcontentloaded", timeout=120000)
         try:
             page.wait_for_load_state("networkidle", timeout=10000)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"scenario_surec_zinciri failed: {err}")
         page.wait_for_selector("#btn-surec-add", state="visible", timeout=20000)
         page.click("#btn-surec-add")
         page.wait_for_selector("#surec-name", state="visible", timeout=15000)
@@ -194,8 +197,8 @@ def scenario_surec_zinciri(page, base_url):
         try:
             page.wait_for_selector("input[id^='ss-']", timeout=8000)
             page.locator("input[id^='ss-']").first.check()
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"scenario_surec_zinciri failed: {err}")
         page.click("#btn-surec-save")
         page.wait_for_timeout(3000)
         step("Süreç oluşturuldu (UI tıklama)", page.locator("body", has_text=sname).count() > 0, sname)
@@ -204,8 +207,8 @@ def scenario_surec_zinciri(page, base_url):
         page.goto(base_url + "/process", wait_until="domcontentloaded", timeout=120000)
         try:
             page.wait_for_load_state("networkidle", timeout=10000)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"scenario_surec_zinciri failed: {err}")
         karne_xp = ('xpath=//*[contains(normalize-space(.),"%s")]'
                     '/ancestor-or-self::*[.//a[contains(.,"Karne")]][1]//a[contains(.,"Karne")]') % sname
         if page.locator(karne_xp).count() == 0:
@@ -215,8 +218,8 @@ def scenario_surec_zinciri(page, base_url):
         page.wait_for_load_state("domcontentloaded", timeout=60000)
         try:
             page.wait_for_load_state("networkidle", timeout=8000)
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"scenario_surec_zinciri failed: {err}")
 
         # ── PG oluştur ──
         page.wait_for_selector("#btn-kpi-add", state="visible", timeout=20000)
@@ -227,8 +230,8 @@ def scenario_surec_zinciri(page, base_url):
         try:
             page.fill("#kpi-add-target", "100")
             page.fill("#kpi-add-unit", "%")
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"scenario_surec_zinciri failed: {err}")
         page.click("#btn-kpi-add-modal-save")
         page.wait_for_timeout(2500)
         step("PG oluşturuldu (UI tıklama)", page.locator("body", has_text=pgname).count() > 0, pgname)
@@ -273,10 +276,10 @@ def scenario_surec_zinciri(page, base_url):
                     if page.locator("#btn-micro-veri-detay-footer-close").count() > 0:
                         try:
                             page.click("#btn-micro-veri-detay-footer-close")
-                        except Exception:
-                            pass
-            except Exception:
-                pass
+                        except Exception as err:
+                            logger.error(f"scenario_surec_zinciri failed: {err}")
+            except Exception as err:
+                logger.error(f"scenario_surec_zinciri failed: {err}")
             if pgv_deleted:
                 step("PGV silindi (veri-detay UI)", True, "")
                 # ── PGV değiştir = yeniden gir (yeni değer) ──

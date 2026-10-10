@@ -9,13 +9,13 @@
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Kontrol Edilen PG',s.total_kpis_checked,'#0f172a'),
-        stat('Uyarı Sayısı',s.warnings_count,s.warnings_count>0?'#dc2626':'#10b981'),
-        stat('Yüksek Öncelik',s.high_severity,'#dc2626'),
+        stat(t('Kontrol Edilen PG'),s.total_kpis_checked,'#0f172a'),
+        stat(t('Uyarı Sayısı'),s.warnings_count,s.warnings_count>0?'#dc2626':'#10b981'),
+        stat(t('Yüksek Öncelik'),s.high_severity,'#dc2626'),
       ].join('');
       const warnings = j.warnings;
       if(warnings.length===0){
-        document.getElementById('warnings').innerHTML = '<div style="color:#10b981;font-size:13px;padding:12px;background:#ecfdf5;border-radius:6px;"><i class="fas fa-check-circle"></i> Şu an erken uyarı yok — tüm PG\'ler kabul edilebilir performansta.</div>';
+        document.getElementById('warnings').innerHTML = '<div style="color:#10b981;font-size:13px;padding:12px;background:#ecfdf5;border-radius:6px;"><i class="fas fa-check-circle"></i> ' + t("Şu an erken uyarı yok — tüm PG'ler kabul edilebilir performansta.") + '</div>';
         return;
       }
       document.getElementById('warnings').innerHTML = '<div style="display:grid;gap:8px;">' + warnings.map(w => {
@@ -26,14 +26,14 @@
               <div style="font-weight:600;color:#0f172a;">${esc(w.kpi_code||'')} ${esc(w.kpi_name||'')}</div>
               <div style="font-size:11px;color:#64748b;margin-top:2px;">${esc(w.process_name||'?')}</div>
             </div>
-            <span style="background:${c};color:#fff;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:8px;">${w.severity==='high'?'YÜKSEK':'ORTA'}</span>
+            <span style="background:${c};color:#fff;font-size:10.5px;font-weight:700;padding:2px 8px;border-radius:8px;">${w.severity==='high'?t('YÜKSEK'):t('ORTA')}</span>
           </div>
-          <div style="font-size:11px;color:#475569;margin-top:6px;">Son 3 başarı puanı: <b>${w.last_scores.map(s=>'%'+s).join(' → ')}</b></div>
+          <div style="font-size:11px;color:#475569;margin-top:6px;">${t('Son 3 başarı puanı:')} <b>${w.last_scores.map(s=>'%'+s).join(' → ')}</b></div>
         </div>`;
       }).join('') + '</div>';
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

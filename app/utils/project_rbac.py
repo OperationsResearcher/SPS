@@ -8,6 +8,9 @@ from flask import jsonify, request
 from flask_login import current_user
 from app.models.legacy_bridge import Project, db
 from sqlalchemy import and_
+import logging
+
+logger = logging.getLogger(__name__)
 
 
 def project_access_required(allowed_roles=None):
@@ -136,9 +139,9 @@ def _get_user_project_role(project, user_id):
             ).first() is not None
             if is_leader:
                 return 'manager'
-    except Exception:
+    except Exception as e:
         # Liderlik kontrolü opsiyoneldir; hata durumda rolü değiştirmeyiz
-        pass
+        logger.error(f"_get_user_project_role failed: {e}")
     
     return None
 

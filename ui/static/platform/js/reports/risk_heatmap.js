@@ -16,10 +16,10 @@
       document.getElementById('content').style.display='block';
       const s=j.summary;
       document.getElementById('summary').innerHTML=[
-        stat('Toplam Risk',s.total,'#0f172a'),
-        stat('Açık',s.open,'#dc2626'),
-        stat('Çözülmüş',s.mitigated,'#10b981'),
-        stat('Yüksek RPN',s.high_rpn,'#f59e0b'),
+        stat(t('Toplam Risk'),s.total,'#0f172a'),
+        stat(t('Açık'),s.open,'#dc2626'),
+        stat(t('Çözülmüş'),s.mitigated,'#10b981'),
+        stat(t('Yüksek RPN'),s.high_rpn,'#f59e0b'),
       ].join('');
       // 5×5 grid (probability 5→1 üstten alta, impact 1→5 soldan sağa)
       let html = '<div></div>';
@@ -28,7 +28,7 @@
         html += `<div style="text-align:right;font-weight:600;color:#64748b;padding-right:6px;line-height:60px;">${p}</div>`;
         for(let imp=1;imp<=5;imp++){
           const items = j.grid[p-1][imp-1];
-          html += `<div style="background:${cellColor(p,imp)};min-height:60px;border-radius:4px;padding:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0f172a;cursor:default;" title="${items.length} risk: ${items.map(r=>r.title).join(', ').substring(0,100)}">${items.length || ''}</div>`;
+          html += `<div style="background:${cellColor(p,imp)};min-height:60px;border-radius:4px;padding:4px;display:flex;align-items:center;justify-content:center;font-size:12px;font-weight:700;color:#0f172a;cursor:default;" title="${items.length} ${t('risk')}: ${esc(items.map(r=>r.title).join(', ').substring(0,100))}">${items.length || ''}</div>`;
         }
       }
       document.getElementById('grid').innerHTML = html;
@@ -43,7 +43,7 @@
           </div>`).join('') + '</div>';
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err=document.getElementById('error');err.style.display='block';err.textContent='Hata: '+e.message;
+      const err=document.getElementById('error');err.style.display='block';err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

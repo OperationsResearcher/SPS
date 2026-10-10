@@ -8,7 +8,7 @@ from werkzeug.utils import secure_filename
 import os
 import uuid
 from flask_login import login_required, current_user
-from extensions import csrf, db
+from extensions import db
 from sqlalchemy import or_, and_, text, delete, insert
 from sqlalchemy.orm import joinedload
 from app.utils.project_rbac import (
@@ -116,7 +116,6 @@ def api_proje_burn(project_id, **kwargs):
 
 # Rule engine API
 @api_bp.route('/projeler/<int:project_id>/kurallar', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_kurallar(project_id, **kwargs):
@@ -148,7 +147,6 @@ def api_proje_kurallar(project_id, **kwargs):
 
 # SLA API
 @api_bp.route('/projeler/<int:project_id>/sla', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_sla(project_id, **kwargs):
@@ -184,7 +182,6 @@ def api_proje_sla(project_id, **kwargs):
 
 # Tekrarlayan Görevler API
 @api_bp.route('/projeler/<int:project_id>/tekrarlayan', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_tekrarlayan(project_id, **kwargs):
@@ -226,7 +223,6 @@ def api_proje_tekrarlayan(project_id, **kwargs):
 
 # Entegrasyon webhooks (Slack/Teams/Outlook)
 @api_bp.route('/projeler/<int:project_id>/integrations', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_integrations(project_id, **kwargs):
@@ -277,7 +273,6 @@ def api_proje_digest(project_id, **kwargs):
 
 # RAID kayıtları
 @api_bp.route('/projeler/<int:project_id>/raid', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_raid(project_id, **kwargs):
@@ -362,7 +357,6 @@ def api_proje_raid(project_id, **kwargs):
 
 # RAID item update/delete
 @api_bp.route('/projeler/<int:project_id>/raid/<int:item_id>', methods=['PUT', 'DELETE'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_raid_item(project_id, item_id, **kwargs):
@@ -497,7 +491,6 @@ def api_proje_bagimlilik_matrisi(project_id, **kwargs):
 
 # Baseline kayıtları
 @api_bp.route('/projeler/<int:project_id>/baseline', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_baseline(project_id, **kwargs):
@@ -548,7 +541,6 @@ def api_proje_baseline(project_id, **kwargs):
 
 # Kapasite planı
 @api_bp.route('/projeler/<int:project_id>/kapasite', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_kapasite(project_id, **kwargs):
@@ -589,7 +581,6 @@ def api_proje_kapasite(project_id, **kwargs):
 
 # Çalışma günü takvimi
 @api_bp.route('/projeler/<int:project_id>/calisma-gunleri', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_calisma_gunleri(project_id, **kwargs):
@@ -665,7 +656,6 @@ def api_proje_ical(project_id, **kwargs):
 
 # DELETE endpoints for project management resources
 @api_bp.route('/projeler/<int:project_id>/kapasite/<int:plan_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_kapasite_delete(project_id, plan_id, **kwargs):
@@ -682,7 +672,6 @@ def api_proje_kapasite_delete(project_id, plan_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/integrations/<int:hook_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_integration_delete(project_id, hook_id, **kwargs):
@@ -699,7 +688,6 @@ def api_proje_integration_delete(project_id, hook_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/kurallar/<int:rule_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_kural_delete(project_id, rule_id, **kwargs):
@@ -716,7 +704,6 @@ def api_proje_kural_delete(project_id, rule_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/sla/<int:sla_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_sla_delete(project_id, sla_id, **kwargs):
@@ -733,7 +720,6 @@ def api_proje_sla_delete(project_id, sla_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/tekrarlayan/<int:recurring_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_tekrarlayan_delete(project_id, recurring_id, **kwargs):
@@ -751,7 +737,6 @@ def api_proje_tekrarlayan_delete(project_id, recurring_id, **kwargs):
 
 # Kapasite planı güncelle
 @api_bp.route('/projeler/<int:project_id>/kapasite/<int:plan_id>', methods=['PUT'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_kapasite_update(project_id, plan_id, **kwargs):
@@ -775,7 +760,6 @@ def api_proje_kapasite_update(project_id, plan_id, **kwargs):
 
 # Entegrasyon güncelle
 @api_bp.route('/projeler/<int:project_id>/integrations/<int:hook_id>', methods=['PUT'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_integration_update(project_id, hook_id, **kwargs):
@@ -798,7 +782,6 @@ def api_proje_integration_update(project_id, hook_id, **kwargs):
 
 # Kural güncelle
 @api_bp.route('/projeler/<int:project_id>/kurallar/<int:rule_id>', methods=['PUT'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_kural_update(project_id, rule_id, **kwargs):
@@ -825,7 +808,6 @@ def api_proje_kural_update(project_id, rule_id, **kwargs):
 
 # SLA güncelle
 @api_bp.route('/projeler/<int:project_id>/sla/<int:sla_id>', methods=['PUT'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_sla_update(project_id, sla_id, **kwargs):
@@ -849,7 +831,6 @@ def api_proje_sla_update(project_id, sla_id, **kwargs):
 
 # Tekrarlayan görev güncelle
 @api_bp.route('/projeler/<int:project_id>/tekrarlayan/<int:recurring_id>', methods=['PUT'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_proje_tekrarlayan_update(project_id, recurring_id, **kwargs):

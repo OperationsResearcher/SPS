@@ -17,6 +17,11 @@ from urllib import request as _urlreq, error as _urlerr
 from flask import current_app
 from flask_babel import gettext as _
 
+from app.utils.outbound_guard import open_no_redirect, validate_outbound_url
+import logging
+
+logger = logging.getLogger(__name__)
+
 
 def _get_tenant_webhook(tenant_id: int) -> Optional[str]:
     """Tenant'ın Slack webhook URL'sini settings JSON'undan al."""
@@ -53,6 +58,9 @@ def send_slack_message(
     url = webhook_url or (_get_tenant_webhook(tenant_id) if tenant_id else None)
     if not url:
         return {"success": False, "message": _("Slack webhook yapılandırılmamış.")}
+    ok, err = validate_outbound_url(url)
+    if not ok:
+        return {"success": False, "message": err}
 
     payload = {
         "text": text_msg,
@@ -70,20 +78,20 @@ def send_slack_message(
             headers={"Content-Type": "application/json"},
             method="POST",
         )
-        with _urlreq.urlopen(req, timeout=5) as resp:
+        with open_no_redirect(req, timeout=5) as resp:
             ok = resp.status == 200
             return {"success": ok, "message": "Gönderildi" if ok else f"HTTP {resp.status}"}
     except _urlerr.URLError as e:
         try:
             current_app.logger.error(f"[slack] URL hatası: {e}")
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"send_slack_message failed: {err}")
         return {"success": False, "message": _("Slack webhook URL hatası.")}
     except Exception as e:
         try:
             current_app.logger.error(f"[slack] {e}")
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"send_slack_message failed: {err}")
         return {"success": False, "message": _("Slack mesajı gönderilemedi.")}
 
 
@@ -94,6 +102,9 @@ def send_teams_message(text_msg: str, webhook_url: str, title: str = "Kokpitim")
     """
     if not webhook_url:
         return {"success": False, "message": _("Teams webhook URL boş.")}
+    ok, err = validate_outbound_url(webhook_url)
+    if not ok:
+        return {"success": False, "message": err}
 
     payload = {
         "@type": "MessageCard",
@@ -109,13 +120,13 @@ def send_teams_message(text_msg: str, webhook_url: str, title: str = "Kokpitim")
             webhook_url, data=data,
             headers={"Content-Type": "application/json"}, method="POST",
         )
-        with _urlreq.urlopen(req, timeout=5) as resp:
+        with open_no_redirect(req, timeout=5) as resp:
             return {"success": resp.status == 200, "message": f"HTTP {resp.status}"}
     except _urlerr.URLError as e:
         try:
             current_app.logger.error(f"[teams] {e}")
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"send_teams_message failed: {err}")
         return {"success": False, "message": _("Webhook mesajı gönderilemedi.")}
 
 
@@ -123,6 +134,9 @@ def send_discord_message(text_msg: str, webhook_url: str, username: str = "Kokpi
     """Discord incoming webhook'a mesaj gönder."""
     if not webhook_url:
         return {"success": False, "message": _("Discord webhook URL boş.")}
+    ok, err = validate_outbound_url(webhook_url)
+    if not ok:
+        return {"success": False, "message": err}
 
     payload = {
         "content": text_msg[:2000],  # Discord limit
@@ -134,13 +148,13 @@ def send_discord_message(text_msg: str, webhook_url: str, username: str = "Kokpi
             webhook_url, data=data,
             headers={"Content-Type": "application/json"}, method="POST",
         )
-        with _urlreq.urlopen(req, timeout=5) as resp:
+        with open_no_redirect(req, timeout=5) as resp:
             return {"success": resp.status in (200, 204), "message": f"HTTP {resp.status}"}
     except _urlerr.URLError as e:
         try:
             current_app.logger.error(f"[discord] {e}")
-        except Exception:
-            pass
+        except Exception as err:
+            logger.error(f"send_discord_message failed: {err}")
         return {"success": False, "message": _("Webhook mesajı gönderilemedi.")}
 
 

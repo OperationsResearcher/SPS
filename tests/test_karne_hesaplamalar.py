@@ -79,8 +79,8 @@ def test_decreasing_below_min_returns_5():
 # ─── Ağırlıklı puan ──────────────────────────────────────────────────────
 
 @pytest.mark.parametrize("score,weight,expected", [
-    (5, 0.2, 1.0),     # %20 ağırlık, 5 puan → 1.0
-    (3, 0.5, 1.5),     # %50 ağırlık, 3 puan → 1.5
+    (5, 20, 1.0),      # A-005: agirlik YUZDE: 20 -> %20
+    (3, 50, 1.5),      # A-005: 50 -> %50
     (4, 25, 1.0),      # 25 (0-100 ölçeği) = 0.25 → 1.0
     (5, 100, 5.0),     # %100 = 1.0 → 5.0
 ])

@@ -74,18 +74,37 @@ def api_kpi_data_create():
     engel = muhur_engeli(kpi)
     if engel:
         return jsonify(engel[0]), engel[1]
+    # A-014: değer (Türkçe biçim dahil), tarih ve yıl istekten doğru ayrıştırılır
+    from datetime import date, datetime as _dtm
+    from app.services.score_engine_service import parse_tr_number
+    from app.utils.tr_time import today_tr
+    raw_val = data.get("actual_value")
+    num = parse_tr_number(raw_val) if raw_val is not None and str(raw_val).strip() != "" else None
+    if num is None:
+        return jsonify({"success": False, "message": _("Geçersiz gerçekleşen değer.")}), 400
+    actual_str = str(int(num)) if float(num).is_integer() else repr(float(num))
     try:
-        from datetime import date
+        raw_dd = data.get("data_date")
+        data_date_val = _dtm.strptime(str(raw_dd)[:10], "%Y-%m-%d").date() if raw_dd else today_tr()
+        year_val = int(data["year"]) if data.get("year") not in (None, "") else data_date_val.year
+        period_no_val = int(data.get("period_no", 1))
+    except (ValueError, TypeError):
+        return jsonify({"success": False, "message": _("Geçersiz tarih, yıl veya dönem.")}), 400
+    if raw_dd and year_val != data_date_val.year:
+        return jsonify({"success": False, "message": _("Yıl, veri tarihinin yılıyla uyuşmuyor.")}), 400
+    if not raw_dd and year_val != data_date_val.year:
+        data_date_val = date(year_val, 12, 31) if year_val < data_date_val.year else date(year_val, 1, 1)
+    try:
         entry = None
         for attempt in (1, 2):
             try:
                 entry = KpiData(
                     process_kpi_id=kpi.id,
-                    year=int(data.get("year", date.today().year)),
-                    data_date=date.today(),
+                    year=year_val,
+                    data_date=data_date_val,
                     period_type=data.get("period_type", "aylik"),
-                    period_no=int(data.get("period_no", 1)),
-                    actual_value=str(data.get("actual_value", "")),
+                    period_no=period_no_val,
+                    actual_value=actual_str,
                     target_value=data.get("target_value"),
                     description=data.get("description"),
                     user_id=current_user.id,

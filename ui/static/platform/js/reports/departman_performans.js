@@ -11,9 +11,9 @@
       document.getElementById('content').style.display='block';
       const s = j.summary;
       document.getElementById('summary').innerHTML = [
-        statCard('Departman', s.total_departments, '#0f172a', 'raporlar_departman_performans.departman'),
-        statCard('Toplam Çalışan', s.total_users, '#0ea5e9', 'raporlar_departman_performans.toplam_calisan'),
-        statCard('Toplam Bireysel PG', s.total_pgs, '#db2777', 'raporlar_departman_performans.toplam_bireysel_pg'),
+        statCard(t('Departman'), s.total_departments, '#0f172a', 'raporlar_departman_performans.departman'),
+        statCard(t('Toplam Çalışan'), s.total_users, '#0ea5e9', 'raporlar_departman_performans.toplam_calisan'),
+        statCard(t('Toplam Bireysel PG'), s.total_pgs, '#db2777', 'raporlar_departman_performans.toplam_bireysel_pg'),
       ].join('');
       document.getElementById('tbl').innerHTML = j.departments.map(d => {
         const totpC = d.totp_rate >= 80 ? '#10b981' : d.totp_rate >= 30 ? '#f59e0b' : '#dc2626';
@@ -28,7 +28,7 @@
       }).join('');
     } catch(e){
       document.getElementById('loading').style.display='none';
-      const err = document.getElementById('error'); err.style.display='block'; err.textContent='Hata: '+e.message;
+      const err = document.getElementById('error'); err.style.display='block'; err.textContent=t('Hata')+': '+e.message;
     }
   }
   load();

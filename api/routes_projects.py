@@ -4,11 +4,12 @@
 api/routes.py'den bölündü (davranış/URL değişmedi). Blueprint: api.blueprint.api_bp
 """
 from flask import jsonify, request, current_app, send_file
+from flask_babel import gettext as _
 from werkzeug.utils import secure_filename
 import os
 import uuid
 from flask_login import login_required, current_user
-from extensions import csrf, db
+from extensions import db
 from sqlalchemy import or_, and_, text, delete, insert
 from sqlalchemy.orm import joinedload
 from app.utils.project_rbac import (
@@ -65,10 +66,61 @@ from api.helpers import (
     _parse_date_safe,
 )
 from app.utils.error_handlers import json_error  # S6
+from app.models.core import User as CoreUser
+from app.models.process import (
+    IndividualPerformanceIndicator as _IndPG,
+    IndividualActivity as _IndActivity,
+)
+
+
+def _can_crud_portfolio():
+    """Modern arayüzdeki portföy/proje oluşturma kuralı (micro...permissions)."""
+    from micro.modules.proje.permissions import can_crud_project_portfolio
+    return can_crud_project_portfolio(current_user)
+
+
+def _forbidden():
+    return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
+
+
+def _user_in_my_tenant(user_id):
+    """Kullanıcı aynı tenant'ta ve aktif mi (C-002)."""
+    try:
+        uid = int(user_id)
+    except (TypeError, ValueError):
+        return False
+    u = CoreUser.query.filter_by(id=uid, tenant_id=current_user.tenant_id, is_active=True).first()
+    return u is not None
+
+
+def _pg_in_my_tenant(pg_id):
+    """Bireysel PG sahibi aynı tenant'ta mı (C-001)."""
+    try:
+        pid = int(pg_id)
+    except (TypeError, ValueError):
+        return False
+    return (
+        db.session.query(_IndPG.id)
+        .join(CoreUser, CoreUser.id == _IndPG.user_id)
+        .filter(_IndPG.id == pid, CoreUser.tenant_id == current_user.tenant_id)
+        .first()
+    ) is not None
+
+
+def _activity_in_my_tenant(act_id):
+    try:
+        aid = int(act_id)
+    except (TypeError, ValueError):
+        return False
+    return (
+        db.session.query(_IndActivity.id)
+        .join(CoreUser, CoreUser.id == _IndActivity.user_id)
+        .filter(_IndActivity.id == aid, CoreUser.tenant_id == current_user.tenant_id)
+        .first()
+    ) is not None
 
 
 @api_bp.route('/projeler', methods=['GET', 'POST'])
-@csrf.exempt
 @login_required
 def api_projeler_list():
     """Kullanıcının kurumundaki tüm projeleri getir veya yeni proje oluştur"""
@@ -91,6 +143,8 @@ def api_projeler_list():
             current_app.logger.error(f'Projeler listesi hatası: {e}')
             return json_error(e, "[api_projeler_list]", 500)
     else:  # POST
+        if not _can_crud_portfolio():
+            return _forbidden()
         try:
             if not request.is_json:
                 return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
@@ -216,7 +270,6 @@ def api_projeler_list():
 
 
 @api_bp.route('/projeler/<int:project_id>', methods=['GET', 'PUT'])
-@csrf.exempt
 @login_required
 def api_proje_detay(project_id):
     """Proje detayını getir veya güncelle"""
@@ -249,6 +302,9 @@ def api_proje_detay(project_id):
                 }
             })
         else:  # PUT
+            from app.utils.project_rbac import _get_user_project_role
+            if _get_user_project_role(project, current_user.id) != 'manager':
+                return _forbidden()
             if not request.is_json:
                 return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
             
@@ -418,7 +474,6 @@ def api_gorev_yorumlari_get(project_id, task_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>/yorumlar', methods=['POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_gorev_yorumlari_post(project_id, task_id, **kwargs):
@@ -452,7 +507,6 @@ def api_gorev_yorumlari_post(project_id, task_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler', methods=['POST'])
-@csrf.exempt
 @login_required
 @project_member_required  # Üye veya yönetici yetkisi gereklidir (gözlemci görev oluşturamaz)
 def api_gorev_olustur(project_id, **kwargs):
@@ -512,6 +566,8 @@ def api_gorev_olustur(project_id, **kwargs):
                 assignee_id = int(assignee_id)
             except (TypeError, ValueError):
                 return jsonify({'success': False, 'message': 'Geçersiz atanan kullanıcı'}), 400
+            if not _user_in_my_tenant(assignee_id):
+                return jsonify({'success': False, 'message': 'Geçersiz atanan kullanıcı'}), 400
 
         if project is not None and getattr(project, 'id', None) != project_id:
             return jsonify({'success': False, 'message': 'Proje bilgisi uyuşmuyor'}), 400
@@ -544,7 +600,6 @@ def api_gorev_olustur(project_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>', methods=['PUT'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_gorev_guncelle(project_id, task_id, **kwargs):
@@ -631,6 +686,8 @@ def api_gorev_guncelle(project_id, task_id, **kwargs):
             new_assigned_id = data.get('assigned_to_id') if data.get('assigned_to_id') else None
             if external_assignee_name:
                 new_assigned_id = None
+            if new_assigned_id is not None and not _user_in_my_tenant(new_assigned_id):
+                return jsonify({'success': False, 'message': 'Geçersiz atanan kullanıcı'}), 400
             task.assigned_to_id = new_assigned_id
             if 'external_assignee_name' in data:
                 task.external_assignee_name = external_assignee_name
@@ -649,6 +706,13 @@ def api_gorev_guncelle(project_id, task_id, **kwargs):
         
         # Impact'leri güncelle (mevcut impact'leri sil ve yenilerini ekle)
         if 'impacts' in data:
+            for _imp in (data.get('impacts') or []):
+                if not isinstance(_imp, dict):
+                    return jsonify({'success': False, 'message': 'Geçersiz etki kaydı'}), 400
+                if _imp.get('related_pg_id') not in (None, '') and not _pg_in_my_tenant(_imp.get('related_pg_id')):
+                    return jsonify({'success': False, 'message': 'Geçersiz performans göstergesi'}), 400
+                if _imp.get('related_faaliyet_id') not in (None, '') and not _activity_in_my_tenant(_imp.get('related_faaliyet_id')):
+                    return jsonify({'success': False, 'message': 'Geçersiz faaliyet'}), 400
             # Mevcut impact'leri sil
             TaskImpact.query.filter_by(task_id=task_id).delete()
             # Yeni impact'leri ekle
@@ -750,7 +814,6 @@ def api_gorev_guncelle(project_id, task_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
 @project_manager_required
 def api_gorev_sil(project_id, task_id, **kwargs):
@@ -766,10 +829,7 @@ def api_gorev_sil(project_id, task_id, **kwargs):
         # Impact'leri sil (cascade ile otomatik silinecek ama emin olmak için)
         TaskImpact.query.filter_by(task_id=task_id).delete()
         
-        # Aktivite log
-        from services.task_activity_service import log_task_deleted
-        log_task_deleted(task_id, current_user.id, task.title)
-        
+        # Not: task_activity.task_id FK olduğundan silinen görev için log satırı yazılamaz.
         # Görevi sil
         db.session.delete(task)
         db.session.commit()
@@ -822,7 +882,6 @@ def api_gorev_bagimliliklar_get(project_id, task_id, **kwargs):
 
 
 @api_bp.route('/projeler/<int:project_id>/gorevler/<int:task_id>/bagimliliklar', methods=['POST'])
-@csrf.exempt
 @login_required
 @project_member_required
 def api_gorev_bagimliliklar_set(project_id, task_id, **kwargs):
@@ -889,6 +948,31 @@ def api_gorev_bagimliliklar_set(project_id, task_id, **kwargs):
 # ============================================================================
 # PROJE YÖNETİMİ - DOSYA HAVUZU API ENDPOINT'LERİ
 # ============================================================================
+_RISK_LEVEL_MAP = {'low': 1, 'medium': 3, 'high': 5, 'düşük': 1, 'orta': 3, 'yüksek': 5}
+
+
+def _risk_num(value):
+    """String impact/probability (Low/Medium/High veya '1'..'5') -> int (1-5)."""
+    try:
+        return int(value)
+    except (TypeError, ValueError):
+        return _RISK_LEVEL_MAP.get(str(value or '').strip().lower(), 1)
+
+
+def _risk_score(risk):
+    return _risk_num(risk.impact) * _risk_num(risk.probability)
+
+
+def _risk_level(score):
+    if score <= 6:
+        return 'Düşük'
+    if score <= 12:
+        return 'Orta'
+    if score < 20:
+        return 'Yüksek'
+    return 'Kritik'
+
+
 @api_bp.route('/projeler/<int:project_id>/riskler', methods=['GET'])
 @login_required
 def api_proje_riskleri(project_id):
@@ -902,39 +986,14 @@ def api_proje_riskleri(project_id):
         
         # Riskleri getir (created_by ilişkisini eager load et)
         from sqlalchemy.orm import joinedload
-        risks = ProjectRisk.query.options(joinedload(ProjectRisk.created_by)).filter_by(project_id=project_id).all()
-        
-        # Risk skoruna göre sırala (property olduğu için Python'da sırala)
-        risks_sorted = sorted(risks, key=lambda r: (r.impact * r.probability), reverse=True)
-        
+        risks = ProjectRisk.query.filter_by(project_id=project_id).all()
+
+        risks_sorted = sorted(risks, key=_risk_score, reverse=True)
+
         risks_data = []
         for r in risks_sorted:
             try:
-                # created_by ilişkisini güvenli şekilde al
-                created_by_name = None
-                try:
-                    if r.created_by_id and r.created_by:
-                        first_name = getattr(r.created_by, 'first_name', None) or ''
-                        last_name = getattr(r.created_by, 'last_name', None) or ''
-                        username = getattr(r.created_by, 'username', None) or ''
-                        created_by_name = f"{first_name} {last_name}".strip() or username
-                except Exception as rel_error:
-                    current_app.logger.warning(f'Risk {r.id} created_by ilişki hatası: {rel_error}')
-                    created_by_name = None
-                
-                # Risk skorunu hesapla
-                risk_score = r.impact * r.probability
-                
-                # Risk seviyesini hesapla (skor >= 20 ise Kritik)
-                if risk_score <= 6:
-                    risk_level = 'Düşük'
-                elif risk_score <= 12:
-                    risk_level = 'Orta'
-                elif risk_score < 20:
-                    risk_level = 'Yüksek'
-                else:  # risk_score >= 20
-                    risk_level = 'Kritik'
-                
+                risk_score = _risk_score(r)
                 risks_data.append({
                     'id': r.id,
                     'title': r.title or '',
@@ -942,44 +1001,16 @@ def api_proje_riskleri(project_id):
                     'impact': r.impact,
                     'probability': r.probability,
                     'risk_score': risk_score,
-                    'risk_level': risk_level,
-                    'mitigation_plan': r.mitigation_plan or '',
-                    'status': r.status or 'Aktif',
-                    'created_by': created_by_name,
+                    'risk_level': _risk_level(risk_score),
+                    'mitigation_plan': '',  # modelde alan yok
+                    'status': r.status or 'Open',
+                    'created_by': None,  # modelde alan yok
                     'created_at': r.created_at.isoformat() if r.created_at else None
                 })
             except Exception as e:
                 current_app.logger.error(f'Risk serialize hatası (ID: {r.id}): {e}', exc_info=True)
-                # Hatalı riski atla veya minimal bilgiyle ekle
-                try:
-                    risk_score = r.impact * r.probability
-                    if risk_score <= 6:
-                        risk_level = 'Düşük'
-                    elif risk_score <= 12:
-                        risk_level = 'Orta'
-                    elif risk_score < 20:
-                        risk_level = 'Yüksek'
-                    else:  # risk_score >= 20
-                        risk_level = 'Kritik'
-                    
-                    risks_data.append({
-                        'id': r.id,
-                        'title': r.title or 'Bilinmeyen Risk',
-                        'description': '',
-                        'impact': r.impact,
-                        'probability': r.probability,
-                        'risk_score': risk_score,
-                        'risk_level': risk_level,
-                        'mitigation_plan': '',
-                        'status': r.status or 'Aktif',
-                        'created_by': None,
-                        'created_at': None
-                    })
-                except Exception as e2:
-                    current_app.logger.error(f'Risk minimal serialize hatası (ID: {r.id}): {e2}')
-                    # Bu riski atla
-                    continue
-        
+                continue
+
         return jsonify({
             'success': True,
             'risks': risks_data
@@ -990,9 +1021,9 @@ def api_proje_riskleri(project_id):
 
 
 @api_bp.route('/projeler/<int:project_id>/riskler', methods=['POST'])
-@csrf.exempt
 @login_required
-def api_risk_ekle(project_id):
+@project_member_required
+def api_risk_ekle(project_id, **kwargs):
     """Yeni risk ekle"""
     try:
         project = Project.query.get_or_404(project_id)
@@ -1007,18 +1038,17 @@ def api_risk_ekle(project_id):
             project_id=project_id,
             title=data.get('title', '').strip(),
             description=data.get('description', '').strip(),
-            impact=int(data.get('impact', 1)),
-            probability=int(data.get('probability', 1)),
-            mitigation_plan=data.get('mitigation_plan', '').strip(),
-            status=data.get('status', 'Aktif'),
-            created_by_id=current_user.id
+            impact=str(data.get('impact', 1)),
+            probability=str(data.get('probability', 1)),
+            status=data.get('status', 'Open'),
         )
-        
+
         db.session.add(risk)
         db.session.commit()
-        
+        risk_score = _risk_score(risk)
+
         # Kritik risk bildirimi oluştur
-        if risk.risk_score >= 20:
+        if risk_score >= 20:
             from services.notification_service import create_critical_risk_notification
             create_critical_risk_notification(risk.id, current_user.id)
         
@@ -1026,14 +1056,14 @@ def api_risk_ekle(project_id):
         _invalidate_executive_dashboard_cache(project.kurum_id)
         
         # Webhook tetikle (V2.0.0) - Yeni risk eklendiğinde (yüksek risk ise)
-        if risk.risk_score >= 20:  # Kritik risk
+        if risk_score >= 20:  # Kritik risk
             try:
                 from services.webhook_service import trigger_risk_increase_webhook
                 trigger_risk_increase_webhook(
                     project.kurum_id,
                     risk.id,
                     0,  # Yeni risk, eski skor yok
-                    risk.risk_score
+                    risk_score
                 )
             except Exception as webhook_error:
                 current_app.logger.warning(f'Risk webhook tetikleme hatası: {webhook_error}')
@@ -1043,8 +1073,8 @@ def api_risk_ekle(project_id):
             'message': 'Risk başarıyla eklendi',
             'risk': {
                 'id': risk.id,
-                'risk_score': risk.risk_score,
-                'risk_level': risk.risk_level
+                'risk_score': risk_score,
+                'risk_level': _risk_level(risk_score)
             }
         })
     except Exception as e:
@@ -1054,9 +1084,9 @@ def api_risk_ekle(project_id):
 
 
 @api_bp.route('/projeler/<int:project_id>/riskler/<int:risk_id>', methods=['PUT'])
-@csrf.exempt
 @login_required
-def api_risk_guncelle(project_id, risk_id):
+@project_member_required
+def api_risk_guncelle(project_id, risk_id, **kwargs):
     """Risk güncelle"""
     try:
         project = Project.query.get_or_404(project_id)
@@ -1073,21 +1103,16 @@ def api_risk_guncelle(project_id, risk_id):
         if 'description' in data:
             risk.description = data['description'].strip()
         if 'impact' in data:
-            risk.impact = int(data['impact'])
+            risk.impact = str(data['impact'])
         if 'probability' in data:
-            risk.probability = int(data['probability'])
-        if 'mitigation_plan' in data:
-            risk.mitigation_plan = data['mitigation_plan'].strip()
+            risk.probability = str(data['probability'])
         if 'status' in data:
             risk.status = data['status']
-        
-        # Risk puanı değişti mi kontrol et (impact veya probability değiştiyse)
+        # mitigation_plan: modelde alan yok, yok sayılır.
+
         risk_score_changed = False
         if 'impact' in data or 'probability' in data:
-            old_score = risk.risk_score
-            db.session.flush()  # Yeni değerleri hesapla
-            if risk.risk_score != old_score:
-                risk_score_changed = True
+            risk_score_changed = True
         
         db.session.commit()
         
@@ -1106,9 +1131,9 @@ def api_risk_guncelle(project_id, risk_id):
 
 
 @api_bp.route('/projeler/<int:project_id>/riskler/<int:risk_id>', methods=['DELETE'])
-@csrf.exempt
 @login_required
-def api_risk_sil(project_id, risk_id):
+@project_manager_required
+def api_risk_sil(project_id, risk_id, **kwargs):
     """Risk sil"""
     try:
         project = Project.query.get_or_404(project_id)
@@ -1204,10 +1229,11 @@ def api_kaynak_isi_haritasi(project_id):
 
 
 @api_bp.route('/projeler/<int:project_id>/klonla', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_proje_klonla(project_id):
     """Projeyi klonla (derin kopyalama)"""
+    if not _can_crud_portfolio():
+        return _forbidden()
     try:
         if not request.is_json:
             return jsonify({'success': False, 'message': 'Content-Type application/json olmalı'}), 400
@@ -1286,7 +1312,6 @@ def api_asiri_yukleme_kontrol(project_id, task_id):
 
 # Kullanıcı Tercihleri API Endpoint'leri
 @api_bp.route('/task/<int:task_id>/complete', methods=['POST'])
-@csrf.exempt
 @login_required
 def api_task_complete(task_id):
     """Görevi tamamla ve proje ilerlemesini güncelle"""
