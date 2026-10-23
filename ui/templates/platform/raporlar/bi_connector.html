@@ -1,11 +1,11 @@
 {% extends "platform/base.html" %}
-{% block title %}BI Connector — Kokpitim{% endblock %}
-{% block page_title %}BI Connector (Power BI / Tableau){% endblock %}
+{% block title %}{{ _("BI Connector — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("BI Connector (Power BI / Tableau)") }}{% endblock %}
 {% block breadcrumb %}{{ mc_breadcrumb('BI Connector') }}{% endblock %}
 {% block content %}
 <div class="mc-page-header" style="max-width:1100px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-plug" style="color:#7c3aed;"></i> BI Connector</h1>
+    <h1 class="mc-page-title"><i class="fas fa-plug" style="color:#7c3aed;"></i> {{ _("BI Connector") }}</h1>
     <p class="mc-page-subtitle">{{ _("Kokpitim verisini Power BI, Tableau ve Excel'e bağla — direkt CSV/JSON endpoint'leri.") }}</p>
   </div>
 </div>

@@ -63,11 +63,11 @@
         <div class="mc-form-group">
           <label class="mc-label" for="smtp_host">{{ _("SMTP Sunucu Adresi") }}</label>
           <input type="text" id="smtp_host" class="mc-input"
-                 placeholder="smtp.gmail.com"
+                 placeholder="{{ _('smtp.gmail.com') }}"
                  value="{{ cfg.smtp_host or '' if cfg else '' }}">
         </div>
         <div class="mc-form-group">
-          <label class="mc-label" for="smtp_port">Port</label>
+          <label class="mc-label" for="smtp_port">{{ _("Port") }}</label>
           <input type="number" id="smtp_port" class="mc-input"
                  placeholder="587"
                  value="{{ cfg.smtp_port or 587 if cfg else 587 }}">
@@ -75,7 +75,7 @@
         <div class="mc-form-group">
           <label class="mc-label" for="smtp_username">{{ _("Kullanıcı Adı / E-posta") }}</label>
           <input type="text" id="smtp_username" class="mc-input"
-                 placeholder="bildirim@firma.com"
+                 placeholder="{{ _('bildirim@firma.com') }}"
                  value="{{ cfg.smtp_username or '' if cfg else '' }}">
         </div>
         <div class="mc-form-group">
@@ -92,7 +92,7 @@
         <div class="mc-form-group">
           <label class="mc-label" for="sender_email">{{ _("Gönderici E-posta") }}</label>
           <input type="email" id="sender_email" class="mc-input"
-                 placeholder="bildirim@firma.com"
+                 placeholder="{{ _('bildirim@firma.com') }}"
                  value="{{ cfg.sender_email or '' if cfg else '' }}">
         </div>
       </div>

@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}Veri Kalitesi — Kokpitim{% endblock %}
-{% block page_title %}Veri Kalitesi Raporu{% endblock %}
+{% block title %}{{ _("Veri Kalitesi — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Veri Kalitesi Raporu") }}{% endblock %}
 
 {% block breadcrumb %}{{ mc_breadcrumb('Veri Kalitesi Raporu') }}{% endblock %}
 {% block content %}
@@ -12,7 +12,7 @@
 
 <div class="mc-page-header" style="max-width:1240px;margin:0 auto 24px;">
   <div class="mc-page-header-left">
-    <h1 class="mc-page-title"><i class="fas fa-database" style="color:#0ea5e9;"></i> Veri Kalitesi Raporu</h1>
+    <h1 class="mc-page-title"><i class="fas fa-database" style="color:#0ea5e9;"></i> {{ _("Veri Kalitesi Raporu") }}</h1>
     <p class="mc-page-subtitle">{{ _("Performans göstergesi doluluk oranı, eksik alanlar ve son veri girişi tarihleri") }}</p>
   </div>
   <div class="mc-page-header-right" style="display:flex;align-items:center;gap:10px;">

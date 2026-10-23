@@ -3,13 +3,13 @@
     <div class="mc-modal mc-modal-lg tool-info-modal-panel" role="dialog" aria-modal="true" aria-labelledby="toolInfoTitle">
         <div class="mc-modal-header">
             <div class="mc-modal-title" id="toolInfoTitle">
-                <i class="fas fa-info-circle"></i><span>Bilgi</span>
+                <i class="fas fa-info-circle"></i><span>{{ _("Bilgi") }}</span>
             </div>
-            <button type="button" class="mc-modal-close" onclick="closeToolInfoModal()" aria-label="Kapat"><i class="fas fa-times"></i></button>
+            <button type="button" class="mc-modal-close" onclick="closeToolInfoModal()" aria-label="{{ _('Kapat') }}"><i class="fas fa-times"></i></button>
         </div>
         <div class="mc-modal-body" id="toolInfoBody"></div>
         <div class="mc-modal-footer">
-            <button type="button" class="mc-btn mc-btn-secondary" onclick="closeToolInfoModal()">Kapat</button>
+            <button type="button" class="mc-btn mc-btn-secondary" onclick="closeToolInfoModal()">{{ _("Kapat") }}</button>
         </div>
     </div>
 </div>

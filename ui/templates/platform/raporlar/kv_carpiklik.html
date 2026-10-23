@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}K-Vektör Çarpıklık — Kokpitim{% endblock %}
-{% block page_title %}K-Vektör Çarpıklık Raporu{% endblock %}
+{% block title %}{{ _("K-Vektör Çarpıklık — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("K-Vektör Çarpıklık Raporu") }}{% endblock %}
 
 {% block breadcrumb %}{{ mc_breadcrumb('K-Vektör Çarpıklık') }}{% endblock %}
 
@@ -10,7 +10,7 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-balance-scale" style="color:#8b5cf6;"></i> K-Vektör Çarpıklık
+        <i class="fas fa-balance-scale" style="color:#8b5cf6;"></i> {{ _("K-Vektör Çarpıklık") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
         {{ _("Stratejik ağırlık × gerçek performans uyumsuzluğu. <b>Yüksek ağırlık + düşük skor</b> → odaklanılması gereken alan.") }}

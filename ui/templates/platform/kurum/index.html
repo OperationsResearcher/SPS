@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Kurum', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Kurum'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -28,10 +28,10 @@
           <button type="button" class="btn-kimlik-edit text-slate-400 hover:text-indigo-600 p-1"
                   data-kind="{{ kind }}" data-item-id="{{ it.id }}"
                   data-baslik="{{ it.baslik }}" data-aciklama="{{ it.aciklama or '' }}"
-                  title="Düzenle"><i class="fas fa-pen text-xs"></i></button>
+                  title="{{ _('Düzenle') }}"><i class="fas fa-pen text-xs"></i></button>
           <button type="button" class="btn-kimlik-delete text-slate-400 hover:text-rose-600 p-1"
                   data-kind="{{ kind }}" data-item-id="{{ it.id }}" data-baslik="{{ it.baslik }}"
-                  title="Sil"><i class="fas fa-trash text-xs"></i></button>
+                  title="{{ _('Sil') }}"><i class="fas fa-trash text-xs"></i></button>
         </div>
         {% endif %}
       </li>
@@ -357,14 +357,14 @@
                     <h4 class="text-xs font-bold uppercase tracking-wide text-emerald-800 dark:text-emerald-300 mb-1">{{ _("PG kapsamı") }}</h4>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">{{ _("Süreçlerde PG tanımı dağılımı") }}</p>
                     <div class="kurum-chart-wrap relative mx-auto max-w-[280px]">
-                      <canvas id="kurum-chart-process-pg" aria-label="PG kapsamı pasta grafiği"></canvas>
+                      <canvas id="kurum-chart-process-pg" aria-label="{{ _('PG kapsamı pasta grafiği') }}"></canvas>
                     </div>
                   </div>
                   <div class="rounded-xl border border-violet-200/80 dark:border-violet-900/50 bg-gradient-to-b from-violet-50/80 to-white dark:from-violet-950/25 dark:to-slate-900/40 p-4">
                     <h4 class="text-xs font-bold uppercase tracking-wide text-violet-800 dark:text-violet-300 mb-1">{{ _("Strateji hizalaması") }}</h4>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">{{ _("Alt strateji bağlantısı") }}</p>
                     <div class="kurum-chart-wrap relative mx-auto max-w-[280px]">
-                      <canvas id="kurum-chart-process-strategy" aria-label="Strateji hizalaması pasta grafiği"></canvas>
+                      <canvas id="kurum-chart-process-strategy" aria-label="{{ _('Strateji hizalaması pasta grafiği') }}"></canvas>
                     </div>
                   </div>
                 </div>
@@ -385,7 +385,7 @@
                    class="border-t border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-4">
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">{{ _("Aktif PG, veri giren süreç, açık faaliyet ve bu ay tamamlanan takip") }}</p>
                 <div class="kurum-chart-wrap kurum-chart-wrap--tall">
-                  <canvas id="kurum-chart-process-activity" aria-label="Süreç operasyon çubuk grafiği"></canvas>
+                  <canvas id="kurum-chart-process-activity" aria-label="{{ _('Süreç operasyon çubuk grafiği') }}"></canvas>
                 </div>
               </div>
             </div>
@@ -406,7 +406,7 @@
                   {{ _("PG için son geçerli veri <strong>%(days)s günden</strong> eskiyse “bayat”; geciken faaliyet; hedef/dönem eksik PG.", days=overview.process.stale_kpi_data_days) }}
                 </p>
                 <div class="kurum-chart-wrap kurum-chart-wrap--tall">
-                  <canvas id="kurum-chart-process-risk" aria-label="Süreç risk çubuk grafiği"></canvas>
+                  <canvas id="kurum-chart-process-risk" aria-label="{{ _('Süreç risk çubuk grafiği') }}"></canvas>
                 </div>
               </div>
             </div>
@@ -427,7 +427,7 @@
                   {{ _("<code class=\"text-[10px] bg-slate-200/50 dark:bg-slate-700/50 px-1 rounded\">calculated_score</code> — düşük (&lt;50), skorlu (≥50), skorsuz.")|safe }}
                 </p>
                 <div class="kurum-chart-wrap relative mx-auto max-w-[260px]">
-                  <canvas id="kurum-chart-process-score" aria-label="PG skor dağılımı"></canvas>
+                  <canvas id="kurum-chart-process-score" aria-label="{{ _('PG skor dağılımı') }}"></canvas>
                 </div>
               </div>
             </div>
@@ -546,14 +546,14 @@
                     <h4 class="text-xs font-bold uppercase tracking-wide text-rose-800 dark:text-rose-300 mb-1">{{ _("Proje bitiş durumu") }}</h4>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">{{ _("Geciken, 30 gün içinde, diğer") }}</p>
                     <div class="kurum-chart-wrap relative mx-auto max-w-[280px]">
-                      <canvas id="kurum-chart-project-timeline" aria-label="Proje bitiş durumu pasta grafiği"></canvas>
+                      <canvas id="kurum-chart-project-timeline" aria-label="{{ _('Proje bitiş durumu pasta grafiği') }}"></canvas>
                     </div>
                   </div>
                   <div class="rounded-xl border border-indigo-200/80 dark:border-indigo-900/50 bg-gradient-to-b from-indigo-50/70 to-white dark:from-indigo-950/25 dark:to-slate-900/40 p-4">
                     <h4 class="text-xs font-bold uppercase tracking-wide text-indigo-800 dark:text-indigo-300 mb-1">{{ _("Açık görev dağılımı") }}</h4>
                     <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">{{ _("Vadesi geçen, 7 gün içinde, diğer") }}</p>
                     <div class="kurum-chart-wrap relative mx-auto max-w-[280px]">
-                      <canvas id="kurum-chart-project-tasks" aria-label="Görev dağılımı pasta grafiği"></canvas>
+                      <canvas id="kurum-chart-project-tasks" aria-label="{{ _('Görev dağılımı pasta grafiği') }}"></canvas>
                     </div>
                   </div>
                 </div>
@@ -573,7 +573,7 @@
                    class="border-t border-slate-100 dark:border-slate-700 bg-slate-50/60 dark:bg-slate-800/40 p-4">
                 <p class="text-[11px] text-slate-500 dark:text-slate-400 mb-3">{{ _("Geciken görev, yaklaşan vade, RAID, düşük sağlık") }}</p>
                 <div class="kurum-chart-wrap kurum-chart-wrap--tall">
-                  <canvas id="kurum-chart-project-risk" aria-label="Proje risk çubuk grafiği"></canvas>
+                  <canvas id="kurum-chart-project-risk" aria-label="{{ _('Proje risk çubuk grafiği') }}"></canvas>
                 </div>
               </div>
             </div>

@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
 {% block title %}{{ process.name }} — Süreç Karnesi{% endblock %}
-{% block page_title %}Süreç Karnesi{% endblock %}
+{% block page_title %}{{ _("Süreç Karnesi") }}{% endblock %}
 
 {% macro primary_leader_label(proc) -%}
   {%- if proc.leaders and proc.leaders|length > 0 -%}
@@ -16,7 +16,7 @@
 
 {% block breadcrumb %}
     {%- set _crumbs = [] -%}
-    {%- set _ = _crumbs.append({'label': 'Süreç Yönetimi', 'url': url_for('app_bp.surec')}) -%}
+    {%- set _ = _crumbs.append({'label': _('Süreç Yönetimi'), 'url': url_for('app_bp.surec')}) -%}
     {%- if parent_process -%}
         {%- set _plbl = ((parent_process.code ~ ' — ') if parent_process.code else '') ~ parent_process.name -%}
         {%- set _ = _crumbs.append({'label': _plbl, 'url': url_for('app_bp.surec_karne', process_id=parent_process.id)}) -%}
@@ -77,11 +77,11 @@
         <div class="karne-banner-top-left">
           <a href="{{ url_for('app_bp.surec') }}" class="karne-banner-back-compact">
             <span class="karne-banner-mini-logo" aria-hidden="true"><i class="fas fa-th-large"></i></span>
-            <span class="karne-banner-back-text"><span class="karne-banner-back-arrow">←</span> Süreç paneline dön</span>
+            <span class="karne-banner-back-text"><span class="karne-banner-back-arrow">←</span> {{ _("Süreç paneline dön") }}</span>
           </a>
           {% if parent_process %}
           <a href="{{ url_for('app_bp.surec_karne', process_id=parent_process.id) }}" class="karne-banner-parent-compact">
-            <i class="fas fa-level-up-alt" aria-hidden="true"></i> Üst süreç
+            <i class="fas fa-level-up-alt" aria-hidden="true"></i> {{ _("Üst süreç") }}
           </a>
           {% endif %}
         </div>
@@ -241,7 +241,7 @@
             <td><span class="mc-badge mc-badge-info">{{ c.status or '—' }}</span></td>
             <td class="no-print">
               <a href="{{ url_for('app_bp.surec_karne', process_id=c.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm">
-                Karnesi
+                {{ _("Karnesi") }}
               </a>
             </td>
           </tr>
@@ -254,7 +254,7 @@
 
   <div class="mc-card karne-trend-card" id="trend-chart-card" data-card-code="process_karne.kpi_performans_trend_analizi">
     <div class="mc-card-header karne-trend-accordion-toggle" id="trend-accordion-toggle" role="button" tabindex="0" aria-expanded="false" aria-controls="trend-accordion-panel">
-      <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#6366f1; margin-right:8px;"></i>PG Performans Trend Analizi</span>
+      <span class="mc-card-title"><i class="fas fa-chart-line" style="color:#6366f1; margin-right:8px;"></i>{{ _("PG Performans Trend Analizi") }}</span>
       <i class="fas fa-chevron-down karne-trend-accordion-chevron" aria-hidden="true"></i>
     </div>
     <div class="mc-card-body karne-trend-accordion-panel is-collapsed" id="trend-accordion-panel" aria-hidden="true">
@@ -519,7 +519,7 @@
             <div class="tm-field">
               <label class="mc-form-label" for="kpi-add-code">{{ _("Kodu") }}</label>
               <input id="kpi-add-code" name="code" class="mc-form-input" type="text"
-                     placeholder="PG-01" autocomplete="off">
+                     placeholder="{{ _('PG-01') }}" autocomplete="off">
             </div>
             <div class="tm-field">
               <label class="mc-form-label" for="kpi-add-target">{{ _("Hedef Değer") }}</label>
@@ -530,7 +530,7 @@
               <label class="mc-form-label" for="kpi-add-unit">{{ _("Ölçüm Birimi") }}</label>
               <input id="kpi-add-unit" name="unit" class="mc-form-input" type="text"
                      list="kpi-add-unit-options"
-                     placeholder="%, Gün, TL…"
+                     placeholder="{{ _('%%, Gün, TL…') }}"
                      autocomplete="off"
                      aria-describedby="kpi-add-unit-hint">
               <span id="kpi-add-unit-hint" class="karne-field-hint">{{ _("Listeden seçin veya kendi biriminizi yazın.") }}</span>
