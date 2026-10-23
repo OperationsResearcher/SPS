@@ -2,6 +2,24 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-317 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P1 — CSS/mobil/kontrast/odak; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P1 paketi: WCAG kontrast token'ları, mobil taşma, kenar çubuğu odak halkası, 16px mobil alan
+**Modül:** frontend CSS, test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/css/components.css` → `--text-subtle` (#5b6b81 / koyu #a3b1c6), `.mc-empty-text`, `.mc-btn-danger/success`, `.dark .mc-badge-gray` kontrast
+- `ui/static/platform/css/sidebar.css` → `.micro-main{min-width:0}`, ≤640px üst çubuk sıkıştırma + plan dönemi gizleme, sidebar `:focus-visible`
+- `ui/static/platform/css/mobile.css` → ≤640px form alanları 16px
+- `tests/test_kontrast_tokenlari.py` → yeni (WCAG AA ≥4.5:1)
+
+### Yapılan İşlem
+KalDer `b72bb03` + `bc7003d` yamaları (yalnız CSS + test) `git apply` ile temiz uygulandı. `temel_akis.css` P5'e bırakıldı.
+
+### Notlar
+Rehberdeki `git apply --3way --reject` birleşimi geçersiz (git hata verir); yalnız `--reject` kullanıldı. Tarayıcı doğrulaması (375px yatay taşma, odak halkası) yapılmadı.
+
 ## TASK-316 | 2026-10-10 | ✅ Tamamlandı (Dalga 4 — kalite; yalnız Yerel; commit yok)
 
 **Görev:** Derin denetim Dalga 4: modal erişilebilirliği, rapor JS i18n, testlerde tenant guard
