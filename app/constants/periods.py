@@ -31,6 +31,7 @@ _ESLEME: dict[str, str] = {
     "ceyrek": "ceyrek", "çeyrek": "ceyrek",
     "ceyreklik": "ceyrek", "çeyreklik": "ceyrek",
     "halfyear": "halfyear", "yarim_yil": "halfyear", "yarıyıl": "halfyear",
+    "yarıyıllık": "halfyear", "yarı yıllık": "halfyear", "6 aylık": "halfyear",
     "yillik": "yillik", "yıllık": "yillik",
 }
 

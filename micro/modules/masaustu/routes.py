@@ -69,6 +69,21 @@ def _individual_pg_has_monthly_entry(pg_id: int, user_id: int, year: int, month:
     return False
 
 
+@app_bp.route("/desktop/api/ilk-kurulum/gizle", methods=["POST"])
+@login_required
+def masaustu_ilk_kurulum_gizle():
+    """İlk kurulum kontrol listesini bu kullanıcı için gizler."""
+    from app.services.ilk_kurulum_service import gizle_ayarla
+    try:
+        gizle_ayarla(current_user, True)
+        db.session.commit()
+    except Exception as e:
+        db.session.rollback()
+        current_app.logger.error(f"[masaustu_ilk_kurulum_gizle] {e}")
+        return jsonify({"success": False, "message": _("Kaydedilemedi.")}), 500
+    return jsonify({"success": True})
+
+
 @app_bp.route("/desktop")
 @login_required
 def masaustu():
@@ -315,8 +330,26 @@ def masaustu():
         except Exception as koe_err:
             current_app.logger.warning(f"[masaustu] KOE hesaplanamadı: {koe_err}")
 
+    # UX-PLANI B: veri girişi bekleyen PG'lerim (bitmiş dönemi verisiz olanlar). Hata sayfayı düşürmez.
+    bekleyen_pg = {"items": [], "toplam": 0}
+    try:
+        from app.services.bekleyen_pg_service import bekleyen_pg_listesi
+        bekleyen_pg = bekleyen_pg_listesi(current_user)
+    except Exception as bp_err:
+        current_app.logger.warning(f"[masaustu] bekleyen PG listesi alınamadı: {bp_err}")
+
+    # UX-PLANI E: ilk kurulum kontrol listesi (yalnız yönetici, tamamlanmamış, gizlenmemiş).
+    ilk_kurulum = None
+    try:
+        from app.services.ilk_kurulum_service import kontrol_listesi
+        ilk_kurulum = kontrol_listesi(current_user)
+    except Exception as ik_err:
+        current_app.logger.warning(f"[masaustu] ilk kurulum listesi alınamadı: {ik_err}")
+
     return render_template(
         "platform/masaustu/index.html",
+        ilk_kurulum=ilk_kurulum,
+        bekleyen_pg=bekleyen_pg,
         koe=koe,
         koe_danisman=koe_danisman,
         bireysel_pgs=bireysel_pgs,

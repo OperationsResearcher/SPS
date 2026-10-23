@@ -488,3 +488,16 @@
     });
   })();
 })();
+
+/* İlk kurulum kontrol listesi: "Gizle" (UX-PLANI E). fetch'e CSRF csrf_fetch.js ekler. */
+(function () {
+  var btn = document.getElementById("ilk-kurulum-gizle");
+  if (!btn) return;
+  btn.addEventListener("click", function () {
+    var kart = btn.closest(".ilk-kurulum");
+    fetch(kart.dataset.gizleUrl, { method: "POST", headers: { "Content-Type": "application/json" }, body: "{}" })
+      .then(function (r) { return r.json(); })
+      .then(function (d) { if (d.success) kart.remove(); })
+      .catch(function () {});
+  });
+})();
