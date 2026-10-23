@@ -5,6 +5,7 @@
 {% block extra_css %}
 <meta name="kule-tour-key" content="surec">
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/surec.css') }}">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_surec_index.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
@@ -15,7 +16,7 @@
 <script type="application/json" id="strategies-json">{{ strategies_json|tojson }}</script>
 <script type="application/json" id="users-pick-json">{{ users_pick_json|tojson }}</script>
 
-<div style="max-width:1240px; margin:0 auto;"
+<div class="st-p04-001"
      id="surec-index"
      data-add-url="{{ url_for('app_bp.surec_api_add') }}"
      data-delete-url-base="/k-plan/process/api/delete/"
@@ -24,22 +25,22 @@
      data-can-crud-process="{{ 'true' if can_crud_process else 'false' }}"
      data-k-vektor-enabled="{{ 'true' if k_vektor_enabled else 'false' }}">
 
-    <div class="mc-page-header" style="margin-bottom:16px;">
+    <div class="mc-page-header st-p04-002">
         <div>
-            <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-                <i class="fas fa-sitemap" style="color:#6366f1;"></i> {{ _("Süreç Yönetimi") }}
+            <h2 class="st-p04-003">
+                <i class="fas fa-sitemap st-p04-004"></i> {{ _("Süreç Yönetimi") }}
             </h2>
-            <p style="font-size:13px;color:#64748b;margin:0;">
+            <p class="st-p04-005">
                 Süreç hiyerarşisi · performans göstergeleri · faaliyetler · stratejik hizalama
                 {% if active_plan_year_val %} · <b>{{ active_plan_year_val }}</b> dönemi{% endif %}
             </p>
         </div>
-        <div style="display:flex; align-items:center; gap:8px; flex-wrap:wrap;">
+        <div class="st-p04-006">
             {% if plan_years %}
-            <label style="display:flex; align-items:center; gap:6px; font-size:12.5px; color:#475569;">
-                <i class="fas fa-calendar-alt" style="color:#6366f1;"></i>
+            <label class="st-p04-007">
+                <i class="fas fa-calendar-alt st-p04-004"></i>
                 <span>{{ _("Plan dönemi:") }}</span>
-                <select id="surec-plan-year-select" class="mc-form-input" style="padding:5px 10px; font-size:13px; min-width:140px;">
+                <select id="surec-plan-year-select" class="mc-form-input st-p04-008">
                     {% for py in plan_years %}
                     <option value="{{ py.year }}" {% if py.year == active_plan_year_val %}selected{% endif %}>
                         {{ py.year }}{% if py.name %} — {{ py.name }}{% endif %}
@@ -48,16 +49,16 @@
                 </select>
             </label>
             {% endif %}
-            <div style="display:flex; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden;">
+            <div class="st-p04-009">
                 <button type="button" id="btn-view-tree"
-                    class="mc-btn mc-btn-sm"
-                    style="border-radius:0; border:none; padding:6px 14px;"
+                    class="mc-btn mc-btn-sm st-p04-010"
+                   
                     title="{{ _('Ağaç görünümü') }}">
                     <i class="fas fa-sitemap"></i> {{ _("Ağaç") }}
                 </button>
                 <button type="button" id="btn-view-kanban"
-                    class="mc-btn mc-btn-sm"
-                    style="border-radius:0; border:none; border-left:1px solid #e2e8f0; padding:6px 14px;"
+                    class="mc-btn mc-btn-sm st-p04-011"
+                   
                     title="{{ _('Kanban görünümü') }}">
                     <i class="fas fa-columns"></i> {{ _("Kanban") }}
                 </button>
@@ -95,128 +96,128 @@
     {% endfor %}
     {% set _avg = (_ns.sum / _ns.cnt)|round|int if _ns.cnt else 0 %}
     {% set _root_cnt = roots|length %}
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px;">
-        <div data-card-code="process.toplam_surec" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;">
-            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Toplam Süreç") }}</div>
-            <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _total_p }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("%(n)s kök süreç", n=_root_cnt) }}</div>
+    <div class="st-p04-012">
+        <div class="st-p04-013" data-card-code="process.toplam_surec">
+            <div class="mc-stat-label st-p04-014">{{ _("Toplam Süreç") }}</div>
+            <div class="st-p04-015">{{ _total_p }}</div>
+            <div class="st-p04-016">{{ _("%(n)s kök süreç", n=_root_cnt) }}</div>
         </div>
-        <div data-card-code="process.toplam_pg" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9;">
-            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Toplam PG") }}</div>
-            <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;">{{ _total_kpi }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("%(n)s PG'siz süreç", n=_ns.no_kpi) }}</div>
+        <div class="st-p04-017" data-card-code="process.toplam_pg">
+            <div class="mc-stat-label st-p04-014">{{ _("Toplam PG") }}</div>
+            <div class="st-p04-015">{{ _total_kpi }}</div>
+            <div class="st-p04-016">{{ _("%(n)s PG'siz süreç", n=_ns.no_kpi) }}</div>
         </div>
         <div data-card-code="process.ortalama_skor" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};">
-            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Ortalama Skor") }}</div>
+            <div class="mc-stat-label st-p04-014">{{ _("Ortalama Skor") }}</div>
             <div style="font-size:24px;font-weight:800;color:{% if _avg >= 80 %}#10b981{% elif _avg >= 50 %}#f59e0b{% else %}#dc2626{% endif %};margin-top:4px;">%{{ _avg }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("tüm süreçler") }}</div>
+            <div class="st-p04-016">{{ _("tüm süreçler") }}</div>
         </div>
-        <div data-card-code="process.yuksek_performans" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #10b981;">
-            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Yüksek Performans") }}</div>
-            <div style="font-size:24px;font-weight:800;color:#10b981;margin-top:4px;">{{ _ns.hi }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("skor ≥ 80") }}</div>
+        <div class="st-p04-018" data-card-code="process.yuksek_performans">
+            <div class="mc-stat-label st-p04-014">{{ _("Yüksek Performans") }}</div>
+            <div class="st-p04-019">{{ _ns.hi }}</div>
+            <div class="st-p04-016">{{ _("skor ≥ 80") }}</div>
         </div>
         <div data-card-code="process.kritik_surec" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid {% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};">
-            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kritik Süreç") }}</div>
+            <div class="mc-stat-label st-p04-014">{{ _("Kritik Süreç") }}</div>
             <div style="font-size:24px;font-weight:800;color:{% if _ns.low > 0 %}#dc2626{% else %}#10b981{% endif %};margin-top:4px;">{{ _ns.low }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("skor &lt; 50") }}</div>
+            <div class="st-p04-016">{{ _("skor &lt; 50") }}</div>
         </div>
         {% if k_vektor_enabled %}
-        <div data-card-code="process.k_vektor" style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6;">
-            <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("K-Vektör") }}</div>
-            <div style="font-size:24px;font-weight:800;color:#0f172a;margin-top:4px;"><i class="fas fa-vector-square" style="font-size:18px;color:#8b5cf6;"></i> {{ _("Aktif") }}</div>
-            <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("ağırlıklı skorlama") }}</div>
+        <div class="st-p04-020" data-card-code="process.k_vektor">
+            <div class="mc-stat-label st-p04-014">{{ _("K-Vektör") }}</div>
+            <div class="st-p04-015"><i class="fas fa-vector-square st-p04-021"></i> {{ _("Aktif") }}</div>
+            <div class="st-p04-016">{{ _("ağırlıklı skorlama") }}</div>
         </div>
         {% endif %}
     </div>
 
     {# ── Arama / Hızlı Filtre ─────────────────────────────────────────── #}
-    <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
-        <div style="position:relative; flex:1; min-width:240px; max-width:420px;">
-            <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
-            <input aria-label="{{ _('Süreç ara (ad veya kod)…') }}" type="search" id="surec-search" class="mc-form-input" placeholder="{{ _('Süreç ara (ad veya kod)…') }}"
-                   style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
+    <div class="st-p04-022">
+        <div class="st-p04-023">
+            <i class="fas fa-search st-p04-024"></i>
+            <input aria-label="{{ _('Süreç ara (ad veya kod)…') }}" type="search" id="surec-search" class="mc-form-input st-p04-025" placeholder="{{ _('Süreç ara (ad veya kod)…') }}"
+                  >
         </div>
-        <select aria-label="{{ _('Skora göre filtrele') }}" id="surec-filter-skor" class="mc-form-input" style="padding:7px 10px; font-size:13px;">
+        <select aria-label="{{ _('Skora göre filtrele') }}" id="surec-filter-skor" class="mc-form-input st-p04-026">
             <option value="">{{ _("Tüm performanslar") }}</option>
             <option value="hi">{{ _("Yüksek (≥80)") }}</option>
             <option value="mid">{{ _("Orta (50-79)") }}</option>
             <option value="lo">{{ _("Kritik (&lt;50)") }}</option>
             <option value="no_kpi">{{ _("PG'siz") }}</option>
         </select>
-        <span id="surec-count-label" style="font-size:12px; color:#64748b; margin-left:auto;">{{ _total_p }} süreç</span>
+        <span class="st-p04-027" id="surec-count-label">{{ _total_p }} süreç</span>
     </div>
 
     {% if roots %}
     {# ── Süreçler kartı: Ağaç/Kanban içeriğini saran kapsayıcı + durum sayaçları ── #}
-    <div class="mc-card" data-card-code="process.surecler" style="margin-bottom:18px;">
-      <div class="mc-card-header" style="flex-wrap:wrap; gap:10px;">
+    <div class="mc-card st-p04-028" data-card-code="process.surecler">
+      <div class="mc-card-header st-p04-029">
         <span class="mc-card-title">
-          <i class="fas fa-sitemap" style="color:#6366f1; margin-right:6px;"></i>{{ _("Süreçler") }}
+          <i class="fas fa-sitemap st-p04-030"></i>{{ _("Süreçler") }}
         </span>
-        <div style="display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px;">
-          <span style="display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:3px 9px; border-radius:999px; font-weight:600;">
-            <span style="width:8px; height:8px; border-radius:50%; background:#10b981;"></span>Hedefte {{ _ns.hi }}
+        <div class="st-p04-031">
+          <span class="st-p04-032">
+            <span class="st-p04-033"></span>Hedefte {{ _ns.hi }}
           </span>
-          <span style="display:inline-flex; align-items:center; gap:5px; background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:3px 9px; border-radius:999px; font-weight:600;">
-            <span style="width:8px; height:8px; border-radius:50%; background:#f59e0b;"></span>Risk altında {{ _ns.risk }}
+          <span class="st-p04-034">
+            <span class="st-p04-035"></span>Risk altında {{ _ns.risk }}
           </span>
-          <span style="display:inline-flex; align-items:center; gap:5px; background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; padding:3px 9px; border-radius:999px; font-weight:600;">
-            <span style="width:8px; height:8px; border-radius:50%; background:#ef4444;"></span>Hedef dışı {{ _ns.low }}
+          <span class="st-p04-036">
+            <span class="st-p04-037"></span>Hedef dışı {{ _ns.low }}
           </span>
           {% if _ns.no_data %}
-          <span style="display:inline-flex; align-items:center; gap:5px; background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; padding:3px 9px; border-radius:999px; font-weight:600;">
-            <span style="width:8px; height:8px; border-radius:50%; background:#cbd5e1;"></span>Veri yok {{ _ns.no_data }}
+          <span class="st-p04-038">
+            <span class="st-p04-039"></span>Veri yok {{ _ns.no_data }}
           </span>
           {% endif %}
         </div>
       </div>
       <div class="mc-card-body">
 
-    <div id="surec-tree-view" style="display:flex; flex-direction:column; gap:10px;">
+    <div class="st-p04-040" id="surec-tree-view">
         {% macro render_process(p, depth) %}
         <div class="mc-card surec-tree-item" style="{% if depth > 0 %}margin-left:{{ depth * 24 }}px;{% endif %}">
-            <div style="display:flex; align-items:center; gap:12px; padding:14px 18px;">
+            <div class="st-p04-041">
 
                 {% if depth > 0 %}
-                <div style="width:3px; height:36px; background:linear-gradient(180deg,#6366f1,#8b5cf6); border-radius:2px; flex-shrink:0;"></div>
+                <div class="st-p04-042"></div>
                 {% endif %}
 
                 {% if p.code %}
-                <span class="mc-badge mc-badge-indigo" style="font-family:monospace; font-size:12px; flex-shrink:0;">{{ p.code }}</span>
+                <span class="mc-badge mc-badge-indigo st-p04-043">{{ p.code }}</span>
                 {% endif %}
 
-                <div style="flex:1; min-width:0;">
-                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" style="font-size:14px; font-weight:600; color:var(--text-default); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:none;" class="dark:text-white">
+                <div class="st-p04-044">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="dark:text-white st-p04-045">
                         {{ p.name }}
                     </a>
-                    <div style="display:flex; align-items:center; gap:12px; margin-top:6px;">
-                        <span style="font-size:11.5px; color:#94a3b8;">{{ p.kpis|length }} PG</span>
-                        <svg class="pg-sparkline" data-pid="{{ p.id }}" width="58" height="18" viewBox="0 0 58 18" style="flex-shrink:0;" title="{{ _('Son 3 ay PG hedef üstü oranı') }}">
+                    <div class="st-p04-046">
+                        <span class="st-p04-047">{{ p.kpis|length }} PG</span>
+                        <svg class="pg-sparkline st-p04-048" data-pid="{{ p.id }}" width="58" height="18" viewBox="0 0 58 18" title="{{ _('Son 3 ay PG hedef üstü oranı') }}">
                           <polyline class="pg-sparkline-line" points="" fill="none" stroke="#cbd5e1" stroke-width="1.5"/>
                         </svg>
                         {% set _ps = (process_scores.get(p.id) or 0)|round|int %}
-                        <div class="mc-progress" style="width:80px;">
+                        <div class="mc-progress st-p04-049">
                             <div class="mc-progress-fill {% if _ps >= 80 %}success{% elif _ps >= 50 %}{% else %}warning{% endif %}"
                                  style="width:{{ _ps }}%;"></div>
                         </div>
-                        <span style="font-size:11.5px; color:#64748b;">{{ _ps }}%</span>
+                        <span class="st-p04-050">{{ _ps }}%</span>
                         {% if k_vektor_enabled %}
                         {% set _kv = process_scores.get(p.id) %}
-                        <span style="font-size:11px; color:#6366f1; font-weight:600; display:flex; align-items:center; gap:4px;">
-                            <i class="fas fa-vector-square" style="font-size:10px;"></i>
+                        <span class="st-p04-051">
+                            <i class="fas fa-vector-square st-p04-052"></i>
                             K-Vektör: {{ '%.1f'|format(_kv if _kv is not none else 0) }}
                         </span>
                         {% endif %}
                         {% if p.status %}
-                        <span class="mc-badge {% if p.status == 'active' %}mc-badge-success{% elif p.status == 'inactive' %}mc-badge-gray{% else %}mc-badge-info{% endif %}" style="font-size:11px;">
+                        <span class="mc-badge {% if p.status == 'active' %}mc-badge-success{% elif p.status == 'inactive' %}mc-badge-gray{% else %}mc-badge-info{% endif %} st-p04-053">
                             {{ p.status }}
                         </span>
                         {% endif %}
                     </div>
                 </div>
 
-                <div style="display:flex; align-items:center; gap:6px; flex-shrink:0; flex-wrap:wrap;">
+                <div class="st-p04-054">
                     <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}"
                        class="mc-btn mc-btn-secondary mc-btn-sm">
                         <i class="fas fa-chart-bar"></i> {{ _("Süreç Karnesi") }}
@@ -244,7 +245,7 @@
             </div>
 
             {% if children_map.get(p.id) %}
-            <div style="padding:0 18px 14px; display:flex; flex-direction:column; gap:8px;">
+            <div class="st-p04-055">
                 {% for child in children_map[p.id] %}
                     {{ render_process(child, depth + 1) }}
                 {% endfor %}
@@ -260,8 +261,8 @@
 
     {# ── Kanban görünümü ── #}
     <div id="surec-kanban-view" style="display:none;">
-      <div class="kb-kanban-root" style="padding:0;">
-        <div class="kb-kanban-grid" style="grid-template-columns:repeat(4,minmax(0,1fr));">
+      <div class="kb-kanban-root st-p04-056">
+        <div class="kb-kanban-grid st-p04-057">
 
           {# Hedefte #}
           <section class="kb-col kb-col--hedefte">
@@ -278,32 +279,32 @@
                 <div class="kb-card">
                   <div class="kb-card-top">
                     <div class="kb-card-name-block">
-                      {% if p.code %}<span style="font-size:10px;font-weight:700;color:#6366f1;font-family:monospace;">{{ p.code }}</span><br>{% endif %}
-                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name" style="text-decoration:none;">{{ p.name }}</a>
+                      {% if p.code %}<span class="st-p04-058">{{ p.code }}</span><br>{% endif %}
+                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name st-p04-059">{{ p.name }}</a>
                     </div>
                     <div class="kb-card-actions">
-                      <span class="kb-card-weight" style="color:#1d9e75;font-weight:700;font-size:13px;">{{ _si }}%</span>
+                      <span class="kb-card-weight st-p04-060">{{ _si }}%</span>
                     </div>
                   </div>
                   <div class="kb-card-divider"></div>
                   <div class="kb-card-meta">
                     <div class="kb-card-meta-item">
-                      <span style="font-size:10px;color:#94a3b8;">{{ _("PG") }}</span>
-                      <span style="font-size:12px;font-weight:600;">{{ p.kpis|length }}</span>
+                      <span class="st-p04-061">{{ _("PG") }}</span>
+                      <span class="st-p04-062">{{ p.kpis|length }}</span>
                     </div>
                     {% if k_vektor_enabled %}
                     <div class="kb-card-meta-item">
-                      <span style="font-size:10px;color:#94a3b8;">{{ _("K-Vektör") }}</span>
-                      <span style="font-size:12px;font-weight:600;color:#6366f1;">{{ '%.1f'|format(_s) }}</span>
+                      <span class="st-p04-061">{{ _("K-Vektör") }}</span>
+                      <span class="st-p04-063">{{ '%.1f'|format(_s) }}</span>
                     </div>
                     {% endif %}
                   </div>
-                  <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
-                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-size:11px;padding:3px 8px;">
+                  <div class="st-p04-064">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm st-p04-065">
                       <i class="fas fa-chart-bar"></i> {{ _("Karne") }}
                     </a>
                     {% if can_crud_process or user_can_edit_process_record(current_user, p) %}
-                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit" data-surec-id="{{ p.id }}" data-process-editable="true" style="font-size:11px;padding:3px 8px;">
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit st-p04-065" data-surec-id="{{ p.id }}" data-process-editable="true">
                       <i class="fas fa-pen"></i>
                     </button>
                     {% endif %}
@@ -329,32 +330,32 @@
                 <div class="kb-card">
                   <div class="kb-card-top">
                     <div class="kb-card-name-block">
-                      {% if p.code %}<span style="font-size:10px;font-weight:700;color:#6366f1;font-family:monospace;">{{ p.code }}</span><br>{% endif %}
-                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name" style="text-decoration:none;">{{ p.name }}</a>
+                      {% if p.code %}<span class="st-p04-058">{{ p.code }}</span><br>{% endif %}
+                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name st-p04-059">{{ p.name }}</a>
                     </div>
                     <div class="kb-card-actions">
-                      <span class="kb-card-weight" style="color:#ef9f27;font-weight:700;font-size:13px;">{{ _si }}%</span>
+                      <span class="kb-card-weight st-p04-066">{{ _si }}%</span>
                     </div>
                   </div>
                   <div class="kb-card-divider"></div>
                   <div class="kb-card-meta">
                     <div class="kb-card-meta-item">
-                      <span style="font-size:10px;color:#94a3b8;">{{ _("PG") }}</span>
-                      <span style="font-size:12px;font-weight:600;">{{ p.kpis|length }}</span>
+                      <span class="st-p04-061">{{ _("PG") }}</span>
+                      <span class="st-p04-062">{{ p.kpis|length }}</span>
                     </div>
                     {% if k_vektor_enabled %}
                     <div class="kb-card-meta-item">
-                      <span style="font-size:10px;color:#94a3b8;">{{ _("K-Vektör") }}</span>
-                      <span style="font-size:12px;font-weight:600;color:#6366f1;">{{ '%.1f'|format(_s) }}</span>
+                      <span class="st-p04-061">{{ _("K-Vektör") }}</span>
+                      <span class="st-p04-063">{{ '%.1f'|format(_s) }}</span>
                     </div>
                     {% endif %}
                   </div>
-                  <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
-                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-size:11px;padding:3px 8px;">
+                  <div class="st-p04-064">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm st-p04-065">
                       <i class="fas fa-chart-bar"></i> {{ _("Karne") }}
                     </a>
                     {% if can_crud_process or user_can_edit_process_record(current_user, p) %}
-                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit" data-surec-id="{{ p.id }}" data-process-editable="true" style="font-size:11px;padding:3px 8px;">
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit st-p04-065" data-surec-id="{{ p.id }}" data-process-editable="true">
                       <i class="fas fa-pen"></i>
                     </button>
                     {% endif %}
@@ -380,32 +381,32 @@
                 <div class="kb-card">
                   <div class="kb-card-top">
                     <div class="kb-card-name-block">
-                      {% if p.code %}<span style="font-size:10px;font-weight:700;color:#6366f1;font-family:monospace;">{{ p.code }}</span><br>{% endif %}
-                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name" style="text-decoration:none;">{{ p.name }}</a>
+                      {% if p.code %}<span class="st-p04-058">{{ p.code }}</span><br>{% endif %}
+                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name st-p04-059">{{ p.name }}</a>
                     </div>
                     <div class="kb-card-actions">
-                      <span class="kb-card-weight" style="color:#e24b4a;font-weight:700;font-size:13px;">{{ _si }}%</span>
+                      <span class="kb-card-weight st-p04-067">{{ _si }}%</span>
                     </div>
                   </div>
                   <div class="kb-card-divider"></div>
                   <div class="kb-card-meta">
                     <div class="kb-card-meta-item">
-                      <span style="font-size:10px;color:#94a3b8;">{{ _("PG") }}</span>
-                      <span style="font-size:12px;font-weight:600;">{{ p.kpis|length }}</span>
+                      <span class="st-p04-061">{{ _("PG") }}</span>
+                      <span class="st-p04-062">{{ p.kpis|length }}</span>
                     </div>
                     {% if k_vektor_enabled %}
                     <div class="kb-card-meta-item">
-                      <span style="font-size:10px;color:#94a3b8;">{{ _("K-Vektör") }}</span>
-                      <span style="font-size:12px;font-weight:600;color:#6366f1;">{{ '%.1f'|format(_s) }}</span>
+                      <span class="st-p04-061">{{ _("K-Vektör") }}</span>
+                      <span class="st-p04-063">{{ '%.1f'|format(_s) }}</span>
                     </div>
                     {% endif %}
                   </div>
-                  <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
-                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-size:11px;padding:3px 8px;">
+                  <div class="st-p04-064">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm st-p04-065">
                       <i class="fas fa-chart-bar"></i> {{ _("Karne") }}
                     </a>
                     {% if can_crud_process or user_can_edit_process_record(current_user, p) %}
-                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit" data-surec-id="{{ p.id }}" data-process-editable="true" style="font-size:11px;padding:3px 8px;">
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit st-p04-065" data-surec-id="{{ p.id }}" data-process-editable="true">
                       <i class="fas fa-pen"></i>
                     </button>
                     {% endif %}
@@ -417,9 +418,9 @@
           </section>
 
           {# Veri yok #}
-          <section class="kb-col" style="background:#f8fafc;">
+          <section class="kb-col st-p04-068">
             <div class="kb-col-head">
-              <span class="kb-col-dot" style="background:#cbd5e1;"></span>
+              <span class="kb-col-dot st-p04-069"></span>
               <h3 class="kb-col-title">{{ _("Veri yok") }}</h3>
               <span class="kb-col-count">{{ _ns.no_data }}</span>
             </div>
@@ -430,26 +431,26 @@
                 <div class="kb-card">
                   <div class="kb-card-top">
                     <div class="kb-card-name-block">
-                      {% if p.code %}<span style="font-size:10px;font-weight:700;color:#6366f1;font-family:monospace;">{{ p.code }}</span><br>{% endif %}
-                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name" style="text-decoration:none;">{{ p.name }}</a>
+                      {% if p.code %}<span class="st-p04-058">{{ p.code }}</span><br>{% endif %}
+                      <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="kb-card-name st-p04-059">{{ p.name }}</a>
                     </div>
                     <div class="kb-card-actions">
-                      <span class="kb-card-weight" style="color:#94a3b8;font-size:12px;">—</span>
+                      <span class="kb-card-weight st-p04-070">—</span>
                     </div>
                   </div>
                   <div class="kb-card-divider"></div>
                   <div class="kb-card-meta">
                     <div class="kb-card-meta-item">
-                      <span style="font-size:10px;color:#94a3b8;">{{ _("PG") }}</span>
-                      <span style="font-size:12px;font-weight:600;">{{ p.kpis|length }}</span>
+                      <span class="st-p04-061">{{ _("PG") }}</span>
+                      <span class="st-p04-062">{{ p.kpis|length }}</span>
                     </div>
                   </div>
-                  <div style="display:flex;gap:4px;margin-top:8px;flex-wrap:wrap;">
-                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm" style="font-size:11px;padding:3px 8px;">
+                  <div class="st-p04-064">
+                    <a href="{{ url_for('app_bp.surec_karne', process_id=p.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm st-p04-065">
                       <i class="fas fa-chart-bar"></i> {{ _("Karne") }}
                     </a>
                     {% if can_crud_process or user_can_edit_process_record(current_user, p) %}
-                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit" data-surec-id="{{ p.id }}" data-process-editable="true" style="font-size:11px;padding:3px 8px;">
+                    <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm btn-surec-edit st-p04-065" data-surec-id="{{ p.id }}" data-process-editable="true">
                       <i class="fas fa-pen"></i>
                     </button>
                     {% endif %}
@@ -469,17 +470,17 @@
 
     {% else %}
     <div class="mc-card">
-        <div class="mc-empty" style="padding:32px 20px;">
-            <div class="mc-empty-icon"><i class="fas fa-sitemap" style="color:#6366f1;"></i></div>
+        <div class="mc-empty st-p04-071">
+            <div class="mc-empty-icon"><i class="fas fa-sitemap st-p04-004"></i></div>
             <div class="mc-empty-title">{{ _("Görüntülenecek süreç yok") }}</div>
-            <div class="mc-empty-text" style="max-width:520px; margin:0 auto;">
+            <div class="mc-empty-text st-p04-072">
               {% if can_crud_process %}
               {{ _("Süreç haritası, kurumun değer üreten akışlarını (örn. <i>Satış, Üretim, AR-GE, İK</i>) tanımlar. Her sürecin altında <b>Performans Göstergeleri (PG)</b> ile başarısı ölçülür. Tipik bir kurumda 8–15 kök süreç bulunur.") }}
               {% else %}
               {{ _("Size lider veya üye olarak atanan bir süreç olduğunda burada listelenir. Yöneticinizden süreç ataması talep edebilirsiniz.") }}
               {% endif %}
             </div>
-            <div style="display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px;">
+            <div class="st-p04-073">
               {% if can_crud_process %}
               <button type="button" id="btn-surec-add-empty" class="mc-btn mc-btn-primary">
                   <i class="fas fa-plus"></i> {{ _("İlk Süreci Ekle") }}
@@ -497,7 +498,7 @@
 
 {% if can_open_process_modal %}
 <div id="modal-surec-add" class="mc-modal-backdrop mc-surec-modal-backdrop" style="display:none;">
-    <div class="mc-modal mc-surec-new-modal" style="max-width:960px;">
+    <div class="mc-modal mc-surec-new-modal st-p04-074">
         <div class="mc-modal-header">
             <div class="mc-modal-title">
                 <i id="modal-surec-title-icon" class="fas fa-plus-circle" aria-hidden="true"></i>
@@ -519,7 +520,7 @@
 
             <div class="mc-surec-form-grid">
                 <div class="mc-form-group mc-surec-span-2">
-                    <label class="mc-label" for="surec-name"><i class="fas fa-bookmark" style="color:#6366f1;"></i> {{ _("Süreç Adı") }} <span class="mc-text-danger">*</span></label>
+                    <label class="mc-label" for="surec-name"><i class="fas fa-bookmark st-p04-004"></i> {{ _("Süreç Adı") }} <span class="mc-text-danger">*</span></label>
                     <input type="text" id="surec-name" class="mc-input mc-input-lg" placeholder="{{ _('Örn: Satın Alma Süreci') }}">
                 </div>
                 <div class="mc-form-group">
@@ -552,7 +553,7 @@
                     <input type="date" id="surec-first-publish-date" class="mc-input">
                 </div>
                 <div class="mc-form-group mc-surec-span-2">
-                    <label class="mc-label" for="surec-parent-id"><i class="fas fa-sitemap" style="color:#64748b;"></i> {{ _("Üst Süreç (Parent)") }}</label>
+                    <label class="mc-label" for="surec-parent-id"><i class="fas fa-sitemap st-p04-075"></i> {{ _("Üst Süreç (Parent)") }}</label>
                     <select id="surec-parent-id" class="mc-select">
                         <option value="">{{ _("— Bağımsız (Üst Süreç Yok) —") }}</option>
                         {% for p, depth in parent_options_with_depth %}
@@ -561,11 +562,11 @@
                     </select>
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-start-boundary"><i class="fas fa-arrow-right-to-bracket" style="color:#10b981;"></i> {{ _("Başlangıç Sınırı") }}</label>
+                    <label class="mc-label" for="surec-start-boundary"><i class="fas fa-arrow-right-to-bracket st-p04-076"></i> {{ _("Başlangıç Sınırı") }}</label>
                     <textarea id="surec-start-boundary" class="mc-textarea" rows="2" placeholder="{{ _('Sürecin başlangıç noktası...') }}"></textarea>
                 </div>
                 <div class="mc-form-group">
-                    <label class="mc-label" for="surec-end-boundary"><i class="fas fa-arrow-left-to-bracket" style="color:#ef4444;"></i> {{ _("Bitiş Sınırı") }}</label>
+                    <label class="mc-label" for="surec-end-boundary"><i class="fas fa-arrow-left-to-bracket st-p04-077"></i> {{ _("Bitiş Sınırı") }}</label>
                     <textarea id="surec-end-boundary" class="mc-textarea" rows="2" placeholder="{{ _('Sürecin bitiş noktası...') }}"></textarea>
                 </div>
                 <div class="mc-form-group mc-surec-span-2">
@@ -582,7 +583,7 @@
                         <span class="mc-text-danger">*</span>{% if not k_vektor_enabled %} {{ _("(en az bir)") }}{% endif %}
                     </label>
                     {% if k_vektor_enabled %}
-                    <p class="mc-empty-text" style="margin:0 0 8px;font-size:12px;line-height:1.45;">
+                    <p class="mc-empty-text st-p04-078">
                         {{ _("Seçili her alt strateji için <strong>katkı %%</strong> girin; toplam en fazla 100 olmalıdır. Ana/alt strateji <strong>ham ağırlıkları</strong> Stratejik Planlama (/sp) sayfasındadır.") }}
                     </p>
                     {% endif %}
@@ -591,7 +592,7 @@
             </div>
 
             <div class="mc-surec-pick-card mc-surec-pick-card--leaders">
-                <div class="mc-surec-pick-card-head"><i class="fas fa-star" style="margin-right:6px;"></i>{{ _("Süreç Liderleri") }}</div>
+                <div class="mc-surec-pick-card-head"><i class="fas fa-star st-p04-079"></i>{{ _("Süreç Liderleri") }}</div>
                 <div class="mc-surec-pick-card-body">
                     <div class="mc-surec-dual-row">
                         <div class="mc-surec-dual-col">

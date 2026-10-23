@@ -2,6 +2,24 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-322 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P6 — inline style= → sınıf, 31 ağır sayfa; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P6: ağır şablonlarda satır içi `style=` → harici sınıf (UX-G); 4554 → 2630
+**Modül:** şablonlar (31), CSS (31 yeni `g_*.css`), test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/**` (31 sayfa: k_rapor/index, masaustu/index, sp/exec_dashboard, surec/index, admin/loglar … k_radar/kp) → `style=` sınıfa, `{% block extra_css %}` ile `g_*.css` bağlandı
+- `ui/static/platform/css/g_*.css` (31 yeni) → üretilen sınıflar (`.x.x` özgüllük taklidi)
+- `tests/test_inline_stil_sayfalar.py` → yeni; toplam inline sayısı BASELINE=2630 (yalnız küçülür), CSS bağlı/dengeli
+
+### Yapılan İşlem
+`g_arac.py` ile dönüşüm, her sayfa `dogrula.py` ile HEAD'e karşı etiket-etiket **efektif stil eşitliği** doğrulandı (31/31 ESIT). Ek olarak `#id` CSS kuralı ile özgüllük çakışması taraması yapıldı: 1 gerçek çakışma bulundu (`masaustu/index.html` `#masaustu-calendar` min-height 420px inline vs masaustu.css 520px) ve o öğe inline bırakıldı.
+
+### Notlar
+- Bilinçli inline kalanlar: `display:none/visibility/opacity:0` (JS açar), Jinja'lı, `url()`, `!important`. Kalan 2630'un çoğu 129 küçük sayfada; devam edilecekse aynı araç.
+- Aracın görmediği risk: sınıf kuralı yerine inline'ı ezen çok-seçicili (`.a .b`, özgüllük ≥ 0,3,0) mevcut CSS kuralları. Tarayıcı taramasıyla (koyu tema dahil) gözle bakılmalı.
+
 ## TASK-317 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P1 — CSS/mobil/kontrast/odak; yalnız Yerel; commit yok)
 
 **Görev:** KalDer P1 paketi: WCAG kontrast token'ları, mobil taşma, kenar çubuğu odak halkası, 16px mobil alan

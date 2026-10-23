@@ -1,0 +1,27 @@
+/* Üretildi: inline style= → sınıf (UX-PLANI G devam). Görünüm değişmez; .x.x = inline stilin özgüllüğünü taklit eder. */
+.st-p12-001.st-p12-001 { max-width:1400px; margin:0 auto; }
+.st-p12-002.st-p12-002 { margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap: var(--space-3); }
+.st-p12-003.st-p12-003 { font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1); letter-spacing:-0.01em; }
+.st-p12-004.st-p12-004 { color: var(--color-primary); margin-right: var(--space-2); }
+.st-p12-005.st-p12-005 { font-size: var(--text-md); color: var(--text-subtle); margin:0; }
+.st-p12-006.st-p12-006 { padding: var(--space-6); margin-bottom: var(--space-6); background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #312e81 100%); color:#fff; border:none; box-shadow: var(--shadow-lg); border-radius:12px; position:relative; overflow:hidden; }
+.st-p12-007.st-p12-007 { position:absolute; right:-40px; top:-40px; width:240px; height:240px; background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%); pointer-events:none; }
+.st-p12-008.st-p12-008 { display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: var(--space-6); position:relative; }
+.st-p12-009.st-p12-009 { flex:1; min-width:240px; }
+.st-p12-010.st-p12-010 { font-size: var(--text-display); font-weight:800; line-height:1; margin: var(--space-2) 0; letter-spacing:-0.02em; }
+.st-p12-011.st-p12-011 { display:grid; grid-template-columns:repeat(4, auto); gap: var(--space-8); font-size: var(--text-sm); }
+.st-p12-012.st-p12-012 { font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1); }
+.st-p12-013.st-p12-013 { display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6); }
+.st-p12-014.st-p12-014 { padding: var(--space-4); border-left:4px solid var(--color-danger); }
+.st-p12-015.st-p12-015 { font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600; }
+.st-p12-016.st-p12-016 { font-size: var(--text-3xl); font-weight:700; color: var(--color-danger); line-height:1.1; margin-top: var(--space-2); }
+.st-p12-017.st-p12-017 { font-size: var(--text-sm); color: var(--text-subtle); }
+.st-p12-018.st-p12-018 { padding: var(--space-4); border-left:4px solid var(--color-warning); }
+.st-p12-019.st-p12-019 { font-size: var(--text-3xl); font-weight:700; color: var(--text-strong); line-height:1.1; margin-top: var(--space-2); }
+.st-p12-020.st-p12-020 { padding: var(--space-5); margin-bottom: var(--space-6); }
+.st-p12-021.st-p12-021 { margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong); }
+.st-p12-022.st-p12-022 { color: var(--color-primary); }
+.st-p12-023.st-p12-023 { margin: var(--space-6) 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong); }
+.st-p12-024.st-p12-024 { font-size: var(--text-sm); color: var(--text-subtle); font-weight:400; }
+.st-p12-025.st-p12-025 { padding:30px; text-align:center; color: var(--text-subtle); }
+.st-p12-026.st-p12-026 { display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4); }

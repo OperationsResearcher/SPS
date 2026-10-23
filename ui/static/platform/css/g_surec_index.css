@@ -1,0 +1,80 @@
+/* Üretildi: inline style= → sınıf (UX-PLANI G devam). Görünüm değişmez; .x.x = inline stilin özgüllüğünü taklit eder. */
+.st-p04-001.st-p04-001 { max-width:1240px; margin:0 auto; }
+.st-p04-002.st-p04-002 { margin-bottom:16px; }
+.st-p04-003.st-p04-003 { font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px; }
+.st-p04-004.st-p04-004 { color:#6366f1; }
+.st-p04-005.st-p04-005 { font-size:13px;color:#64748b;margin:0; }
+.st-p04-006.st-p04-006 { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.st-p04-007.st-p04-007 { display:flex; align-items:center; gap:6px; font-size:12.5px; color:#475569; }
+.st-p04-008.st-p04-008 { padding:5px 10px; font-size:13px; min-width:140px; }
+.st-p04-009.st-p04-009 { display:flex; border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; }
+.st-p04-010.st-p04-010 { border-radius:0; border:none; padding:6px 14px; }
+.st-p04-011.st-p04-011 { border-radius:0; border:none; border-left:1px solid #e2e8f0; padding:6px 14px; }
+.st-p04-012.st-p04-012 { display:grid;grid-template-columns:repeat(auto-fit,minmax(160px,1fr));gap:10px;margin-bottom:18px; }
+.st-p04-013.st-p04-013 { background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1; }
+.st-p04-014.st-p04-014 { font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em; }
+.st-p04-015.st-p04-015 { font-size:24px;font-weight:800;color:#0f172a;margin-top:4px; }
+.st-p04-016.st-p04-016 { font-size:11px;color:#64748b;margin-top:2px; }
+.st-p04-017.st-p04-017 { background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #0ea5e9; }
+.st-p04-018.st-p04-018 { background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #10b981; }
+.st-p04-019.st-p04-019 { font-size:24px;font-weight:800;color:#10b981;margin-top:4px; }
+.st-p04-020.st-p04-020 { background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #8b5cf6; }
+.st-p04-021.st-p04-021 { font-size:18px;color:#8b5cf6; }
+.st-p04-022.st-p04-022 { display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap; }
+.st-p04-023.st-p04-023 { position:relative; flex:1; min-width:240px; max-width:420px; }
+.st-p04-024.st-p04-024 { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px; }
+.st-p04-025.st-p04-025 { padding:8px 12px 8px 34px; font-size:13px; width:100%; }
+.st-p04-026.st-p04-026 { padding:7px 10px; font-size:13px; }
+.st-p04-027.st-p04-027 { font-size:12px; color:#64748b; margin-left:auto; }
+.st-p04-028.st-p04-028 { margin-bottom:18px; }
+.st-p04-029.st-p04-029 { flex-wrap:wrap; gap:10px; }
+.st-p04-030.st-p04-030 { color:#6366f1; margin-right:6px; }
+.st-p04-031.st-p04-031 { display:flex; align-items:center; gap:6px; flex-wrap:wrap; font-size:12px; }
+.st-p04-032.st-p04-032 { display:inline-flex; align-items:center; gap:5px; background:#ecfdf5; color:#047857; border:1px solid #a7f3d0; padding:3px 9px; border-radius:999px; font-weight:600; }
+.st-p04-033.st-p04-033 { width:8px; height:8px; border-radius:50%; background:#10b981; }
+.st-p04-034.st-p04-034 { display:inline-flex; align-items:center; gap:5px; background:#fffbeb; color:#b45309; border:1px solid #fde68a; padding:3px 9px; border-radius:999px; font-weight:600; }
+.st-p04-035.st-p04-035 { width:8px; height:8px; border-radius:50%; background:#f59e0b; }
+.st-p04-036.st-p04-036 { display:inline-flex; align-items:center; gap:5px; background:#fef2f2; color:#b91c1c; border:1px solid #fecaca; padding:3px 9px; border-radius:999px; font-weight:600; }
+.st-p04-037.st-p04-037 { width:8px; height:8px; border-radius:50%; background:#ef4444; }
+.st-p04-038.st-p04-038 { display:inline-flex; align-items:center; gap:5px; background:#f8fafc; color:#64748b; border:1px solid #e2e8f0; padding:3px 9px; border-radius:999px; font-weight:600; }
+.st-p04-039.st-p04-039 { width:8px; height:8px; border-radius:50%; background:#cbd5e1; }
+.st-p04-040.st-p04-040 { display:flex; flex-direction:column; gap:10px; }
+.st-p04-041.st-p04-041 { display:flex; align-items:center; gap:12px; padding:14px 18px; }
+.st-p04-042.st-p04-042 { width:3px; height:36px; background:linear-gradient(180deg,#6366f1,#8b5cf6); border-radius:2px; flex-shrink:0; }
+.st-p04-043.st-p04-043 { font-family:monospace; font-size:12px; flex-shrink:0; }
+.st-p04-044.st-p04-044 { flex:1; min-width:0; }
+.st-p04-045.st-p04-045 { font-size:14px; font-weight:600; color:var(--text-default); display:block; white-space:nowrap; overflow:hidden; text-overflow:ellipsis; text-decoration:none; }
+.st-p04-046.st-p04-046 { display:flex; align-items:center; gap:12px; margin-top:6px; }
+.st-p04-047.st-p04-047 { font-size:11.5px; color:#94a3b8; }
+.st-p04-048.st-p04-048 { flex-shrink:0; }
+.st-p04-049.st-p04-049 { width:80px; }
+.st-p04-050.st-p04-050 { font-size:11.5px; color:#64748b; }
+.st-p04-051.st-p04-051 { font-size:11px; color:#6366f1; font-weight:600; display:flex; align-items:center; gap:4px; }
+.st-p04-052.st-p04-052 { font-size:10px; }
+.st-p04-053.st-p04-053 { font-size:11px; }
+.st-p04-054.st-p04-054 { display:flex; align-items:center; gap:6px; flex-shrink:0; flex-wrap:wrap; }
+.st-p04-055.st-p04-055 { padding:0 18px 14px; display:flex; flex-direction:column; gap:8px; }
+.st-p04-056.st-p04-056 { padding:0; }
+.st-p04-057.st-p04-057 { grid-template-columns:repeat(4,minmax(0,1fr)); }
+.st-p04-058.st-p04-058 { font-size:10px;font-weight:700;color:#6366f1;font-family:monospace; }
+.st-p04-059.st-p04-059 { text-decoration:none; }
+.st-p04-060.st-p04-060 { color:#1d9e75;font-weight:700;font-size:13px; }
+.st-p04-061.st-p04-061 { font-size:10px;color:#94a3b8; }
+.st-p04-062.st-p04-062 { font-size:12px;font-weight:600; }
+.st-p04-063.st-p04-063 { font-size:12px;font-weight:600;color:#6366f1; }
+.st-p04-064.st-p04-064 { display:flex;gap:4px;margin-top:8px;flex-wrap:wrap; }
+.st-p04-065.st-p04-065 { font-size:11px;padding:3px 8px; }
+.st-p04-066.st-p04-066 { color:#ef9f27;font-weight:700;font-size:13px; }
+.st-p04-067.st-p04-067 { color:#e24b4a;font-weight:700;font-size:13px; }
+.st-p04-068.st-p04-068 { background:#f8fafc; }
+.st-p04-069.st-p04-069 { background:#cbd5e1; }
+.st-p04-070.st-p04-070 { color:#94a3b8;font-size:12px; }
+.st-p04-071.st-p04-071 { padding:32px 20px; }
+.st-p04-072.st-p04-072 { max-width:520px; margin:0 auto; }
+.st-p04-073.st-p04-073 { display:flex; gap:8px; justify-content:center; flex-wrap:wrap; margin-top:14px; }
+.st-p04-074.st-p04-074 { max-width:960px; }
+.st-p04-075.st-p04-075 { color:#64748b; }
+.st-p04-076.st-p04-076 { color:#10b981; }
+.st-p04-077.st-p04-077 { color:#ef4444; }
+.st-p04-078.st-p04-078 { margin:0 0 8px;font-size:12px;line-height:1.45; }
+.st-p04-079.st-p04-079 { margin-right:6px; }

@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="sp_vrio">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_sp_vrio.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
@@ -11,17 +12,17 @@
 {% endblock %}
 
 {% block content %}
-<div style="max-width:1200px;margin:0 auto;"
+<div class="st-p16-001"
      id="vrio-root"
      data-url="{{ url_for('app_bp.sp_api_vrio_list') }}"
      data-create-url="{{ url_for('app_bp.sp_api_vrio_create') }}">
 
-  <div class="mc-page-header" style="margin-bottom:16px;display:flex;justify-content:space-between;align-items:center;flex-wrap:wrap;gap:12px;">
+  <div class="mc-page-header st-p16-002">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
+      <h2 class="st-p16-003">
         <i class="fas fa-gem"></i> {{ _("VRIO Analizi") }}
       </h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">
+      <p class="st-p16-004">
         {{ _("Barney çerçevesi — kurumunuzun kaynak ve yeteneklerini 4 soru ile sınıflandırıp <b>rekabet avantajı tipini</b> belirler.") }}
       </p>
     </div>
@@ -29,38 +30,38 @@
   </div>
 
   <!-- VRIO Açıklama Kartları -->
-  <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:10px;margin-bottom:16px;">
-    <div class="mc-card mc-card--accent-info" style="padding:12px" data-card-code="sp_vrio.aciklama_degerli">
-      <div class="mc-card-title" style="font-weight:700;color:#0ea5e9;font-size:13px;">{{ _("V — Değerli mi?") }}</div>
-      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">{{ _("Bu kaynak müşteri için değer yaratıyor mu? Bir tehdidi azaltıyor veya fırsatı kullanmaya yarıyor mu?") }}</div>
+  <div class="st-p16-005">
+    <div class="mc-card mc-card--accent-info st-p16-006" data-card-code="sp_vrio.aciklama_degerli">
+      <div class="mc-card-title st-p16-007">{{ _("V — Değerli mi?") }}</div>
+      <div class="st-p16-008">{{ _("Bu kaynak müşteri için değer yaratıyor mu? Bir tehdidi azaltıyor veya fırsatı kullanmaya yarıyor mu?") }}</div>
     </div>
-    <div class="mc-card mc-card--accent-info" style="padding:12px" data-card-code="sp_vrio.aciklama_nadir">
-      <div class="mc-card-title" style="font-weight:700;color:#8b5cf6;font-size:13px;">{{ _("R — Nadir mi?") }}</div>
-      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">{{ _("Rakiplerin çoğunda bu kaynak yok mu? Az sayıda firma bu kaynağa sahip mi?") }}</div>
+    <div class="mc-card mc-card--accent-info st-p16-006" data-card-code="sp_vrio.aciklama_nadir">
+      <div class="mc-card-title st-p16-009">{{ _("R — Nadir mi?") }}</div>
+      <div class="st-p16-008">{{ _("Rakiplerin çoğunda bu kaynak yok mu? Az sayıda firma bu kaynağa sahip mi?") }}</div>
     </div>
-    <div class="mc-card mc-card--accent-warning" style="padding:12px" data-card-code="sp_vrio.aciklama_taklit_edilemez">
-      <div class="mc-card-title" style="font-weight:700;color:#f59e0b;font-size:13px;">{{ _("I — Taklit Edilemez mi?") }}</div>
-      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">{{ _("Rakipler kopyalamaya çalışsa zorlanır mı? (yüksek maliyet, hukuki engel, kültürel bağ)") }}</div>
+    <div class="mc-card mc-card--accent-warning st-p16-006" data-card-code="sp_vrio.aciklama_taklit_edilemez">
+      <div class="mc-card-title st-p16-010">{{ _("I — Taklit Edilemez mi?") }}</div>
+      <div class="st-p16-008">{{ _("Rakipler kopyalamaya çalışsa zorlanır mı? (yüksek maliyet, hukuki engel, kültürel bağ)") }}</div>
     </div>
-    <div class="mc-card mc-card--accent-success" style="padding:12px" data-card-code="sp_vrio.aciklama_organize">
-      <div class="mc-card-title" style="font-weight:700;color:#059669;font-size:13px;">{{ _("O — Organize mi?") }}</div>
-      <div style="font-size:11.5px;color:#64748b;margin-top:3px;">{{ _("Kurum bu kaynağı sömürmek için süreç, yapı ve sistemlere sahip mi?") }}</div>
+    <div class="mc-card mc-card--accent-success st-p16-006" data-card-code="sp_vrio.aciklama_organize">
+      <div class="mc-card-title st-p16-011">{{ _("O — Organize mi?") }}</div>
+      <div class="st-p16-008">{{ _("Kurum bu kaynağı sömürmek için süreç, yapı ve sistemlere sahip mi?") }}</div>
     </div>
   </div>
 
-  <div class="mc-card" style="padding:14px;overflow:auto;" data-card-code="sp_vrio.kaynak_tablosu">
-    <div class="mc-card-title" style="font-size:13px;font-weight:700;color:var(--text-default);margin-bottom:8px;">{{ _("Kaynak / Yetenek Listesi") }}</div>
-    <table id="vrio-tbl" style="width:100%;border-collapse:collapse;font-size:13px;">
+  <div class="mc-card st-p16-012" data-card-code="sp_vrio.kaynak_tablosu">
+    <div class="mc-card-title st-p16-013">{{ _("Kaynak / Yetenek Listesi") }}</div>
+    <table class="st-p16-014" id="vrio-tbl">
       <thead>
-        <tr style="background:#f1f5f9;">
-          <th style="padding:8px;text-align:left;">{{ _("Kaynak") }}</th>
-          <th style="padding:8px;text-align:left;">{{ _("Kategori") }}</th>
-          <th style="padding:8px;text-align:center;" title="{{ _('Değerli mi?') }}">V</th>
-          <th style="padding:8px;text-align:center;" title="{{ _('Nadir mi?') }}">R</th>
-          <th style="padding:8px;text-align:center;" title="{{ _('Taklit Edilemez mi?') }}">I</th>
-          <th style="padding:8px;text-align:center;" title="{{ _('Organize mi?') }}">O</th>
-          <th style="padding:8px;text-align:left;">{{ _("Sonuç") }}</th>
-          <th style="padding:8px;text-align:center;">{{ _("İşlem") }}</th>
+        <tr class="st-p16-015">
+          <th class="st-p16-016">{{ _("Kaynak") }}</th>
+          <th class="st-p16-016">{{ _("Kategori") }}</th>
+          <th class="st-p16-017" title="{{ _('Değerli mi?') }}">V</th>
+          <th class="st-p16-017" title="{{ _('Nadir mi?') }}">R</th>
+          <th class="st-p16-017" title="{{ _('Taklit Edilemez mi?') }}">I</th>
+          <th class="st-p16-017" title="{{ _('Organize mi?') }}">O</th>
+          <th class="st-p16-016">{{ _("Sonuç") }}</th>
+          <th class="st-p16-017">{{ _("İşlem") }}</th>
         </tr>
       </thead>
       <tbody id="vrio-body"></tbody>
@@ -68,14 +69,14 @@
   </div>
 
   <!-- Sınıflandırma Açıklama -->
-  <div class="mc-card" style="padding:14px;margin-top:16px;" data-card-code="sp_vrio.sonuc_siniflandirmasi">
-    <h4 class="mc-card-title" style="margin:0 0 10px;font-size:14px;color:#0f172a;">📊 {{ _("Sonuç Sınıflandırması") }}</h4>
-    <div style="display:grid;grid-template-columns:repeat(auto-fit,minmax(200px,1fr));gap:10px;font-size:12px;">
-      <div><span style="background:#dc2626;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Rekabetçi Dezavantaj") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("Değerli değil → kaynak iş yaramıyor.") }}</div></div>
-      <div><span style="background:#94a3b8;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Rekabet Paritesi") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("Değerli ama nadir değil → herkeste var.") }}</div></div>
-      <div><span style="background:#0ea5e9;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Geçici Rekabet Avantajı") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("Değerli + nadir ama taklit edilebilir.") }}</div></div>
-      <div><span style="background:#f59e0b;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Kullanılmayan Avantaj") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("VRI ✓ ama organizasyon eksik — potansiyel kaybediliyor.") }}</div></div>
-      <div><span style="background:#059669;color:#fff;padding:2px 8px;border-radius:4px;font-weight:600;">{{ _("Sürdürülebilir Rekabet Avantajı") }}</span><div style="color:#64748b;margin-top:4px;">{{ _("VRIO ✓✓✓✓ — kurumsal kale.") }}</div></div>
+  <div class="mc-card st-p16-018" data-card-code="sp_vrio.sonuc_siniflandirmasi">
+    <h4 class="mc-card-title st-p16-019">📊 {{ _("Sonuç Sınıflandırması") }}</h4>
+    <div class="st-p16-020">
+      <div><span class="st-p16-021">{{ _("Rekabetçi Dezavantaj") }}</span><div class="st-p16-022">{{ _("Değerli değil → kaynak iş yaramıyor.") }}</div></div>
+      <div><span class="st-p16-023">{{ _("Rekabet Paritesi") }}</span><div class="st-p16-022">{{ _("Değerli ama nadir değil → herkeste var.") }}</div></div>
+      <div><span class="st-p16-024">{{ _("Geçici Rekabet Avantajı") }}</span><div class="st-p16-022">{{ _("Değerli + nadir ama taklit edilebilir.") }}</div></div>
+      <div><span class="st-p16-025">{{ _("Kullanılmayan Avantaj") }}</span><div class="st-p16-022">{{ _("VRI ✓ ama organizasyon eksik — potansiyel kaybediliyor.") }}</div></div>
+      <div><span class="st-p16-026">{{ _("Sürdürülebilir Rekabet Avantajı") }}</span><div class="st-p16-022">{{ _("VRIO ✓✓✓✓ — kurumsal kale.") }}</div></div>
     </div>
   </div>
 </div>

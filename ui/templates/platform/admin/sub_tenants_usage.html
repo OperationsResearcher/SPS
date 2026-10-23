@@ -6,22 +6,26 @@
     {{ mc_breadcrumb([{'label': _('Yönetim Paneli'), 'url': url_for('app_bp.yonetim_paneli')}, {'label': _('Alt Kurum Kullanımı'), 'url': None}]) }}
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_admin_sub_tenants_usage.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
 {% block content %}
-<div style="max-width:1400px; margin:0 auto;"
+<div class="st-p14-001"
      id="usage-root"
      data-api-url="{{ url_for('app_bp.admin_api_sub_tenants_usage') }}"
      data-export-url="{{ url_for('app_bp.admin_api_sub_tenants_usage_export') }}"
      {% if parent and is_platform_admin %}data-parent-id="{{ parent.id }}"{% endif %}>
 
-  <div class="mc-page-header" style="margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap: var(--space-3);">
+  <div class="mc-page-header st-p14-002">
     <div>
-      <h2 style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1);">
-        <i class="fas fa-file-invoice-dollar" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
+      <h2 class="st-p14-003">
+        <i class="fas fa-file-invoice-dollar st-p14-004"></i>
         {{ _("Konsolide Kullanım Raporu") }}
       </h2>
-      <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;" id="usage-subtitle">—</p>
+      <p class="st-p14-005" id="usage-subtitle">—</p>
     </div>
-    <div style="display:flex; gap: var(--space-2);">
+    <div class="st-p14-006">
       <a href="{{ url_for('app_bp.admin_sub_tenants_page') }}" class="mc-btn mc-btn-secondary">
         <i class="fas fa-arrow-left"></i> {{ _("Geri") }}
       </a>
@@ -34,52 +38,52 @@
   {# Hero — toplam özet #}
   <div class="mc-card" id="hero-card" data-card-code="admin_sub_tenants_usage.ozet_toplam" style="padding: var(--space-5); margin-bottom: var(--space-5);
        background: linear-gradient(135deg, #1e293b, #312e81); color:#fff; border:none; display:none;">
-    <div style="display:flex; justify-content:space-between; flex-wrap:wrap; gap: var(--space-6); align-items:center;">
+    <div class="st-p14-007">
       <div>
         <div class="mc-stat-label" style="font-size:11px; opacity:0.7; text-transform:uppercase; letter-spacing:0.06em;" id="hero-period">{{ _("Bu Ay") }}</div>
-        <div id="hero-parent" style="font-size:22px; font-weight:700;">—</div>
+        <div class="st-p14-008" id="hero-parent">—</div>
       </div>
-      <div style="display:grid; grid-template-columns:repeat(5, auto); gap: var(--space-6); font-size:13px;">
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("Kurum") }}</div><div id="h-tcount" style="font-size:22px; font-weight:700;">—</div></div>
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("Kullanıcı") }}</div><div id="h-users" style="font-size:22px; font-weight:700;">—</div></div>
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("KPI") }}</div><div id="h-kpi" style="font-size:22px; font-weight:700;">—</div></div>
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("LLM Çağrı") }}</div><div id="h-llm" style="font-size:22px; font-weight:700;">—</div></div>
-        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("LLM USD") }}</div><div id="h-cost" style="font-size:22px; font-weight:700;">—</div></div>
+      <div class="st-p14-009">
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("Kurum") }}</div><div class="st-p14-008" id="h-tcount">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("Kullanıcı") }}</div><div class="st-p14-008" id="h-users">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("KPI") }}</div><div class="st-p14-008" id="h-kpi">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("LLM Çağrı") }}</div><div class="st-p14-008" id="h-llm">—</div></div>
+        <div><div style="opacity:0.6; text-transform:uppercase; font-size:10px;">{{ _("LLM USD") }}</div><div class="st-p14-008" id="h-cost">—</div></div>
       </div>
     </div>
   </div>
 
   {# Paket dağılımı #}
   <div class="mc-card" id="pkg-card" data-card-code="admin_sub_tenants_usage.paket_dagilimi" style="padding: var(--space-5); margin-bottom: var(--space-5); display:none;">
-    <h3 class="mc-card-title" style="margin:0 0 var(--space-3); font-size: var(--text-lg);">
-      <i class="fas fa-box" style="color: var(--color-primary);"></i> {{ _("Paket Dağılımı") }}
+    <h3 class="mc-card-title st-p14-010">
+      <i class="fas fa-box st-p14-011"></i> {{ _("Paket Dağılımı") }}
     </h3>
     <div id="pkg-bars"></div>
   </div>
 
   {# Loading #}
-  <div id="loading" style="padding:30px; text-align:center; color: var(--text-subtle);">
+  <div class="st-p14-012" id="loading">
     <i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}
   </div>
 
   {# Detay tablo #}
   <div class="mc-card" id="table-card" data-card-code="admin_sub_tenants_usage.detay_tablosu" style="padding:0; display:none;">
-    <div class="mc-stat-label" style="font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color: var(--text-subtle); padding: var(--space-3) var(--space-3) 0;">{{ _("Alt Kurum Detayı") }}</div>
-    <div class="mc-table-wrap" style="overflow-x:auto;">
-      <table class="mc-table" style="width:100%; font-size:12px;">
+    <div class="mc-stat-label st-p14-013">{{ _("Alt Kurum Detayı") }}</div>
+    <div class="mc-table-wrap st-p14-014">
+      <table class="mc-table st-p14-015">
         <thead>
-          <tr style="background:#f1f5f9;">
-            <th style="text-align:left;">{{ _("Kurum") }}</th>
+          <tr class="st-p14-016">
+            <th class="st-p14-017">{{ _("Kurum") }}</th>
             <th>{{ _("Paket") }}</th>
-            <th style="text-align:center;">{{ _("Kullanıcı") }}</th>
-            <th style="text-align:center;">{{ _("Doluluk") }}</th>
-            <th style="text-align:center;">{{ _("KPI") }}</th>
-            <th style="text-align:center;">{{ _("Girişim") }}</th>
-            <th style="text-align:center;">{{ _("Plan Yılı") }}</th>
-            <th style="text-align:right;">{{ _("LLM Çağrı (ay)") }}</th>
-            <th style="text-align:right;">{{ _("LLM Token (ay)") }}</th>
-            <th style="text-align:right;">{{ _("USD") }}</th>
-            <th style="text-align:center;">{{ _("Durum") }}</th>
+            <th class="st-p14-018">{{ _("Kullanıcı") }}</th>
+            <th class="st-p14-018">{{ _("Doluluk") }}</th>
+            <th class="st-p14-018">{{ _("KPI") }}</th>
+            <th class="st-p14-018">{{ _("Girişim") }}</th>
+            <th class="st-p14-018">{{ _("Plan Yılı") }}</th>
+            <th class="st-p14-019">{{ _("LLM Çağrı (ay)") }}</th>
+            <th class="st-p14-019">{{ _("LLM Token (ay)") }}</th>
+            <th class="st-p14-019">{{ _("USD") }}</th>
+            <th class="st-p14-018">{{ _("Durum") }}</th>
           </tr>
         </thead>
         <tbody id="usage-tbody"></tbody>

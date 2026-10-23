@@ -9,15 +9,19 @@
     ]) }}
 {% endblock %}
 
-{% block content %}
-<div style="max-width:1240px; margin:0 auto;" id="pgx-root">
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_raporlar_pg_proje_etki.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
 
-  <div class="mc-page-header" style="margin-bottom:16px;">
+{% block content %}
+<div class="st-p20-001" id="pgx-root">
+
+  <div class="mc-page-header st-p20-002">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-diagram-project" style="color:#6366f1;"></i> {{ _("PG × Proje Çapraz Etki Analizi") }}
+      <h2 class="st-p20-003">
+        <i class="fas fa-diagram-project st-p20-004"></i> {{ _("PG × Proje Çapraz Etki Analizi") }}
       </h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">
+      <p class="st-p20-005">
         {{ _("Hangi projeler hangi PG'leri etkiliyor? Proje → bağlı süreç(ler) → o süreçlerdeki PG performansı") }}
       </p>
     </div>
@@ -26,19 +30,19 @@
     </button>
   </div>
 
-  <div class="mc-card mc-card--accent-info" data-card-code="raporlar_pg_proje_etki.nasil_okunur" style="padding:12px 16px; margin-bottom:14px; background:#eef2ff">
-    <div class="mc-card-title" style="font-size:10.5px; color:#3730a3; text-transform:uppercase; font-weight:600; margin-bottom:4px;">{{ _("Nasıl Okunur") }}</div>
-    <div style="font-size:12.5px; color:#3730a3; line-height:1.5;">
+  <div class="mc-card mc-card--accent-info st-p20-006" data-card-code="raporlar_pg_proje_etki.nasil_okunur">
+    <div class="mc-card-title st-p20-007">{{ _("Nasıl Okunur") }}</div>
+    <div class="st-p20-008">
       {{ _('<b>Nasıl okunur?</b> Her satır bir projedir. Sağdaki "PG hedef üstü %%" sütunu, o projeye bağlı tüm süreçlerdeki PG\'lerin ne kadarının hedef üstünde olduğunu özetler. Satırı genişletip etkilenen süreç ve PG sayılarını görebilirsiniz. "0 PG" olan projeler, herhangi bir süreçle bağlı değildir.') }}
     </div>
   </div>
 
-  <div id="pgx-summary" data-card-code="raporlar_pg_proje_etki.ozet_kartlari" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(160px,1fr)); gap:10px; margin-bottom:16px;"></div>
+  <div class="st-p20-009" id="pgx-summary" data-card-code="raporlar_pg_proje_etki.ozet_kartlari"></div>
 
-  <div class="mc-card" data-card-code="raporlar_pg_proje_etki.proje_listesi" style="padding:0;">
-    <div class="mc-card-title" style="padding:10px 14px 0; font-size:10.5px; color:#64748b; text-transform:uppercase; font-weight:600;">{{ _("Proje Listesi") }}</div>
-    <div id="pgx-list-wrap" style="overflow-x:auto;">
-      <div style="text-align:center; padding:40px; color:#94a3b8;"><i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}</div>
+  <div class="mc-card st-p20-010" data-card-code="raporlar_pg_proje_etki.proje_listesi">
+    <div class="mc-card-title st-p20-011">{{ _("Proje Listesi") }}</div>
+    <div class="st-p20-012" id="pgx-list-wrap">
+      <div class="st-p20-013"><i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}</div>
     </div>
   </div>
 </div>

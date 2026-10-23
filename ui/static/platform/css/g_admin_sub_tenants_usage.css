@@ -1,0 +1,20 @@
+/* Üretildi: inline style= → sınıf (UX-PLANI G devam). Görünüm değişmez; .x.x = inline stilin özgüllüğünü taklit eder. */
+.st-p14-001.st-p14-001 { max-width:1400px; margin:0 auto; }
+.st-p14-002.st-p14-002 { margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap: var(--space-3); }
+.st-p14-003.st-p14-003 { font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1); }
+.st-p14-004.st-p14-004 { color: var(--color-primary); margin-right: var(--space-2); }
+.st-p14-005.st-p14-005 { font-size: var(--text-md); color: var(--text-subtle); margin:0; }
+.st-p14-006.st-p14-006 { display:flex; gap: var(--space-2); }
+.st-p14-007.st-p14-007 { display:flex; justify-content:space-between; flex-wrap:wrap; gap: var(--space-6); align-items:center; }
+.st-p14-008.st-p14-008 { font-size:22px; font-weight:700; }
+.st-p14-009.st-p14-009 { display:grid; grid-template-columns:repeat(5, auto); gap: var(--space-6); font-size:13px; }
+.st-p14-010.st-p14-010 { margin:0 0 var(--space-3); font-size: var(--text-lg); }
+.st-p14-011.st-p14-011 { color: var(--color-primary); }
+.st-p14-012.st-p14-012 { padding:30px; text-align:center; color: var(--text-subtle); }
+.st-p14-013.st-p14-013 { font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color: var(--text-subtle); padding: var(--space-3) var(--space-3) 0; }
+.st-p14-014.st-p14-014 { overflow-x:auto; }
+.st-p14-015.st-p14-015 { width:100%; font-size:12px; }
+.st-p14-016.st-p14-016 { background:#f1f5f9; }
+.st-p14-017.st-p14-017 { text-align:left; }
+.st-p14-018.st-p14-018 { text-align:center; }
+.st-p14-019.st-p14-019 { text-align:right; }

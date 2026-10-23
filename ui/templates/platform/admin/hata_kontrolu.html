@@ -6,8 +6,12 @@
     {{ mc_breadcrumb([{'label': _('Admin Araçları'), 'url': url_for('app_bp.admin_tools_home')}, {'label': _('Hata Kontrolü'), 'url': None}]) }}
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_admin_hata_kontrolu.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
 {% block content %}
-<div style="max-width:1000px;margin:0 auto;"
+<div class="st-p06-001"
      id="hk-root"
      data-durum-url="{{ url_for('app_bp.admin_tools_tomofiltest_durum') }}"
      data-yenile-url="{{ url_for('app_bp.admin_tools_tomofiltest_yenile') }}"
@@ -20,32 +24,32 @@
      data-gecmis-yukle-url="{{ url_for('app_bp.admin_tools_hk_gecmis_yukle') }}"
      data-is-local="{{ '1' if is_local else '0' }}">
 
-  <div class="mc-page-header" style="margin-bottom:16px;">
+  <div class="mc-page-header st-p06-002">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-stethoscope" style="color:#0284c7;"></i> {{ _("Hata Kontrolü") }}
+      <h2 class="st-p06-003">
+        <i class="fas fa-stethoscope st-p06-004"></i> {{ _("Hata Kontrolü") }}
       </h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">
+      <p class="st-p06-005">
         {{ _("Uygulamayı izole bir test kurumu (<b>tomofiltest</b>) üzerinde otomatik gezip çalışmayan sayfa/özellikleri raporlar.") }}
       </p>
     </div>
   </div>
 
   {% if not is_local %}
-  <div class="mc-card mc-card--accent-danger" style="padding:12px 16px;margin-bottom:16px;background:#fef2f2">
-    <i class="fas fa-lock" style="color:#b91c1c;"></i>
-    <span style="font-size:13px;color:#991b1b;">{{ _("Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre dışı.") }}</span>
+  <div class="mc-card mc-card--accent-danger st-p06-006">
+    <i class="fas fa-lock st-p06-007"></i>
+    <span class="st-p06-008">{{ _("Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre dışı.") }}</span>
   </div>
   {% endif %}
 
   {# ── Adım 1: İzole test kurumu ── #}
-  <div class="mc-card" data-card-code="admin_hata_kontrolu.izole_test_kurumu" style="padding:18px;margin-bottom:16px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:34px;height:34px;border-radius:9px;background:#ecfeff;color:#0e7490;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clone"></i></span>
+  <div class="mc-card st-p06-009" data-card-code="admin_hata_kontrolu.izole_test_kurumu">
+    <div class="st-p06-010">
+      <div class="st-p06-011">
+        <span class="st-p06-012"><i class="fas fa-clone"></i></span>
         <div>
-          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("İzole Test Kurumu — tomofiltest") }}</div>
-          <div style="font-size:12px;color:#64748b;">{{ _("Tomofil'in birebir klonu. Testler yalnız burada koşar; gerçek veri etkilenmez.") }}</div>
+          <div class="mc-card-title st-p06-013">{{ _("İzole Test Kurumu — tomofiltest") }}</div>
+          <div class="st-p06-014">{{ _("Tomofil'in birebir klonu. Testler yalnız burada koşar; gerçek veri etkilenmez.") }}</div>
         </div>
       </div>
       <button id="hk-yenile" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}>
@@ -53,49 +57,49 @@
       </button>
     </div>
 
-    <div id="hk-durum" style="font-size:13px;color:#475569;">{{ _("Durum yükleniyor…") }}</div>
+    <div class="st-p06-015" id="hk-durum">{{ _("Durum yükleniyor…") }}</div>
     <div id="hk-sonuc" style="display:none;margin-top:10px;padding:10px 12px;border-radius:8px;font-size:13px;"></div>
   </div>
 
   {# ── Adım 2: Keşif — taranacak sayfalar ── #}
-  <div class="mc-card" data-card-code="admin_hata_kontrolu.kesif_taranacak_sayfalar" style="padding:18px;margin-bottom:16px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:34px;height:34px;border-radius:9px;background:#eef2ff;color:#4338ca;display:flex;align-items:center;justify-content:center;"><i class="fas fa-sitemap"></i></span>
+  <div class="mc-card st-p06-009" data-card-code="admin_hata_kontrolu.kesif_taranacak_sayfalar">
+    <div class="st-p06-010">
+      <div class="st-p06-011">
+        <span class="st-p06-016"><i class="fas fa-sitemap"></i></span>
         <div>
-          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Keşif — Taranacak Sayfalar") }}</div>
-          <div style="font-size:12px;color:#64748b;">{{ _("Aktif uygulamanın güvenli (GET, parametresiz) sayfaları. Yıkıcı uçlar ve legacy hariç.") }}</div>
+          <div class="mc-card-title st-p06-013">{{ _("Keşif — Taranacak Sayfalar") }}</div>
+          <div class="st-p06-014">{{ _("Aktif uygulamanın güvenli (GET, parametresiz) sayfaları. Yıkıcı uçlar ve legacy hariç.") }}</div>
         </div>
       </div>
       <button id="hk-kesfet" class="mc-btn mc-btn-secondary"><i class="fas fa-magnifying-glass"></i> {{ _("Keşfet") }}</button>
     </div>
-    <div id="hk-kesif" style="font-size:13px;color:#64748b;">{{ _("Henüz keşif yapılmadı.") }}</div>
+    <div class="st-p06-017" id="hk-kesif">{{ _("Henüz keşif yapılmadı.") }}</div>
     <div id="hk-kesif-liste" style="display:none;margin-top:10px;"></div>
   </div>
 
   {# ── Adım 3: Otomatik tarayıcı testi (Playwright) ── #}
-  <div class="mc-card" data-card-code="admin_hata_kontrolu.otomatik_tarayici_testi" style="padding:18px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:34px;height:34px;border-radius:9px;background:#f0fdf4;color:#15803d;display:flex;align-items:center;justify-content:center;"><i class="fas fa-robot"></i></span>
+  <div class="mc-card st-p06-018" data-card-code="admin_hata_kontrolu.otomatik_tarayici_testi">
+    <div class="st-p06-010">
+      <div class="st-p06-011">
+        <span class="st-p06-019"><i class="fas fa-robot"></i></span>
         <div>
-          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Otomatik Tarayıcı Testi") }}</div>
-          <div style="font-size:12px;color:#64748b;">{{ _("Gerçek tarayıcı tomofiltest admini olarak her sayfayı açar; HTTP + JS + AJAX hatalarını yakalar.") }}</div>
+          <div class="mc-card-title st-p06-013">{{ _("Otomatik Tarayıcı Testi") }}</div>
+          <div class="st-p06-014">{{ _("Gerçek tarayıcı tomofiltest admini olarak her sayfayı açar; HTTP + JS + AJAX hatalarını yakalar.") }}</div>
         </div>
       </div>
-      <div style="display:flex;gap:6px;align-items:center;">
-        <label style="font-size:12px;color:#475569;">{{ _("Limit:") }}
-          <input id="hk-limit" type="number" min="1" placeholder="{{ _('tümü') }}" style="width:70px;padding:4px 6px;border:1px solid #cbd5e1;border-radius:6px;font-size:12px;">
+      <div class="st-p06-020">
+        <label class="st-p06-021">{{ _("Limit:") }}
+          <input class="st-p06-022" id="hk-limit" type="number" min="1" placeholder="{{ _('tümü') }}">
         </label>
         <button id="hk-tara" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}><i class="fas fa-play"></i> {{ _("Taramayı Başlat") }}</button>
       </div>
     </div>
 
     <div id="hk-tara-bar-wrap" style="display:none;margin-bottom:10px;">
-      <div style="height:10px;background:#e2e8f0;border-radius:6px;overflow:hidden;">
-        <div id="hk-tara-bar" style="height:100%;width:0;background:linear-gradient(90deg,#0ea5e9,#2563eb);transition:width .3s;"></div>
+      <div class="st-p06-023">
+        <div class="st-p06-024" id="hk-tara-bar"></div>
       </div>
-      <div id="hk-tara-info" style="font-size:12px;color:#64748b;margin-top:6px;"></div>
+      <div class="st-p06-025" id="hk-tara-info"></div>
     </div>
 
     <div id="hk-tara-ozet" style="display:none;margin-bottom:8px;"></div>
@@ -104,58 +108,58 @@
   </div>
 
   {# ── Tarama geçmişi (katlanabilir, varsayılan kapalı) ── #}
-  <div class="mc-card" data-card-code="admin_hata_kontrolu.tarama_gecmisi" style="padding:18px;margin-top:16px;">
-    <div class="hk-collapse-toggle" data-collapsed="1" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:34px;height:34px;border-radius:9px;background:#eff6ff;color:#1d4ed8;display:flex;align-items:center;justify-content:center;"><i class="fas fa-clock-rotate-left"></i></span>
+  <div class="mc-card st-p06-026" data-card-code="admin_hata_kontrolu.tarama_gecmisi">
+    <div class="hk-collapse-toggle st-p06-027" data-collapsed="1">
+      <div class="st-p06-011">
+        <span class="st-p06-028"><i class="fas fa-clock-rotate-left"></i></span>
         <div>
-          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Tarama Geçmişi") }}</div>
-          <div style="font-size:12px;color:#64748b;">{{ _("Yalnız Otomatik Tarayıcı Testi koşuları. Bir kayda tıklayınca yukarıda açılır.") }}</div>
+          <div class="mc-card-title st-p06-013">{{ _("Tarama Geçmişi") }}</div>
+          <div class="st-p06-014">{{ _("Yalnız Otomatik Tarayıcı Testi koşuları. Bir kayda tıklayınca yukarıda açılır.") }}</div>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;">
+      <div class="st-p06-029">
         <button id="hk-tara-gecmis-yenile" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="event.stopPropagation();"><i class="fas fa-sync"></i></button>
-        <i class="fas fa-chevron-down hk-collapse-chevron" style="color:#94a3b8;transition:transform .2s;"></i>
+        <i class="fas fa-chevron-down hk-collapse-chevron st-p06-030"></i>
       </div>
     </div>
     <div class="hk-collapse-body" style="display:none;margin-top:12px;">
-      <div id="hk-tara-gecmis-liste" style="font-size:12.5px;color:#64748b;">{{ _("Yükleniyor…") }}</div>
+      <div class="st-p06-031" id="hk-tara-gecmis-liste">{{ _("Yükleniyor…") }}</div>
     </div>
   </div>
 
   {# ── Adım 4: Aktif CRUD senaryoları ── #}
-  <div class="mc-card" data-card-code="admin_hata_kontrolu.aktif_crud_senaryolari" style="padding:18px;margin-top:16px;">
-    <div style="display:flex;align-items:center;justify-content:space-between;gap:12px;flex-wrap:wrap;margin-bottom:10px;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:34px;height:34px;border-radius:9px;background:#fef3c7;color:#b45309;display:flex;align-items:center;justify-content:center;"><i class="fas fa-flask"></i></span>
+  <div class="mc-card st-p06-026" data-card-code="admin_hata_kontrolu.aktif_crud_senaryolari">
+    <div class="st-p06-010">
+      <div class="st-p06-011">
+        <span class="st-p06-032"><i class="fas fa-flask"></i></span>
         <div>
-          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Aktif CRUD Senaryoları") }}</div>
-          <div style="font-size:12px;color:#64748b;">{{ _("Gerçek UI etkileşimi (buton/form/AJAX) tomofiltest'te. Bitince tomofiltest otomatik sıfırlanır.") }}</div>
+          <div class="mc-card-title st-p06-013">{{ _("Aktif CRUD Senaryoları") }}</div>
+          <div class="st-p06-014">{{ _("Gerçek UI etkileşimi (buton/form/AJAX) tomofiltest'te. Bitince tomofiltest otomatik sıfırlanır.") }}</div>
         </div>
       </div>
       <button id="hk-senaryo" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}><i class="fas fa-vial"></i> {{ _("Senaryoları Çalıştır") }}</button>
     </div>
-    <div id="hk-senaryo-info" style="font-size:12.5px;color:#64748b;">{{ _("Henüz çalıştırılmadı.") }}</div>
+    <div class="st-p06-031" id="hk-senaryo-info">{{ _("Henüz çalıştırılmadı.") }}</div>
     <div id="hk-senaryo-sonuc" style="display:none;margin-top:8px;"></div>
   </div>
 
   {# ── Senaryo geçmişi (katlanabilir, varsayılan kapalı) ── #}
-  <div class="mc-card" data-card-code="admin_hata_kontrolu.senaryo_gecmisi" style="padding:18px;margin-top:16px;">
-    <div class="hk-collapse-toggle" data-collapsed="1" style="display:flex;align-items:center;justify-content:space-between;gap:12px;cursor:pointer;">
-      <div style="display:flex;align-items:center;gap:10px;">
-        <span style="width:34px;height:34px;border-radius:9px;background:#fffbeb;color:#b45309;display:flex;align-items:center;justify-content:center;"><i class="fas fa-vials"></i></span>
+  <div class="mc-card st-p06-026" data-card-code="admin_hata_kontrolu.senaryo_gecmisi">
+    <div class="hk-collapse-toggle st-p06-027" data-collapsed="1">
+      <div class="st-p06-011">
+        <span class="st-p06-033"><i class="fas fa-vials"></i></span>
         <div>
-          <div class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Senaryo Geçmişi") }}</div>
-          <div style="font-size:12px;color:#64748b;">{{ _("Yalnız Aktif CRUD senaryo koşuları. Bir kayda tıklayınca yukarıda açılır.") }}</div>
+          <div class="mc-card-title st-p06-013">{{ _("Senaryo Geçmişi") }}</div>
+          <div class="st-p06-014">{{ _("Yalnız Aktif CRUD senaryo koşuları. Bir kayda tıklayınca yukarıda açılır.") }}</div>
         </div>
       </div>
-      <div style="display:flex;align-items:center;gap:8px;">
+      <div class="st-p06-029">
         <button id="hk-sen-gecmis-yenile" class="mc-btn mc-btn-secondary mc-btn-sm" onclick="event.stopPropagation();"><i class="fas fa-sync"></i></button>
-        <i class="fas fa-chevron-down hk-collapse-chevron" style="color:#94a3b8;transition:transform .2s;"></i>
+        <i class="fas fa-chevron-down hk-collapse-chevron st-p06-030"></i>
       </div>
     </div>
     <div class="hk-collapse-body" style="display:none;margin-top:12px;">
-      <div id="hk-sen-gecmis-liste" style="font-size:12.5px;color:#64748b;">{{ _("Yükleniyor…") }}</div>
+      <div class="st-p06-031" id="hk-sen-gecmis-liste">{{ _("Yükleniyor…") }}</div>
     </div>
   </div>
 

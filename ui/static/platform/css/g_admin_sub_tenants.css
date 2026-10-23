@@ -1,0 +1,45 @@
+/* Üretildi: inline style= → sınıf (UX-PLANI G devam). Görünüm değişmez; .x.x = inline stilin özgüllüğünü taklit eder. */
+.st-p08-001.st-p08-001 { max-width:1200px; margin:0 auto; }
+.st-p08-002.st-p08-002 { margin-bottom:20px; display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap:12px; }
+.st-p08-003.st-p08-003 { font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 4px; }
+.st-p08-004.st-p08-004 { color: var(--color-primary); margin-right:8px; }
+.st-p08-005.st-p08-005 { font-size: var(--text-md); color: var(--text-subtle); margin:0; }
+.st-p08-006.st-p08-006 { display:flex; gap: var(--space-2); }
+.st-p08-007.st-p08-007 { display:flex; align-items:center; justify-content:space-between; flex-wrap:wrap; gap:16px; }
+.st-p08-008.st-p08-008 { font-size:22px; font-weight:700; line-height:1.2; }
+.st-p08-009.st-p08-009 { display:flex; gap:32px; font-size:13px; }
+.st-p08-010.st-p08-010 { font-size:24px; font-weight:700; }
+.st-p08-011.st-p08-011 { padding:30px; text-align:center; color: var(--text-subtle); }
+.st-p08-012.st-p08-012 { padding:12px 16px 0; font-size:11px; text-transform:uppercase; letter-spacing:0.06em; color: var(--text-subtle); }
+.st-p08-013.st-p08-013 { width:100%; table-layout:fixed; }
+.st-p08-014.st-p08-014 { width:24%; }
+.st-p08-015.st-p08-015 { width:26%; }
+.st-p08-016.st-p08-016 { width:14%; }
+.st-p08-017.st-p08-017 { width:10%; }
+.st-p08-018.st-p08-018 { width:16%; }
+.st-p08-019.st-p08-019 { text-align:center; }
+.st-p08-020.st-p08-020 { background:#fff; max-width:560px; border-radius:8px; }
+.st-p08-021.st-p08-021 { padding:16px 20px; border-bottom:1px solid #e2e8f0; display:flex; justify-content:space-between; align-items:center; }
+.st-p08-022.st-p08-022 { margin:0; font-size:16px; }
+.st-p08-023.st-p08-023 { color:#4f46e5; }
+.st-p08-024.st-p08-024 { background:none; border:none; font-size:18px; cursor:pointer; color:#64748b; }
+.st-p08-025.st-p08-025 { padding:20px; }
+.st-p08-026.st-p08-026 { background:#eef2ff; border-left:3px solid #4f46e5; padding:10px 12px; border-radius:4px; margin-bottom:16px; font-size:12px; color:#3730a3; }
+.st-p08-027.st-p08-027 { display:grid; gap:12px; }
+.st-p08-028.st-p08-028 { font-size:12px; color:#64748b; font-weight:500; }
+.st-p08-029.st-p08-029 { color:#dc2626; }
+.st-p08-030.st-p08-030 { display:grid; grid-template-columns:1fr 1fr; gap:12px; }
+.st-p08-031.st-p08-031 { margin:6px 0; border:none; border-top:1px solid #e2e8f0; }
+.st-p08-032.st-p08-032 { font-weight:600; color:var(--text-default); font-size:13px; }
+.st-p08-033.st-p08-033 { font-size:11px; color:#94a3b8; }
+.st-p08-034.st-p08-034 { padding:14px 20px; border-top:1px solid #e2e8f0; display:flex; justify-content:flex-end; gap:8px; }
+.st-p08-035.st-p08-035 { background:#fff; max-width:480px; border-radius:8px; }
+.st-p08-036.st-p08-036 { padding:16px 20px; border-bottom:1px solid #e2e8f0; }
+.st-p08-037.st-p08-037 { margin:0; font-size:16px; color:#059669; }
+.st-p08-038.st-p08-038 { margin:0 0 14px; color:var(--text-default); }
+.st-p08-039.st-p08-039 { font-weight:600; color:#92400e; font-size:13px; margin-bottom:8px; }
+.st-p08-040.st-p08-040 { font-family:monospace; font-size:13px; color:var(--text-default); }
+.st-p08-041.st-p08-041 { background:#fff; padding:2px 8px; border-radius:4px; border:1px solid #f59e0b; }
+.st-p08-042.st-p08-042 { margin-top:8px; }
+.st-p08-043.st-p08-043 { font-size:11px; color:#92400e; margin:8px 0 0; }
+.st-p08-044.st-p08-044 { padding:14px 20px; border-top:1px solid #e2e8f0; text-align:right; }

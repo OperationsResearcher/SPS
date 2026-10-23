@@ -6,6 +6,7 @@
 <meta name="kule-tour-key" content="bireysel">
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/surec.css') }}">
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/bireysel-karne.css') }}">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_bireysel_karne.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
@@ -13,7 +14,7 @@
 {% endblock %}
 
 {% block content %}
-<div id="bireysel-root"
+<div class="st-p13-001" id="bireysel-root"
      data-karne-api-url="{{ url_for('app_bp.bireysel_api_karne') }}"
      data-pg-add-url="{{ url_for('app_bp.bireysel_api_pg_add') }}"
      data-veri-add-url="{{ url_for('app_bp.bireysel_api_veri_add') }}"
@@ -25,18 +26,18 @@
      data-pg-series-url-template="{{ url_for('app_bp.bireysel_api_pg_series', pg_id=999999) }}"
      data-current-year="{{ current_year }}"
      data-strateji-secenekleri="{{ strateji_secenekleri | tojson | forceescape }}"
-     style="max-width:1200px; margin:0 auto;">
+    >
 
   {# ── Inline AI Özet (bireysel) ── #}
   <div id="ai-ozet-serit" data-card-code="bireysel_karne.ai_ozet" data-ozet-url="{{ url_for('app_bp.bireysel_api_ai_ozet') }}" class="no-print" style="display:none; margin-bottom:14px; border-radius:12px; border:1px solid #e0e7ff; border-left:4px solid #6366f1; background:linear-gradient(135deg,#eef2ff,#faf5ff);">
-    <div style="display:flex; align-items:flex-start; gap:12px; padding:13px 18px;">
-      <span style="flex:0 0 auto; width:32px; height:32px; border-radius:10px; background:#6366f1; color:#fff; display:flex; align-items:center; justify-content:center;"><i class="fas fa-wand-magic-sparkles"></i></span>
-      <div style="flex:1; min-width:0;">
-        <div style="display:flex; align-items:center; gap:8px; margin-bottom:2px;">
-          <span style="font-size:11.5px; font-weight:700; color:#4338ca; letter-spacing:.02em;">{{ _("AI PERFORMANS ÖZETİ") }}</span>
-          <span id="ai-ozet-kaynak" style="font-size:10px; font-weight:600; color:#64748b; background:#fff; border:1px solid #e2e8f0; border-radius:8px; padding:1px 7px;"></span>
+    <div class="st-p13-002">
+      <span class="st-p13-003"><i class="fas fa-wand-magic-sparkles"></i></span>
+      <div class="st-p13-004">
+        <div class="st-p13-005">
+          <span class="st-p13-006">{{ _("AI PERFORMANS ÖZETİ") }}</span>
+          <span class="st-p13-007" id="ai-ozet-kaynak"></span>
         </div>
-        <p id="ai-ozet-metin" style="font-size:13px; line-height:1.55; color:#1e293b; margin:0;">…</p>
+        <p class="st-p13-008" id="ai-ozet-metin">…</p>
       </div>
     </div>
   </div>
@@ -63,18 +64,18 @@
   </script>
 
   <!-- Üst bar -->
-  <div class="mc-card" data-card-code="bireysel_karne.ust_bar" style="margin-bottom:20px;">
-    <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:16px;">
-      <div style="flex:1; min-width:0;">
-        <h2 class="mc-page-title" style="margin:0;">{{ _("Bireysel Performans Karnem") }}</h2>
+  <div class="mc-card st-p13-009" data-card-code="bireysel_karne.ust_bar">
+    <div class="mc-card-body st-p13-010">
+      <div class="st-p13-004">
+        <h2 class="mc-page-title st-p13-011">{{ _("Bireysel Performans Karnem") }}</h2>
         <p class="mc-page-subtitle">{{ _("Kişisel PG ve faaliyet takibi") }}</p>
       </div>
       <div class="karne-score-gauge-wrap" data-card-code="bireysel_karne.genel_skor">
         <svg id="karne-ring-score" width="86" height="86" viewBox="0 0 86 86">
           <circle cx="43" cy="43" r="37" fill="none" stroke="#e2e8f0" stroke-width="8"/>
-          <circle id="karne-ring-score-fg" cx="43" cy="43" r="37" fill="none" stroke="#6366f1" stroke-width="8"
+          <circle class="st-p13-012" id="karne-ring-score-fg" cx="43" cy="43" r="37" fill="none" stroke="#6366f1" stroke-width="8"
                   stroke-linecap="round" stroke-dasharray="232.5" stroke-dashoffset="232.5"
-                  transform="rotate(-90 43 43)" style="transition: stroke-dashoffset 0.6s ease, stroke 0.6s ease;"/>
+                  transform="rotate(-90 43 43)"/>
           <text id="karne-ring-score-text" x="43" y="48" text-anchor="middle" dominant-baseline="middle"
                 font-size="18" font-weight="800" fill="#0f172a">—</text>
         </svg>
@@ -83,9 +84,9 @@
           <div class="karne-score-gauge-sub">{{ _("Ağırlıklı ortalama (1-5)") }}</div>
         </div>
       </div>
-      <div style="display:flex; align-items:center; gap:8px;">
-        <label for="year-select" class="mc-label" style="margin:0; white-space:nowrap;">{{ _("Yıl") }}:</label>
-        <select id="year-select" class="mc-select" style="width:auto;">
+      <div class="st-p13-013">
+        <label for="year-select" class="mc-label st-p13-014">{{ _("Yıl") }}:</label>
+        <select id="year-select" class="mc-select st-p13-015">
           {% for y in range(current_year + 1, current_year - 5, -1) %}
           <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
           {% endfor %}
@@ -95,31 +96,31 @@
   </div>
 
   {# Kişisel İlerleme Halkaları — SVG progress rings #}
-  <div class="mc-card" data-card-code="bireysel_karne.ilerleme_halkalari" style="margin-bottom:18px; padding:20px;">
-    <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap; justify-content:center;">
-      <div style="text-align:center;">
+  <div class="mc-card st-p13-016" data-card-code="bireysel_karne.ilerleme_halkalari">
+    <div class="st-p13-017">
+      <div class="st-p13-018">
         <svg id="karne-ring-pg" width="120" height="120" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" stroke-width="10"/>
-          <circle id="karne-ring-pg-fg" cx="60" cy="60" r="52" fill="none" stroke="#6366f1" stroke-width="10"
+          <circle class="st-p13-019" id="karne-ring-pg-fg" cx="60" cy="60" r="52" fill="none" stroke="#6366f1" stroke-width="10"
                   stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
-                  transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.6s ease;"/>
+                  transform="rotate(-90 60 60)"/>
           <text id="karne-ring-pg-text" x="60" y="62" text-anchor="middle" dominant-baseline="middle"
                 font-size="22" font-weight="800" fill="#0f172a">—</text>
           <text x="60" y="82" text-anchor="middle" font-size="9.5" fill="#64748b" letter-spacing="0.5">{{ _("PG VERİ KAPSAMI") }}</text>
         </svg>
-        <div style="font-size:12px; color:#64748b; margin-top:4px;">{{ _("Veri girilen / toplam PG") }}</div>
+        <div class="st-p13-020">{{ _("Veri girilen / toplam PG") }}</div>
       </div>
-      <div style="text-align:center;">
+      <div class="st-p13-018">
         <svg id="karne-ring-act" width="120" height="120" viewBox="0 0 120 120">
           <circle cx="60" cy="60" r="52" fill="none" stroke="#e2e8f0" stroke-width="10"/>
-          <circle id="karne-ring-act-fg" cx="60" cy="60" r="52" fill="none" stroke="#10b981" stroke-width="10"
+          <circle class="st-p13-019" id="karne-ring-act-fg" cx="60" cy="60" r="52" fill="none" stroke="#10b981" stroke-width="10"
                   stroke-linecap="round" stroke-dasharray="326.7" stroke-dashoffset="326.7"
-                  transform="rotate(-90 60 60)" style="transition: stroke-dashoffset 0.6s ease;"/>
+                  transform="rotate(-90 60 60)"/>
           <text id="karne-ring-act-text" x="60" y="62" text-anchor="middle" dominant-baseline="middle"
                 font-size="22" font-weight="800" fill="#0f172a">—</text>
           <text x="60" y="82" text-anchor="middle" font-size="9.5" fill="#64748b" letter-spacing="0.5">{{ _("FAALİYET TAMAMLAMA") }}</text>
         </svg>
-        <div style="font-size:12px; color:#64748b; margin-top:4px;">{{ _("İşaretlenen aylar / toplam ay") }}</div>
+        <div class="st-p13-020">{{ _("İşaretlenen aylar / toplam ay") }}</div>
       </div>
     </div>
   </div>
@@ -169,7 +170,7 @@
   </script>
 
   <!-- Özet istatistikler -->
-  <div class="mc-grid-4" style="margin-bottom:20px;">
+  <div class="mc-grid-4 st-p13-009">
     <div class="mc-stat-card mc-stat-indigo" data-card-code="bireysel_karne.stat_toplam_pg">
       <div class="mc-stat-icon"><i class="fas fa-chart-line"></i></div>
       <div class="mc-stat-label">{{ _("Toplam PG") }}</div>
@@ -193,42 +194,42 @@
   </div>
 
   <!-- Hedef vs Gerçekleşen karşılaştırma -->
-  <div class="mc-card" id="karne-compare-card" data-card-code="bireysel_karne.hedef_karsilastirma" style="margin-bottom:20px;">
+  <div class="mc-card st-p13-009" id="karne-compare-card" data-card-code="bireysel_karne.hedef_karsilastirma">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-chart-simple" style="color:#6366f1; margin-right:8px;"></i>{{ _("Hedef vs Gerçekleşen") }}
+        <i class="fas fa-chart-simple st-p13-021"></i>{{ _("Hedef vs Gerçekleşen") }}
       </span>
     </div>
-    <div class="mc-card-body" style="padding-top:8px;">
+    <div class="mc-card-body st-p13-022">
       <div id="karne-compare-list" class="karne-compare-list"></div>
       <p id="karne-compare-empty" class="mc-page-subtitle" style="margin:8px 0 0; display:none;">{{ _("Karşılaştırma için hedef ve gerçekleşen değeri olan gösterge yok.") }}</p>
     </div>
   </div>
 
   <!-- Yıl özeti / hedef–gerçekleşen (JS doldurur) -->
-  <div class="mc-card" id="karne-insights-card" data-card-code="bireysel_karne.yil_ozeti" style="margin-bottom:20px;">
+  <div class="mc-card st-p13-009" id="karne-insights-card" data-card-code="bireysel_karne.yil_ozeti">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-lightbulb" style="color:#f59e0b; margin-right:8px;"></i>{{ _("Yıl özeti &amp; dikkat") }}
+        <i class="fas fa-lightbulb st-p13-023"></i>{{ _("Yıl özeti &amp; dikkat") }}
       </span>
     </div>
-    <div class="mc-card-body" style="padding-top:8px;">
-      <p class="mc-page-subtitle" style="margin:0 0 10px;">{{ _("Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti.") }}</p>
+    <div class="mc-card-body st-p13-022">
+      <p class="mc-page-subtitle st-p13-024">{{ _("Seçili yılda veri kapsamı ve göstergelerinizin kısa özeti.") }}</p>
       <div id="karne-insights-strip" class="karne-insights-strip"></div>
-      <p class="mc-page-subtitle" style="margin:10px 0 0; font-size:11px; color:#94a3b8;">
+      <p class="mc-page-subtitle st-p13-025">
         {{ _("Sarı uyarı pill’lerindeki “hedefe göre zayıf” ifadesi, son girilen aylık değer ile hedefi karşılaştıran <strong>bilgi amaçlı bir tahmindir</strong>; İK veya resmi ölçüm yerine geçmez.") }}
       </p>
     </div>
   </div>
 
   <!-- Geçmişe dönük hareketler (PG verisi + faaliyet) -->
-  <div class="mc-card" id="karne-timeline-card" data-card-code="bireysel_karne.zaman_cizelgesi" style="margin-bottom:20px;">
+  <div class="mc-card st-p13-009" id="karne-timeline-card" data-card-code="bireysel_karne.zaman_cizelgesi">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-clock-rotate-left" style="color:#6366f1; margin-right:8px;"></i>{{ _("Bu yıl ne yaptım?") }}
+        <i class="fas fa-clock-rotate-left st-p13-021"></i>{{ _("Bu yıl ne yaptım?") }}
       </span>
     </div>
-    <div class="mc-card-body" style="padding-top:8px;">
+    <div class="mc-card-body st-p13-022">
       <ul id="karne-timeline-list" class="karne-timeline-list" aria-live="polite"></ul>
       <p id="karne-timeline-empty" class="mc-page-subtitle" style="margin:12px 0 0; display:none;">{{ _("Henüz kayıtlı bir hareket yok. PG verisi girin veya faaliyet aylarını işaretleyin.") }}</p>
     </div>
@@ -236,47 +237,47 @@
 
   <!-- Yükleniyor -->
   <div id="karne-loading" class="mc-empty" style="display:none;">
-    <i class="fas fa-spinner fa-spin" style="font-size:28px; color:#6366f1;"></i>
-    <div class="mc-empty-text" style="margin-top:8px;">{{ _("Veriler yükleniyor…") }}</div>
+    <i class="fas fa-spinner fa-spin st-p13-026"></i>
+    <div class="mc-empty-text st-p13-027">{{ _("Veriler yükleniyor…") }}</div>
   </div>
 
   <!-- PG Tablosu -->
-  <div class="mc-card" data-card-code="bireysel_karne.pg_tablosu" style="margin-bottom:20px;">
+  <div class="mc-card st-p13-009" data-card-code="bireysel_karne.pg_tablosu">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-bullseye" style="color:#6366f1; margin-right:8px;"></i>{{ _("Performans Göstergelerim") }}
+        <i class="fas fa-bullseye st-p13-021"></i>{{ _("Performans Göstergelerim") }}
       </span>
       <button id="btn-pg-add" class="mc-btn mc-btn-primary mc-btn-sm">
         <i class="fas fa-plus"></i> {{ _("PG Ekle") }}
       </button>
     </div>
-    <div class="mc-card-body" style="padding:0 20px 12px;">
+    <div class="mc-card-body st-p13-028">
       <div class="karne-heat-legend">
-        <span class="karne-heat-swatch"><span class="karne-cell-heat-fill" style="display:inline-block;width:14px;height:14px;"></span> {{ _("Veri var") }}</span>
-        <span class="karne-heat-swatch"><span class="karne-cell-heat-empty" style="display:inline-block;width:14px;height:14px;"></span> {{ _("Geçmiş/geçerli ay, veri yok") }}</span>
-        <span style="margin-left:auto;">{{ _("Satıra tıklayınca yıllık detay ve mini grafik açılır.") }}</span>
+        <span class="karne-heat-swatch"><span class="karne-cell-heat-fill st-p13-029"></span> {{ _("Veri var") }}</span>
+        <span class="karne-heat-swatch"><span class="karne-cell-heat-empty st-p13-029"></span> {{ _("Geçmiş/geçerli ay, veri yok") }}</span>
+        <span class="st-p13-030">{{ _("Satıra tıklayınca yıllık detay ve mini grafik açılır.") }}</span>
       </div>
     </div>
-    <div class="mc-table-wrap" style="border:none; border-radius:0; box-shadow:none;">
+    <div class="mc-table-wrap st-p13-031">
       <table class="mc-table karne-table">
         <thead>
           <tr>
-            <th style="width:32px;">#</th>
-            <th style="min-width:180px;">{{ _("Gösterge") }}</th>
-            <th style="text-align:center;">{{ _("Hedef") }}</th>
-            <th style="text-align:center;">{{ _("Birim") }}</th>
+            <th class="st-p13-032">#</th>
+            <th class="st-p13-033">{{ _("Gösterge") }}</th>
+            <th class="st-p13-018">{{ _("Hedef") }}</th>
+            <th class="st-p13-018">{{ _("Birim") }}</th>
             {% for m in range(1, 13) %}
-            <th class="month-col" style="text-align:center;">
+            <th class="month-col st-p13-018">
               {{ [_('Oca'),_('Şub'),_('Mar'),_('Nis'),_('May'),_('Haz'),_('Tem'),_('Ağu'),_('Eyl'),_('Eki'),_('Kas'),_('Ara')][m-1] }}
             </th>
             {% endfor %}
-            <th style="text-align:center; min-width:70px;">{{ _("Trend") }}</th>
-            <th style="text-align:center;">{{ _("İşlem") }}</th>
+            <th class="st-p13-034">{{ _("Trend") }}</th>
+            <th class="st-p13-018">{{ _("İşlem") }}</th>
           </tr>
         </thead>
         <tbody id="pg-tbody">
           <tr>
-            <td colspan="18" style="text-align:center; padding:32px; color:#94a3b8;">{{ _("Yükleniyor…") }}</td>
+            <td class="st-p13-035" colspan="18">{{ _("Yükleniyor…") }}</td>
           </tr>
         </tbody>
       </table>
@@ -284,13 +285,13 @@
   </div>
 
   <!-- Faaliyet Tamamlama Isı Haritası -->
-  <div class="mc-card" id="karne-act-heat-card" data-card-code="bireysel_karne.faaliyet_isi_haritasi" style="margin-bottom:20px;">
+  <div class="mc-card st-p13-009" id="karne-act-heat-card" data-card-code="bireysel_karne.faaliyet_isi_haritasi">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-fire" style="color:#f97316; margin-right:8px;"></i>{{ _("Faaliyet Tamamlama Takvimi") }}
+        <i class="fas fa-fire st-p13-036"></i>{{ _("Faaliyet Tamamlama Takvimi") }}
       </span>
     </div>
-    <div class="mc-card-body" style="padding-top:8px;">
+    <div class="mc-card-body st-p13-022">
       <div id="karne-act-heat-list"></div>
       <p id="karne-act-heat-empty" class="mc-page-subtitle" style="margin:8px 0 0; display:none;">{{ _("Henüz faaliyet eklenmemiş.") }}</p>
     </div>
@@ -300,30 +301,30 @@
   <div class="mc-card" data-card-code="bireysel_karne.faaliyet_tablosu">
     <div class="mc-card-header">
       <span class="mc-card-title">
-        <i class="fas fa-list-check" style="color:#10b981; margin-right:8px;"></i>{{ _("Faaliyetlerim") }}
+        <i class="fas fa-list-check st-p13-037"></i>{{ _("Faaliyetlerim") }}
       </span>
       <button id="btn-faaliyet-add" class="mc-btn mc-btn-success mc-btn-sm">
         <i class="fas fa-plus"></i> {{ _("Faaliyet Ekle") }}
       </button>
     </div>
-    <div class="mc-table-wrap" style="border:none; border-radius:0; box-shadow:none;">
+    <div class="mc-table-wrap st-p13-031">
       <table class="mc-table karne-table">
         <thead>
           <tr>
-            <th style="width:32px;">#</th>
-            <th style="min-width:180px;">{{ _("Faaliyet") }}</th>
-            <th style="text-align:center;">{{ _("Durum") }}</th>
+            <th class="st-p13-032">#</th>
+            <th class="st-p13-033">{{ _("Faaliyet") }}</th>
+            <th class="st-p13-018">{{ _("Durum") }}</th>
             {% for m in range(1, 13) %}
-            <th class="month-col" style="text-align:center;">
+            <th class="month-col st-p13-018">
               {{ [_('Oca'),_('Şub'),_('Mar'),_('Nis'),_('May'),_('Haz'),_('Tem'),_('Ağu'),_('Eyl'),_('Eki'),_('Kas'),_('Ara')][m-1] }}
             </th>
             {% endfor %}
-            <th style="text-align:center;">{{ _("İşlem") }}</th>
+            <th class="st-p13-018">{{ _("İşlem") }}</th>
           </tr>
         </thead>
         <tbody id="faaliyet-tbody">
           <tr>
-            <td colspan="16" style="text-align:center; padding:32px; color:#94a3b8;">{{ _("Yükleniyor…") }}</td>
+            <td class="st-p13-035" colspan="16">{{ _("Yükleniyor…") }}</td>
           </tr>
         </tbody>
       </table>
