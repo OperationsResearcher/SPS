@@ -4,7 +4,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: Kokpitim 1.0.7\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-23 20:06+0300\n"
+"POT-Creation-Date: 2026-10-23 20:30+0300\n"
 "PO-Revision-Date: 2026-05-23 12:00+0300\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language: tr\n"
@@ -84,7 +84,7 @@ msgid "Erişim reddedildi."
 msgstr ""
 
 #: app/constants/module_visibility.py:158
-#: app/constants/module_visibility.py:160 micro/modules/masaustu/routes.py:838
+#: app/constants/module_visibility.py:160 micro/modules/masaustu/routes.py:871
 #: micro/modules/proje/routes_list.py:339
 #: micro/modules/proje/routes_project_crud.py:384
 msgid "Bu sayfaya erişim yetkiniz yok."
@@ -104,7 +104,7 @@ msgstr ""
 
 #: app/constants/roles.py:35 app/constants/roles.py:37
 #: app/constants/roles.py:38 ui/templates/platform/launcher.html:12
-#: ui/templates/platform/masaustu/index.html:31
+#: ui/templates/platform/masaustu/index.html:34
 msgid "Kurum Kullanıcısı"
 msgstr ""
 
@@ -137,7 +137,7 @@ msgstr ""
 
 #: app/routes/admin.py:172 app/services/k_vektor_config_service.py:41
 #: micro/modules/admin/routes.py:568 micro/modules/k_rapor/routes.py:1827
-#: micro/modules/masaustu/routes.py:794
+#: micro/modules/masaustu/routes.py:827
 #: micro/modules/raporlar/routes_faz5.py:395
 #: micro/modules/sp/routes_plan_year.py:198
 #: ui/templates/platform/admin/tenants.html:178
@@ -159,7 +159,7 @@ msgstr ""
 #: micro/modules/kurum/routes.py:419 micro/modules/kurum/routes.py:446
 #: micro/modules/kurum/routes.py:468 micro/modules/kurum/routes.py:489
 #: micro/modules/kurum/routes.py:521 micro/modules/kurum/routes.py:544
-#: micro/modules/kurum/routes.py:567 micro/modules/masaustu/routes.py:790
+#: micro/modules/kurum/routes.py:567 micro/modules/masaustu/routes.py:823
 #: micro/modules/raporlar/helpers.py:72 micro/modules/raporlar/routes_esg.py:93
 #: micro/modules/raporlar/routes_esg.py:128
 #: micro/modules/raporlar/routes_esg.py:164
@@ -941,6 +941,7 @@ msgstr ""
 #: ui/static/platform/js/surec_vgs.js:595
 #: ui/templates/platform/admin/istatistikler.html:73
 #: ui/templates/platform/k_rapor/index.html:270
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:6
 #: ui/templates/platform/raporlar/sektorel_detay.html:17
 #: ui/templates/platform/raporlar/sektorel_detay.html:62
 #: ui/templates/platform/sp/dynamic_flow.html:30
@@ -1050,7 +1051,7 @@ msgstr ""
 #: ui/static/platform/js/reports/initiative_bubble.js:7
 #: ui/templates/platform/calendar/_calendar_quick_create_modal.html:83
 #: ui/templates/platform/calendar/_calendar_quick_create_modal.html:113
-#: ui/templates/platform/masaustu/index.html:560
+#: ui/templates/platform/masaustu/index.html:595
 #: ui/templates/platform/sp/initiatives.html:75
 #: ui/templates/platform/sp/projeler.html:76
 #: ui/templates/platform/sp/projeler.html:126
@@ -1085,12 +1086,12 @@ msgstr ""
 #: ui/static/platform/js/admin.js:657 ui/static/platform/js/admin.js:685
 #: ui/static/platform/js/admin.js:714 ui/static/platform/js/admin.js:804
 #: ui/static/platform/js/app.js:197 ui/static/platform/js/bireysel.js:121
-#: ui/static/platform/js/k_radar.js:30 ui/static/platform/js/k_radar_ks.js:397
-#: ui/static/platform/js/k_radar_ks.js:498
-#: ui/static/platform/js/k_radar_ks.js:585
-#: ui/static/platform/js/k_radar_ks.js:902
-#: ui/static/platform/js/k_radar_ks.js:967
-#: ui/static/platform/js/k_radar_ks.js:1257 ui/static/platform/js/kurum.js:55
+#: ui/static/platform/js/k_radar.js:30 ui/static/platform/js/k_radar_ks.js:395
+#: ui/static/platform/js/k_radar_ks.js:496
+#: ui/static/platform/js/k_radar_ks.js:583
+#: ui/static/platform/js/k_radar_ks.js:900
+#: ui/static/platform/js/k_radar_ks.js:965
+#: ui/static/platform/js/k_radar_ks.js:1255 ui/static/platform/js/kurum.js:55
 #: ui/static/platform/js/kurum.js:476 ui/static/platform/js/masaustu.js:141
 #: ui/static/platform/js/mc-modal-form.js:25
 #: ui/static/platform/js/pg_tablo_modal.js:682
@@ -1141,7 +1142,7 @@ msgstr "İptal"
 
 #: app/services/weekly_digest_service.py:33
 #: ui/static/platform/js/reports/initiative_bubble.js:8
-#: ui/templates/platform/masaustu/index.html:203
+#: ui/templates/platform/masaustu/index.html:238
 msgid "Gecikmiş"
 msgstr ""
 
@@ -1328,10 +1329,12 @@ msgstr ""
 #: app/services/weekly_digest_service.py:545
 #: ui/static/platform/js/reports/ai_sunum.js:21
 #: ui/static/platform/js/reports/strateji_hikayesi.js:15
+#: ui/templates/platform/_temel_akis.html:9
 #: ui/templates/platform/admin/holding_drilldown.html:54
 #: ui/templates/platform/k_radar/cross_paydas.html:39
 #: ui/templates/platform/k_rapor/index.html:661
 #: ui/templates/platform/k_rapor/index.html:825
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:4
 #: ui/templates/platform/masaustu/yonetim_ozeti.html:36
 #: ui/templates/platform/raporlar/kv_carpiklik.html:62
 #: ui/templates/platform/raporlar/sektorel_detay.html:15
@@ -1421,6 +1424,7 @@ msgstr ""
 #: ui/templates/platform/admin/istatistikler.html:72
 #: ui/templates/platform/calendar/_calendar_quick_create_modal.html:38
 #: ui/templates/platform/calendar/index.html:22
+#: ui/templates/platform/k_radar/kp_olgunluk.html:32
 #: ui/templates/platform/k_radar/kp_olgunluk.html:61
 #: ui/templates/platform/k_radar/risk_management.html:107
 #: ui/templates/platform/k_radar/risk_management.html:133
@@ -1433,7 +1437,8 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:725
 #: ui/templates/platform/k_rapor/index.html:751
 #: ui/templates/platform/launcher/_vgs_modal.html:25
-#: ui/templates/platform/masaustu/index.html:443
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:5
+#: ui/templates/platform/masaustu/index.html:478
 #: ui/templates/platform/masaustu/yonetim_ozeti.html:41
 #: ui/templates/platform/project/list.html:322
 #: ui/templates/platform/raporlar/sektorel_detay.html:16
@@ -2165,7 +2170,7 @@ msgstr ""
 
 #: micro/modules/api/routes.py:46 micro/modules/api/routes.py:228
 #: micro/modules/api/routes.py:241 micro/modules/api/routes.py:275
-#: micro/modules/api/routes.py:291 micro/modules/masaustu/routes.py:689
+#: micro/modules/api/routes.py:291 micro/modules/masaustu/routes.py:722
 #: micro/modules/surec/routes_karne.py:97
 msgid "Süreç bulunamadı."
 msgstr ""
@@ -2186,14 +2191,14 @@ msgstr ""
 msgid "Yıl, veri tarihinin yılıyla uyuşmuyor."
 msgstr ""
 
-#: micro/modules/api/routes.py:182 ui/static/platform/js/k_radar_ks.js:887
+#: micro/modules/api/routes.py:182 ui/static/platform/js/k_radar_ks.js:885
 #: ui/static/platform/js/kurum.js:590 ui/static/platform/js/kurum.js:697
 #: ui/static/platform/js/pg_tablo_modal.js:715
 #: ui/static/platform/js/surec.js:2654
 msgid "Güncellendi."
 msgstr ""
 
-#: micro/modules/api/routes.py:215 ui/static/platform/js/k_radar_ks.js:907
+#: micro/modules/api/routes.py:215 ui/static/platform/js/k_radar_ks.js:905
 #: ui/static/platform/js/kurum.js:601
 #: ui/static/platform/js/pg_tablo_modal.js:695
 msgid "Silindi."
@@ -2359,10 +2364,10 @@ msgstr ""
 #: micro/modules/sp/routes_analysis.py:488
 #: micro/modules/sp/routes_analysis.py:538
 #: micro/modules/sp/routes_analysis.py:601
-#: ui/static/platform/js/k_radar_ks.js:860
-#: ui/static/platform/js/k_radar_ks.js:881
-#: ui/static/platform/js/k_radar_ks.js:924
-#: ui/static/platform/js/k_radar_ks.js:947 ui/static/platform/js/kurum.js:521
+#: ui/static/platform/js/k_radar_ks.js:858
+#: ui/static/platform/js/k_radar_ks.js:879
+#: ui/static/platform/js/k_radar_ks.js:922
+#: ui/static/platform/js/k_radar_ks.js:945 ui/static/platform/js/kurum.js:521
 #: ui/static/platform/js/kurum.js:559 ui/static/platform/js/kurum.js:641
 #: ui/static/platform/js/kurum.js:686 ui/static/platform/js/kurum.js:740
 msgid "Başlık zorunludur."
@@ -2566,84 +2571,88 @@ msgstr ""
 msgid "K-Vektör ağırlıkları kaydedildi."
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:291
+#: micro/modules/masaustu/routes.py:83
+msgid "Kaydedilemedi."
+msgstr ""
+
+#: micro/modules/masaustu/routes.py:306
 #: ui/static/platform/js/pg_tablo_modal.js:100
 #: ui/static/platform/js/pg_tablo_modal.js:154
 #: ui/static/platform/js/surec.js:277
 msgid "Ocak"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:292
+#: micro/modules/masaustu/routes.py:307
 #: ui/static/platform/js/pg_tablo_modal.js:101
 #: ui/static/platform/js/pg_tablo_modal.js:155
 #: ui/static/platform/js/surec.js:278
 msgid "Şubat"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:293
+#: micro/modules/masaustu/routes.py:308
 #: ui/static/platform/js/pg_tablo_modal.js:102
 #: ui/static/platform/js/pg_tablo_modal.js:156
 #: ui/static/platform/js/surec.js:279
 msgid "Mart"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:294
+#: micro/modules/masaustu/routes.py:309
 #: ui/static/platform/js/pg_tablo_modal.js:103
 #: ui/static/platform/js/pg_tablo_modal.js:157
 #: ui/static/platform/js/surec.js:280
 msgid "Nisan"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:295
+#: micro/modules/masaustu/routes.py:310
 #: ui/static/platform/js/pg_tablo_modal.js:104
 #: ui/static/platform/js/pg_tablo_modal.js:158
 #: ui/static/platform/js/surec.js:281
 msgid "Mayıs"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:296
+#: micro/modules/masaustu/routes.py:311
 #: ui/static/platform/js/pg_tablo_modal.js:105
 #: ui/static/platform/js/pg_tablo_modal.js:159
 #: ui/static/platform/js/surec.js:282
 msgid "Haziran"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:297
+#: micro/modules/masaustu/routes.py:312
 #: ui/static/platform/js/pg_tablo_modal.js:106
 #: ui/static/platform/js/pg_tablo_modal.js:160
 #: ui/static/platform/js/surec.js:283
 msgid "Temmuz"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:298
+#: micro/modules/masaustu/routes.py:313
 #: ui/static/platform/js/pg_tablo_modal.js:107
 #: ui/static/platform/js/pg_tablo_modal.js:161
 #: ui/static/platform/js/surec.js:284
 msgid "Ağustos"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:299
+#: micro/modules/masaustu/routes.py:314
 #: ui/static/platform/js/pg_tablo_modal.js:108
 #: ui/static/platform/js/pg_tablo_modal.js:162
 #: ui/static/platform/js/surec.js:285
 msgid "Eylül"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:300
+#: micro/modules/masaustu/routes.py:315
 #: ui/static/platform/js/pg_tablo_modal.js:109
 #: ui/static/platform/js/pg_tablo_modal.js:163
 #: ui/static/platform/js/surec.js:286
 msgid "Ekim"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:301
+#: micro/modules/masaustu/routes.py:316
 #: ui/static/platform/js/pg_tablo_modal.js:110
 #: ui/static/platform/js/pg_tablo_modal.js:164
 #: ui/static/platform/js/surec.js:287
 msgid "Kasım"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:302
+#: micro/modules/masaustu/routes.py:317
 #: ui/static/platform/js/pg_tablo_modal.js:111
 #: ui/static/platform/js/pg_tablo_modal.js:165
 #: ui/static/platform/js/surec.js:288
@@ -2651,15 +2660,15 @@ msgstr ""
 msgid "Aralık"
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:691
+#: micro/modules/masaustu/routes.py:724
 msgid "Bu sürece erişiminiz yok."
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:740 micro/modules/masaustu/routes.py:845
+#: micro/modules/masaustu/routes.py:773 micro/modules/masaustu/routes.py:878
 msgid "Özet yüklenemedi."
 msgstr ""
 
-#: micro/modules/masaustu/routes.py:811
+#: micro/modules/masaustu/routes.py:844
 msgid "AI danışman çağrılamadı."
 msgstr ""
 
@@ -4050,7 +4059,7 @@ msgstr ""
 #: ui/templates/platform/ayarlar/index.html:92
 #: ui/templates/platform/k_rapor/index.html:793
 #: ui/templates/platform/kurum/index.html:10
-#: ui/templates/platform/masaustu/index.html:433
+#: ui/templates/platform/masaustu/index.html:468
 msgid "Kurum"
 msgstr ""
 
@@ -4230,7 +4239,7 @@ msgstr ""
 
 #: micro/modules/raporlar/routes_faz4.py:206
 #: micro/modules/raporlar/routes_faz4.py:226
-#: ui/static/platform/js/k_radar_ks.js:1558
+#: ui/static/platform/js/k_radar_ks.js:1556
 #: ui/static/platform/js/k_rapor.js:1419
 msgid "Ort. Başarı %"
 msgstr ""
@@ -4343,6 +4352,7 @@ msgstr ""
 
 #: micro/modules/raporlar/routes_faz4.py:302
 #: ui/static/platform/js/project_raid.js:93
+#: ui/templates/platform/k_radar/cross_paydas.html:20
 #: ui/templates/platform/k_radar/cross_paydas.html:39
 #: ui/templates/platform/k_radar/risk_management.html:51
 #: ui/templates/platform/k_rapor/index.html:345
@@ -4610,7 +4620,7 @@ msgid "Bu dönem mühürlü değil."
 msgstr ""
 
 #: micro/modules/sp/routes_plan_year.py:275
-#: ui/static/platform/js/sp_donemler.js:87
+#: ui/static/platform/js/sp_donemler.js:85
 msgid "Mühür açma gerekçesi zorunludur."
 msgstr ""
 
@@ -4873,7 +4883,7 @@ msgid "Şifremi unuttum"
 msgstr ""
 
 #: templates/auth/reset_email.html:1
-#: ui/templates/platform/masaustu/index.html:34
+#: ui/templates/platform/masaustu/index.html:37
 #: ui/templates/platform/raporlar/mobile.html:24
 msgid "Merhaba"
 msgstr ""
@@ -4906,14 +4916,14 @@ msgstr ""
 
 #: ui/static/platform/js/admin.js:32 ui/static/platform/js/analiz.js:45
 #: ui/static/platform/js/app.js:166 ui/static/platform/js/bireysel.js:109
-#: ui/static/platform/js/k_radar_ks.js:863
-#: ui/static/platform/js/k_radar_ks.js:888
-#: ui/static/platform/js/k_radar_ks.js:908
-#: ui/static/platform/js/k_radar_ks.js:927
-#: ui/static/platform/js/k_radar_ks.js:954
-#: ui/static/platform/js/k_radar_ks.js:973
-#: ui/static/platform/js/k_radar_ks.js:1036
-#: ui/static/platform/js/k_radar_ks.js:1268 ui/static/platform/js/kurum.js:48
+#: ui/static/platform/js/k_radar_ks.js:861
+#: ui/static/platform/js/k_radar_ks.js:886
+#: ui/static/platform/js/k_radar_ks.js:906
+#: ui/static/platform/js/k_radar_ks.js:925
+#: ui/static/platform/js/k_radar_ks.js:952
+#: ui/static/platform/js/k_radar_ks.js:971
+#: ui/static/platform/js/k_radar_ks.js:1034
+#: ui/static/platform/js/k_radar_ks.js:1266 ui/static/platform/js/kurum.js:48
 #: ui/static/platform/js/launcher_plan_year.js:39
 #: ui/static/platform/js/launcher_vgs.js:71
 #: ui/static/platform/js/masaustu.js:217 ui/static/platform/js/masaustu.js:221
@@ -4963,7 +4973,7 @@ msgstr ""
 #: ui/static/platform/js/sp_analiz.js:149
 #: ui/static/platform/js/sp_analiz.js:186
 #: ui/static/platform/js/sp_donemler.js:30
-#: ui/static/platform/js/sp_donemler.js:394
+#: ui/static/platform/js/sp_donemler.js:390
 #: ui/static/platform/js/sp_plan_year.js:49 ui/static/platform/js/surec.js:122
 #: ui/static/platform/js/surec.js:3282 ui/static/platform/js/totp_setup.js:30
 #: ui/static/platform/js/twofa.js:73 ui/static/platform/js/twofa.js:170
@@ -5041,9 +5051,9 @@ msgid "Yeni Paket Ekle"
 msgstr ""
 
 #: ui/static/platform/js/admin.js:657 ui/static/platform/js/admin.js:685
-#: ui/static/platform/js/k_radar_ks.js:396
-#: ui/static/platform/js/k_radar_ks.js:498
-#: ui/static/platform/js/k_radar_ks.js:585 ui/static/platform/js/kurum.js:476
+#: ui/static/platform/js/k_radar_ks.js:394
+#: ui/static/platform/js/k_radar_ks.js:496
+#: ui/static/platform/js/k_radar_ks.js:583 ui/static/platform/js/kurum.js:476
 #: ui/static/platform/js/kurum.js:518 ui/static/platform/js/kurum.js:567
 #: ui/static/platform/js/kurum.js:638 ui/static/platform/js/masaustu.js:140
 #: ui/static/platform/js/mc-modal-form.js:24 ui/static/platform/js/surec.js:636
@@ -5058,7 +5068,7 @@ msgstr ""
 #: ui/templates/platform/k_radar/risk_management.html:118
 #: ui/templates/platform/kurum/ayarlar.html:187
 #: ui/templates/platform/launcher/_vgs_modal.html:71
-#: ui/templates/platform/masaustu/index.html:536
+#: ui/templates/platform/masaustu/index.html:571
 #: ui/templates/platform/project/form.html:174
 #: ui/templates/platform/project/raid.html:128
 #: ui/templates/platform/project/strategy_detail.html:66
@@ -5171,8 +5181,8 @@ msgstr ""
 #: ui/static/platform/js/admin_hierarchy.js:65
 #: ui/static/platform/js/esg_yonetim.js:66
 #: ui/static/platform/js/esg_yonetim.js:91 ui/static/platform/js/k_radar.js:797
-#: ui/static/platform/js/k_radar.js:944 ui/static/platform/js/k_radar_ks.js:902
-#: ui/static/platform/js/k_radar_ks.js:967
+#: ui/static/platform/js/k_radar.js:944 ui/static/platform/js/k_radar_ks.js:900
+#: ui/static/platform/js/k_radar_ks.js:965
 #: ui/static/platform/js/project_kapasite.js:61
 #: ui/static/platform/js/sp_liste_analiz.js:63
 #: ui/static/platform/js/sp_porter.js:63
@@ -5256,7 +5266,7 @@ msgstr ""
 msgid "Süreç karnesi →"
 msgstr ""
 
-#: ui/static/platform/js/app.js:154 ui/static/platform/js/k_radar_ks.js:744
+#: ui/static/platform/js/app.js:154 ui/static/platform/js/k_radar_ks.js:742
 #: ui/static/platform/js/project_raid.js:288
 #: ui/static/platform/js/project_raid.js:316
 #: ui/templates/platform/admin/sub_tenants.html:178
@@ -5264,10 +5274,10 @@ msgid "Başarılı"
 msgstr ""
 
 #: ui/static/platform/js/app.js:169 ui/static/platform/js/app.js:179
-#: ui/static/platform/js/auth.js:18 ui/static/platform/js/k_radar_ks.js:1276
-#: ui/static/platform/js/kule.js:200 ui/static/platform/js/mc-modal-form.js:127
+#: ui/static/platform/js/auth.js:18 ui/static/platform/js/k_radar_ks.js:1274
+#: ui/static/platform/js/kule.js:200
 #: ui/static/platform/js/reports/veri_kalitesi.js:96
-#: ui/static/platform/js/sp_donemler.js:385 ui/static/platform/js/surec.js:2892
+#: ui/static/platform/js/sp_donemler.js:381 ui/static/platform/js/surec.js:2892
 #: ui/templates/platform/admin/sub_tenants.html:198
 msgid "Tamam"
 msgstr ""
@@ -5493,7 +5503,7 @@ msgid "VRIO"
 msgstr ""
 
 #: ui/static/platform/js/command_palette.js:33
-#: ui/static/platform/js/k_radar_ks.js:1052
+#: ui/static/platform/js/k_radar_ks.js:1050
 #: ui/templates/platform/k_radar/hub.html:131
 #: ui/templates/platform/sp/strateji_haritasi.html:3
 #: ui/templates/platform/sp/strateji_haritasi.html:12
@@ -5529,8 +5539,8 @@ msgstr ""
 #: ui/static/platform/js/command_palette.js:48
 #: ui/templates/platform/base.html:343 ui/templates/platform/base.html:465
 #: ui/templates/platform/bildirim/index.html:18
-#: ui/templates/platform/masaustu/index.html:429
-#: ui/templates/platform/masaustu/index.html:671
+#: ui/templates/platform/masaustu/index.html:464
+#: ui/templates/platform/masaustu/index.html:706
 msgid "Bildirimler"
 msgstr ""
 
@@ -5561,7 +5571,7 @@ msgid "Kullanıcılar"
 msgstr ""
 
 #: ui/static/platform/js/command_palette.js:124
-#: ui/templates/platform/masaustu/index.html:335
+#: ui/templates/platform/masaustu/index.html:370
 msgid "Son ziyaret edilenler"
 msgstr ""
 
@@ -5642,7 +5652,7 @@ msgstr ""
 #: ui/static/platform/js/k_radar.js:113 ui/static/platform/js/k_radar_ks.js:127
 #: ui/static/platform/js/k_radar_ks.js:142
 #: ui/static/platform/js/k_radar_ks.js:165
-#: ui/static/platform/js/k_radar_ks.js:743
+#: ui/static/platform/js/k_radar_ks.js:741
 #: ui/templates/platform/surec/index.html:423
 msgid "Veri yok"
 msgstr ""
@@ -5825,8 +5835,8 @@ msgid "Orta"
 msgstr ""
 
 #: ui/static/platform/js/k_radar_ks.js:112
-#: ui/static/platform/js/k_radar_ks.js:746
-#: ui/static/platform/js/k_radar_ks.js:1532
+#: ui/static/platform/js/k_radar_ks.js:744
+#: ui/static/platform/js/k_radar_ks.js:1530
 #: ui/static/platform/js/k_rapor.js:703
 #: ui/static/platform/js/reports/initiative_bubble.js:11
 #: ui/static/platform/js/reports/initiative_bubble.js:12
@@ -5893,119 +5903,119 @@ msgid "Tehdit ekle…"
 msgstr ""
 
 #: ui/static/platform/js/k_radar_ks.js:392
-#: ui/static/platform/js/k_radar_ks.js:497
-#: ui/static/platform/js/k_radar_ks.js:584
+#: ui/static/platform/js/k_radar_ks.js:495
+#: ui/static/platform/js/k_radar_ks.js:582
 msgid "Maddeyi Düzenle"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:431
+#: ui/static/platform/js/k_radar_ks.js:429
 msgid "SO — Saldırgan"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:431
+#: ui/static/platform/js/k_radar_ks.js:429
 msgid "SO stratejisi ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:432
+#: ui/static/platform/js/k_radar_ks.js:430
 msgid "WO — Dönüşüm"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:432
+#: ui/static/platform/js/k_radar_ks.js:430
 msgid "WO stratejisi ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:433
+#: ui/static/platform/js/k_radar_ks.js:431
 msgid "ST — Savunma"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:433
+#: ui/static/platform/js/k_radar_ks.js:431
 msgid "ST stratejisi ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:434
+#: ui/static/platform/js/k_radar_ks.js:432
 msgid "WT — Kaçınma"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:434
+#: ui/static/platform/js/k_radar_ks.js:432
 msgid "WT stratejisi ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:524
+#: ui/static/platform/js/k_radar_ks.js:522
 msgid "Siyasi (P)"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:524
+#: ui/static/platform/js/k_radar_ks.js:522
 msgid "Siyasi faktör ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:525
+#: ui/static/platform/js/k_radar_ks.js:523
 msgid "Ekonomik (E)"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:525
+#: ui/static/platform/js/k_radar_ks.js:523
 msgid "Ekonomik faktör ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:526
+#: ui/static/platform/js/k_radar_ks.js:524
 msgid "Sosyal (S)"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:526
+#: ui/static/platform/js/k_radar_ks.js:524
 msgid "Sosyal faktör ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:527
+#: ui/static/platform/js/k_radar_ks.js:525
 msgid "Teknolojik (T)"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:527
+#: ui/static/platform/js/k_radar_ks.js:525
 msgid "Teknolojik faktör ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:528
+#: ui/static/platform/js/k_radar_ks.js:526
 msgid "Çevresel (E)"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:528
+#: ui/static/platform/js/k_radar_ks.js:526
 msgid "Çevresel faktör ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:529
+#: ui/static/platform/js/k_radar_ks.js:527
 msgid "Yasal (L)"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:529
+#: ui/static/platform/js/k_radar_ks.js:527
 msgid "Yasal faktör ekle…"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:745
+#: ui/static/platform/js/k_radar_ks.js:743
 #: ui/templates/platform/project/raid.html:121
 msgid "Devam ediyor"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:768
+#: ui/static/platform/js/k_radar_ks.js:766
 msgid "Yıllık Hedefler"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:827
+#: ui/static/platform/js/k_radar_ks.js:825
 msgid "Henüz KR eklenmemiş"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:854 ui/templates/platform/sp/okr.html:23
+#: ui/static/platform/js/k_radar_ks.js:852 ui/templates/platform/sp/okr.html:23
 msgid "Yeni Hedef Ekle"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:862
+#: ui/static/platform/js/k_radar_ks.js:860
 msgid "Hedef eklendi."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:864
-#: ui/static/platform/js/k_radar_ks.js:889
-#: ui/static/platform/js/k_radar_ks.js:909
-#: ui/static/platform/js/k_radar_ks.js:928
-#: ui/static/platform/js/k_radar_ks.js:955
-#: ui/static/platform/js/k_radar_ks.js:974
-#: ui/static/platform/js/k_radar_ks.js:1037
+#: ui/static/platform/js/k_radar_ks.js:862
+#: ui/static/platform/js/k_radar_ks.js:887
+#: ui/static/platform/js/k_radar_ks.js:907
+#: ui/static/platform/js/k_radar_ks.js:926
+#: ui/static/platform/js/k_radar_ks.js:953
+#: ui/static/platform/js/k_radar_ks.js:972
+#: ui/static/platform/js/k_radar_ks.js:1035
 #: ui/static/platform/js/launcher_plan_year.js:56
 #: ui/static/platform/js/launcher_plan_year.js:90
 #: ui/static/platform/js/launcher_plan_year.js:143
@@ -6016,168 +6026,168 @@ msgstr ""
 #: ui/static/platform/js/sp_analiz.js:150
 #: ui/static/platform/js/sp_analiz.js:187
 #: ui/static/platform/js/sp_donemler.js:40
-#: ui/static/platform/js/sp_donemler.js:73
-#: ui/static/platform/js/sp_donemler.js:98
-#: ui/static/platform/js/sp_donemler.js:209
+#: ui/static/platform/js/sp_donemler.js:71
+#: ui/static/platform/js/sp_donemler.js:94
+#: ui/static/platform/js/sp_donemler.js:205
 #: ui/static/platform/js/sp_plan_year.js:69
 #: ui/static/platform/js/sp_plan_year.js:103
 #: ui/static/platform/js/sp_plan_year.js:160
 msgid "Bağlantı hatası."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:874
+#: ui/static/platform/js/k_radar_ks.js:872
 msgid "Hedefi Düzenle"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:900
+#: ui/static/platform/js/k_radar_ks.js:898
 msgid "Hedefi sil?"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:900
+#: ui/static/platform/js/k_radar_ks.js:898
 msgid "Bu hedef ve tüm KR'ları silinecek."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:918
+#: ui/static/platform/js/k_radar_ks.js:916
 #: ui/templates/platform/k_radar/ks.html:316
 msgid "Anahtar Sonuç Ekle"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:926
+#: ui/static/platform/js/k_radar_ks.js:924
 msgid "KR eklendi."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:939
+#: ui/static/platform/js/k_radar_ks.js:937
 msgid "Anahtar Sonucu Düzenle"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:953
+#: ui/static/platform/js/k_radar_ks.js:951
 msgid "KR güncellendi."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:966
+#: ui/static/platform/js/k_radar_ks.js:964
 msgid "KR silinsin mi?"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:972
+#: ui/static/platform/js/k_radar_ks.js:970
 msgid "KR silindi."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:995 ui/static/platform/js/sp_bsc.js:21
+#: ui/static/platform/js/k_radar_ks.js:993 ui/static/platform/js/sp_bsc.js:21
 #: ui/templates/platform/k_radar/ks.html:163
 #: ui/templates/platform/k_radar/ks.html:389
 msgid "Finansal"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:996 ui/static/platform/js/sp_bsc.js:22
+#: ui/static/platform/js/k_radar_ks.js:994 ui/static/platform/js/sp_bsc.js:22
 #: ui/templates/platform/k_radar/ks.html:164
 #: ui/templates/platform/k_radar/ks.html:390
 msgid "Müşteri"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:997 ui/static/platform/js/sp_bsc.js:23
+#: ui/static/platform/js/k_radar_ks.js:995 ui/static/platform/js/sp_bsc.js:23
 #: ui/templates/platform/k_radar/ks.html:391
 msgid "İç Süreçler"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:998 ui/static/platform/js/sp_bsc.js:24
+#: ui/static/platform/js/k_radar_ks.js:996 ui/static/platform/js/sp_bsc.js:24
 msgid "Öğrenme & Gelişim"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1032
+#: ui/static/platform/js/k_radar_ks.js:1030
 msgid "Perspektif atandı."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1032
+#: ui/static/platform/js/k_radar_ks.js:1030
 msgid "Atama kaldırıldı."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1050
+#: ui/static/platform/js/k_radar_ks.js:1048
 msgid "Kart Görünümü"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1051
+#: ui/static/platform/js/k_radar_ks.js:1049
 msgid "KPI Tablosu"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1053
+#: ui/static/platform/js/k_radar_ks.js:1051
 #: ui/templates/platform/k_radar/ks.html:380
 msgid "Perspektif Ata"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1122
+#: ui/static/platform/js/k_radar_ks.js:1120
 msgid "Atanmamış"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1252
+#: ui/static/platform/js/k_radar_ks.js:1250
 msgid "Otomatik Atama"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1256
+#: ui/static/platform/js/k_radar_ks.js:1254
 msgid "Otomatik Ata"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1268
+#: ui/static/platform/js/k_radar_ks.js:1266
 msgid "Atama yapılamadı"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1273
+#: ui/static/platform/js/k_radar_ks.js:1271
 msgid "Atama Tamamlandı"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1313
+#: ui/static/platform/js/k_radar_ks.js:1311
 msgid "Yıl seçili değil"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1321
+#: ui/static/platform/js/k_radar_ks.js:1319
 #: ui/templates/platform/raporlar/sektorel_detay.html:62
 msgid "Yön"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1322
+#: ui/static/platform/js/k_radar_ks.js:1320
 msgid "Kuruluş \"neden\" var ve \"nasıl\" yön belirliyor."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1323
+#: ui/static/platform/js/k_radar_ks.js:1321
 msgid "Uygulama"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1324
+#: ui/static/platform/js/k_radar_ks.js:1322
 msgid "Amaç, vizyon ve stratejiyi \"nasıl\" hayata geçiriyor."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1325
+#: ui/static/platform/js/k_radar_ks.js:1323
 msgid "Sonuçlar"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1326
+#: ui/static/platform/js/k_radar_ks.js:1324
 msgid "Bugüne kadar \"ne\" gerçekleştirildi."
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1426
+#: ui/static/platform/js/k_radar_ks.js:1424
 msgid "Results — Sonuçlar"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1427
+#: ui/static/platform/js/k_radar_ks.js:1425
 msgid "Approach — Yaklaşım"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1428
+#: ui/static/platform/js/k_radar_ks.js:1426
 msgid "Deployment — Yayılım"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1429
+#: ui/static/platform/js/k_radar_ks.js:1427
 msgid "Assessment — Değerlendirme"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1430
+#: ui/static/platform/js/k_radar_ks.js:1428
 msgid "Refinement — İyileştirme"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1493
+#: ui/static/platform/js/k_radar_ks.js:1491
 msgid "Hata:"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1529
+#: ui/static/platform/js/k_radar_ks.js:1527
 #: ui/templates/platform/k_radar/ks.html:135
 #: ui/templates/platform/k_rapor/index.html:793
 #: ui/templates/platform/surec/index.html:270
@@ -6185,7 +6195,7 @@ msgstr ""
 msgid "Hedefte"
 msgstr ""
 
-#: ui/static/platform/js/k_radar_ks.js:1531
+#: ui/static/platform/js/k_radar_ks.js:1529
 #: ui/templates/platform/k_radar/ks.html:136
 #: ui/templates/platform/k_rapor/index.html:793
 msgid "Riskli"
@@ -6209,7 +6219,7 @@ msgstr ""
 #: ui/static/platform/js/k_rapor.js:1547
 #: ui/templates/platform/k_rapor/index.html:751
 #: ui/templates/platform/k_rapor/index.html:851
-#: ui/templates/platform/masaustu/index.html:469
+#: ui/templates/platform/masaustu/index.html:504
 msgid "Geciken"
 msgstr ""
 
@@ -6582,8 +6592,8 @@ msgstr ""
 
 #: ui/static/platform/js/launcher_plan_year.js:76
 #: ui/static/platform/js/masaustu_plan_year.js:83
-#: ui/static/platform/js/sp_donemler.js:65
-#: ui/static/platform/js/sp_donemler.js:90
+#: ui/static/platform/js/sp_donemler.js:64
+#: ui/static/platform/js/sp_donemler.js:87
 #: ui/static/platform/js/sp_plan_year.js:89
 msgid "Vazgeç"
 msgstr ""
@@ -6595,14 +6605,14 @@ msgstr ""
 
 #: ui/static/platform/js/launcher_plan_year.js:124
 #: ui/static/platform/js/masaustu_plan_year.js:134
-#: ui/static/platform/js/sp_donemler.js:200
+#: ui/static/platform/js/sp_donemler.js:196
 #: ui/static/platform/js/sp_plan_year.js:141
 msgid "Geçerli bir yıl girin (2000-2100)."
 msgstr ""
 
 #: ui/static/platform/js/launcher_plan_year.js:140
 #: ui/static/platform/js/masaustu_plan_year.js:150
-#: ui/static/platform/js/sp_donemler.js:208
+#: ui/static/platform/js/sp_donemler.js:204
 msgid "Dönem oluşturulamadı."
 msgstr ""
 
@@ -6621,7 +6631,7 @@ msgstr ""
 #: ui/static/platform/js/masaustu.js:211
 #: ui/templates/platform/admin/demo_talepleri.html:66
 #: ui/templates/platform/admin/notifications.html:108
-#: ui/templates/platform/masaustu/index.html:684
+#: ui/templates/platform/masaustu/index.html:719
 msgid "Okundu"
 msgstr ""
 
@@ -6638,8 +6648,8 @@ msgid "Kaydedilemedi"
 msgstr ""
 
 #: ui/static/platform/js/masaustu.js:271
-#: ui/templates/platform/masaustu/index.html:204
-#: ui/templates/platform/masaustu/index.html:467
+#: ui/templates/platform/masaustu/index.html:239
+#: ui/templates/platform/masaustu/index.html:502
 #: ui/templates/platform/sp/exec_dashboard.html:266
 msgid "Bugün"
 msgstr ""
@@ -6655,11 +6665,6 @@ msgstr ""
 #: ui/static/platform/js/masaustu.js:274
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:46
 msgid "Gün"
-msgstr ""
-
-#: ui/static/platform/js/mc-modal-form.js:124
-#: ui/templates/platform/project/_tool_info_modal.html:6
-msgid "Bilgi"
 msgstr ""
 
 #: ui/static/platform/js/pg_tablo_modal.js:141
@@ -6994,80 +6999,80 @@ msgstr ""
 msgid "PESTLE kaydedildi."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:61
+#: ui/static/platform/js/sp_donemler.js:60
 msgid "Gerekçe (denetim kaydına yazılır)"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:62
+#: ui/static/platform/js/sp_donemler.js:61
 msgid "Örn: 2024 verileri tamamlandı ve onaylandı"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:64
+#: ui/static/platform/js/sp_donemler.js:63
 #: ui/templates/platform/sp/donemler.html:138
 msgid "Mühürle"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:72
+#: ui/static/platform/js/sp_donemler.js:70
 msgid "Dönem mühürlenemedi."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:85
+#: ui/static/platform/js/sp_donemler.js:82
 msgid "Gerekçe (zorunlu)"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:86
+#: ui/static/platform/js/sp_donemler.js:83
 msgid "Örn: Aralık ayı PGV girişi unutulmuş, tamamlanacak"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:89
+#: ui/static/platform/js/sp_donemler.js:86
 #: ui/templates/platform/sp/donemler.html:131
 msgid "Mührü Aç"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:97
+#: ui/static/platform/js/sp_donemler.js:93
 msgid "Mühür açılamadı."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:257
-#: ui/static/platform/js/sp_donemler.js:259
+#: ui/static/platform/js/sp_donemler.js:253
+#: ui/static/platform/js/sp_donemler.js:255
 msgid "Sadece"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:257
-#: ui/static/platform/js/sp_donemler.js:259
+#: ui/static/platform/js/sp_donemler.js:253
+#: ui/static/platform/js/sp_donemler.js:255
 msgid "'de"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:312
+#: ui/static/platform/js/sp_donemler.js:308
 msgid "İki dönem arasında kayıtlı konfigürasyon farkı yok."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:351
+#: ui/static/platform/js/sp_donemler.js:347
 #: ui/templates/platform/kurum/index.html:591
 msgid "Stratejiler"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:351
+#: ui/static/platform/js/sp_donemler.js:347
 msgid "Strateji konfigürasyonu yok."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:352
+#: ui/static/platform/js/sp_donemler.js:348
 msgid "Alt Stratejiler"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:352
+#: ui/static/platform/js/sp_donemler.js:348
 msgid "Alt strateji konfigürasyonu yok."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:385
+#: ui/static/platform/js/sp_donemler.js:381
 msgid "Aynı dönem seçildi"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:385
+#: ui/static/platform/js/sp_donemler.js:381
 msgid "Farklı iki dönem seçin."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:389
+#: ui/static/platform/js/sp_donemler.js:385
 #: ui/templates/platform/admin/hata_kontrolu.html:122
 #: ui/templates/platform/admin/hata_kontrolu.html:158
 #: ui/templates/platform/admin/hierarchy.html:27
@@ -7129,8 +7134,8 @@ msgstr ""
 #: ui/templates/platform/k_rapor/index.html:905
 #: ui/templates/platform/k_rapor/index.html:914
 #: ui/templates/platform/launcher/_vgs_modal.html:60
-#: ui/templates/platform/masaustu/index.html:63
-#: ui/templates/platform/masaustu/index.html:215
+#: ui/templates/platform/masaustu/index.html:66
+#: ui/templates/platform/masaustu/index.html:250
 #: ui/templates/platform/masaustu/yonetim_ozeti.html:69
 #: ui/templates/platform/masaustu/yonetim_ozeti.html:81
 #: ui/templates/platform/masaustu/yonetim_ozeti.html:93
@@ -7149,19 +7154,19 @@ msgstr ""
 msgid "Yükleniyor…"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:394
+#: ui/static/platform/js/sp_donemler.js:390
 msgid "Karşılaştırma yapılamadı."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:396
+#: ui/static/platform/js/sp_donemler.js:392
 msgid "Bağlantı hatası"
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:396
+#: ui/static/platform/js/sp_donemler.js:392
 msgid "Sunucuya ulaşılamadı."
 msgstr ""
 
-#: ui/static/platform/js/sp_donemler.js:399
+#: ui/static/platform/js/sp_donemler.js:395
 #: ui/templates/platform/sp/donemler.html:187
 #: ui/templates/platform/sp/scenarios_kiyas.html:31
 msgid "Karşılaştır"
@@ -7389,6 +7394,7 @@ msgid "Erteleme işlemi başarısız."
 msgstr ""
 
 #: ui/static/platform/js/surec.js:2624
+#: ui/templates/platform/k_rapor/index.html:192
 msgid "Dönem"
 msgstr ""
 
@@ -7881,7 +7887,7 @@ msgid "Toplam Bütçe"
 msgstr ""
 
 #: ui/static/platform/js/reports/chro_dashboard.js:14
-#: ui/templates/platform/masaustu/index.html:167
+#: ui/templates/platform/masaustu/index.html:170
 #: ui/templates/platform/raporlar/departman_performans.html:27
 msgid "Bireysel PG"
 msgstr ""
@@ -8038,7 +8044,7 @@ msgstr ""
 
 #: ui/static/platform/js/reports/hizalama_sankey.js:191
 #: ui/templates/platform/k_radar/hub.html:35
-#: ui/templates/platform/masaustu/index.html:202
+#: ui/templates/platform/masaustu/index.html:237
 #: ui/templates/platform/project/list.html:278
 #: ui/templates/platform/project/list.html:314
 #: ui/templates/platform/project/list.html:324
@@ -8271,7 +8277,7 @@ msgid "AI yanıt vermedi"
 msgstr ""
 
 #: ui/static/platform/js/reports/sektor_benchmark.js:165
-#: ui/templates/platform/masaustu/index.html:207
+#: ui/templates/platform/masaustu/index.html:242
 #: ui/templates/platform/raporlar/pg_proje_etki.html:24
 #: ui/templates/platform/sp/dynamic_flow.html:34
 #: ui/templates/platform/sp/exec_dashboard.html:99
@@ -8287,6 +8293,8 @@ msgstr ""
 #: ui/static/platform/js/reports/strateji_hikayesi.js:15
 #: ui/templates/platform/bireysel/karne.html:87
 #: ui/templates/platform/k_rapor/index.html:875
+#: ui/templates/platform/raporlar/evrim_filmi.html:27
+#: ui/templates/platform/raporlar/risk_heatmap.html:14
 #: ui/templates/platform/sp/ceyreklik_review.html:35
 #: ui/templates/platform/sp/donemler.html:89
 #: ui/templates/platform/surec/faaliyetler.html:51
@@ -8597,11 +8605,12 @@ msgstr ""
 #: ui/templates/platform/admin/istatistikler.html:75
 #: ui/templates/platform/calendar/_calendar_quick_create_modal.html:97
 #: ui/templates/platform/calendar/index.html:23
+#: ui/templates/platform/k_radar/kpr_cpm.html:10
 #: ui/templates/platform/k_radar/risk_management.html:108
 #: ui/templates/platform/k_radar/risk_management.html:133
 #: ui/templates/platform/k_rapor/index.html:250
 #: ui/templates/platform/k_rapor/index.html:595
-#: ui/templates/platform/masaustu/index.html:444
+#: ui/templates/platform/masaustu/index.html:479
 #: ui/templates/platform/masaustu/yonetim_ozeti.html:46
 #: ui/templates/platform/project/detail.html:10
 #: ui/templates/platform/project/portfolio.html:62
@@ -8651,6 +8660,40 @@ msgid ""
 "altında konumlanabilir. <b>Girişim ≠ Proje:</b> Girişim \"Almanya'ya "
 "gireceğiz\" (3 yıllık hamle), Proje \"Münih ofisi kuracağız\" (6 aylık "
 "somut iş)."
+msgstr ""
+
+#: ui/templates/platform/_temel_akis.html:9
+msgid "Stratejik planlama"
+msgstr ""
+
+#: ui/templates/platform/_temel_akis.html:10
+#: ui/templates/platform/k_rapor/index.html:98
+msgid "Süreç & PG"
+msgstr ""
+
+#: ui/templates/platform/_temel_akis.html:10
+msgid "Süreçler ve performans göstergeleri"
+msgstr ""
+
+#: ui/templates/platform/_temel_akis.html:11
+msgid "Veri girişi"
+msgstr ""
+
+#: ui/templates/platform/_temel_akis.html:11
+msgid "Süreç karnesinde veri girişi"
+msgstr ""
+
+#: ui/templates/platform/_temel_akis.html:12
+msgid "Karne & Rapor"
+msgstr ""
+
+#: ui/templates/platform/_temel_akis.html:12
+msgid "Raporlar ve analizler"
+msgstr ""
+
+#: ui/templates/platform/_temel_akis.html:14
+#: ui/templates/platform/_temel_akis.html:15
+msgid "Temel akış"
 msgstr ""
 
 #: ui/templates/platform/auth/login.html:20 ui/templates/platform/base.html:8
@@ -9634,6 +9677,10 @@ msgstr ""
 msgid "Başlık veya mesaj ara…"
 msgstr ""
 
+#: ui/templates/platform/admin/notifications.html:55
+msgid "Bildirim türü"
+msgstr ""
+
 #: ui/templates/platform/admin/notifications.html:56
 msgid "Tüm Tipler"
 msgstr ""
@@ -9657,6 +9704,10 @@ msgstr ""
 #: ui/templates/platform/admin/notifications.html:61
 #: ui/templates/platform/ayarlar/eposta.html:160
 msgid "Görev Atama"
+msgstr ""
+
+#: ui/templates/platform/admin/notifications.html:63
+msgid "Bildirim durumu"
 msgstr ""
 
 #: ui/templates/platform/admin/notifications.html:64
@@ -9761,6 +9812,10 @@ msgstr ""
 
 #: ui/templates/platform/admin/setup_import.html:33
 msgid "Şablonu İndir (.xlsx)"
+msgstr ""
+
+#: ui/templates/platform/admin/setup_import.html:36
+msgid "Excel dosyası (.xlsx)"
 msgstr ""
 
 #: ui/templates/platform/admin/setup_import.html:38
@@ -10228,8 +10283,13 @@ msgstr ""
 msgid "Arama ve Filtreler"
 msgstr ""
 
+#: ui/templates/platform/admin/users.html:41
 #: ui/templates/platform/admin/users.html:42
 msgid "Ad, e-posta, rol veya kurum ile ara…"
+msgstr ""
+
+#: ui/templates/platform/admin/users.html:45
+msgid "Kuruma göre filtrele"
 msgstr ""
 
 #: ui/templates/platform/admin/users.html:46
@@ -10408,6 +10468,10 @@ msgid ""
 " (geri alınamaz). Şifre + onay metni gerekir."
 msgstr ""
 
+#: ui/templates/platform/admin/yedekleme.html:107
+msgid "Yedek dosyası (.dump)"
+msgstr ""
+
 #: ui/templates/platform/admin/yedekleme.html:108
 #: ui/templates/platform/auth/login.html:59
 #: ui/templates/platform/auth/profil.html:263
@@ -10525,8 +10589,13 @@ msgstr ""
 msgid "Süreç Seçimi ve Araçlar"
 msgstr ""
 
+#: ui/templates/platform/analiz/index.html:37
 #: ui/templates/platform/analiz/index.html:38
 msgid "Süreç ara…"
+msgstr ""
+
+#: ui/templates/platform/analiz/index.html:40
+msgid "Süreç seç"
 msgstr ""
 
 #: ui/templates/platform/analiz/index.html:41
@@ -10787,6 +10856,10 @@ msgstr "Profil Özeti"
 msgid "Fotoğraf Yükle"
 msgstr ""
 
+#: ui/templates/platform/auth/profil.html:33
+msgid "Profil fotoğrafı"
+msgstr ""
+
 #: ui/templates/platform/auth/profil.html:59
 msgid "Kişisel Bilgiler"
 msgstr ""
@@ -10943,6 +11016,7 @@ msgid "Telefonunuzdaki Authenticator uygulamasından 6 haneli kodu girin."
 msgstr ""
 
 #: ui/templates/platform/auth/totp_challenge.html:42
+#: ui/templates/platform/auth/totp_setup.html:72
 msgid "Doğrulama Kodu"
 msgstr ""
 
@@ -11660,7 +11734,7 @@ msgid "Kurum Takvimi"
 msgstr ""
 
 #: ui/templates/platform/calendar/index.html:24
-#: ui/templates/platform/masaustu/index.html:445
+#: ui/templates/platform/masaustu/index.html:480
 msgid "Kendime"
 msgstr ""
 
@@ -11672,7 +11746,7 @@ msgid ""
 msgstr ""
 
 #: ui/templates/platform/calendar/index.html:32
-#: ui/templates/platform/masaustu/index.html:453
+#: ui/templates/platform/masaustu/index.html:488
 #: ui/templates/platform/project/calendar.html:27
 msgid "Takvim yükleniyor…"
 msgstr ""
@@ -12000,6 +12074,12 @@ msgid "Etki 5"
 msgstr ""
 
 #: ui/templates/platform/k_radar/cross_paydas.html:21
+#: ui/templates/platform/k_radar/cross_paydas.html:39
+#: ui/templates/platform/k_rapor/index.html:661
+msgid "İlgi"
+msgstr ""
+
+#: ui/templates/platform/k_radar/cross_paydas.html:21
 msgid "İlgi 1"
 msgstr ""
 
@@ -12027,6 +12107,12 @@ msgstr ""
 msgid "Ad/Rol filtrele"
 msgstr ""
 
+#: ui/templates/platform/k_radar/cross_paydas.html:28
+#: ui/templates/platform/k_radar/kp_olgunluk.html:48
+#: ui/templates/platform/project/list.html:285
+msgid "Sırala"
+msgstr ""
+
 #: ui/templates/platform/k_radar/cross_paydas.html:29
 msgid "Varsayılan"
 msgstr ""
@@ -12045,11 +12131,6 @@ msgstr ""
 
 #: ui/templates/platform/k_radar/cross_paydas.html:33
 msgid "İlgi (Düşük-Yüksek)"
-msgstr ""
-
-#: ui/templates/platform/k_radar/cross_paydas.html:39
-#: ui/templates/platform/k_rapor/index.html:661
-msgid "İlgi"
 msgstr ""
 
 #: ui/templates/platform/k_radar/cross_rekabet.html:7
@@ -12819,7 +12900,7 @@ msgid "Detaylı Analiz Modülleri"
 msgstr ""
 
 #: ui/templates/platform/k_radar/kp.html:70
-#: ui/templates/platform/masaustu/index.html:80
+#: ui/templates/platform/masaustu/index.html:83
 msgid "Olgunluk"
 msgstr ""
 
@@ -13013,6 +13094,10 @@ msgstr ""
 #: ui/templates/platform/k_radar/kp_olgunluk.html:33
 #: ui/templates/platform/surec/karne.html:118
 msgid "Süreç seçin"
+msgstr ""
+
+#: ui/templates/platform/k_radar/kp_olgunluk.html:38
+msgid "Olgunluk seviyesi"
 msgstr ""
 
 #: ui/templates/platform/k_radar/kp_olgunluk.html:39
@@ -13536,8 +13621,16 @@ msgstr ""
 msgid "Satır: Olasılık · Sütun: Etki"
 msgstr ""
 
+#: ui/templates/platform/k_radar/risk_management.html:34
+msgid "Önem derecesi"
+msgstr ""
+
 #: ui/templates/platform/k_radar/risk_management.html:35
 msgid "Tüm severity"
+msgstr ""
+
+#: ui/templates/platform/k_radar/risk_management.html:41
+msgid "Risk durumu"
 msgstr ""
 
 #: ui/templates/platform/k_radar/risk_management.html:42
@@ -13725,10 +13818,6 @@ msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:97
 msgid "Vizyon skoru ve strateji başarı tablosu"
-msgstr ""
-
-#: ui/templates/platform/k_rapor/index.html:98
-msgid "Süreç & PG"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:98
@@ -14032,6 +14121,10 @@ msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:385
 msgid "En Aktif Kullanıcılar"
+msgstr ""
+
+#: ui/templates/platform/k_rapor/index.html:387
+msgid "Gün aralığı"
 msgstr ""
 
 #: ui/templates/platform/k_rapor/index.html:390
@@ -15019,6 +15112,7 @@ msgid "Henüz strateji eklenmemiş"
 msgstr ""
 
 #: ui/templates/platform/launcher/_vgs_modal.html:17
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:3
 #: ui/templates/platform/surec/karne.html:105
 msgid "Plan yılı"
 msgstr ""
@@ -15082,15 +15176,47 @@ msgstr ""
 msgid "Bu PG için henüz kayıt yok."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:24
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:3
+msgid "Plan yılını tanımla"
+msgstr ""
+
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:4
+msgid "İlk ana stratejiyi ekle"
+msgstr ""
+
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:5
+msgid "İlk süreci oluştur"
+msgstr ""
+
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:6
+msgid "Performans göstergesi ekle"
+msgstr ""
+
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:7
+msgid "İlk veri"
+msgstr ""
+
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:7
+msgid "İlk veriyi gir"
+msgstr ""
+
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:11
+msgid "İlk kurulum"
+msgstr ""
+
+#: ui/templates/platform/masaustu/_ilk_kurulum.html:14
+msgid "Gizle"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:27
 msgid "Widget görünürlüğü"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:25
+#: ui/templates/platform/masaustu/index.html:28
 msgid "Widget yönetimi"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:47
+#: ui/templates/platform/masaustu/index.html:50
 msgid ""
 "<strong>Karalama defteri</strong> ve <strong>widget sırası / gizlenen "
 "kartlar</strong> yalnızca bu tarayıcıda (<code>localStorage</code>) "
@@ -15099,335 +15225,356 @@ msgid ""
 "açmak için sayfa yenilenir."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:58
+#: ui/templates/platform/masaustu/index.html:61
 msgid "Yönetici Sabah Özeti"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:73
+#: ui/templates/platform/masaustu/index.html:76
 msgid "Kurumsal Olgunluk Endeksi"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:78
+#: ui/templates/platform/masaustu/index.html:81
 msgid "Kimlik & Strateji Netliği"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:79
+#: ui/templates/platform/masaustu/index.html:82
 msgid "Süreç Mimarisi"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:81
+#: ui/templates/platform/masaustu/index.html:84
 msgid "İcra Disiplini"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:103
+#: ui/templates/platform/masaustu/index.html:106
 msgid "Bu dönem önceliklerin"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:118
+#: ui/templates/platform/masaustu/index.html:121
 msgid "AI ile zenginleştir"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:125
+#: ui/templates/platform/masaustu/index.html:128
 msgid ""
 "Yapısal olgunluk — performans verisi (PGV) girmeden mevcut yapıdan "
 "hesaplanır."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:134
+#: ui/templates/platform/masaustu/index.html:137
 msgid "Bugünün özeti"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:140
+#: ui/templates/platform/masaustu/index.html:143
 msgid "Okunmamış bildirim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:144
+#: ui/templates/platform/masaustu/index.html:147
 #, python-format
 msgid "%(ay)s ayı için eksik PG verisi"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:148
+#: ui/templates/platform/masaustu/index.html:151
 msgid "Geciken faaliyet (bitiş tarihi geçti)"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:152
+#: ui/templates/platform/masaustu/index.html:155
 msgid "Önümüzdeki 7 gün içinde biten"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:157
+#: ui/templates/platform/masaustu/index.html:160
 msgid "Harika — acil dikkat gerektiren bir uyarı görünmüyor."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:169
+#: ui/templates/platform/masaustu/index.html:172
 msgid "Aktif gösterge"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:173
+#: ui/templates/platform/masaustu/index.html:176
 msgid "Devam Eden Faaliyet"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:175
+#: ui/templates/platform/masaustu/index.html:178
 msgid "Aktif faaliyet"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:179
+#: ui/templates/platform/masaustu/index.html:182
 msgid "Süreç PG"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:181
+#: ui/templates/platform/masaustu/index.html:184
 msgid "Üye/lider olduğunuz süreçlerdeki toplam aktif PG"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:185
+#: ui/templates/platform/masaustu/index.html:188
 msgid "Okunmamış Bildirim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:187
+#: ui/templates/platform/masaustu/index.html:190
 msgid "Bekleyen bildirim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:197
+#: ui/templates/platform/masaustu/index.html:203
+msgid "Veri girişi bekleyen PG'lerim"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:214
+msgid "Eksik"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:217
+msgid "Gir"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:222
+#, python-format
+msgid "%(n)s PG daha"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:232
 msgid "Benim Görevlerim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:205
+#: ui/templates/platform/masaustu/index.html:236
+msgid "Görev filtresi"
+msgstr ""
+
+#: ui/templates/platform/masaustu/index.html:240
 msgid "Bu hafta"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:322
+#: ui/templates/platform/masaustu/index.html:357
 msgid "Favoriler & Son Ziyaret Edilenler"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:324
+#: ui/templates/platform/masaustu/index.html:359
 msgid "Önceki sayfayı favorilere ekle"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:325
+#: ui/templates/platform/masaustu/index.html:360
 msgid "Son Sayfayı Pinle"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:329
+#: ui/templates/platform/masaustu/index.html:364
 msgid "Sabitlenmiş"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:332
+#: ui/templates/platform/masaustu/index.html:367
 msgid ""
 "Henüz sabitlenmiş bir sayfa yok. Bir sayfaya gidip yukarıdaki \"Son "
 "Sayfayı Pinle\" butonuna basın."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:338
+#: ui/templates/platform/masaustu/index.html:373
 msgid "Henüz ziyaret kaydı yok. Sayfalar arasında gezdikçe burada listelenecek."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:424
+#: ui/templates/platform/masaustu/index.html:459
 msgid "Hızlı işlemler"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:428
+#: ui/templates/platform/masaustu/index.html:463
 msgid "Bireysel karne"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:430
+#: ui/templates/platform/masaustu/index.html:465
 #: ui/templates/platform/surec/index.html:155
 msgid "Süreçler"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:431
+#: ui/templates/platform/masaustu/index.html:466
 msgid "Stratejik plan"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:432
+#: ui/templates/platform/masaustu/index.html:467
 #: ui/templates/platform/project/detail.html:18
 #: ui/templates/platform/project/list.html:350
 #: ui/templates/platform/sp/projeler.html:10
 msgid "Projeler"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:441
+#: ui/templates/platform/masaustu/index.html:476
 msgid "Takvimim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:450
+#: ui/templates/platform/masaustu/index.html:485
 msgid ""
 "Boş güne tıklayın veya aralık seçin; Kurum Takvimi ile aynı hızlı ekleme "
 "(süreç faaliyeti, proje görevi, kendime görev)."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:462
+#: ui/templates/platform/masaustu/index.html:497
 msgid "Benim Masam"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:463
+#: ui/templates/platform/masaustu/index.html:498
 msgid "Karnede aç →"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:468
+#: ui/templates/platform/masaustu/index.html:503
 msgid "7 gün"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:475
+#: ui/templates/platform/masaustu/index.html:510
 #, python-format
 msgid "%(p)s%% ilerleme, bugün bitiş"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:479
+#: ui/templates/platform/masaustu/index.html:514
 msgid "Bugün bitiş tarihli faaliyet yok."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:487
+#: ui/templates/platform/masaustu/index.html:522
 #, python-format
 msgid "Bitiş: %(tarih)s · %%%(ilerleme)s"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:490
+#: ui/templates/platform/masaustu/index.html:525
 msgid "Önümüzdeki 7 günde biten faaliyet yok."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:497
+#: ui/templates/platform/masaustu/index.html:532
 #, python-format
 msgid "Bitiş: %(tarih)s (gecikmiş)"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:500
+#: ui/templates/platform/masaustu/index.html:535
 msgid "Geciken faaliyet yok."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:509
+#: ui/templates/platform/masaustu/index.html:544
 #, python-format
 msgid "Dikkat: %(ay)s verisi"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:513
+#: ui/templates/platform/masaustu/index.html:548
 #, python-format
 msgid "Bu ay için henüz veri girmediğiniz göstergeler (%(n)s):"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:519
+#: ui/templates/platform/masaustu/index.html:554
 msgid "Karnede veri gir"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:521
+#: ui/templates/platform/masaustu/index.html:556
 msgid "Bu ay tüm bireysel PG’lerinizde en az bir veri kaydı var (veya PG yok)."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:529
+#: ui/templates/platform/masaustu/index.html:564
 msgid "Karalama defteri"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:533
+#: ui/templates/platform/masaustu/index.html:568
 msgid "Notlar yalnızca <strong>bu tarayıcıda</strong> tutulur (sunucuya gitmez)."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:535
+#: ui/templates/platform/masaustu/index.html:570
 msgid "Bugünkü notunuz…"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:535
+#: ui/templates/platform/masaustu/index.html:570
 msgid "Karalama notu"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:543
+#: ui/templates/platform/masaustu/index.html:578
 msgid "Özet listeler"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:549
+#: ui/templates/platform/masaustu/index.html:584
 msgid "Bireysel PG'lerim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:550
-#: ui/templates/platform/masaustu/index.html:574
-#: ui/templates/platform/masaustu/index.html:672
+#: ui/templates/platform/masaustu/index.html:585
+#: ui/templates/platform/masaustu/index.html:609
+#: ui/templates/platform/masaustu/index.html:707
 msgid "Tümünü Gör →"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:565
+#: ui/templates/platform/masaustu/index.html:600
 msgid "Henüz bireysel PG yok."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:573
+#: ui/templates/platform/masaustu/index.html:608
 msgid "Devam Eden Faaliyetlerim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:588
+#: ui/templates/platform/masaustu/index.html:623
 #, python-format
 msgid "Bitiş: %(tarih)s"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:593
+#: ui/templates/platform/masaustu/index.html:628
 msgid "Devam eden faaliyet yok."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:606
+#: ui/templates/platform/masaustu/index.html:641
 msgid "Favori PG'lerim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:607
+#: ui/templates/platform/masaustu/index.html:642
 #, python-format
 msgid "%(n)s gösterge"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:609
+#: ui/templates/platform/masaustu/index.html:644
 msgid ""
 "Süreç karnelerinden yıldızladığınız göstergeler son ölçüm değerleriyle "
 "burada toplanır."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:626
+#: ui/templates/platform/masaustu/index.html:661
 msgid "Hedef oranı — compute_pg_score"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:626
+#: ui/templates/platform/masaustu/index.html:661
 msgid "Hedef oranı"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:630
+#: ui/templates/platform/masaustu/index.html:665
 msgid "Başarı bandı — status_percentage; hedef oranı değildir"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:630
+#: ui/templates/platform/masaustu/index.html:665
 msgid "Başarı bandı"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:634
+#: ui/templates/platform/masaustu/index.html:669
 #: ui/templates/platform/raporlar/hizalama_sankey.html:56
 #: ui/templates/platform/sp/index.html:326
 msgid "veri yok"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:636
-#: ui/templates/platform/masaustu/index.html:660
+#: ui/templates/platform/masaustu/index.html:671
+#: ui/templates/platform/masaustu/index.html:695
 #, python-format
 msgid "Hedef: %(v)s"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:648
+#: ui/templates/platform/masaustu/index.html:683
 msgid "Süreç PG'lerim"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:649
+#: ui/templates/platform/masaustu/index.html:684
 msgid "Süreçlere Git →"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:651
+#: ui/templates/platform/masaustu/index.html:686
 msgid ""
 "Son güncellenen <strong>5</strong> gösterge listelenir; toplam adet "
 "üstteki istatistik kartındadır."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:684
+#: ui/templates/platform/masaustu/index.html:719
 msgid "Okundu işaretle"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:688
+#: ui/templates/platform/masaustu/index.html:723
 msgid "Okunmamış bildirim yok."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:697
+#: ui/templates/platform/masaustu/index.html:732
 msgid "Stratejik Hedefler"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:698
+#: ui/templates/platform/masaustu/index.html:733
 msgid "Stratejik Planlamaya Git →"
 msgstr ""
 
@@ -15491,6 +15638,10 @@ msgstr ""
 #: ui/templates/platform/project/_project_views_nav.html:22
 #: ui/templates/platform/project/raid.html:19
 msgid "RAID"
+msgstr ""
+
+#: ui/templates/platform/project/_tool_info_modal.html:6
+msgid "Bilgi"
 msgstr ""
 
 #: ui/templates/platform/project/calendar.html:19
@@ -15953,10 +16104,6 @@ msgstr ""
 
 #: ui/templates/platform/project/list.html:273
 msgid "Ad / açıklama"
-msgstr ""
-
-#: ui/templates/platform/project/list.html:285
-msgid "Sırala"
 msgstr ""
 
 #: ui/templates/platform/project/list.html:287
@@ -18212,6 +18359,10 @@ msgid "Base URL"
 msgstr ""
 
 #: ui/templates/platform/sp/ai_settings.html:86
+msgid "Temel URL"
+msgstr ""
+
+#: ui/templates/platform/sp/ai_settings.html:86
 msgid "https://openrouter.ai/api/v1"
 msgstr ""
 
@@ -19572,6 +19723,10 @@ msgstr ""
 msgid "What-if harmanı"
 msgstr ""
 
+#: ui/templates/platform/sp/scenarios_kiyas.html:51
+msgid "Karışım oranı"
+msgstr ""
+
 #: ui/templates/platform/sp/scenarios_kiyas.html:55
 msgid "HARMANLANMIŞ VİZYON SKORU"
 msgstr ""
@@ -19843,6 +19998,10 @@ msgstr ""
 msgid "Sahne süresi (sn):"
 msgstr ""
 
+#: ui/templates/platform/sp/tv.html:161
+msgid "Sahne süresi (sn)"
+msgstr ""
+
 #: ui/templates/platform/sp/tv.html:165
 msgid "+ Metrik panosu"
 msgstr ""
@@ -20058,6 +20217,10 @@ msgstr ""
 
 #: ui/templates/platform/surec/index.html:137
 msgid "Süreç ara (ad veya kod)…"
+msgstr ""
+
+#: ui/templates/platform/surec/index.html:140
+msgid "Skora göre filtrele"
 msgstr ""
 
 #: ui/templates/platform/surec/index.html:141
@@ -20579,6 +20742,14 @@ msgstr ""
 msgid "%(i)s Puan"
 msgstr ""
 
+#: ui/templates/platform/surec/karne.html:653
+msgid "Puan aralığı"
+msgstr ""
+
+#: ui/templates/platform/surec/karne.html:657
+msgid "Puan açıklaması"
+msgstr ""
+
 #: ui/templates/platform/surec/karne.html:659
 msgid "Beklentinin Çok Altında"
 msgstr ""
@@ -20958,11 +21129,15 @@ msgstr ""
 msgid "Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin misiniz?"
 msgstr ""
 
-#: ui/templates/platform/admin/sub_tenants.html:412
+#: ui/templates/platform/admin/sub_tenants.html:394
+msgid "Evet, sıfırla"
+msgstr ""
+
+#: ui/templates/platform/admin/sub_tenants.html:415
 msgid "Bu alt kurumu pasifleştirmek istiyor musunuz?"
 msgstr ""
 
-#: ui/templates/platform/admin/sub_tenants.html:412
+#: ui/templates/platform/admin/sub_tenants.html:415
 msgid "Bu alt kurumu aktifleştirmek istiyor musunuz?"
 msgstr ""
 
@@ -21134,47 +21309,47 @@ msgstr ""
 msgid "sekme"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:237
+#: ui/templates/platform/masaustu/index.html:272
 msgid "tarihsiz"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:238
+#: ui/templates/platform/masaustu/index.html:273
 msgid "gün gecikme"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:240
+#: ui/templates/platform/masaustu/index.html:275
 msgid "gün kaldı"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:241
+#: ui/templates/platform/masaustu/index.html:276
 msgid "gün"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:257
+#: ui/templates/platform/masaustu/index.html:292
 msgid "Filtreye uyan görev yok."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:295
+#: ui/templates/platform/masaustu/index.html:330
 msgid "Bu Hafta"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:309
+#: ui/templates/platform/masaustu/index.html:344
 msgid "Yüklenemedi:"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:364
+#: ui/templates/platform/masaustu/index.html:399
 msgid "Sabitten kaldır"
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:403
+#: ui/templates/platform/masaustu/index.html:438
 msgid "Önce bir sayfayı ziyaret edin."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:409
+#: ui/templates/platform/masaustu/index.html:444
 msgid "Bu sayfa zaten sabitlenmiş."
 msgstr ""
 
-#: ui/templates/platform/masaustu/index.html:415
+#: ui/templates/platform/masaustu/index.html:450
 msgid "sabitlendi"
 msgstr ""
 
@@ -22193,6 +22368,10 @@ msgstr ""
 
 #: ui/templates/platform/sp/tv.html:499
 msgid "✈️ Animasyonu aç"
+msgstr ""
+
+#: ui/templates/platform/sp/tv.html:516
+msgid "Ön yüz adı"
 msgstr ""
 
 #: ui/templates/platform/sp/tv.html:517
