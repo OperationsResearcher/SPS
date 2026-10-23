@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-321 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P5 — Masaüstüm: temel akış şeridi, bekleyen PG, ilk kurulum; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P5: Masaüstüm'e Temel akış şeridi, "Veri girişi bekleyen PG'lerim" kartı, İlk kurulum kontrol listesi + ortak boş durum makrosu
+**Modül:** masaustu, servisler, şablon/CSS/JS, test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/bekleyen_pg_service.py` (yeni), `app/services/ilk_kurulum_service.py` (yeni), `app/constants/periods.py` → `normalize_period_type` yardımcısı
+- `micro/modules/masaustu/routes.py` → bekleyen PG + ilk kurulum context'i, `masaustu_ilk_kurulum_gizle` (POST, tercih `theme_preferences` JSON'u)
+- `ui/templates/platform/_temel_akis.html`, `masaustu/_ilk_kurulum.html`, `_macros/bos_durum.html` (yeni), `masaustu/index.html`
+- `ui/static/platform/css/temel_akis.css` (yeni, KalDer son hali), `ui/static/platform/js/masaustu.js`
+- `tests/test_bekleyen_pg.py`, `tests/test_ilk_kurulum.py` (yeni)
+- `scripts/seed_masaustu_yeni_kartlar.py` (yeni) → MA21 bekleyen_pg, MA22 ilk_kurulum, TA01 serit (ÇALIŞTIRILMADI)
+
+### Yapılan İşlem
+KalDer `752d51b` (SP hub kısmı hariç), `0f5eb2c`, `7033146`, `27e6fa3` yamaları temiz uygulandı; ana projeye uyarlama: (1) `kalder_core_lock`/holding kilidi bağımlılığı kaldırıldı ve holding testi silindi, (2) kaskad yok → "Strateji" adımı `app_bp.sp`'ye bağlandı, (3) toplu veri girişi ızgarası yok → `izgara=1` parametresi ve "toplu" ifadesi çıkarıldı, (4) kart seed'i ana DB'deki mevcut MA01–MA20 numaralarına dokunmadan yalnız 3 yeni kart için yeniden yazıldı.
+
+### Notlar
+- **Seed koşulmadı:** önce kart keşfi (Admin > Kart Yönetimi), sonra `python scripts/seed_masaustu_yeni_kartlar.py`; Test/Yayın'da ayrıca (kod deploy'u seed çalıştırmaz).
+- Yeni `_()` msgid'leri ("Temel akış", "Stratejik planlama", "Süreç karnesinde veri girişi" vb.) ve 3 kart açıklaması `.po`'da yok → EN'de Türkçe görünür; dallar birleşince `i18n_cikar.py --yaz` + EN çeviri gerekir (KURALLAR §5.1).
+- Tarayıcıda gözle doğrulanmadı; base.html/route değişimi için `python pybasla.py` ile yeniden başlat.
+
 ## TASK-316 | 2026-10-10 | ✅ Tamamlandı (Dalga 4 — kalite; yalnız Yerel; commit yok)
 
 **Görev:** Derin denetim Dalga 4: modal erişilebilirliği, rapor JS i18n, testlerde tenant guard

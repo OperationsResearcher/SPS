@@ -1,0 +1,28 @@
+{# Temel akış (UX-PLANI A / Faz 2.2): Strateji → Süreç & PG → Veri girişi → Karne/Rapor.
+   Yalnız kısayol; yeni sayfa yok. Adım, kullanıcının modül/rol yetkisi yoksa gösterilmez. #}
+{% set _mod = sidebar_module_ids %}
+{% set role_name = current_user.role.name if current_user.role else '' %}
+{% set _sp_ok = (role_name in ['tenant_admin', 'executive_manager', 'Admin']) and (_mod is none or 'sp' in _mod) %}
+{% set _surec_ok = (_mod is none or 'surec' in _mod) %}
+{% set _rapor_ok = (_mod is none or 'k_rapor' in _mod) %}
+{% set _adimlar = [] %}
+{% if _sp_ok %}{% set _gec = _adimlar.append({'url': url_for('app_bp.sp'), 'icon': 'fa-bullseye', 'ad': _('Strateji'), 'ipucu': _('Stratejik planlama')}) %}{% endif %}
+{% if _surec_ok %}{% set _gec = _adimlar.append({'url': url_for('app_bp.surec'), 'icon': 'fa-project-diagram', 'ad': _('Süreç & PG'), 'ipucu': _('Süreçler ve performans göstergeleri')}) %}
+{% set _gec = _adimlar.append({'url': url_for('app_bp.surec'), 'icon': 'fa-pen-to-square', 'ad': _('Veri girişi'), 'ipucu': _('Süreç karnesinde veri girişi')}) %}{% endif %}
+{% if _rapor_ok %}{% set _gec = _adimlar.append({'url': url_for('app_bp.k_rapor'), 'icon': 'fa-chart-line', 'ad': _('Karne & Rapor'), 'ipucu': _('Raporlar ve analizler')}) %}{% endif %}
+{% if _adimlar|length >= 2 %}
+<nav class="temel-akis" aria-label="{{ _('Temel akış') }}" data-card-code="temel_akis.serit">
+  <span class="temel-akis-baslik">{{ _("Temel akış") }}</span>
+  <ol class="temel-akis-liste">
+    {% for a in _adimlar %}
+    <li class="temel-akis-adim">
+      <a href="{{ a.url }}" class="temel-akis-link" title="{{ a.ipucu }}">
+        <span class="temel-akis-no" aria-hidden="true">{{ loop.index }}</span>
+        <i class="fas {{ a.icon }}" aria-hidden="true"></i>
+        <span class="temel-akis-ad">{{ a.ad }}</span>
+      </a>
+    </li>
+    {% endfor %}
+  </ol>
+</nav>
+{% endif %}

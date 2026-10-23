@@ -1,0 +1,12 @@
+{# Ortak boş durum (UX-PLANI E / Faz 2.7): ikon + başlık + açıklama + tek birincil eylem.
+   Kullanım: {% from "platform/_macros/bos_durum.html" import bos_durum %}
+             {{ bos_durum("fa-sitemap", _("Süreç yok"), _("Açıklama"), url, _("Süreç ekle")) }}
+   Eylem yoksa url/etiket boş bırakılır. Metinler çağıran tarafta çevrilir. #}
+{% macro bos_durum(ikon, baslik, aciklama="", eylem_url="", eylem_etiket="") %}
+<div class="mc-empty bos-durum">
+  <div class="mc-empty-icon"><i class="fas {{ ikon }}" aria-hidden="true"></i></div>
+  <div class="mc-empty-title">{{ baslik }}</div>
+  {% if aciklama %}<div class="mc-empty-text bos-durum-metin">{{ aciklama }}</div>{% endif %}
+  {% if eylem_url and eylem_etiket %}<a class="mc-btn mc-btn-primary" href="{{ eylem_url }}">{{ eylem_etiket }}</a>{% endif %}
+</div>
+{% endmacro %}
