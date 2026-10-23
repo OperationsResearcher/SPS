@@ -134,10 +134,10 @@
     <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
         <div style="position:relative; flex:1; min-width:240px; max-width:420px;">
             <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
-            <input type="search" id="surec-search" class="mc-form-input" placeholder="{{ _('Süreç ara (ad veya kod)…') }}"
+            <input aria-label="{{ _('Süreç ara (ad veya kod)…') }}" type="search" id="surec-search" class="mc-form-input" placeholder="{{ _('Süreç ara (ad veya kod)…') }}"
                    style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
         </div>
-        <select id="surec-filter-skor" class="mc-form-input" style="padding:7px 10px; font-size:13px;">
+        <select aria-label="{{ _('Skora göre filtrele') }}" id="surec-filter-skor" class="mc-form-input" style="padding:7px 10px; font-size:13px;">
             <option value="">{{ _("Tüm performanslar") }}</option>
             <option value="hi">{{ _("Yüksek (≥80)") }}</option>
             <option value="mid">{{ _("Orta (50-79)") }}</option>

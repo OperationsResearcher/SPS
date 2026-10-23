@@ -29,23 +29,23 @@
       <form id="kp-olgunluk-form" method="post" action="{{ url_for('app_bp.k_radar_kp_olgunluk_ekle') }}"
             style="display:flex; gap:8px; flex-wrap:wrap; margin-bottom:16px; padding:14px; background:var(--bg-subtle,#f8fafc); border-radius:10px;">
         <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
-        <select name="process_id" class="mc-select" required style="min-width:260px;">
+        <select aria-label="{{ _('Süreç') }}" name="process_id" class="mc-select" required style="min-width:260px;">
           <option value="">{{ _("Süreç seçin") }}</option>
           {% for p in processes %}
           <option value="{{ p.id }}">{{ p.code or '' }} {{ p.name }}</option>
           {% endfor %}
         </select>
-        <select name="maturity_level" class="mc-select" required>
+        <select aria-label="{{ _('Olgunluk seviyesi') }}" name="maturity_level" class="mc-select" required>
           <option value="1">{{ _("Seviye 1") }}</option><option value="2">{{ _("Seviye 2") }}</option><option value="3" selected>{{ _("Seviye 3") }}</option><option value="4">{{ _("Seviye 4") }}</option><option value="5">{{ _("Seviye 5") }}</option>
         </select>
-        <input name="dimension" class="mc-input" placeholder="{{ _('Boyut (opsiyonel)') }}">
+        <input aria-label="{{ _('Boyut (opsiyonel)') }}" name="dimension" class="mc-input" placeholder="{{ _('Boyut (opsiyonel)') }}">
         <button class="mc-btn mc-btn-primary mc-btn-sm" type="submit"><i class="fas fa-plus"></i> {{ _("Ekle") }}</button>
       </form>
       {% endif %}
 
       <div style="display:flex; gap:8px; margin-bottom:12px; align-items:center; flex-wrap:wrap;">
-        <input id="kp-olgunluk-filter" class="mc-input" placeholder="{{ _('Süreç ID filtrele') }}" style="width:180px;">
-        <select id="kp-olgunluk-sort" class="mc-select">
+        <input aria-label="{{ _('Süreç ID filtrele') }}" id="kp-olgunluk-filter" class="mc-input" placeholder="{{ _('Süreç ID filtrele') }}" style="width:180px;">
+        <select aria-label="{{ _('Sırala') }}" id="kp-olgunluk-sort" class="mc-select">
           <option value="updated_desc">{{ _("Güncelleme (Yeni-Eski)") }}</option>
           <option value="updated_asc">{{ _("Güncelleme (Eski-Yeni)") }}</option>
           <option value="level_desc">{{ _("Seviye (Yüksek-Düşük)") }}</option>

@@ -32,12 +32,12 @@
     </div>
     <form id="qr-form" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Yıl") }}</label>
+        <label for="qr-year" style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Yıl") }}</label>
         <input type="number" id="qr-year" class="mc-input" value="{{ default_year }}"
                min="2020" max="2035" style="width:120px;">
       </div>
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Çeyrek") }}</label>
+        <label for="qr-quarter" style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Çeyrek") }}</label>
         <select id="qr-quarter" class="mc-input" style="width:140px;">
           <option value="1" {% if default_quarter==1 %}selected{% endif %}>{{ _("Q1 (Oca-Mar)") }}</option>
           <option value="2" {% if default_quarter==2 %}selected{% endif %}>{{ _("Q2 (Nis-Haz)") }}</option>

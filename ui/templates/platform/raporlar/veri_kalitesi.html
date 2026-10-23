@@ -16,7 +16,7 @@
     <p class="mc-page-subtitle">{{ _("Performans göstergesi doluluk oranı, eksik alanlar ve son veri girişi tarihleri") }}</p>
   </div>
   <div class="mc-page-header-right" style="display:flex;align-items:center;gap:10px;">
-    <label style="font-size:12px;color:#475569;font-weight:600;">{{ _("Plan yılı:") }}</label>
+    <label for="year-select" style="font-size:12px;color:#475569;font-weight:600;">{{ _("Plan yılı:") }}</label>
     <select id="year-select" data-active="{{ active_year or '' }}" class="mc-select" style="font-size:13px;padding:6px 12px;min-width:110px;">
       <option value="">{{ _("Aktif dönem") }}</option>
       {% for y in plan_years %}

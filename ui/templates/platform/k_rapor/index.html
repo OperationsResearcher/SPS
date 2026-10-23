@@ -87,7 +87,7 @@
   <div id="kr-search-bar" style="display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap;">
     <div style="position:relative; flex:1; min-width:240px; max-width:360px;">
       <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
-      <input type="search" id="kr-tab-search" class="mc-form-input" placeholder="{{ _('Sekme ara…') }}"
+      <input aria-label="{{ _('Sekme ara…') }}" type="search" id="kr-tab-search" class="mc-form-input" placeholder="{{ _('Sekme ara…') }}"
              style="padding:7px 12px 7px 34px; font-size:13px; width:100%;">
     </div>
     <span id="kr-tab-count" style="font-size:12px; color:#64748b;">{{ _("%(n)s sekme", n=22) }}</span>
@@ -190,7 +190,7 @@
       <div class="mc-card-header" data-card-code="k_rapor_surec_pg.surec_donem_isi_haritasi">
         <span class="mc-card-title"><i class="fas fa-table-cells"></i> {{ _("Süreç × Dönem Isı Haritası") }}</span>
         <div style="display:flex; gap:8px; flex-wrap:wrap;">
-          <select id="kr-pg-period" class="mc-select" style="font-size:12px; padding:4px 8px;">
+          <select aria-label="{{ _('Dönem') }}" id="kr-pg-period" class="mc-select" style="font-size:12px; padding:4px 8px;">
             <option value="ceyrek">{{ _("Çeyreklik") }}</option>
             <option value="aylik">{{ _("Aylık") }}</option>
             <option value="yillik">{{ _("Yıllık") }}</option>
@@ -385,7 +385,7 @@
         <div class="mc-card-header">
           <span class="mc-card-title"><i class="fas fa-user-shield"></i> {{ _("En Aktif Kullanıcılar") }}</span>
           <div style="display:flex; gap:8px; align-items:center;">
-            <select id="kr-denetim-gun" class="mc-select" style="font-size:12px; padding:4px 8px;">
+            <select aria-label="{{ _('Gün aralığı') }}" id="kr-denetim-gun" class="mc-select" style="font-size:12px; padding:4px 8px;">
               <option value="7">Son 7 gün</option>
               <option value="30" selected>Son 30 gün</option>
               <option value="90">Son 90 gün</option>

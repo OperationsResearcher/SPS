@@ -34,22 +34,22 @@
     <div class="mc-card-body" style="display:flex; flex-wrap:wrap; align-items:center; gap:10px;">
       <div style="position:relative; flex:1; min-width:260px; max-width:420px;">
         <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
-        <input id="analiz-process-search" type="search" class="mc-form-input"
+        <input aria-label="{{ _('Süreç ara…') }}" id="analiz-process-search" type="search" class="mc-form-input"
                placeholder="{{ _('Süreç ara…') }}" style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
       </div>
-      <select id="analiz-process-select" class="mc-form-input" style="flex:1; min-width:240px; max-width:340px; font-size:13px;">
+      <select aria-label="{{ _('Süreç seç') }}" id="analiz-process-select" class="mc-form-input" style="flex:1; min-width:240px; max-width:340px; font-size:13px;">
         <option value="">{{ _("— Süreç Seçin —") }}</option>
         {% for p in processes %}
         <option value="{{ p.id }}">{{ (p.code ~ ' — ') if p.code else '' }}{{ p.name }}</option>
         {% endfor %}
       </select>
-      <select id="analiz-frequency" class="mc-form-input" style="font-size:13px;" title="{{ _('Trend frekansı') }}">
+      <select aria-label="{{ _('Trend frekansı') }}" id="analiz-frequency" class="mc-form-input" style="font-size:13px;" title="{{ _('Trend frekansı') }}">
         <option value="monthly">{{ _("Aylık") }}</option>
         <option value="quarterly">{{ _("Çeyreklik") }}</option>
         <option value="weekly">{{ _("Haftalık") }}</option>
         <option value="daily">{{ _("Günlük") }}</option>
       </select>
-      <select id="analiz-forecast-method" class="mc-form-input" style="font-size:13px;" title="{{ _('Tahmin yöntemi') }}">
+      <select aria-label="{{ _('Tahmin yöntemi') }}" id="analiz-forecast-method" class="mc-form-input" style="font-size:13px;" title="{{ _('Tahmin yöntemi') }}">
         <option value="linear">{{ _("Doğrusal Tahmin") }}</option>
         <option value="moving_avg">{{ _("Hareketli Ortalama") }}</option>
         <option value="seasonal">{{ _("Mevsimsel") }}</option>

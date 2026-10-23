@@ -1512,3 +1512,14 @@ select.mc-form-input {
   .tm-grid, .tm-grid-2 { grid-template-columns: 1fr; }
   .tm-full { grid-column: 1; }
 }
+
+/* Klavye odak halkası (UX-PLANI F / Faz 2.9): fare tıklamasında değil, yalnız klavye gezinmesinde görünür. */
+.mc-btn:focus-visible,
+.mc-input:focus-visible,
+.mc-select:focus-visible,
+.mc-form-input:focus-visible,
+.mc-modal-close:focus-visible,
+.mc-modal a:focus-visible {
+  outline: 2px solid var(--color-primary, #4f46e5);
+  outline-offset: 2px;
+}

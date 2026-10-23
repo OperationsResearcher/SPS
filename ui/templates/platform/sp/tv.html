@@ -158,7 +158,7 @@
       <div class="s-sub">{{ _("Cephe ekle/sil, yeniden adlandır, gösterilecek verileri seç. Ayarlar bu tarayıcıda saklanır.") }}</div>
       <div class="s-row">
         <span class="s-label">{{ _("Sahne süresi (sn):") }}</span>
-        <input type="number" id="s-duration" class="s-input" min="6" max="120" style="width:80px;">
+        <input aria-label="{{ _('Sahne süresi (sn)') }}" type="number" id="s-duration" class="s-input" min="6" max="120" style="width:80px;">
       </div>
       <div id="s-fronts"></div>
       <div class="s-row">
@@ -513,7 +513,7 @@
       draft.fronts.forEach(function(f, idx) {
         var card = document.createElement("div"); card.className = "s-front";
         var head = '<div class="s-front-head">' +
-          '<input class="s-input s-name" data-i="'+idx+'" value="'+(f.name||"").replace(/"/g,"&quot;")+'" style="flex:1;min-width:160px;">' +
+          '<input class="s-input s-name" aria-label="'+t("Ön yüz adı")+'" data-i="'+idx+'" value="'+(f.name||"").replace(/"/g,"&quot;")+'" style="flex:1;min-width:160px;">' +
           '<span class="s-badge">'+(f.type==="metrics"?t("Metrik panosu"):t("Sıralama"))+'</span>' +
           '<button class="s-btn s-up" data-i="'+idx+'">↑</button>' +
           '<button class="s-btn s-down" data-i="'+idx+'">↓</button>' +

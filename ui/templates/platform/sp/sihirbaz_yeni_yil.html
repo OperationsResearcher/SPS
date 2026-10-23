@@ -22,7 +22,7 @@
         <div class="mc-card-header"><span class="mc-card-title">{{ _("Kaynak ve Hedef Yıl") }}</span></div>
         <div class="mc-card-body">
             <div style="margin-bottom:14px;">
-                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">{{ _("Kaynak Yıl (Taşınacak Veriler)") }}</label>
+                <label for="source-year-select" style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">{{ _("Kaynak Yıl (Taşınacak Veriler)") }}</label>
                 <select id="source-year-select" class="mc-input" style="width:100%;">
                     <option value="">{{ _("— Seçiniz —") }}</option>
                     {% for py in plan_years %}
@@ -31,12 +31,12 @@
                 </select>
             </div>
             <div style="margin-bottom:14px;">
-                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">{{ _("Hedef Yıl (Yeni Dönem)") }}</label>
+                <label for="new-year-input" style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">{{ _("Hedef Yıl (Yeni Dönem)") }}</label>
                 <input type="number" id="new-year-input" class="mc-input" style="width:100%;"
                        placeholder="{{ 'today'|default('2027') }}" min="2020" max="2040" value="{{ now.year + 1 if now is defined else '' }}">
             </div>
             <div style="margin-bottom:14px;">
-                <label style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">{{ _("Yeni Dönem Adı (isteğe bağlı)") }}</label>
+                <label for="new-year-name" style="font-size:13px; font-weight:600; display:block; margin-bottom:4px;">{{ _("Yeni Dönem Adı (isteğe bağlı)") }}</label>
                 <input type="text" id="new-year-name" class="mc-input" style="width:100%;" placeholder="{{ _('Plan 2027') }}">
             </div>
             <button id="btn-preview" class="mc-btn mc-btn-primary" style="width:100%;">

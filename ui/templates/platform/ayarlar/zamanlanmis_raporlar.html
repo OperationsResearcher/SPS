@@ -43,8 +43,8 @@
       </div>
       <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px; flex-wrap:wrap;">
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Gün") }}</label>
-          <select data-sub="weekly_digest" data-key="day" class="mc-form-input" style="font-size:13px;">
+          <label for="lbl-auto-4" style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Gün") }}</label>
+          <select id="lbl-auto-4" data-sub="weekly_digest" data-key="day" class="mc-form-input" style="font-size:13px;">
             {% set days = [('mon',_('Pazartesi')),('tue',_('Salı')),('wed',_('Çarşamba')),('thu',_('Perşembe')),('fri',_('Cuma')),('sat',_('Cumartesi')),('sun',_('Pazar'))] %}
             {% for v, l in days %}
             <option value="{{ v }}" {% if subs.weekly_digest.day == v %}selected{% endif %}>{{ l }}</option>
@@ -52,8 +52,8 @@
           </select>
         </div>
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat") }}</label>
-          <select data-sub="weekly_digest" data-key="hour" class="mc-form-input" style="font-size:13px;">
+          <label for="lbl-auto-5" style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat") }}</label>
+          <select id="lbl-auto-5" data-sub="weekly_digest" data-key="hour" class="mc-form-input" style="font-size:13px;">
             {% for h in range(0, 24) %}
             <option value="{{ h }}" {% if subs.weekly_digest.hour == h %}selected{% endif %}>{{ "%02d:00"|format(h) }}</option>
             {% endfor %}
@@ -83,8 +83,8 @@
       </div>
       <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px; flex-wrap:wrap;">
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat (her gün)") }}</label>
-          <select data-sub="morning_summary" data-key="hour" class="mc-form-input" style="font-size:13px;">
+          <label for="lbl-auto-6" style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat (her gün)") }}</label>
+          <select id="lbl-auto-6" data-sub="morning_summary" data-key="hour" class="mc-form-input" style="font-size:13px;">
             {% for h in range(0, 24) %}
             <option value="{{ h }}" {% if subs.morning_summary.hour == h %}selected{% endif %}>{{ "%02d:00"|format(h) }}</option>
             {% endfor %}
@@ -111,8 +111,8 @@
       </div>
       <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px; flex-wrap:wrap;">
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Sıklık") }}</label>
-          <select data-sub="risk_alert" data-key="frequency" class="mc-form-input" style="font-size:13px;">
+          <label for="lbl-auto-7" style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Sıklık") }}</label>
+          <select id="lbl-auto-7" data-sub="risk_alert" data-key="frequency" class="mc-form-input" style="font-size:13px;">
             <option value="daily"  {% if subs.risk_alert.frequency == 'daily' %}selected{% endif %}>{{ _("Günlük") }}</option>
             <option value="weekly" {% if subs.risk_alert.frequency == 'weekly' %}selected{% endif %}>{{ _("Haftalık") }}</option>
           </select>
@@ -138,16 +138,16 @@
       </div>
       <div style="display:flex; gap:12px; align-items:flex-end; margin-top:14px; flex-wrap:wrap;">
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Ayın günü") }}</label>
-          <select data-sub="monthly_kpi" data-key="day_of_month" class="mc-form-input" style="font-size:13px;">
+          <label for="lbl-auto-8" style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Ayın günü") }}</label>
+          <select id="lbl-auto-8" data-sub="monthly_kpi" data-key="day_of_month" class="mc-form-input" style="font-size:13px;">
             {% for d in range(1, 29) %}
             <option value="{{ d }}" {% if subs.monthly_kpi.day_of_month == d %}selected{% endif %}>{{ d }}</option>
             {% endfor %}
           </select>
         </div>
         <div>
-          <label style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat") }}</label>
-          <select data-sub="monthly_kpi" data-key="hour" class="mc-form-input" style="font-size:13px;">
+          <label for="lbl-auto-9" style="font-size:11.5px; color:#475569; display:block; margin-bottom:4px;">{{ _("Saat") }}</label>
+          <select id="lbl-auto-9" data-sub="monthly_kpi" data-key="hour" class="mc-form-input" style="font-size:13px;">
             {% for h in range(0, 24) %}
             <option value="{{ h }}" {% if subs.monthly_kpi.hour == h %}selected{% endif %}>{{ "%02d:00"|format(h) }}</option>
             {% endfor %}

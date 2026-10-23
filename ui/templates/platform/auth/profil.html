@@ -30,7 +30,7 @@
           <button type="button" id="btn-foto-yukle" class="mc-btn mc-btn-secondary mc-btn-sm">
             <i class="fas fa-camera"></i> {{ _("Fotoğraf Yükle") }}
           </button>
-          <input type="file" id="profilePhotoInput"
+          <input aria-label="{{ _('Profil fotoğrafı') }}" type="file" id="profilePhotoInput"
                  accept="image/png,image/jpeg,image/jpg,image/gif,image/webp"
                  style="display:none;">
           <div id="photoUploadProgress" style="display:none;width:100%;text-align:center;">
@@ -204,7 +204,7 @@
       </div>
 
       <div style="margin-bottom:12px;">
-        <label style="display:block;font-size:12px;color:#64748b;margin-bottom:4px;font-weight:500;">
+        <label for="twofa-code-input" style="display:block;font-size:12px;color:#64748b;margin-bottom:4px;font-weight:500;">
           {{ _("Doğrulama Kodu (6 hane)") }}
         </label>
         <input id="twofa-code-input" class="mc-form-input" maxlength="6" inputmode="numeric" pattern="[0-9]*"
@@ -260,7 +260,7 @@
       <p style="font-size:13px;color:#475569;margin:0 0 12px;">
         {{ _("Güvenlik için şifrenizi tekrar girmeniz gerekiyor. 2FA devre dışı bırakılırsa hesabınız yalnızca şifre ile korunur.") }}
       </p>
-      <input id="twofa-disable-password" type="password" class="mc-form-input" placeholder="{{ _('Şifreniz') }}" style="width:100%;margin-bottom:8px;">
+      <input aria-label="{{ _('Şifreniz') }}" id="twofa-disable-password" type="password" class="mc-form-input" placeholder="{{ _('Şifreniz') }}" style="width:100%;margin-bottom:8px;">
       <div id="twofa-disable-error" style="display:none;color:#dc2626;font-size:13px;margin-bottom:8px;"></div>
       <div style="display:flex;gap:8px;justify-content:flex-end;">
         <button class="mc-btn mc-btn-secondary" id="twofa-disable-cancel">{{ _("İptal") }}</button>

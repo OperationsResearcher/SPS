@@ -15,22 +15,22 @@
 
         <div class="mc-card-title" style="text-transform:uppercase; font-size:12px; color:#94a3b8; margin-bottom:8px;">{{ _("Görev Bilgileri") }}</div>
 
-        <label class="mc-label">{{ _("Başlık") }} *</label>
-        <input type="text" name="title" class="mc-input" required value="{{ task.title if task else '' }}"/>
+        <label for="lbl-auto-20" class="mc-label">{{ _("Başlık") }} *</label>
+        <input id="lbl-auto-20" type="text" name="title" class="mc-input" required value="{{ task.title if task else '' }}"/>
 
-        <label class="mc-label mt-3">{{ _("Açıklama") }}</label>
-        <textarea name="description" class="mc-input" rows="3">{{ task.description if task else '' }}</textarea>
+        <label for="lbl-auto-21" class="mc-label mt-3">{{ _("Açıklama") }}</label>
+        <textarea id="lbl-auto-21" name="description" class="mc-input" rows="3">{{ task.description if task else '' }}</textarea>
 
-        <label class="mc-label mt-3">{{ _("Durum") }}</label>
-        <select name="status" class="mc-select">
+        <label for="lbl-auto-22" class="mc-label mt-3">{{ _("Durum") }}</label>
+        <select id="lbl-auto-22" name="status" class="mc-select">
             {% set st = task.status if task else 'Yapılacak' %}
             {% for o in ['Yapılacak','Devam Ediyor','Beklemede','Tamamlandı'] %}
             <option value="{{ o }}" {% if st == o %}selected{% endif %}>{{ o }}</option>
             {% endfor %}
         </select>
 
-        <label class="mc-label mt-3">{{ _("Öncelik") }}</label>
-        <select name="priority" class="mc-select">
+        <label for="lbl-auto-23" class="mc-label mt-3">{{ _("Öncelik") }}</label>
+        <select id="lbl-auto-23" name="priority" class="mc-select">
             {% set pr = task.priority if task else 'Medium' %}
             {% set priority_tr = {'Low': 'Düşük', 'Medium': 'Orta', 'High': 'Yüksek', 'Critical': 'Kritik'} %}
             {% for o in ['Low','Medium','High','Critical'] %}
@@ -38,8 +38,8 @@
             {% endfor %}
         </select>
 
-        <label class="mc-label mt-3">{{ _("Atanan") }}</label>
-        <select name="assignee_id" class="mc-select">
+        <label for="lbl-auto-24" class="mc-label mt-3">{{ _("Atanan") }}</label>
+        <select id="lbl-auto-24" name="assignee_id" class="mc-select">
             <option value="">—</option>
             {% for u in users %}
             <option value="{{ u.id }}" {% if task and task.assignee_id == u.id %}selected{% endif %}>
@@ -48,12 +48,12 @@
             {% endfor %}
         </select>
 
-        <label class="mc-label mt-3">{{ _("Bitiş tarihi") }}</label>
-        <input type="date" name="due_date" class="mc-input"
+        <label for="lbl-auto-25" class="mc-label mt-3">{{ _("Bitiş tarihi") }}</label>
+        <input id="lbl-auto-25" type="date" name="due_date" class="mc-input"
                value="{{ task.due_date.strftime('%Y-%m-%d') if task and task.due_date else '' }}"/>
 
-        <label class="mc-label mt-3">{{ _("Bağlı süreç PG (en fazla bir)") }}</label>
-        <select name="process_kpi_id" class="mc-select">
+        <label for="lbl-auto-26" class="mc-label mt-3">{{ _("Bağlı süreç PG (en fazla bir)") }}</label>
+        <select id="lbl-auto-26" name="process_kpi_id" class="mc-select">
             <option value="">{{ _("— PG seçilmedi —") }}</option>
             {% for k in kpis %}
             <option value="{{ k.id }}" {% if task and task.process_kpi_id == k.id %}selected{% endif %}>

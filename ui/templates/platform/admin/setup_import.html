@@ -33,7 +33,7 @@
       <i class="fas fa-download"></i> {{ _("Şablonu İndir (.xlsx)") }}
     </a>
     <div style="margin-top:8px;">
-      <input type="file" id="si-file" accept=".xlsx" />
+      <input aria-label="{{ _('Excel dosyası (.xlsx)') }}" type="file" id="si-file" accept=".xlsx" />
       <button type="button" id="si-dryrun-btn" class="mc-btn mc-btn-primary" disabled>
         <i class="fas fa-search"></i> {{ _("Önizle (hiçbir şey yazılmaz)") }}
       </button>

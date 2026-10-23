@@ -37,6 +37,22 @@ KalDer `1f4cea8`, `bc7003d` (Enter), `0311c40` yamaları `git apply --reject` il
 
 ### Notlar
 Plan aşamasında 4 çağrı sanılmıştı; gerçek sayı 8 (ilk grep çok satırlı/satır ortası `input:` kalıplarını kaçırmıştı, lint testi yakaladı). Tarayıcıda elle doğrulanmadı (boş gönderim → alan altı hata, Esc, Enter). Yeni msgid yok (mevcut `t()` metinleri); "Evet, sıfırla" ve "Evet" metinleri `.po`'da yoksa EN'de Türkçe görünür → P4.
+## TASK-319 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P3 — etiketsiz form alanları + odak; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P3: 107 etiketsiz form alanı → ≤1; klavye odak halkası; lint testi
+**Modül:** şablonlar (41 dosya), components.css, test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/**` (41 şablon) → 107 alana `aria-label="{{ _('…') }}"` veya bitişik `<label for>` + `id` (yalnız nitelik eklendi, davranış değişmez)
+- `ui/static/platform/css/components.css` → `.mc-btn/.mc-form-input/.mc-modal-close` `:focus-visible` halkası
+- `tests/test_etiketsiz_input_lint.py` → yeni, BASELINE=1 (yalnız küçülür)
+
+### Yapılan İşlem
+Alanlar KalDer lint mantığıyla (aria-label / label-for / sarmalayan label) ölçüldü: 107. 77'si kural tabanlı araçla (bitişik label → for/id; mevcut placeholder/title çevirisi → aria-label), 28'i bağlamdan elle, 1'i JS dizgesinde (`sp/tv.html`, `t()`). Kalan 1, `surec/karne.html` yorum metnindeki `<select>` (yanlış pozitif).
+
+### Notlar
+KalDer'in karne ızgarası mobil CSS'i alınmadı (ana projede `.karne-izgara-*` yok; P10 opsiyonel özellik). Yeni msgid'ler (`.po`'da yoksa EN'de Türkçe görünür → P4): Bildirim türü, Bildirim durumu, Excel dosyası (.xlsx), Kuruma göre filtrele, Yedek dosyası (.dump), Süreç seç, Profil fotoğrafı, Etki, İlgi, Sırala, Süreç, Olgunluk seviyesi, Proje, Önem derecesi, Risk durumu, Dönem, Gün aralığı, Görev filtresi, Yıl, Temel URL, Karışım oranı, Sahne süresi (sn), Skora göre filtrele, Puan aralığı, Puan açıklaması, Ön yüz adı. Etiketler bağlamdan yazıldı; tarayıcıda gözle doğrulanmadı.
 
 ## TASK-316 | 2026-10-10 | ✅ Tamamlandı (Dalga 4 — kalite; yalnız Yerel; commit yok)
 
