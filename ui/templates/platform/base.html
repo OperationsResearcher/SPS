@@ -5,7 +5,7 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>{% block title %}Kokpitim{% endblock %}</title>
+    <title>{% block title %}{{ _("Kokpitim") }}{% endblock %}</title>
 
     <!-- Google Fonts — Inter -->
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -131,7 +131,7 @@
                 src="{% if _t and _t.logo_path %}{{ url_for('app_bp.tenant_logo', tenant_id=_t.id, v=(_t.logo_updated_at.timestamp()|int if _t.logo_updated_at else 0)) }}{% else %}{{ _def_logo }}{% endif %}"
                 alt="{% if _t and _t.logo_path %}{{ _t.short_name or _t.name }}{% else %}Kokpitim{% endif %}" width="120" height="36" loading="lazy" decoding="async">
             <div>
-                <div class="sidebar-brand-name">Kokpitim</div>
+                <div class="sidebar-brand-name">{{ _("Kokpitim") }}</div>
                 <span class="sidebar-brand-sub">
                     {% if current_user.tenant %}{{ current_user.tenant.short_name or current_user.tenant.name }}{% else
                     %}Platform{% endif %}
@@ -235,7 +235,7 @@
             <a href="{{ url_for('app_bp.k_radar_hub') }}"
                 class="sidebar-item {% if 'k_radar' in ep and 'k_report' not in ep %}active{% endif %}">
                 <span class="sidebar-item-icon"><i class="fas fa-satellite-dish"></i></span>
-                <span class="sidebar-item-text">K-Radar</span>
+                <span class="sidebar-item-text">{{ _("K-Radar") }}</span>
             </a>
             {% endif %}
 
@@ -411,7 +411,7 @@
                 <i class="fas fa-bars" style="font-size:15px;"></i>
             </button>
 
-            <span class="topbar-title">{% block page_title %}Kokpitim{% endblock %}</span>
+            <span class="topbar-title">{% block page_title %}{{ _("Kokpitim") }}{% endblock %}</span>
 
             {# ── GLOBAL YIL SEÇİCİ ────────────────────────────────────────────
                Yıl bazlılık sistemin temel çalışma biçimi (K5), o yüzden seçici
@@ -441,7 +441,7 @@
             <button type="button" class="topbar-search-btn" title="{{ _('Ara — Ctrl+K') }}">
               <i class="fas fa-search topbar-search-icon"></i>
               <span>{{ _("Sayfa, strateji, PG, proje ara…") }}</span>
-              <span class="topbar-search-kbd">Ctrl+K</span>
+              <span class="topbar-search-kbd">{{ _("Ctrl+K") }}</span>
             </button>
             {% endif %}
 
@@ -450,7 +450,7 @@
                 <div data-kk-dropdown style="position:relative;">
                     <button data-kk-dd-toggle class="topbar-icon-btn"
                         style="width:auto; padding:0 8px; gap:4px; display:flex; align-items:center; font-weight:600; font-size:12px;"
-                        title="Dil / Language">
+                        title="{{ _('Dil / Language') }}">
                         <i class="fas fa-globe"></i>
                         <span>{{ get_locale()|upper }}</span>
                     </button>
@@ -491,12 +491,12 @@
                         <a href="{{ url_for('app_bp.profil') }}"
                             style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; text-decoration:none; transition:background 0.15s;"
                             onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
-                            <i class="fas fa-user-circle" style="color:#94a3b8; width:14px;"></i> Profilim
+                            <i class="fas fa-user-circle" style="color:#94a3b8; width:14px;"></i> {{ _("Profilim") }}
                         </a>
                         <a href="{{ url_for('app_bp.ayarlar') }}"
                             style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; text-decoration:none; transition:background 0.15s;"
                             onmouseover="this.style.background='#f8fafc'" onmouseout="this.style.background=''">
-                            <i class="fas fa-cog" style="color:#94a3b8; width:14px;"></i> Ayarlar
+                            <i class="fas fa-cog" style="color:#94a3b8; width:14px;"></i> {{ _("Ayarlar") }}
                         </a>
                         <button type="button" data-kk-toggle-dark data-kk-dd-close
                             style="display:flex; align-items:center; gap:8px; padding:9px 12px; border-radius:8px; color:#374151; font-size:13px; background:none; border:none; cursor:pointer; width:100%; transition:background 0.15s;"
@@ -563,7 +563,7 @@
                     {%- set _norm = _norm[1:] -%}
                 {%- endif -%}
             {%- endif -%}
-            <nav class="mc-breadcrumb" aria-label="Sayfa konumu">
+            <nav class="mc-breadcrumb" aria-label="{{ _('Sayfa konumu') }}">
                 <a href="/desktop-launcher" class="mc-breadcrumb-home" title="{{ _('Ana Sayfa') }}" aria-label="{{ _('Ana Sayfa') }}">
                     <i class="fas fa-home"></i>
                 </a>
@@ -894,13 +894,13 @@
           <input aria-label="{{ _('Sayfa / strateji / PG / proje / süreç / kullanıcı ara…') }}" id="cmd-palette-input" type="search" placeholder="{{ _('Sayfa / strateji / PG / proje / süreç / kullanıcı ara…') }}"
                  autocomplete="off" spellcheck="false"
                  style="flex:1; border:none; outline:none; font-size:14px; background:transparent; color:#0f172a;">
-          <span style="font-size:11px; color:#94a3b8; background:#f1f5f9; padding:2px 6px; border-radius:4px;">ESC</span>
+          <span style="font-size:11px; color:#94a3b8; background:#f1f5f9; padding:2px 6px; border-radius:4px;">{{ _("ESC") }}</span>
         </div>
         <div id="cmd-palette-list" style="overflow-y:auto; padding:6px;"></div>
         <div style="padding:8px 16px; border-top:1px solid #e2e8f0; background:#f8fafc; font-size:11px; color:#64748b; display:flex; gap:12px; justify-content:space-between;">
-          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">↑ ↓</kbd> gezin</span>
-          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">Enter</kbd> aç</span>
-          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">Ctrl+K</kbd> kapat</span>
+          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">↑ ↓</kbd> {{ _("gezin") }}</span>
+          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">{{ _("Enter") }}</kbd> {{ _("aç") }}</span>
+          <span><kbd style="background:#fff; border:1px solid #cbd5e1; border-radius:3px; padding:1px 5px; font-size:10px;">{{ _("Ctrl+K") }}</kbd> {{ _("kapat") }}</span>
         </div>
       </div>
     </div>
@@ -915,7 +915,7 @@
                     <i class="fas fa-pen-to-square" id="mc-modal-form-icon"></i>
                     <span id="mc-modal-form-title">{{ _("Düzenle") }}</span>
                 </div>
-                <button type="button" class="mc-modal-close" id="mc-modal-form-close" aria-label="Kapat"><i
+                <button type="button" class="mc-modal-close" id="mc-modal-form-close" aria-label="{{ _('Kapat') }}"><i
                         class="fas fa-times"></i></button>
             </div>
             <div class="mc-modal-body">
@@ -925,7 +925,7 @@
             <div class="mc-modal-footer">
                 <button type="button" class="mc-btn mc-btn-secondary" id="mc-modal-form-cancel">{{ _("İptal") }}</button>
                 <button type="button" class="mc-btn mc-btn-primary" id="mc-modal-form-save">
-                    <i class="fas fa-save" id="mc-modal-form-save-icon"></i> <span id="mc-modal-form-save-label">Kaydet</span>
+                    <i class="fas fa-save" id="mc-modal-form-save-icon"></i> <span id="mc-modal-form-save-label">{{ _("Kaydet") }}</span>
                 </button>
             </div>
         </div>

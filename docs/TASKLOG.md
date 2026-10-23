@@ -74,6 +74,25 @@ KalDer `752d51b` (SP hub kısmı hariç), `0f5eb2c`, `7033146`, `27e6fa3` yamala
 - **Seed koşulmadı:** önce kart keşfi (Admin > Kart Yönetimi), sonra `python scripts/seed_masaustu_yeni_kartlar.py`; Test/Yayın'da ayrıca (kod deploy'u seed çalıştırmaz).
 - Yeni `_()` msgid'leri ("Temel akış", "Stratejik planlama", "Süreç karnesinde veri girişi" vb.) ve 3 kart açıklaması `.po`'da yok → EN'de Türkçe görünür; dallar birleşince `i18n_cikar.py --yaz` + EN çeviri gerekir (KURALLAR §5.1).
 - Tarayıcıda gözle doğrulanmadı; base.html/route değişimi için `python pybasla.py` ile yeniden başlat.
+## TASK-320 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P4 — i18n: kalıcı araç + 1060 boş çeviri + 218 sabit metin sarma; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P4: `.po` çıkarımını kalıcı araca bağla (satır içi JS + `_l`), boş EN çevirilerini doldur, şablonlardaki sarılmamış Türkçe metni `_()` ile sar
+**Modül:** i18n (`translations/`), şablonlar (43 dosya), araçlar
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/ops/i18n_cikar.py` (yeni), `babel.cfg` → `-k t -k _l` + şablon içi satır içi `t("…")` çıkarımı; `--yaz` ile update+compile
+- `scripts/port_araclari/*` (yeni, KalDer'den) → `say.py`, `g_i18n.py`, `ceviri_ekle.py`, Playwright tarayıcı betikleri (pw_*)
+- `translations/en/LC_MESSAGES/messages.po|mo`, `translations/tr/…`, `translations/messages.pot` → yeniden çıkarım; EN canlı girdi 4247 → 4818, boş msgstr 0
+- `ui/templates/platform/**` (43 şablon) → 218 sabit Türkçe metin `{{ _("…") }}` ile sarıldı (say.py: 218 → 0)
+
+### Yapılan İşlem
+Çıkarım öncesi: 453 boş msgstr + 417 satır içi JS msgid'i `.po`'da hiç yoktu (EN'de Türkçe kalıyordu), 2095 obsolete. Boşların 1066'sı KalDer `.po`'sundan (aynı msgid) dolduruldu, 8 + 10 girdi elle çevrildi, 56'sı (kısaltma/e-posta/URL) aynen bırakıldı. `%` biçimlendirme: msgid'i geçerli 139 girdinin hiçbirinin çevirisi hata vermiyor. i18n/dil testleri geçti.
+
+### Notlar
+- Obsolete (#~) 2209 girdi `.po`'da bırakıldı (zarar yok). KalDer'deki "obsolete geri alma" gerekmedi: boşlar zaten KalDer çevirilerinden (canlı+obsolete) doldu.
+- P2/P3 dallarında eklenen yeni `_()`/`t()` msgid'leri bu dalda YOK; dallar birleşince `python scripts/ops/i18n_cikar.py --yaz` + boşları doldurmak gerekir.
+- `.po` diff'i büyük (kaynak satır referansları). EN tarayıcı taraması (`?lang=en`) yapılmadı.
 
 ## TASK-316 | 2026-10-10 | ✅ Tamamlandı (Dalga 4 — kalite; yalnız Yerel; commit yok)
 

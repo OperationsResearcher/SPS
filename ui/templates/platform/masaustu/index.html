@@ -118,7 +118,7 @@
                 {% endif %}
                 <button type="button" id="koe-ai-btn"
                         style="margin-top:4px; font-size:12px; font-weight:600; color:#10b981; background:none; border:none; cursor:pointer; padding:2px 0;">
-                    <i class="fas fa-wand-magic-sparkles" style="margin-right:4px;"></i><span data-koe-ai-label>AI ile zenginleştir</span>
+                    <i class="fas fa-wand-magic-sparkles" style="margin-right:4px;"></i><span data-koe-ai-label>{{ _("AI ile zenginleştir") }}</span>
                 </button>
             </div>
             {% endif %}
@@ -568,7 +568,7 @@
                 {{ _("Notlar yalnızca <strong>bu tarayıcıda</strong> tutulur (sunucuya gitmez).") }}
             </p>
             <textarea id="masaustu-scratch-body" placeholder="{{ _('Bugünkü notunuz…') }}" aria-label="{{ _('Karalama notu') }}"></textarea>
-            <button type="button" class="mc-btn mc-btn-success mc-btn-sm" id="masaustu-scratch-save" style="margin-top:10px;"><i class="fas fa-save"></i> Kaydet</button>
+            <button type="button" class="mc-btn mc-btn-success mc-btn-sm" id="masaustu-scratch-save" style="margin-top:10px;"><i class="fas fa-save"></i> {{ _("Kaydet") }}</button>
         </div>
     </div>
 

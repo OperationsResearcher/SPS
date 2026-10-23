@@ -7,7 +7,7 @@
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Ayarlar', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Ayarlar'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -16,10 +16,10 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-cog" style="color:#6366f1;"></i> Ayarlar
+        <i class="fas fa-cog" style="color:#6366f1;"></i> {{ _("Ayarlar") }}
       </h2>
       <p style="font-size:13px;color:#64748b;margin:0;">
-        Hesap, profil, kurum ve sistem yapılandırması
+        {{ _("Hesap, profil, kurum ve sistem yapılandırması") }}
       </p>
     </div>
   </div>

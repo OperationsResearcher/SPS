@@ -3,27 +3,27 @@
 <div class="flex flex-wrap items-center gap-2">
     <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}"
        class="mc-btn mc-btn-sm {% if av == 'detail' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
-        <i class="fas fa-th-large"></i> Özet
+        <i class="fas fa-th-large"></i> {{ _("Özet") }}
     </a>
     <a href="{{ url_for('app_bp.project_view_kanban', project_id=project.id) }}"
        class="mc-btn mc-btn-sm {% if av == 'kanban' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
-        <i class="fas fa-columns"></i> Kanban
+        <i class="fas fa-columns"></i> {{ _("Kanban") }}
     </a>
     <a href="{{ url_for('app_bp.project_view_calendar', project_id=project.id) }}"
        class="mc-btn mc-btn-sm {% if av == 'calendar' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
-        <i class="fas fa-calendar-alt"></i> Takvim
+        <i class="fas fa-calendar-alt"></i> {{ _("Takvim") }}
     </a>
     <a href="{{ url_for('app_bp.project_view_gantt', project_id=project.id) }}"
        class="mc-btn mc-btn-sm {% if av == 'gantt' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
-        <i class="fas fa-bars"></i> Gantt
+        <i class="fas fa-bars"></i> {{ _("Gantt") }}
     </a>
     <a href="{{ url_for('app_bp.project_view_raid', project_id=project.id) }}"
        class="mc-btn mc-btn-sm {% if av == 'raid' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
-        <i class="fas fa-shield-alt"></i> RAID
+        <i class="fas fa-shield-alt"></i> {{ _("RAID") }}
     </a>
     <a href="{{ url_for('app_bp.project_view_kapasite', project_id=project.id) }}"
        class="mc-btn mc-btn-sm {% if av == 'kapasite' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
-        <i class="fas fa-users-gear"></i> Kapasite
+        <i class="fas fa-users-gear"></i> {{ _("Kapasite") }}
     </a>
 </div>
 

@@ -15,7 +15,7 @@
       <div class="profil-avatar-wrap">
         <div id="profilePhotoContainer">
           {% if current_user.profile_picture %}
-          <img id="profilePhotoImg" src="{{ current_user.profile_picture }}" alt="Profil" class="profil-avatar-img"
+          <img id="profilePhotoImg" src="{{ current_user.profile_picture }}" alt="{{ _('Profil') }}" class="profil-avatar-img"
                onerror="this.style.display='none';document.getElementById('profilePhotoPlaceholder').style.display='flex';">
           <div id="profilePhotoPlaceholder" class="mc-avatar mc-avatar-xl" style="display:none;">
             {{ (current_user.first_name or current_user.email)[0]|upper }}
@@ -196,7 +196,7 @@
       </ol>
 
       <div style="text-align:center;margin:16px 0;">
-        <img id="twofa-qr" alt="QR" style="max-width:200px;border:1px solid #e2e8f0;border-radius:8px;padding:8px;background:#fff;">
+        <img id="twofa-qr" alt="{{ _('QR') }}" style="max-width:200px;border:1px solid #e2e8f0;border-radius:8px;padding:8px;background:#fff;">
         <div style="font-size:12px;color:#64748b;margin-top:8px;">
           {{ _("QR taranamıyorsa kodu manuel girin:") }}<br>
           <code id="twofa-secret" style="background:#f1f5f9;padding:4px 10px;border-radius:4px;font-family:monospace;letter-spacing:1px;"></code>

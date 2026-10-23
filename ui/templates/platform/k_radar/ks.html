@@ -41,8 +41,8 @@
       </div>
     </div>
     <div style="display:flex;gap:8px;">
-      <a href="{{ url_for('app_bp.k_radar_kp') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Süreç Analizi') }}"><i class="fas fa-cogs"></i> KP</a>
-      <a href="{{ url_for('app_bp.k_radar_kpr') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Proje Analizi') }}"><i class="fas fa-project-diagram"></i> KPR</a>
+      <a href="{{ url_for('app_bp.k_radar_kp') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Süreç Analizi') }}"><i class="fas fa-cogs"></i> {{ _("KP") }}</a>
+      <a href="{{ url_for('app_bp.k_radar_kpr') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Proje Analizi') }}"><i class="fas fa-project-diagram"></i> {{ _("KPR") }}</a>
       <a href="{{ url_for('app_bp.k_radar_cross') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Çapraz Analiz') }}"><i class="fas fa-network-wired"></i> {{ _("Çapraz") }}</a>
     </div>
   </div>
@@ -103,10 +103,10 @@
       </div>
       <div class="mc-card-body">
         <div class="ks-module-grid">
-          <div class="ks-quad ks-quad-so"><span class="ks-quad-label">SO</span><span class="ks-quad-val" id="ks-tows-so">—</span></div>
-          <div class="ks-quad ks-quad-st"><span class="ks-quad-label">ST</span><span class="ks-quad-val" id="ks-tows-st">—</span></div>
-          <div class="ks-quad ks-quad-wo"><span class="ks-quad-label">WO</span><span class="ks-quad-val" id="ks-tows-wo">—</span></div>
-          <div class="ks-quad ks-quad-wt"><span class="ks-quad-label">WT</span><span class="ks-quad-val" id="ks-tows-wt">—</span></div>
+          <div class="ks-quad ks-quad-so"><span class="ks-quad-label">{{ _("SO") }}</span><span class="ks-quad-val" id="ks-tows-so">—</span></div>
+          <div class="ks-quad ks-quad-st"><span class="ks-quad-label">{{ _("ST") }}</span><span class="ks-quad-val" id="ks-tows-st">—</span></div>
+          <div class="ks-quad ks-quad-wo"><span class="ks-quad-label">{{ _("WO") }}</span><span class="ks-quad-val" id="ks-tows-wo">—</span></div>
+          <div class="ks-quad ks-quad-wt"><span class="ks-quad-label">{{ _("WT") }}</span><span class="ks-quad-val" id="ks-tows-wt">—</span></div>
         </div>
         <div class="ks-module-footer">{{ _("Detay için tıkla") }} <i class="fas fa-expand"></i></div>
       </div>
@@ -143,7 +143,7 @@
     <!-- OKR -->
     <div class="mc-card mc-card-lift ks-module-card" data-modal="okr" data-card-code="k_radar_ks.okr" style="cursor:pointer;">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-crosshairs" style="color:#3b82f6;"></i> OKR</span>
+        <span class="mc-card-title"><i class="fas fa-crosshairs" style="color:#3b82f6;"></i> {{ _("OKR") }}</span>
         <span class="mc-badge mc-badge-indigo" id="ks-okr-badge">—</span>
       </div>
       <div class="mc-card-body" style="color:#64748b;font-size:13px;">
@@ -155,7 +155,7 @@
     <!-- BSC -->
     <div class="mc-card mc-card-lift ks-module-card" data-modal="bsc" data-card-code="k_radar_ks.bsc" style="cursor:pointer;">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-table-cells-large" style="color:#ec4899;"></i> BSC</span>
+        <span class="mc-card-title"><i class="fas fa-table-cells-large" style="color:#ec4899;"></i> {{ _("BSC") }}</span>
         <span class="mc-badge mc-badge-pink" id="ks-bsc-badge">—</span>
       </div>
       <div class="mc-card-body">
@@ -172,7 +172,7 @@
     <!-- EFQM -->
     <div class="mc-card mc-card-lift ks-module-card" data-modal="efqm" data-card-code="k_radar_ks.efqm" style="cursor:pointer;">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-medal" style="color:#f59e0b;"></i> EFQM</span>
+        <span class="mc-card-title"><i class="fas fa-medal" style="color:#f59e0b;"></i> {{ _("EFQM") }}</span>
         <span class="mc-badge mc-badge-warning" id="ks-efqm-badge">—</span>
       </div>
       <div class="mc-card-body">
