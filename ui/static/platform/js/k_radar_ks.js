@@ -357,16 +357,14 @@
           const idx = parseInt(btn.dataset.idx);
           const cur = swotState[key][idx];
           const text = typeof cur === "string" ? cur : (cur.text || "");
-          Swal.fire({
+          openMcTextPrompt({
             title: t("Maddeyi Düzenle"),
-            input: "text",
-            inputValue: text,
-            showCancelButton: true,
-            confirmButtonText: t("Kaydet"),
-            cancelButtonText: t("İptal"),
-          }).then(r => {
-            if (r.isConfirmed && r.value.trim()) {
-              swotState[key][idx] = r.value.trim();
+            value: text,
+            confirmText: t("Kaydet"),
+            cancelText: t("İptal"),
+          }).then(v => {
+            if (v) {
+              swotState[key][idx] = v;
               renderSwotModal();
             }
           });
@@ -462,9 +460,9 @@
         btn.addEventListener("click", () => {
           const key = btn.closest("ul").id.replace("ks-tows-list-", "");
           const idx = parseInt(btn.dataset.idx);
-          Swal.fire({ title: t("Maddeyi Düzenle"), input: "text", inputValue: towsState[key][idx],
-            showCancelButton: true, confirmButtonText: t("Kaydet"), cancelButtonText: t("İptal") })
-            .then(r => { if (r.isConfirmed && r.value.trim()) { towsState[key][idx] = r.value.trim(); renderTowsModal(); } });
+          openMcTextPrompt({ title: t("Maddeyi Düzenle"), value: towsState[key][idx],
+            confirmText: t("Kaydet"), cancelText: t("İptal") })
+            .then(v => { if (v) { towsState[key][idx] = v; renderTowsModal(); } });
         });
       });
 
@@ -548,9 +546,9 @@
         btn.addEventListener("click", () => {
           const key = btn.closest("ul").id.replace("ks-pestle-list-", "");
           const idx = parseInt(btn.dataset.idx);
-          Swal.fire({ title: t("Maddeyi Düzenle"), input: "text", inputValue: pestleState[key][idx],
-            showCancelButton: true, confirmButtonText: t("Kaydet"), cancelButtonText: t("İptal") })
-            .then(r => { if (r.isConfirmed && r.value.trim()) { pestleState[key][idx] = r.value.trim(); renderPestleModal(); } });
+          openMcTextPrompt({ title: t("Maddeyi Düzenle"), value: pestleState[key][idx],
+            confirmText: t("Kaydet"), cancelText: t("İptal") })
+            .then(v => { if (v) { pestleState[key][idx] = v; renderPestleModal(); } });
         });
       });
 

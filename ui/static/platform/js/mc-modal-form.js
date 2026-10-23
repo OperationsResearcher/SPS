@@ -78,6 +78,11 @@
 
       function onKey(e) {
         if (e.key === "Escape") cancel();
+        // Tek satırlık alanda Enter = Kaydet (textarea'da satır sonu kalır)
+        else if (e.key === "Enter" && e.target && e.target.tagName === "INPUT" && overlay.contains(e.target)) {
+          e.preventDefault();
+          submit();
+        }
       }
 
       function submit() {
@@ -109,6 +114,54 @@
         if (first) first.focus();
       });
     });
+  };
+
+  /**
+   * Tek alanlı metin istemi (Swal `input:` yerine). Hata mesajı alanın altında görünür.
+   * @param {object} opts
+   * @param {string} opts.title
+   * @param {string} [opts.label] alan etiketi
+   * @param {string} [opts.introHtml] alanın üstünde gösterilecek güvenilir HTML
+   * @param {string} [opts.value] başlangıç değeri
+   * @param {string} [opts.placeholder]
+   * @param {boolean} [opts.textarea] çok satırlı alan
+   * @param {string} [opts.requiredMessage] verilirse alan boş bırakılamaz, mesaj alanın altında çıkar
+   * @param {string} [opts.iconClass] @param {string} [opts.confirmText] @param {string} [opts.cancelText]
+   * @returns {Promise<null|string>} iptalde null, aksi halde kırpılmış metin
+   */
+  window.openMcTextPrompt = function openMcTextPrompt(opts) {
+    var o = opts || {};
+    function esc(v) {
+      return String(v == null ? "" : v).replace(/&/g, "&amp;").replace(/</g, "&lt;")
+        .replace(/>/g, "&gt;").replace(/"/g, "&quot;");
+    }
+    var field = o.textarea
+      ? '<textarea id="mc-prompt-input" class="mc-form-input" rows="3" placeholder="' + esc(o.placeholder) + '">' + esc(o.value) + "</textarea>"
+      : '<input id="mc-prompt-input" type="text" class="mc-form-input" value="' + esc(o.value) + '" placeholder="' + esc(o.placeholder) + '">';
+    var html =
+      (o.introHtml ? '<div class="mc-prompt-intro">' + o.introHtml + "</div>" : "") +
+      '<div class="mc-form-field">' +
+      (o.label ? '<label class="mc-form-label" for="mc-prompt-input">' + esc(o.label) + "</label>" : "") +
+      field +
+      '<div class="mc-form-error" id="mc-prompt-error" role="alert" hidden></div></div>';
+    return window.openMcFormModal({
+      title: o.title,
+      iconClass: o.iconClass,
+      bodyHtml: html,
+      confirmText: o.confirmText,
+      cancelText: o.cancelText,
+      onConfirm: function () {
+        var input = document.getElementById("mc-prompt-input");
+        var err = document.getElementById("mc-prompt-error");
+        var val = (input ? input.value : "").trim();
+        if (o.requiredMessage && !val) {
+          if (err) { err.textContent = o.requiredMessage; err.hidden = false; }
+          if (input) { input.classList.add("mc-form-input--error"); input.setAttribute("aria-invalid", "true"); input.focus(); }
+          return false;
+        }
+        return { text: val };
+      },
+    }).then(function (r) { return r ? r.text : null; });
   };
 
   /**

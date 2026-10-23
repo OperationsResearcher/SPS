@@ -615,16 +615,13 @@
 
     const btn = e.target.closest(".btn-veri-gir");
     if (btn) {
-      const { value: val } = await Swal.fire({
+      const val = await openMcTextPrompt({
         title: t("Veri Gir"),
-        input: "text",
-        inputLabel: t("Gerçekleşen Değer"),
-        inputPlaceholder: t("Örn: 92.5"),
-        showCancelButton: true,
-        confirmButtonText: t("Kaydet"),
-        cancelButtonText: t("İptal"),
-        confirmButtonColor: "#4f46e5",
-        inputValidator: (v) => !v && t("Değer boş bırakılamaz."),
+        label: t("Gerçekleşen Değer"),
+        placeholder: t("Örn: 92.5"),
+        confirmText: t("Kaydet"),
+        cancelText: t("İptal"),
+        requiredMessage: t("Değer boş bırakılamaz."),
       });
       if (!val) return;
       try {

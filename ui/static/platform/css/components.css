@@ -1345,6 +1345,11 @@ body {
   box-shadow: 0 0 0 3px rgba(124,58,237,0.1);
 }
 .mc-form-input::placeholder { color: #94a3b8; }
+.mc-form-input--error { border-color: var(--color-danger, #dc2626); }
+.mc-form-error { margin-top: 4px; font-size: 12px; color: var(--color-danger, #dc2626); }
+.mc-prompt-intro { margin-bottom: 12px; font-size: 14px; }
+.mc-prompt-intro p { margin: 0 0 6px; }
+.mc-prompt-intro .mc-prompt-note { font-size: 13px; color: var(--text-muted, #64748b); }
 
 textarea.mc-form-input {
   min-height: 120px;
