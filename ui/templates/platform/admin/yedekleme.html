@@ -141,7 +141,7 @@
     var f=document.getElementById("yd-restore-file").files[0];
     var pw=document.getElementById("yd-restore-pw").value;
     var cf=document.getElementById("yd-restore-confirm").value;
-    if(!f){ alert(t("Bir .dump dosyası seçin.")); return; }
+    if(!f){ Swal.fire({icon:"warning",title:t("Bir .dump dosyası seçin.")}); return; }
     if(typeof Swal==="undefined"){ if(!confirm(t("DB üzerine yazılacak. Emin misiniz?"))) return; doRestore(); }
     else { Swal.fire({title:t("Emin misiniz?"),text:t("Mevcut DB üzerine yazılacak, geri alınamaz."),icon:"warning",showCancelButton:true,confirmButtonColor:"#dc2626",confirmButtonText:t("Evet, geri yükle"),cancelButtonText:t("Vazgeç")}).then(function(r){ if(r.isConfirmed) doRestore(); }); }
     function doRestore(){

@@ -84,13 +84,12 @@
   }
 
   async function onAdd(key) {
-    const { value: txt } = await Swal.fire({
-      title: t("Madde ekle"), input: "textarea", inputPlaceholder: t("Gözlem / faktör…"),
-      showCancelButton: true, confirmButtonText: t("Ekle"), cancelButtonText: t("İptal"),
-      confirmButtonColor: "#ea580c",
-      inputValidator: (v) => (!v || !v.trim()) ? t("Boş olamaz.") : undefined,
+    const txt = await openMcTextPrompt({
+      title: t("Madde ekle"), textarea: true, placeholder: t("Gözlem / faktör…"),
+      confirmText: t("Ekle"), cancelText: t("İptal"),
+      requiredMessage: t("Boş olamaz."),
     });
-    if (!txt || !txt.trim()) return;
+    if (!txt) return;
     const f = (state[key] = state[key] || { score: null, items: [] });
     f.items.push(txt.trim());
     render();

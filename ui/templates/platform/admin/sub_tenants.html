@@ -390,7 +390,9 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     const toggleBtn = e.target.closest(".btn-toggle");
     if (resetBtn) {
       const id = resetBtn.dataset.id;
-      if (!confirm(t("Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin misiniz?"))) return;
+      const onayReset = await Swal.fire({ icon: "warning", title: t("Bu alt kurumun yönetici parolasını sıfırlamak istediğinize emin misiniz?"),
+        showCancelButton: true, confirmButtonText: t("Evet, sıfırla"), cancelButtonText: t("İptal") });
+      if (!onayReset.isConfirmed) return;
       resetBtn.disabled = true;
       resetBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i>';
       try {
@@ -409,7 +411,10 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     if (toggleBtn) {
       const id = toggleBtn.dataset.id;
       const active = toggleBtn.dataset.active === "true";
-      if (!confirm(active ? t("Bu alt kurumu pasifleştirmek istiyor musunuz?") : t("Bu alt kurumu aktifleştirmek istiyor musunuz?"))) return;
+      const onayToggle = await Swal.fire({ icon: "question",
+        title: active ? t("Bu alt kurumu pasifleştirmek istiyor musunuz?") : t("Bu alt kurumu aktifleştirmek istiyor musunuz?"),
+        showCancelButton: true, confirmButtonText: t("Evet"), cancelButtonText: t("İptal") });
+      if (!onayToggle.isConfirmed) return;
       toggleBtn.disabled = true;
       try {
         const j = await postJson(`/admin/api/sub-tenants/${id}/toggle`);

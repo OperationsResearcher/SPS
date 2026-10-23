@@ -2,6 +2,25 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-318 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P2 — openMcTextPrompt + alert/confirm; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P2: Swal `input:` formları → `openMcTextPrompt` (alan altı doğrulama), koşulsuz alert/confirm → SweetAlert2
+**Modül:** frontend JS ortak, SP/K-Radar/Bireysel/Admin şablonları, test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/mc-modal-form.js` → `window.openMcTextPrompt` + tek satırlı alanda Enter = Kaydet
+- `ui/static/platform/css/components.css` → `.mc-form-input--error`, `.mc-form-error`, `.mc-prompt-intro`
+- `ui/static/platform/js/bireysel.js`, `k_radar_ks.js` (4 çağrı), `sp_donemler.js` (2), `sp_liste_analiz.js`, `sp_porter.js` → 8 Swal `input:` çağrısı openMcTextPrompt'a çevrildi
+- `ui/templates/platform/admin/sub_tenants.html` (2 confirm), `yedekleme.html` (1 alert) → SweetAlert2
+- `tests/test_swal_input_kaldirildi.py`, `tests/test_alert_confirm_lint.py` → yeni (lint BASELINE: 6 "Swal yoksa" yedeği, yalnız küçülür)
+
+### Yapılan İşlem
+KalDer `1f4cea8`, `bc7003d` (Enter), `0311c40` yamaları `git apply --reject` ile; Swal input çağrıları ana projenin koduna göre elle çevrildi. Mühürle'de gerekçe isteğe bağlı, Mührü Aç'ta zorunlu (requiredMessage yalnız ikincisinde).
+
+### Notlar
+Plan aşamasında 4 çağrı sanılmıştı; gerçek sayı 8 (ilk grep çok satırlı/satır ortası `input:` kalıplarını kaçırmıştı, lint testi yakaladı). Tarayıcıda elle doğrulanmadı (boş gönderim → alan altı hata, Esc, Enter). Yeni msgid yok (mevcut `t()` metinleri); "Evet, sıfırla" ve "Evet" metinleri `.po`'da yoksa EN'de Türkçe görünür → P4.
+
 ## TASK-316 | 2026-10-10 | ✅ Tamamlandı (Dalga 4 — kalite; yalnız Yerel; commit yok)
 
 **Görev:** Derin denetim Dalga 4: modal erişilebilirliği, rapor JS i18n, testlerde tenant guard
