@@ -269,8 +269,8 @@
     rows.innerHTML = competitors.length
       ? competitors.map(c => `
           <div style="display:flex;align-items:center;gap:8px;margin-bottom:6px;">
-            <label style="flex:1;font-size:13px;color:#475569;">${mcEsc(c)}</label>
-            <input type="number" min="0" max="10" step="0.5" class="bo-comp-input mc-form-input" data-name="${mcEsc(c)}" placeholder="0-10" style="width:110px;">
+            <label for="lbl-auto-27" style="flex:1;font-size:13px;color:#475569;">${mcEsc(c)}</label>
+            <input id="lbl-auto-27" type="number" min="0" max="10" step="0.5" class="bo-comp-input mc-form-input" data-name="${mcEsc(c)}" placeholder="0-10" style="width:110px;">
           </div>
         `).join('')
       : '<div style="font-size:12px;color:#94a3b8;font-style:italic;">'+t("Canvas'a rakip eklenmemiş — yalnız kendi puanı girilecek.")+'</div>';

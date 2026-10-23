@@ -69,7 +69,7 @@
         <span style="display:inline-flex; width:20px; height:20px; background:#4f46e5; color:#fff; border-radius:50%; align-items:center; justify-content:center; font-size:11px; margin-right:6px;">2</span>
         {{ _("Uygulamadaki 6 haneli kodu girin") }}
       </div>
-      <input type="text" name="code" id="code-input" class="mc-form-input"
+      <input aria-label="{{ _('Doğrulama Kodu') }}" type="text" name="code" id="code-input" class="mc-form-input"
              maxlength="6" inputmode="numeric" pattern="[0-9]*"
              autocomplete="one-time-code" autofocus placeholder="123456"
              style="width:100%; font-size:22px; letter-spacing:6px; text-align:center; padding:12px;">

@@ -156,11 +156,11 @@
           <b>${t("Yetenek (Capability)")}</b> = ${t("kurumun bu varlıkları kullanma becerisi (Ar-Ge, müşteri ilişkisi, üretim verimi).")}
         </div>
         <div style="text-align:left;margin-bottom:10px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Ad")}</label>
+          <label for="vr-name" style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Ad")}</label>
           <input id="vr-name" class="swal2-input" style="margin:0;width:100%;" placeholder="${t('Örn: Endüstriyel patent portföyü')}">
         </div>
         <div style="text-align:left;margin-bottom:10px;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Kategori")}</label>
+          <label for="vr-cat" style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Kategori")}</label>
           <select id="vr-cat" class="swal2-input" style="margin:0;width:100%;">
             <option value="tangible">${t("Maddi Varlık (bina, makine, stok)")}</option>
             <option value="intangible" selected>${t("Maddi Olmayan Varlık (marka, patent, itibar)")}</option>
@@ -170,7 +170,7 @@
           </select>
         </div>
         <div style="text-align:left;">
-          <label style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Açıklama (opsiyonel)")}</label>
+          <label for="vr-desc" style="display:block;font-size:12px;font-weight:600;color:#0f172a;margin-bottom:4px;">${t("Açıklama (opsiyonel)")}</label>
           <textarea id="vr-desc" class="swal2-textarea" style="margin:0;width:100%;" placeholder="${t('Kaynağı kısaca açıklayın')}"></textarea>
         </div>
       `,

@@ -168,7 +168,7 @@
       <p style="font-size:13px; color:#64748b; margin:0 0 14px;">{{ _("İki stratejik plan dönemini seçin; strateji, süreç ve KPI hedefi farklarını görebilirsiniz.") }}</p>
       <div style="display:flex; gap:12px; align-items:flex-end; flex-wrap:wrap;">
         <div style="flex:1; min-width:140px;">
-          <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">{{ _("1. Dönem") }}</label>
+          <label for="dpy-cmp-y1" style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">{{ _("1. Dönem") }}</label>
           <select id="dpy-cmp-y1" class="mc-form-input" style="width:100%;">
             {% for py in plan_years %}
             <option value="{{ py.year }}">{{ py.year }}{% if py.name %} — {{ py.name }}{% endif %}</option>
@@ -176,7 +176,7 @@
           </select>
         </div>
         <div style="flex:1; min-width:140px;">
-          <label style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">{{ _("2. Dönem") }}</label>
+          <label for="dpy-cmp-y2" style="font-size:12px; font-weight:600; color:#475569; display:block; margin-bottom:4px;">{{ _("2. Dönem") }}</label>
           <select id="dpy-cmp-y2" class="mc-form-input" style="width:100%;">
             {% for py in plan_years %}
             <option value="{{ py.year }}" {% if loop.index == 2 %}selected{% endif %}>{{ py.year }}{% if py.name %} — {{ py.name }}{% endif %}</option>

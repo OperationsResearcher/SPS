@@ -261,20 +261,20 @@
                 <div class="flex flex-wrap gap-3 mb-3 items-end">
                     {% if privileged %}
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Kapsam") }}</label>
-                        <select name="scope" class="mc-select" style="min-width:160px;">
+                        <label for="lbl-auto-10" class="mc-label text-xs mb-1 block">{{ _("Kapsam") }}</label>
+                        <select id="lbl-auto-10" name="scope" class="mc-select" style="min-width:160px;">
                             <option value="all" {% if filters.scope == 'all' %}selected{% endif %}>{{ _("Tüm kurum projeleri") }}</option>
                             <option value="my" {% if filters.scope == 'my' %}selected{% endif %}>{{ _("Benim projelerim") }}</option>
                         </select>
                     </div>
                     {% endif %}
                     <div class="flex-1 min-w-[160px]">
-                        <label class="mc-label text-xs mb-1 block">{{ _("Ara") }}</label>
-                        <input type="search" name="q" class="mc-input" value="{{ filters.q }}" placeholder="{{ _('Ad / açıklama') }}" autocomplete="off"/>
+                        <label for="lbl-auto-11" class="mc-label text-xs mb-1 block">{{ _("Ara") }}</label>
+                        <input id="lbl-auto-11" type="search" name="q" class="mc-input" value="{{ filters.q }}" placeholder="{{ _('Ad / açıklama') }}" autocomplete="off"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Öncelik") }}</label>
-                        <select name="priority" class="mc-select" style="min-width:120px;">
+                        <label for="lbl-auto-12" class="mc-label text-xs mb-1 block">{{ _("Öncelik") }}</label>
+                        <select id="lbl-auto-12" name="priority" class="mc-select" style="min-width:120px;">
                             <option value="">{{ _("Tümü") }}</option>
                             {% for o in ['Düşük','Orta','Yüksek','Kritik'] %}
                             <option value="{{ o }}" {% if filters.priority == o %}selected{% endif %}>{{ o }}</option>
@@ -282,8 +282,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Sırala") }}</label>
-                        <select name="sort" class="mc-select" style="min-width:150px;">
+                        <label for="lbl-auto-13" class="mc-label text-xs mb-1 block">{{ _("Sırala") }}</label>
+                        <select id="lbl-auto-13" name="sort" class="mc-select" style="min-width:150px;">
                             <option value="updated" {% if filters.sort == 'updated' %}selected{% endif %}>{{ _("Son güncelleme") }}</option>
                             <option value="end_date" {% if filters.sort == 'end_date' %}selected{% endif %}>{{ _("Proje bitiş tarihi") }}</option>
                             <option value="name" {% if filters.sort == 'name' %}selected{% endif %}>{{ _("Ad (A-Z)") }}</option>
@@ -293,24 +293,24 @@
                 </div>
                 <div class="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-3 mb-3">
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Bitiş ≥") }}</label>
-                        <input type="date" name="end_from" class="mc-input" value="{{ filters.end_from.isoformat() if filters.end_from else '' }}"/>
+                        <label for="lbl-auto-14" class="mc-label text-xs mb-1 block">{{ _("Bitiş ≥") }}</label>
+                        <input id="lbl-auto-14" type="date" name="end_from" class="mc-input" value="{{ filters.end_from.isoformat() if filters.end_from else '' }}"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Bitiş ≤") }}</label>
-                        <input type="date" name="end_to" class="mc-input" value="{{ filters.end_to.isoformat() if filters.end_to else '' }}"/>
+                        <label for="lbl-auto-15" class="mc-label text-xs mb-1 block">{{ _("Bitiş ≤") }}</label>
+                        <input id="lbl-auto-15" type="date" name="end_to" class="mc-input" value="{{ filters.end_to.isoformat() if filters.end_to else '' }}"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Başlangıç ≥") }}</label>
-                        <input type="date" name="start_from" class="mc-input" value="{{ filters.start_from.isoformat() if filters.start_from else '' }}"/>
+                        <label for="lbl-auto-16" class="mc-label text-xs mb-1 block">{{ _("Başlangıç ≥") }}</label>
+                        <input id="lbl-auto-16" type="date" name="start_from" class="mc-input" value="{{ filters.start_from.isoformat() if filters.start_from else '' }}"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Başlangıç ≤") }}</label>
-                        <input type="date" name="start_to" class="mc-input" value="{{ filters.start_to.isoformat() if filters.start_to else '' }}"/>
+                        <label for="lbl-auto-17" class="mc-label text-xs mb-1 block">{{ _("Başlangıç ≤") }}</label>
+                        <input id="lbl-auto-17" type="date" name="start_to" class="mc-input" value="{{ filters.start_to.isoformat() if filters.start_to else '' }}"/>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Lider") }}</label>
-                        <select name="leader_id" class="mc-select" style="width:100%;">
+                        <label for="lbl-auto-18" class="mc-label text-xs mb-1 block">{{ _("Lider") }}</label>
+                        <select id="lbl-auto-18" name="leader_id" class="mc-select" style="width:100%;">
                             <option value="">{{ _("Tümü") }}</option>
                             {% for u in filter_leaders %}
                             {% set lname = ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim %}
@@ -319,8 +319,8 @@
                         </select>
                     </div>
                     <div>
-                        <label class="mc-label text-xs mb-1 block">{{ _("Süreç") }}</label>
-                        <select name="surec_id" class="mc-select" style="width:100%;">
+                        <label for="lbl-auto-19" class="mc-label text-xs mb-1 block">{{ _("Süreç") }}</label>
+                        <select id="lbl-auto-19" name="surec_id" class="mc-select" style="width:100%;">
                             <option value="">{{ _("Tümü") }}</option>
                             {% for s in surecler %}
                             <option value="{{ s.id }}" {% if filters.surec_id == s.id %}selected{% endif %}>{{ s.code or '—' }} — {{ s.ad }}</option>

@@ -51,8 +51,8 @@
   <div class="mc-card" style="margin-bottom:16px;" data-card-code="admin_notifications.filtre">
     <div class="mc-card-body" style="padding:12px 16px; display:flex; gap:12px; align-items:center; flex-wrap:wrap;">
       <div class="mc-stat-label">{{ _("Filtre") }}</div>
-      <input type="text" id="notif-search" class="mc-input" placeholder="{{ _('Başlık veya mesaj ara…') }}" style="max-width:300px;">
-      <select id="notif-filter-type" class="mc-input" style="max-width:200px;">
+      <input aria-label="{{ _('Başlık veya mesaj ara…') }}" type="text" id="notif-search" class="mc-input" placeholder="{{ _('Başlık veya mesaj ara…') }}" style="max-width:300px;">
+      <select aria-label="{{ _('Bildirim türü') }}" id="notif-filter-type" class="mc-input" style="max-width:200px;">
         <option value="">{{ _("Tüm Tipler") }}</option>
         <option value="system_broadcast">{{ _("Sistem Yayını") }}</option>
         <option value="process_assigned">{{ _("Süreç Atama") }}</option>
@@ -60,7 +60,7 @@
         <option value="activity_assigned">{{ _("Faaliyet Atama") }}</option>
         <option value="task_assigned">{{ _("Görev Atama") }}</option>
       </select>
-      <select id="notif-filter-status" class="mc-input" style="max-width:160px;">
+      <select aria-label="{{ _('Bildirim durumu') }}" id="notif-filter-status" class="mc-input" style="max-width:160px;">
         <option value="">{{ _("Tüm Durumlar") }}</option>
         <option value="unread">{{ _("Okunmamış") }}</option>
         <option value="read">{{ _("Okunmuş") }}</option>

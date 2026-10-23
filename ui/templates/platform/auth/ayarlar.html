@@ -45,22 +45,22 @@
       <div class="mc-card-body">
         <div class="mc-grid-3">
           <div class="mc-form-group">
-            <label class="mc-label">{{ _("Dil") }}</label>
-            <select name="language" class="mc-select">
+            <label for="lbl-auto-1" class="mc-label">{{ _("Dil") }}</label>
+            <select id="lbl-auto-1" name="language" class="mc-select">
               <option value="tr" {{ 'selected' if locale_prefs.get('language') == 'tr' else '' }}>Türkçe</option>
               <option value="en" {{ 'selected' if locale_prefs.get('language') == 'en' else '' }}>English</option>
             </select>
           </div>
           <div class="mc-form-group">
-            <label class="mc-label">{{ _("Saat Dilimi") }}</label>
-            <select name="timezone" class="mc-select">
+            <label for="lbl-auto-2" class="mc-label">{{ _("Saat Dilimi") }}</label>
+            <select id="lbl-auto-2" name="timezone" class="mc-select">
               <option value="Europe/Istanbul" {{ 'selected' if locale_prefs.get('timezone') == 'Europe/Istanbul' else '' }}>{{ _("İstanbul (GMT+3)") }}</option>
               <option value="Europe/London" {{ 'selected' if locale_prefs.get('timezone') == 'Europe/London' else '' }}>{{ _("Londra (GMT+0)") }}</option>
             </select>
           </div>
           <div class="mc-form-group">
-            <label class="mc-label">{{ _("Tarih Formatı") }}</label>
-            <select name="date_format" class="mc-select">
+            <label for="lbl-auto-3" class="mc-label">{{ _("Tarih Formatı") }}</label>
+            <select id="lbl-auto-3" name="date_format" class="mc-select">
               <option value="dd.mm.yyyy" {{ 'selected' if locale_prefs.get('date_format') == 'dd.mm.yyyy' else '' }}>GG.AA.YYYY</option>
               <option value="mm/dd/yyyy" {{ 'selected' if locale_prefs.get('date_format') == 'mm/dd/yyyy' else '' }}>AA/GG/YYYY</option>
               <option value="yyyy-mm-dd" {{ 'selected' if locale_prefs.get('date_format') == 'yyyy-mm-dd' else '' }}>YYYY-AA-GG</option>
