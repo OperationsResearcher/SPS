@@ -2,6 +2,22 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-333 | 2026-10-24 | ✅ Tamamlandı (Yayın deploy 875e6fd9 + KMF yıl bazlı geçiş UYGULANDI)
+
+**Görev:** `claude/yayin-hazirlik` main'e merge+push; Test sıfırdan; Yayın deploy; KMF (tenant 16) geçişi; eksik kontrolü.
+**Modül:** deploy / ops
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/ops/oracle/yayina_ver.ps1` → `Invoke-Oracle`: çıktı Out-Host'a + tamsayı çıkış kodu (4-katman sahte FALLBACK); uzak komuttan CR temizlenir (`set -e` patlaması).
+- `docs/kontrol/KMF-KIYAS-YAYIN-SONRASI-2026-10-24.md` → önce/sonra kıyas.
+
+### Yapılan İşlem
+Test sıfırdan kuruldu (sağlık 200). Yayın `.env`: `YEDEKLEME_SCHEDULER_ENABLED=false` (eski hal `.env.bak_20261024`). Deploy sonrası Yayın: kod 875e6fd9, alembic mg01a2b3c4d5. KMF geçişi `kurum_yilbazli_gecis.py --tenant 16 --calistir`; karışık PG 0. Kıyas (`kokpitim_yayin_oncesi2` → `kokpitim_yayin_sonrasi`): KAYIP YOK, 22227 → 23608 (prova ile aynı +1381).
+
+### Notlar
+Yedekler: backups/yayin/yayin_2026-10-24_1512.dump (öncesi), _1531 (sonrası); sunucu pg_kokpitim_db_full_20261024_122507.sql.gz. Geri alma CSV: Yayın container `instance/yilbazli/karisik_pg_geri_alma_20261024_123039.csv`. Tarayıcı testi kullanıcıda.
+
 ## TASK-332 | 2026-10-24 | ✅ Tamamlandı (KMF yıl bazlı geçiş runner'ı + karışık yıllı PG düzeltmesi; Yayın'a UYGULANMADI)
 
 **Görev:** KMF için iki bulgu: (1) yıl bazlı veri geçişi deploy'a dahil değil → tek komutlu, kilitli, tekrarlanabilir runner; (2) 31 karışık yıllı PG / 28 görünmez ölçüm → düzeltme betiği.

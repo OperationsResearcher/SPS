@@ -76,8 +76,10 @@ Ajan kurali: script cozemezse geleneksel yolla devam; sessiz yama yok.
 }
 
 function Invoke-Oracle([string]$RemoteCmd) {
-    & ssh.exe @SshOpts $SshTarget $RemoteCmd
-    return $LASTEXITCODE
+    # Çıktı Out-Host'a: aksi halde fonksiyonun dönüş değerine karışır ($code dizi olur, -ne 0 hep doğru)
+    $RemoteCmd = $RemoteCmd -replace "`r", ''   # CR kalırsa uzak bash 'set -e\r' ile patlar
+    & ssh.exe @SshOpts $SshTarget $RemoteCmd | Out-Host
+    return [int]$LASTEXITCODE
 }
 
 function Send-File([string]$Local, [string]$Remote) {
