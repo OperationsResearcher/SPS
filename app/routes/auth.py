@@ -48,11 +48,9 @@ def login():
     if request.method == "POST":
         email = (request.form.get("email") or "").strip().lower()
         password = request.form.get("password") or ""
-        # X-Real-IP yalnızca güvenilir bir reverse proxy (nginx vb.) arkasında
-        # doğru çalışır. ProxyFix middleware (config.py PROXY_COUNT) doğru
-        # ayarlanmamışsa bu değer istemci tarafından taklit edilebilir (spoof).
-        # Tercih: ProxyFix + request.remote_addr; burada nginx X-Real-IP kullanılıyor.
-        ip = request.headers.get("X-Real-IP") or request.remote_addr or "unknown"
+        # İstemci IP'si: ProxyFix (production) X-Forwarded-For'u remote_addr'a çevirir.
+        # Ham X-Real-IP başlığı istemci tarafından taklit edilebildiği için okunmaz.
+        ip = request.remote_addr or "unknown"
 
         if not email or not password:
             flash(_("E-posta ve şifre gereklidir."), "danger")

@@ -123,7 +123,7 @@
     const card = document.querySelector(`.kr-tab-card[data-tab="${urlTab}"]`);
     if (card && activeTitleEl) {
       const name = card.dataset.name || urlTab;
-      activeTitleEl.innerHTML = `<i class="fas fa-chevron-right" style="color:#cbd5e1; margin-right:6px; font-size:11px;"></i>${name}`;
+      activeTitleEl.innerHTML = `<i class="fas fa-chevron-right" style="color:#cbd5e1; margin-right:6px; font-size:11px;"></i>${esc(name)}`;
     }
     activatePanel(urlTab);
   } else {
@@ -275,14 +275,14 @@
     const tbody = rows.map(row => {
       const cells = (row.cells || []).map(c => {
         if (!c.has_data) return `<td><span class="kr-heat-cell no-data">—</span></td>`;
-        return `<td><span class="kr-heat-cell ${heatClass(c.avg_val)}" title="${c.count} veri · Ort: ${c.avg_val}">${c.avg_val ?? "—"}</span></td>`;
+        return `<td><span class="kr-heat-cell ${heatClass(c.avg_val)}" title="${esc(c.count)} veri · Ort: ${esc(c.avg_val)}">${esc(c.avg_val ?? "—")}</span></td>`;
       }).join("");
       return `<tr>
         <td class="kr-ht-proc-name">
-          <span class="kr-ht-proc-link" data-proc-id="${row.id}" title="${t("Trend görüntüle")}">${esc((row.code ? row.code + " " : "") + row.name)}</span>
+          <span class="kr-ht-proc-link" data-proc-id="${esc(row.id)}" title="${t("Trend görüntüle")}">${esc((row.code ? row.code + " " : "") + row.name)}</span>
         </td>
         ${cells}
-        <td style="text-align:center;font-size:11px;color:#94a3b8;">${row.kpi_count}</td>
+        <td style="text-align:center;font-size:11px;color:#94a3b8;">${esc(row.kpi_count)}</td>
       </tr>`;
     }).join("");
     el.innerHTML = `<table class="kr-heat-table"><thead>${thead}</thead><tbody>${tbody}</tbody></table>`;

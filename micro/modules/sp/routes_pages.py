@@ -9,7 +9,6 @@ from flask_login import login_required, current_user
 from sqlalchemy.orm import selectinload
 
 from platform_core import app_bp
-from app.extensions import csrf
 from app.models import db
 from app.utils.audit_logger import AuditLogger
 from sqlalchemy import or_
@@ -218,7 +217,6 @@ def sp():
 
 
 @app_bp.route("/k-plan/strategy/api/k-vektor/weights", methods=["GET", "POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_k_vektor_weights():
@@ -261,7 +259,6 @@ def sp_degerler():
 # ── API: Stratejik kimlik (SP yöneticileri — Admin / kurum rolleri) ────────────
 
 @app_bp.route("/k-plan/strategy/api/tenant-identity", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open

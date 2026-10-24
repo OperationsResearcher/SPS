@@ -8,7 +8,6 @@ from flask import render_template, jsonify, request, current_app, redirect, url_
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
-from app.extensions import csrf
 from app.services.exec_dashboard_service import build_exec_snapshot
 from app.services.ai_pivot_advisor_service import generate_pivot_recommendations
 from app.services.plan_year_template_service import (
@@ -280,7 +279,6 @@ def sp_api_exec_trend():
 # ─── AI Pivot Advisor ────────────────────────────────────────────────────────
 
 @app_bp.route("/k-plan/strategy/api/ai-pivot", methods=["POST"])
-@csrf.exempt
 @login_required
 def sp_api_ai_pivot():
     if not _can():
@@ -435,7 +433,6 @@ def sp_api_exec_ai_ozet():
 
 
 @app_bp.route("/k-plan/strategy/api/templates/<code>/apply", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_plan_year_open
 def sp_api_template_apply(code):

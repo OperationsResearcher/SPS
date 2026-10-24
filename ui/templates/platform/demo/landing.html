@@ -150,7 +150,9 @@
       transition: transform .2s ease, box-shadow .2s ease, border-color .2s ease;
       display: flex; flex-direction: column;
       text-decoration: none; color: inherit;
+      font: inherit; text-align: left; cursor: pointer; width: 100%;
     }
+    .demo-role-form { display: flex; }
     .demo-role-card:hover {
       transform: translateY(-4px);
       box-shadow: 0 12px 32px rgba(15,23,42,0.10);
@@ -334,7 +336,9 @@
 
     <div class="demo-roles">
       {% for key, spec in tenants.items() %}
-      <a href="{{ url_for('app_bp.demo_start', tenant_key=key) }}"
+      <form method="post" action="{{ url_for('app_bp.demo_start', tenant_key=key) }}" class="demo-role-form">
+      <input type="hidden" name="csrf_token" value="{{ csrf_token() }}">
+      <button type="submit"
          class="demo-role-card"
          style="--card-color: {{ spec.color }}; --card-color-soft: {{ spec.color_soft }};">
         <div class="demo-role-card-icon">
@@ -349,7 +353,8 @@
           {{ _("%(label)s olarak başla", label=spec.label) }}
           <i class="fas fa-arrow-right"></i>
         </span>
-      </a>
+      </button>
+      </form>
       {% endfor %}
     </div>
 

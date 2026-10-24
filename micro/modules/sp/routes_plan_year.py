@@ -76,7 +76,6 @@ def sp_api_plan_years_list():
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_years_create():
@@ -149,7 +148,6 @@ def sp_api_plan_years_create():
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years/set-active", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_years_set_active():
@@ -356,7 +354,6 @@ def sp_api_plan_year_kpi_configs(year_id):
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/kpi-configs/<int:kpi_id>", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
@@ -386,7 +383,6 @@ def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/kpi-configs/bulk", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_year_kpi_configs_bulk(year_id):

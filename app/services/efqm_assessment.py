@@ -791,8 +791,8 @@ def compute_efqm_assessment(tenant_id: int, plan_year_id: int | None = None) -> 
     if plan_year_id:
         try:
             py_row = db.session.execute(text(
-                "SELECT year, name FROM plan_years WHERE id=:id LIMIT 1"
-            ), {"id": plan_year_id}).fetchone()
+                "SELECT year, name FROM plan_years WHERE id=:id AND tenant_id=:tid LIMIT 1"
+            ), {"id": plan_year_id, "tid": tenant_id}).fetchone()
             if py_row:
                 plan_year_year = int(py_row.year) if py_row.year is not None else None
                 plan_year_label = (py_row.name or "").strip() or (

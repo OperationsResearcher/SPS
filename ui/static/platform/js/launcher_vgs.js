@@ -354,7 +354,7 @@
     const opts = yearsMeta.map((py) => {
       const y = py.year;
       const lock = py.sealed || py.muhurlu ? " 🔒" : "";
-      const name = py.name ? ` — ${py.name}` : "";
+      const name = py.name ? ` — ${esc(py.name)}` : "";
       const sel = y === DEFAULT_YEAR ? " selected" : "";
       return `<option value="${y}"${sel}>${y}${name}${lock}</option>`;
     });

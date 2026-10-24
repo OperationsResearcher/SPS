@@ -536,7 +536,13 @@ def create_app(config_class=None):
                 db.session.rollback()
                 app.logger.error(f"[set_language] locale_preferences kaydedilemedi: {e}")
 
-        return redirect(_req.referrer or "/")
+        # Open redirect önlemi: yalnız aynı host'un referrer'ına dön, aksi halde kök.
+        from urllib.parse import urlparse as _urlparse
+        _ref = _req.referrer or ""
+        _p = _urlparse(_ref)
+        if _p.netloc and _p.netloc == _req.host and _p.scheme in ("http", "https"):
+            return redirect(_ref)
+        return redirect("/")
 
     @app.route("/health")
     def global_health():

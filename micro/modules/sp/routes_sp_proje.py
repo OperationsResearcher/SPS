@@ -15,7 +15,6 @@ from flask_login import login_required, current_user
 from sqlalchemy.orm import selectinload
 
 from platform_core import app_bp
-from app.extensions import csrf
 from app.models import db
 from sqlalchemy import or_
 from app.models.core import Strategy, SubStrategy, Tenant
@@ -81,7 +80,6 @@ def sp_api_proje_list():
 
 
 @app_bp.route("/k-plan/strategy/api/project", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open
@@ -122,7 +120,6 @@ def sp_api_proje_save():
 
 
 @app_bp.route("/k-plan/strategy/api/project/<int:item_id>", methods=["DELETE"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open
@@ -155,7 +152,6 @@ def sp_api_proje_gorev_list(project_id):
 
 
 @app_bp.route("/k-plan/strategy/api/project/<int:project_id>/task", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open
@@ -206,7 +202,6 @@ def sp_api_proje_gorev_save(project_id):
 
 
 @app_bp.route("/k-plan/strategy/api/project/task/<int:task_id>", methods=["DELETE"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open

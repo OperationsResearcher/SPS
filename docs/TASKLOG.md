@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-324 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P8 — güvenlik testleri + açıkların kapatılması; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P8: güvenlik test paketini al, kırılanlar = ana projedeki açıklar → kapat
+**Modül:** güvenlik (CSRF, XSS, SSO, demo, admin araçları, swagger, open redirect), testler
+**Durum:** ✅ Tamamlandı
+
+### Ölçüm (testler ana projeye alındığında)
+9 test dosyası: 22 başarısız + 1 import hatası (SSO). IDOR (cross-tenant) ve sessiz-except lint'leri **ilk koşuda geçti** (ana projede açık yok).
+
+### Değiştirilen Dosyalar
+- Testler (yeni): `test_ham_sql_tenant_lint`, `test_idor_cross_tenant`, `test_sessiz_except_lint`, `test_csrf_exempt_kaldirildi`, `test_innerhtml_kacis`, `test_kucuk_guvenlik_duzeltmeleri`, `test_sso_guvenlik`, `test_admin_tools_ortam_kilidi`, `test_demo_host_csrf`
+- CSRF: 17 `@csrf.exempt` kaldırıldı (`micro/modules/sp/routes_{strategy,initiative,sp_proje,exec_advisor,pages}.py`; diğer muafiyetler KalDer yamasıyla), `csrf_fetch.js` + `base.html` (merkezî `X-CSRFToken`), `yedekleme.html` formlarına `csrf_token`
+- XSS: `calendar_quick_create.js`, `k_rapor.js`, `launcher_vgs.js` (`esc()`)
+- `app.py`, `app/__init__.py`, `app/api/swagger.py`, `app/routes/{auth,totp}.py`, `micro/modules/admin/routes_admin_tools.py` → open redirect, hata ayrıntısı sızıntısı, Swagger yalnız admin, debug açık bayrağa bağlı, ham `X-Real-IP` okunmaz, yedek uçları ortam kilidi (`KOKPITIM_ENV=local` açık bayrak)
+- `app/routes/sso.py` → Google SSO dönüşünde TOTP kapısı + `SSO_ALLOWED_DOMAINS` izin listesi (boşsa auto-provision kapalı)
+- `micro/modules/demo/routes.py`, `demo/landing.html` → demo yalnız demo host'ta; `/demo/start` yalnız CSRF'li POST
+- `app/services/efqm_assessment.py` → ham SQL tenant_id
+
+### Notlar
+- **Davranış değişikliği:** `SSO_ALLOWED_DOMAINS` tanımlı değilse Google SSO ile yeni kullanıcı OTOMATİK AÇILMAZ (eskiden açılıyordu). Yayın/Test `.env`'e gerekirse eklenmeli. `KOKPITIM_ENV=local` yoksa admin araçları (yedek/hata kontrolü) "local" sayılmaz — Yerel `.env`'de bu bayrak olmalı.
+- CSRF: `fetch` dışı çağıran (XHR/ajax/form) taraması yapıldı: yok; base.html miras almayan POST'lu sayfa yok. Yine de **tarayıcıda** tüm POST akışları (SP strateji/girişim/proje, sp_exec_advisor, setup import, kule, ayarlar) denenmeli: 400 çıkarsa token eksik demektir.
+- Dış çağıran (webhook, mobil, BI) muafiyet bekliyorsa 400 alır — envanter yapılmadı.
+
 ## TASK-323 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P7 — bağımlılık kilidi + pip-audit; yalnız Yerel; commit yok)
 
 **Görev:** KalDer P7: `requirements.lock`, güvenlik taraması, yama güncellemesi (izole venv)

@@ -18,7 +18,6 @@ from flask_login import login_required, current_user
 from werkzeug.security import check_password_hash
 
 from platform_core import app_bp
-from app.extensions import csrf
 from app.constants.roles import PLATFORM_ADMIN_ROLES
 from flask_babel import gettext as _
 from app.utils.error_handlers import json_error  # S6
@@ -33,8 +32,8 @@ def _is_admin() -> bool:
 
 
 def _is_local() -> bool:
-    """Yalnız Yerel (development). Test/Demo/Yayín = production → kilitli."""
-    return (os.environ.get("FLASK_ENV") or "development").lower() != "production"
+    """Yalnız Yerel. Açık bayrak şart: KOKPITIM_ENV=local (yoksa kilitli — Test/Demo/Yayın dahil)."""
+    return (os.environ.get("KOKPITIM_ENV") or "").strip().lower() == "local"
 
 
 # ─── Admin Araçları ana sayfa ────────────────────────────────────────────────
@@ -168,7 +167,6 @@ def _send_temp(path: str, download_name: str, mime: str):
 
 
 @app_bp.route("/admin/araclar/yedekleme/indir/db", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_yedekleme_indir_db():
     """Manuel: anlık tam DB yedeği üret → indir."""
@@ -186,11 +184,10 @@ def admin_tools_yedekleme_indir_db():
         return _send_temp(path, f"kokpitim_db_{ts}.dump", "application/octet-stream")
     except Exception as e:
         current_app.logger.error(f"[admin_tools] yedek DB indir: {e}", exc_info=True)
-        return jsonify({"success": False, "message": f"DB yedeği alınamadı: {e}"}), 500
+        return jsonify({"success": False, "message": "DB yedeği alınamadı. Ayrıntı sunucu günlüğünde."}), 500
 
 
 @app_bp.route("/admin/araclar/yedekleme/indir/kod", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_yedekleme_indir_kod():
     """Manuel: anlık tam kod yedeği üret → indir."""
@@ -208,7 +205,7 @@ def admin_tools_yedekleme_indir_kod():
         return _send_temp(path, f"kokpitim_kod_{ts}.tar.gz", "application/gzip")
     except Exception as e:
         current_app.logger.error(f"[admin_tools] yedek kod indir: {e}", exc_info=True)
-        return jsonify({"success": False, "message": f"Kod yedeği alınamadı: {e}"}), 500
+        return jsonify({"success": False, "message": "Kod yedeği alınamadı. Ayrıntı sunucu günlüğünde."}), 500
 
 
 @app_bp.route("/admin/araclar/yedekleme/indir-dosya")
@@ -230,7 +227,6 @@ def admin_tools_yedekleme_indir_dosya():
 
 
 @app_bp.route("/admin/araclar/yedekleme/otomatik-calistir", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_yedekleme_otomatik_calistir():
     """Otomatik yedeği şimdi elle tetikle (test/acil)."""
@@ -246,7 +242,6 @@ def admin_tools_yedekleme_otomatik_calistir():
 
 
 @app_bp.route("/admin/araclar/yedekleme/geri-yukle/db", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_yedekleme_geri_yukle_db():
     """YIKICI: yüklenen .dump'tan DB'yi geri yükle. Admin + şifre + onay metni."""
@@ -371,7 +366,6 @@ def admin_tools_hk_gecmis_yukle():
 
 
 @app_bp.route("/admin/araclar/hata-kontrolu/tarama-baslat", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_hk_tarama_baslat():
     """Faz 3b — Playwright tarayıcı taramasını arka planda başlatır. Yalnız Admin + Yerel."""
@@ -416,7 +410,6 @@ def admin_tools_hk_tarama_durum():
 
 
 @app_bp.route("/admin/araclar/hata-kontrolu/senaryo-baslat", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_hk_senaryo_baslat():
     """Faz 3d — aktif CRUD senaryolarını arka planda başlatır. Yalnız Admin + Yerel."""
@@ -457,7 +450,6 @@ def admin_tools_hk_senaryo_durum():
 
 
 @app_bp.route("/admin/araclar/hata-kontrolu/tomofiltest-yenile", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_tomofiltest_yenile():
     """tomofiltest'i Tomofil'den (yeniden) klonlar. Yalnız Admin + Yerel."""
@@ -500,7 +492,6 @@ def admin_tools_kilavuz_olusturucu():
 
 
 @app_bp.route("/admin/araclar/kilavuz-olusturucu/baslat", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_kilavuz_olusturucu_baslat():
     if not _is_admin():
@@ -547,7 +538,6 @@ def admin_tools_kilavuz_olusturucu_durum():
 
 
 @app_bp.route("/admin/araclar/kilavuz-olusturucu/durdur", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_tools_kilavuz_olusturucu_durdur():
     """Çalışan otonom çekimi durdurur (kooperatif iptal — güvenli noktada durur)."""
