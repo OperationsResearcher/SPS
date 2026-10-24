@@ -132,62 +132,70 @@ def _is_valid_logo_url(url):
 @api_bp.route('/kurum/upload-logo', methods=['POST'])
 @login_required
 def api_kurum_upload_logo():
-    """Kurum logosunu yükle"""
+    """Kurum logosunu yükle (legacy yüzey; modern kurum ayarları ile AYNI depolama).
+
+    Dosya `instance/uploads/tenant_logos/<tenant_id>.<ext>` altına yazılır, `Tenant.logo_path` /
+    `logo_updated_at` güncellenir. (Eskiden var olmayan `logo_url` alanına ve herkese açık
+    `static/uploads/logos` klasörüne yazıyordu → her istek 500 veriyordu.)
+    """
     try:
-        from werkzeug.utils import secure_filename
-        from utils.file_validation import validate_uploaded_file
-        import os
-        import uuid
-        
+        import datetime as _dt
+        from app.utils.upload_security import validate_uploaded_image, safe_filename
+
         if current_user.sistem_rol not in _LOGO_ROLES:
             return jsonify({'success': False, 'message': 'Bu işlem için yetkiniz yok'}), 403
 
         if 'file' not in request.files:
             return jsonify({'success': False, 'message': 'Dosya seçilmedi!'}), 400
-        
+
         file = request.files['file']
-        
         if file.filename == '':
             return jsonify({'success': False, 'message': 'Dosya seçilmedi!'}), 400
-        
-        # Güvenli dosya validasyonu (extension + MIME type)
-        is_valid, error_msg, mime_type = validate_uploaded_file(file, max_size=5 * 1024 * 1024)  # 5MB max for logos
-        if not is_valid:
-            return jsonify({'success': False, 'message': error_msg}), 400
-        
-        # Güvenli dosya adı oluştur
-        filename = secure_filename(file.filename)
-        unique_filename = f"{uuid.uuid4().hex}_{filename}"
-        
-        # Upload klasörünü oluştur
-        upload_folder = os.path.join('static', 'uploads', 'logos')
-        os.makedirs(upload_folder, exist_ok=True)
-        
-        # Dosyayı kaydet
-        file_path = os.path.join(upload_folder, unique_filename)
-        file.save(file_path)
-        
-        # Eski logo dosyasını sil (yalnız static/uploads/logos içindeyse)
+
         kurum = current_user.tenant
-        _safe_remove_old_logo(kurum.logo_url)
-        
-        # Veritabanında güncelle
-        logo_url = f'/static/uploads/logos/{unique_filename}'
-        kurum.logo_url = logo_url
+        if not kurum:
+            return jsonify({'success': False, 'message': 'Kurum bulunamadı'}), 404
+
+        blob = file.read()
+        if len(blob) > 2 * 1024 * 1024:
+            return jsonify({'success': False, 'message': "Logo dosyası 2MB'dan büyük olamaz."}), 400
+
+        # Magic byte doğrulaması (SVG XSS dahil) — modern uçlarla aynı kural
+        ok, msg, detected_ext = validate_uploaded_image(
+            blob, {'.png', '.jpg', '.jpeg', '.gif', '.webp', '.svg'}, accept_svg=True
+        )
+        if not ok:
+            current_app.logger.warning(f'[api logo] reject tenant={kurum.id} user={current_user.id}: {msg}')
+            return jsonify({'success': False, 'message': msg}), 400
+
+        folder = os.path.join(current_app.instance_path, 'uploads', 'tenant_logos')
+        os.makedirs(folder, exist_ok=True)
+        fname = safe_filename(f'{kurum.id}.{detected_ext}', fallback=f'{kurum.id}.png')
+        dest = os.path.join(folder, fname)
+        if not os.path.abspath(dest).startswith(os.path.abspath(folder)):
+            current_app.logger.error(f'[api logo] path traversal blocked: {dest}')
+            return jsonify({'success': False, 'message': 'Geçersiz dosya yolu.'}), 400
+
+        for old in os.listdir(folder):  # eski uzantılı dosyaları temizle
+            if old.startswith(f'{kurum.id}.') and old != fname:
+                try:
+                    os.remove(os.path.join(folder, old))
+                except OSError as err:
+                    current_app.logger.error(f'api logo old remove failed: {err}')
+
+        with open(dest, 'wb') as out:
+            out.write(blob)
+        kurum.logo_path = fname
+        kurum.logo_updated_at = _dt.datetime.now(_dt.timezone.utc)
         db.session.commit()
-        
-        current_app.logger.info(f'Kurum logosu güncellendi: {kurum.short_name or kurum.name} -> {unique_filename}')
-        
-        return jsonify({
-            'success': True,
-            'message': 'Logo başarıyla yüklendi!',
-            'logo_url': logo_url
-        }), 200, {'Content-Type': 'application/json'}
-        
+
+        current_app.logger.info(f'Kurum logosu güncellendi: {kurum.short_name or kurum.name} -> {fname}')
+        return jsonify({'success': True, 'message': 'Logo başarıyla yüklendi!', 'logo_path': fname}), 200
+
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f'Logo yükleme hatası: {str(e)} - Kullanıcı: {current_user.email}')
-        return jsonify({'success': False, 'message': f'Logo yüklenirken hata oluştu: {str(e)}'}), 500, {'Content-Type': 'application/json'}
+        return jsonify({'success': False, 'message': f'Logo yüklenirken hata oluştu: {str(e)}'}), 500
 
 
 @api_bp.route('/kurum/<int:kurum_id>/alt-stratejiler', methods=['GET'])

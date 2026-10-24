@@ -2,6 +2,26 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-327 | 2026-10-24 | ✅ Tamamlandı (legacy logo yükleme düzeltmesi + test artıklarının temizliği; yalnız Yerel; commit yok)
+
+**Görev:** `POST /api/kurum/upload-logo` her istekte 500 veriyordu → düzelt; otomatik testin bıraktığı artıkları temizle
+**Modül:** api (legacy yüzey), test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `api/routes_admin.py` → `api_kurum_upload_logo`: var olmayan `Tenant.logo_url` ve herkese açık `static/uploads/logos` yerine modern depolama (`instance/uploads/tenant_logos/<id>.<ext>` + `logo_path`/`logo_updated_at`), magic-byte doğrulaması (`validate_uploaded_image`, SVG script reddi), 2 MB sınırı
+- `tests/test_logo_upload_legacy_alan.py` → yeni (kaynak düzeyinde regresyon koruması)
+
+### Yapılan İşlem
+Kök neden: model `logo_url` değil `logo_path` kullanıyor; legacy uç eski alanı yazıyordu. **Düzeltme öncesi yanlış bilgi:** bu uç hiçbir ekrandan çağrılmıyor (yalnız bir testte); kurum ayarlarındaki gerçek logo yükleme modern uçlardan (`micro/modules/kurum/routes.py`, `admin/routes.py`) geçiyor ve zaten çalışıyordu. Düzeltme tarayıcıda doğrulandı (izole instance klasörüyle): geçerli PNG → 200 + `27.png` yazıldı + ayarlar sayfası logoyu `/tenant-logo/27` ile gösterdi; metin dosyası, script'li SVG → 400; dosya alanı yok → 400; standart kullanıcı → 403.
+
+### Temizlik
+- Otomatik testin gerçek `otomatik-calistir` ucunu çağırması sonucu `instance/yedekler/otomatik/` altında oluşan `db_20261024_062636.dump` ve `code_tam_20261024_062636.tar.gz` SİLİNDİ; `_state.json` önceki zincire (son tam: `code_tam_20260720_020000`, son çalışma 24.07 02:00) geri alındı (silinen dosyaya bakan durum gece fark yedeğini bozardı). Rotasyon başka dosya silmemişti (11/8/3 adet < 14). Aynı denemenin `%TEMP%	mp*.dump` artığı da silindi.
+- `kokpitim_sandbox` veritabanı, `sandbox_src.dump`, bağlantı/şifre dosyaları, ekran görüntüleri ve sonuç dosyaları silindi. `kokpitim_db` ve diğer veritabanlarına dokunulmadı.
+
+### Notlar
+Metin dosyası yüklenince hata mesajı "SVG güvenlik kontrolünden geçemedi" diyor (paylaşılan doğrulayıcının mesajı; modern uçlarda da aynı) — reddi doğru, mesaj yanıltıcı; ayrı iş.
+
 ## TASK-326 | 2026-10-24 | ✅ Tamamlandı (otomatik tarayıcı doğrulaması + P4 boşluk kapatma; yalnız Yerel; commit yok)
 
 **Görev:** KalDer P1–P10 değişikliklerini Playwright ile (yerel DB'nin kopyası üzerinde) doğrula; bulunan i18n boşluklarını kapat
