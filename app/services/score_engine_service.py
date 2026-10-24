@@ -256,6 +256,26 @@ def achievement(actual, target, direction='Increasing') -> Optional[float]:
     return round(min(100.0, max(0.0, ratio * 100.0)), 2)
 
 
+def adverse_deviation_pct(actual, target, direction='Increasing') -> Optional[float]:
+    """Hedefe göre OLUMSUZ sapma yüzdesi (>0 = kötü yönde, <=0 = hedefte/iyi yönde).
+
+    Artan : (hedef - gerçek) / hedef. Azalan: (gerçek - hedef) / hedef. Yön `normalize_direction`
+    ile çözülür. Hedef <= 0 veya değer eksikse None (negatif/sıfır hedefte oran anlamsız —
+    `achievement` ile aynı kural). Sapma/uyarı formülleri bunu kullanır; kendi formülünü yazmaz."""
+    if target is None or actual is None:
+        return None
+    try:
+        hedef_f = float(target)
+        gercek_f = float(actual)
+    except (TypeError, ValueError):
+        return None
+    if hedef_f <= 0:
+        return None
+    if normalize_direction(direction) == 'Decreasing':
+        return (gercek_f - hedef_f) / hedef_f * 100.0
+    return (hedef_f - gercek_f) / hedef_f * 100.0
+
+
 def compute_pg_score(
     hedef_val: Optional[float],
     gerceklesen_val: Optional[float],

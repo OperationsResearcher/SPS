@@ -10,7 +10,6 @@ from app.services.score_engine_service import achievement
 KOK = Path(__file__).resolve().parent.parent
 
 
-@pytest.mark.xfail(reason="KalDer P10 farkı: ana projede surec.js hâlâ istemcide yüzde hesaplıyor (computeKpiYearlyMetrics); sunucu achievement() tek kaynağa taşıma iş kararı bekliyor (docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md)", strict=False)
 def test_surec_js_yuzde_hesaplamiyor():
     src = (KOK / "ui/static/platform/js/surec.js").read_text("utf-8")
     govde = src[src.index("function computeKpiYearlyMetrics"):src.index("function healthBand")]

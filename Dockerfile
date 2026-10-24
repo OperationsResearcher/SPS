@@ -18,9 +18,11 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
     postgresql-client \
     && rm -rf /var/lib/apt/lists/*
 
-# Bağımlılıkları kopyala ve yükle
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Bağımlılıkları kopyala ve yükle: requirements.lock (test edilen sürümler, TEKRARLANABİLİR build).
+# Yenileme: python scripts/ops/kilit_uret.py (Yerel, testler yeşilken); Py 3.11'de doğrulandı
+# (docs/kontrol/BAGIMLILIK-TARAMASI.md). requirements.txt yalnız kök bağımlılık listesidir.
+COPY requirements.lock .
+RUN pip install --no-cache-dir -r requirements.lock
 
 # Uygulama kodunu kopyala
 COPY . .

@@ -1040,15 +1040,14 @@
         if (x != null) vals.push(x);
       }
     }
-    const yearlyActual =
-      vals.length === 0 ? null : vals.reduce((a, b) => a + b, 0) / vals.length;
-    let successPct = null;
-    if (target != null && target !== 0 && yearlyActual != null) {
-      const dec = String(k.direction || "Increasing").toLowerCase() === "decreasing";
-      successPct = dec
-        ? Math.min(100, Math.round((target / yearlyActual) * 100))
-        : Math.min(100, Math.round((yearlyActual / target) * 100));
+    // Yıl özeti ve başarı oranı SUNUCU motorundan gelir (score_engine_service): yöntem
+    // (Toplama/Ortalama/Son Değer), yön ve negatif/sıfır hedef kuralları tek yerde. İstemci
+    // yalnız sunucu değeri yoksa görüntü için ortalamaya düşer; yüzde ASLA burada hesaplanmaz.
+    let yearlyActual = parseNum(k.year_rollup != null ? k.year_rollup : k.consolidated_value);
+    if (yearlyActual == null && vals.length > 0) {
+      yearlyActual = vals.reduce((a, b) => a + b, 0) / vals.length;
     }
+    const successPct = k.achievement != null ? Math.round(Number(k.achievement)) : null;
     return { target, yearlyActual, successPct, monthCount: vals.length };
   }
 

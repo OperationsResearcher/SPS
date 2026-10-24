@@ -19,7 +19,7 @@ Yerel Docker kaldırıldı; Docker imajının yaptığı iş `python:3.11-slim` 
 - Tam test **3.11'de: 1211 geçti, 0 başarısız** (3.13'te 1209; bu makinede 3.13 + çok parçalı yükleme testleri takılıyor, 3.11'de iki upload testi de geçti → uygulama hatası değil test ortamı uyumsuzluğu).
 - Bu çalışma bir çakışma da buldu: `requirements-test.txt` `marshmallow==3.20.1` sabitliyordu, `requirements.txt` 3.26.2 → ikisi birlikte kurulamıyordu; düzeltildi.
 - `requirements.lock` 3.11'de doğrulanan sürümlerden **yeniden üretildi** (yalnız numpy, scipy, deprecated değişti). Hiçbir paketin `Requires-Python` kısıtı 3.11–3.13'ü dışlamıyor → kilit artık hem Docker (3.11) hem yerel (3.13) için kurulabilir.
-- **Dockerfile hâlâ `requirements.txt` (alt sınırlı `>=`) kuruyor, kilidi değil**: build'ler zamanla farklı sürüm çekebilir. Kilide geçmek tek satırlık bir değişiklik ama dağıtım davranışını değiştirir → kullanıcı onayı + Test'te doğrulama gerekir (yapılmadı).
+- **Dockerfile artık `requirements.lock` kuruyor** (2026-10-24, kullanıcı kararı): build'ler tekrarlanabilir. Kilitteki 102 pinin 101'i için cp311 `manylinux` wheel'i hem x86_64 hem aarch64'te mevcut (pip `--platform` ile doğrulandı); `http-ece` yalnız sdist (saf Python, Docker'da kaynaktan derlenir). `tests/test_requirements_lock_tutarli.py` kilit ile `requirements.txt` ayrışırsa (ve Dockerfile kilidi kurmazsa) kırılır. Yenileme: `python scripts/ops/kilit_uret.py`.
 - Sunucuda gerçek Docker build yine de Test ortamında yapılmalı (sistem paketleri: gcc, libpq-dev bu doğrulamada yok).
 
 ## Yapılmayanlar

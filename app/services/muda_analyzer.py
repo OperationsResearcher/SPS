@@ -87,9 +87,11 @@ class MudaAnalyzerService:
                     for d in recent:
                         target = _safe_float(d.target_value) or _safe_float(kpi.target_value)
                         actual = _safe_float(d.actual_value)
-                        if target is not None and actual is not None and target > 0 and actual < target:
+                        from app.services.score_engine_service import adverse_deviation_pct
+                        adverse = adverse_deviation_pct(actual, target, kpi.direction)
+                        if adverse is not None and adverse > 0:
                             below_count += 1
-                            total_gap_pct += ((target - actual) / target) * 100
+                            total_gap_pct += adverse
                     if below_count >= 2:
                         avg_below = total_gap_pct / below_count if below_count > 0 else 0
                         findings.append({

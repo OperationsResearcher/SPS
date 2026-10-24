@@ -1,17 +1,21 @@
-# KalDer ↔ ana proje: karne/skor motoru kıyası (P10, 2026-10-24)
+# KalDer ↔ ana proje: karne/skor motoru (P10) — TAŞINDI (2026-10-24, kullanıcı kararı)
 
-KalDer'in karne testleri ana projede koşuldu; **hesaplama sonuçlarını değiştireceği için hiçbir şey TAŞINMADI**.
+İlk kıyasta (aynı gün, sabah) iki fark bulunmuş ve rakamı değiştireceği için bilerek taşınmamıştı. Kullanıcı
+"tek kaynak olsun" dedi; ikisi de taşındı.
 
-| Konu | KalDer | Ana proje | Sonuç |
-|---|---|---|---|
-| Puan sözleşmesi (`achievement`, `hesapla_basari_puani`; `test_puan_sozlesmesi`) | Faz 1.1/1.2 | var | **3/3 geçti** — ana projede zaten sağlanıyor |
-| Başarı yüzdesi yalnız sunucudan (`test_basari_yuzdesi_sunucu`) | Faz 1.1 | sunucu tarafı var | 9/10 geçti; **`surec.js computeKpiYearlyMetrics` hâlâ istemcide `Math.min/round(...*100)`** (xfail) |
-| Ortak sapma formülü `adverse_deviation_pct` (`test_sapma_formulleri`) | Faz 1.3 (`d7cfac6`) | **yok** | `muda_analyzer.py`, `process_deviation_service.py`, `services/notification_service.py` kendi formülünü kullanıyor |
+| Konu | Önce | Şimdi |
+|---|---|---|
+| Puan sözleşmesi (`achievement`, `hesapla_basari_puani`) | ana projede zaten vardı | `docs/kontrol/PUAN-SOZLESMESI.md` belgelendi |
+| Başarı yüzdesi | `surec.js computeKpiYearlyMetrics` istemcide `Math.min/round(...*100)` | yüzde yalnız sunucu `achievement` alanından (`score_engine_service`); istemci yalnız sunucu yıl özeti yoksa görüntü için ortalamaya düşer |
+| Sapma formülü | `muda_analyzer`, `process_deviation_service`, `services/notification_service` her biri kendi formülü | tek yardımcı `score_engine_service.adverse_deviation_pct(actual, target, direction)` |
 
-## Neden taşınmadı
-Her iki fark da kurumların ekranda/uyarıda gördüğü **rakamı** değiştirebilir (istemci yüzdesi negatif üretiyordu, sınır durumlar; sapma formülü hedef ≤ 0 ve yön konusunda farklı davranır). Bu bir kod uyarlaması değil iş kararı: hangi hesap "doğru" kabul edilecek.
+## Davranış değişiklikleri (kurumların gördüğü rakamlar)
+- **Hedef ≤ 0:** sapma/uyarı hesabı artık yapılmaz (`None`); `achievement` ile aynı kural. Eskiden hedef < 0 için anlamsız oran üretilebiliyordu.
+- **Yön:** `Decreasing` için sapma `(gerçek − hedef)/hedef`, `Increasing` için `(hedef − gerçek)/hedef`; uyarılarda gösterilen "Sapma: %x" artık hep **olumsuz yönde** pozitif sayı (eskiden mutlak değer).
+- **İstemci yüzdesi:** karne ekranındaki başarı yüzdesi sunucu puanıyla birebir aynı; eskiden istemci Toplama/Son Değer yöntemlerini ve negatif değerleri (istemci negatif yüzde üretiyordu) farklı ele alıyordu → bazı PG'lerde ekran yüzdesi değişebilir.
 
-## Karar gerekirse nasıl taşınır
-1. `adverse_deviation_pct`: KalDer `d7cfac6` → `app/services/score_engine_service.py` (+20 satır) ve 3 çağıran (`git -C C:\projeler\KalDer show d7cfac6`).
-2. İstemci yüzdesi: KalDer `3a2a7ff` → `surec.js`'te `k.achievement` kullan; sonra `test_basari_yuzdesi_sunucu` xfail kaldırılır.
-Her ikisi için önce Test'te mevcut kurum verisiyle önce/sonra karne kıyası alınmalı (`docs/ekim2026/kiyas*` araçları).
+## Koruma
+`tests/test_sapma_formulleri.py`, `tests/test_basari_yuzdesi_sunucu.py` (istemcide yüzde formülü geri gelirse kırılır), `tests/test_puan_sozlesmesi.py`.
+
+## Yayın öncesi
+Test ortamında gerçek kurum verisiyle karne ekranı ve uyarı bildirimleri önce/sonra kıyaslanmalı (rakam farkı beklenir, ama açıklanabilir olmalı).

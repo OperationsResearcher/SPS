@@ -2,6 +2,24 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-329 | 2026-10-24 | ✅ Tamamlandı (karne/sapma tek kaynak + Dockerfile kilide geçti; yalnız Yerel)
+
+**Görev:** Kullanıcı kararları: (a) karne yüzdesi ve sapma formülü KalDer gibi tek kaynağa taşınsın, (b) Dockerfile `requirements.lock` kursun
+**Modül:** skor motoru, karne JS, Docker, bağımlılıklar
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/score_engine_service.py` → `adverse_deviation_pct` (yön + hedef≤0 guard'ı tek yerde)
+- `app/services/muda_analyzer.py`, `app/services/process_deviation_service.py`, `services/notification_service.py` → ortak yardımcıyı kullanır (hedef ≤ 0'da hesap yapılmaz, "Sapma" olumsuz yönde pozitif)
+- `ui/static/platform/js/surec.js` → `computeKpiYearlyMetrics`: başarı yüzdesi yalnız sunucu `achievement`'tan; istemci formülü kaldırıldı
+- `tests/test_sapma_formulleri.py` (yeni), `tests/test_basari_yuzdesi_sunucu.py` (xfail kalktı), `docs/kontrol/PUAN-SOZLESMESI.md` (yeni), `docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md` (güncellendi)
+- `Dockerfile` → `COPY requirements.lock` + `pip install -r requirements.lock`; `tests/test_requirements_lock_tutarli.py` (yeni)
+
+### Notlar
+- **Rakamlar değişebilir** (hedef ≤ 0, yön, istemci yüzdesi): ayrıntı `docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md`. Test'te gerçek kurum verisiyle önce/sonra kıyası yapılmalı.
+- Kilit: x86_64 ve aarch64 cp311 wheel'leri doğrulandı (http-ece sdist). Sunucuda gerçek Docker build yine Test'te (gcc/libpq-dev).
+- Yayın'a/Test'e gönderilmedi.
+
 ## TASK-328 | 2026-10-24 | ✅ Tamamlandı (Docker'sız Python 3.11 doğrulaması + kilit yenileme; yalnız Yerel)
 
 **Görev:** Yerel Docker kaldırıldı → Docker imajının (python:3.11-slim + `pip install -r requirements.txt`) yaptığını Docker olmadan doğrula
