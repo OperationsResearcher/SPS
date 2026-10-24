@@ -14,6 +14,7 @@
 | `seed_yonetim_ozeti_kartlari.py` | ✅ (2026-07 öncesi) | ✅ 2026-07-21 (DB yerel kopyası) | ? | ✅ 2026-07-21 | YO01-09 meta. Öncesinde kart keşfi şart. |
 | `seed_sp_kart_aciklamalari.py` | ✅ (tarih bilinmiyor) | ✅ 2026-07-21 (DB yerel kopyası) | ? | ✅ 2026-07-21 (içerik md5 doğrulandı) | system_cards içeriği Yayın=Yerel birebir (501 kart, toplu md5 eşit). |
 | `seed_card_descriptions.py` | ✅ 2026-07-24 (501/501) | ✅ 2026-07-24 (sıfırdan dump) | ✅ 2026-08-05 (483 güncelleme; 18 kart DB’de yok) | ✅ 2026-08-05 (1 EFQM) / ✅ 2026-07-24 (501) | Zengin açıklama. Önkoşul: Text `391945351814`. Demo 2026-08-05: tam sync `e9e94270` + Alembic + seed + baseline snapshot. |
+| `seed_masaustu_yeni_kartlar.py` | ❌ (kart keşfi sonrası kullanıcı koşar) | ? | ? | ? | MA21 bekleyen_pg, MA22 ilk_kurulum, TA01 temel_akis.serit; mevcut MA01–MA20'ye dokunmaz, idempotent. Önce kart keşfi. EN açıklamaları `.po`'da hazır. |
 | `seed_l3_ileri_moduller.py` | ? | ? | ? | ? | |
 | `seed_raporlar_modulu_strateji.py` | ? | ? | ? | ? | |
 | `seed_component_module_gating.py` | ? | ? | ? | ? | |

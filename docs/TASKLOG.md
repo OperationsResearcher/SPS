@@ -2,6 +2,68 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-332 | 2026-10-24 | ✅ Tamamlandı (KMF yıl bazlı geçiş runner'ı + karışık yıllı PG düzeltmesi; Yayın'a UYGULANMADI)
+
+**Görev:** KMF için iki bulgu: (1) yıl bazlı veri geçişi deploy'a dahil değil → tek komutlu, kilitli, tekrarlanabilir runner; (2) 31 karışık yıllı PG / 28 görünmez ölçüm → düzeltme betiği.
+**Modül:** ops araçları (yılbazlı geçiş)
+**Durum:** ✅ Tamamlandı — Yayın kopyasında (taze `kokpitim_yayin_prova2`) uçtan uca prova: kayıp yok, karışık PG 0, aktif ölçümün tamamı (861) görünür.
+
+### Değiştirilen Dosyalar
+- `scripts/ops/yilbazli_faz1_2b_karisik_pg_duzelt.py` (yeni) → PG yılı ≠ süreç yılı olan PG'leri düzeltir: yılın klonu varsa ölçüm+bağlı kayıtlar klona taşınır (K pasif), yoksa K yılın sürecine bağlanır + alt strateji yılın klonuna eşlenir. KONTROL varsayılan, `--calistir`, geri alma CSV (`instance/yilbazli/`).
+- `scripts/ops/kurum_yilbazli_gecis.py` (yeni) → sıralı runner: 1.2 → 1.2b → 1.5 → 1.4 → doğrulama; `--calistir` için `--yedek-onay` zorunlu; hata = dur.
+- `tests/test_kurum_yilbazli_gecis.py` (yeni) → yedek kilidi + adım sırası.
+
+### Yapılan İşlem
+KMF'de 31 karışık PG: 8'i klonlu (taşı), 23'ü klonsuz (bağla); etkilenen 31 ölçüm. Prova: `CREATE DATABASE … TEMPLATE kokpitim_yayin_oncesi` → `run_db_upgrade` → runner `--calistir`; `kurum_veri_kiyas` ✅ KAYIP YOK (22219 → 23600, yalnız eklenen klonlar). Kalan "yanlış yıl 343" (faz1_5 uyarısı) = Tenant 28'in 204'ü (Yayın'da zaten var) + KMF'nin 139 PASİF 2020 PG'si (Yayın'da zaten pasif/görünmez).
+
+### Notlar
+Yayın'da çalıştırma: deploy + seed sonrası, container içinde, yedek sonrası; kullanıcı "yayına çıkalım" demeden yok. Aynı adlı kardeş PG'ler (SR8 2025) birleştirilmez, ayrı bağlanır.
+
+## TASK-331 | 2026-10-24 | ✅ Tamamlandı (KMF Yayın verisi: yerel yedek + envanter + Yayın kopyasında prova; Yayın'a YAZMA YOK, deploy YOK)
+
+**Görev:** "Canlıdaki KMF verileri çok kritik: önce yerel yedekle, hangi verimiz var tespit et; canlıya aldıktan sonra eksik var mı kontrol edeceğiz"
+**Modül:** ops araçları, yedek, doğrulama
+**Durum:** ✅ Tamamlandı — ayrıntı: `docs/kontrol/KMF-VERI-ENVANTERI-2026-10-24.md`
+
+### Değiştirilen Dosyalar
+- `scripts/ops/kurum_veri_kiyas.py` (yeni) → bir kurumun TÜM verisini (tenant_id + FK zinciri + FK'siz emniyet ağı) bulup iki yerel DB arasında satır satır kıyaslar; yalnız localhost; negatif kontrolle doğrulandı
+- `scripts/ops/yayin_kopya_al.py` (yeni) → Yayın'ı salt okunur dump + kullanıcı dosyaları (tar) → AYRI yerel DB (`kokpitim_yayin_*`); `kokpitim_db` korunur
+- `docs/kontrol/KMF-VERI-ENVANTERI-2026-10-24.md` (yeni), `docs/kontrol/YAYIN-HAZIRLIK-2026-10-24.md` (düzeltildi: Yayın bi01/4cb738bb, bekleyen 3 migration, KMF veri geçişi zorunlu)
+
+### Yapılan İşlem
+Yayın: salt okunur `sudo -u postgres pg_dump` (9,1 MB, sha256 kayıtlı) + `uploads` tar (KMF logosu dahil). Yerel yedek: `backups/yayin/yayin_2026-10-24_1028.dump`; referans kopya DB `kokpitim_yayin_oncesi` (dokunulmaz). Prova (`kokpitim_yayin_prova`): `run_db_upgrade.py` + `yilbazli_faz1_2 --tenant 16` + `faz1_5` + `faz1_4 --tenant 16`; 13 kurumun hepsinde ve KMF'de değer düzeyinde **kayıp 0**; provada yerelin dönüşüm sonrası KMF yapısı (77 süreç/973 PG) birebir yeniden üretildi.
+
+### Bulgular
+- Yayın ile yerel arasındaki TEK yapı farkı KMF (Yayın 11 süreç/187 PG yılsız; yerel 77/973). Veri geçişi deploy'la gelmez → zorunlu 4. katman işlemi.
+- 31 PG kopyası (SR5 23, SR8 7, SR11 1) süreç yılından farklı yıl taşıyor; 28 ölçüm yıl bazlı karnede GÖRÜNMÜYOR (kayıp değil). Yerelde de var. Karar bekliyor.
+- Karne rakamları değişir (başarı yüzdesi dolar; virgüllü ondalık hatası düzelir; "son değer" en son girileni seçer; 2026 özetleri: SR10 %30→%70, SR8 %50→%66). KMF sorumlusuyla Test'te doğrulanmalı.
+- Önceki raporun "15 migration" sayısı yanlıştı: Yayın alembic `bi01`'de, bekleyen 3.
+
+### Notlar
+Prova sırasında zamanlayıcılar kapatıldı (APScheduler `start` boşa çıkarıldı), Sentry/AI anahtarları boşaltıldı; gerçek kullanıcıya bildirim/e-posta gitmedi. Prova DB'lerinde yalnızca 4 KMF hesabına prova şifresi tanımlandı (kopyada).
+
+## TASK-330 | 2026-10-24 | ✅ Tamamlandı (Yayın hazırlığı: Alembic çift head düzeltmesi + ön kontrol + rapor; yalnız Yerel, deploy YOK)
+
+**Görev:** "Yayına almak için son hazırlıkları yap" — 4 katman kontrolü (REHBER §0 madde 7), deploy engellerini kapat
+**Modül:** migrations, ops, doküman
+**Durum:** ✅ Tamamlandı (deploy/push/tag yapılmadı)
+
+### Değiştirilen Dosyalar
+- `migrations/versions/mg01a2b3c4d5_merge_bi01_ux01.py` → bi01c4e5f6a7 + ux01a2b3c4d5 birleştirme (boş; şemayı değiştirmez)
+- `tests/test_alembic_tek_head.py` → tek head + yetim migration yok
+- `scripts/ops/yayin_onkontrol.sql` → Yayın/Test için SALT OKUNUR ön kontrol (11 bölüm), yerelde doğrulandı
+- `docs/kontrol/YAYIN-HAZIRLIK-2026-10-24.md` (yeni) → 4 katman listesi, env değişkenleri, sıra, açık kararlar; `docs/kontrol/seed_calistirma_kaydi.md` → yeni seed satırı
+
+### Bulgular
+- 🔴 **İki Alembic head** (`alembic upgrade head` deploy'da "Multiple head revisions" ile dururdu) → birleştirildi.
+- Etiketten (`deploy-2026-07-08`) bu yana 187 commit / 800 dosya / 15 migration; veri değiştirenler: ux01 (mükerrer bireysel PG pasifleşir), e9669 (yetim user_id NULL), backfill'ler. Yayın'ın gerçek konumu sunucudan okunmalı.
+- 8 yeni env değişkeni; `YEDEKLEME_SCHEDULER_ENABLED` varsayılan açık (gece ~250–580 MB arşiv) → karar bekliyor.
+- `origin/main` yerelden 21 commit geride (push yok → `yayina_ver.ps1 -Mod kontrol` ön kontrolü geçemez).
+- Yerel dev DB alembic grafiğinden sapmış (session_version var, ux01 indeksi yok).
+
+### Notlar
+Bağlayıcı kural "tüm L paketleri bitmeden Yayın yok" (2026-06-19) için kullanıcı onayı bekleniyor. Yayın'a/Test'e gönderilmedi.
+
 ## TASK-329 | 2026-10-24 | ✅ Tamamlandı (karne/sapma tek kaynak + Dockerfile kilide geçti; yalnız Yerel)
 
 **Görev:** Kullanıcı kararları: (a) karne yüzdesi ve sapma formülü KalDer gibi tek kaynağa taşınsın, (b) Dockerfile `requirements.lock` kursun
