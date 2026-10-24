@@ -2,6 +2,28 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-330 | 2026-10-24 | ✅ Tamamlandı (Yayın hazırlığı: Alembic çift head düzeltmesi + ön kontrol + rapor; yalnız Yerel, deploy YOK)
+
+**Görev:** "Yayına almak için son hazırlıkları yap" — 4 katman kontrolü (REHBER §0 madde 7), deploy engellerini kapat
+**Modül:** migrations, ops, doküman
+**Durum:** ✅ Tamamlandı (deploy/push/tag yapılmadı)
+
+### Değiştirilen Dosyalar
+- `migrations/versions/mg01a2b3c4d5_merge_bi01_ux01.py` → bi01c4e5f6a7 + ux01a2b3c4d5 birleştirme (boş; şemayı değiştirmez)
+- `tests/test_alembic_tek_head.py` → tek head + yetim migration yok
+- `scripts/ops/yayin_onkontrol.sql` → Yayın/Test için SALT OKUNUR ön kontrol (11 bölüm), yerelde doğrulandı
+- `docs/kontrol/YAYIN-HAZIRLIK-2026-10-24.md` (yeni) → 4 katman listesi, env değişkenleri, sıra, açık kararlar; `docs/kontrol/seed_calistirma_kaydi.md` → yeni seed satırı
+
+### Bulgular
+- 🔴 **İki Alembic head** (`alembic upgrade head` deploy'da "Multiple head revisions" ile dururdu) → birleştirildi.
+- Etiketten (`deploy-2026-07-08`) bu yana 187 commit / 800 dosya / 15 migration; veri değiştirenler: ux01 (mükerrer bireysel PG pasifleşir), e9669 (yetim user_id NULL), backfill'ler. Yayın'ın gerçek konumu sunucudan okunmalı.
+- 8 yeni env değişkeni; `YEDEKLEME_SCHEDULER_ENABLED` varsayılan açık (gece ~250–580 MB arşiv) → karar bekliyor.
+- `origin/main` yerelden 21 commit geride (push yok → `yayina_ver.ps1 -Mod kontrol` ön kontrolü geçemez).
+- Yerel dev DB alembic grafiğinden sapmış (session_version var, ux01 indeksi yok).
+
+### Notlar
+Bağlayıcı kural "tüm L paketleri bitmeden Yayın yok" (2026-06-19) için kullanıcı onayı bekleniyor. Yayın'a/Test'e gönderilmedi.
+
 ## TASK-329 | 2026-10-24 | ✅ Tamamlandı (karne/sapma tek kaynak + Dockerfile kilide geçti; yalnız Yerel)
 
 **Görev:** Kullanıcı kararları: (a) karne yüzdesi ve sapma formülü KalDer gibi tek kaynağa taşınsın, (b) Dockerfile `requirements.lock` kursun
