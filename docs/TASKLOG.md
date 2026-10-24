@@ -2,6 +2,25 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-328 | 2026-10-24 | ✅ Tamamlandı (Docker'sız Python 3.11 doğrulaması + kilit yenileme; yalnız Yerel)
+
+**Görev:** Yerel Docker kaldırıldı → Docker imajının (python:3.11-slim + `pip install -r requirements.txt`) yaptığını Docker olmadan doğrula
+**Modül:** bağımlılıklar, doküman
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `requirements-test.txt` → `marshmallow==3.26.2` (P7'de `requirements.txt` güncellenmiş, bu dosya unutulmuştu: ikisi birlikte kurulamıyordu; Docker/CI yalnız `requirements.txt` kurduğu için dağıtımı etkilemiyordu)
+- `requirements.lock` → 3.11'de doğrulanan sürümlerden yeniden üretildi (yalnız numpy 2.5.4→2.4.6, scipy 1.18.1→1.17.1, deprecated 3.0.0→1.3.1); artık Python 3.11–3.13'ün hepsinde kurulabilir
+- `docs/kontrol/BAGIMLILIK-TARAMASI.md` → Python sürümü uyarısı yerine Docker'sız doğrulama bölümü
+
+### Yapılan İşlem
+`uv` ile Python 3.11.17 (kullanıcı klasörüne), temiz venv, `requirements.txt` + `requirements-test.txt` kurulumu (Docker'ın çözeceği sürümler). Tam test 3.11'de **1211 geçti, 0 başarısız** (iki upload testi dahil). 3.13'te bu iki test bu makinede takılıyordu → uygulama değil test ortamı uyumsuzluğuymuş (3.13 + çok parçalı istek). Kilit: hiçbir paketin Requires-Python'u 3.11–3.13'ü dışlamıyor, 3.13'te çözümleme hatasız, pip-audit temiz.
+
+### Notlar
+- **Dockerfile hâlâ `requirements.txt` (`>=`) kuruyor, kilidi değil** (build'ler zamanla farklı sürüm çekebilir). Kilide geçmek dağıtım davranışını değiştirir → kullanıcı onayı + Test'te doğrulama gerekir; YAPILMADI.
+- Sunucuda gerçek Docker build yine Test'te yapılmalı (gcc/libpq-dev gibi sistem paketleri bu doğrulamada yok).
+- Geçici araçlar (yaklaşık 1,5 GB): C:/tmp/venv311, venv_p7, venv_audit ve uv'nin Python kopyaları (APPDATA/uv/python).
+
 ## TASK-327 | 2026-10-24 | ✅ Tamamlandı (legacy logo yükleme düzeltmesi + test artıklarının temizliği; yalnız Yerel; commit yok)
 
 **Görev:** `POST /api/kurum/upload-logo` her istekte 500 veriyordu → düzelt; otomatik testin bıraktığı artıkları temizle
