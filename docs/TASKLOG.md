@@ -2,6 +2,23 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-323 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P7 — bağımlılık kilidi + pip-audit; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P7: `requirements.lock`, güvenlik taraması, yama güncellemesi (izole venv)
+**Modül:** bağımlılıklar, ops aracı, doküman
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `requirements.txt` → `marshmallow==3.26.2`, `python-socketio==5.16.2` (PYSEC-2026-1605/1854/3042)
+- `requirements.lock` (yeni, 102 paket, test edilen sürümler), `scripts/ops/kilit_uret.py` (yeni)
+- `docs/kontrol/BAGIMLILIK-TARAMASI.md` (yeni)
+
+### Yapılan İşlem
+İzole venv'de (Py 3.13, senin ortamına dokunulmadı) taze kurulum + tam test (1141 geçti) → kilit → pip-audit: 2 pakette 3 açık → güncellendi → yeniden test (1141) + `pip check` temiz + pip-audit temiz.
+
+### Notlar
+**Kilit Python ≥3.12 ister (numpy 2.5.4/scipy 1.18.1/Deprecated 3.0.0); Docker 3.11 → kilitle KURULMAZ**, Docker `requirements.txt` kullanır. 3.11 kombinasyonu test edilmedi → Yayın öncesi Test'te Docker build + test. Majör güncelleme gerekmedi.
+
 ## TASK-322 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P6 — inline style= → sınıf, 31 ağır sayfa; yalnız Yerel; commit yok)
 
 **Görev:** KalDer P6: ağır şablonlarda satır içi `style=` → harici sınıf (UX-G); 4554 → 2630
