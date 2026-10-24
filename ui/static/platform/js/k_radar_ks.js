@@ -581,7 +581,7 @@
         total += p[key]?.kpi_count || 0;
       });
       const badge = document.getElementById("ks-bsc-badge");
-      if (badge) badge.textContent = total + " KPI";
+      if (badge) badge.textContent = total + " PG";
     }).catch(() => {});
   }
 

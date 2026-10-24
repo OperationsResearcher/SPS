@@ -546,31 +546,31 @@ def _karne_heuristik_ozet(p, year, skor, durum, detay, recs):
     parts = []
     if skor is not None:
         try:
-            parts.append(f"{ad} {year} sağlık skoru %{float(skor):.0f}"
-                         + (f" ({durum})." if durum else "."))
+            parts.append(_("%(ad)s %(year)s sağlık skoru %%%(v).0f", ad=ad, year=year, v=float(skor))
+                         + (f" ({_(durum)})." if durum else "."))
         except (TypeError, ValueError) as e:
             logger.warning(f"_karne_heuristik_ozet failed: {e}")
     ulasma = detay.get("pg_hedef_ulasma_orani")
     if ulasma is not None:
         try:
-            parts.append(f"PG hedef ulaşma oranı %{float(ulasma):.0f}.")
+            parts.append(_("PG hedef ulaşma oranı %%%(v).0f.", v=float(ulasma)))
         except (TypeError, ValueError) as e:
             logger.warning(f"_karne_heuristik_ozet failed: {e}")
     pg_sayisi = detay.get("pg_sayisi") or 0
     veri = detay.get("veri_girilen_pg")
     if pg_sayisi and veri is not None and veri < pg_sayisi:
-        parts.append(f"{pg_sayisi} PG'den {pg_sayisi - veri}'ine veri girilmemiş — "
-                     "veri disiplinini güçlendirin.")
+        parts.append(_("%(total)s PG'den %(n)s'ine veri girilmemiş — veri disiplinini güçlendirin.",
+                       total=pg_sayisi, n=pg_sayisi - veri))
     yuksek = [r for r in (recs or []) if r.get("priority") == "high"]
     kaynak_rec = yuksek[0] if yuksek else ((recs or [None])[0])
     if kaynak_rec:
         msg = (kaynak_rec.get("message") or kaynak_rec.get("action")
                or kaynak_rec.get("title") or "").strip()
         if msg:
-            etiket = "Kırmızı bayrak" if yuksek else "Öneri"
+            etiket = _("Kırmızı bayrak") if yuksek else _("Öneri")
             parts.append(f"{etiket}: {msg.rstrip('.')}.")
     if not parts:
-        parts.append(f"{ad} için {year} yılında özet üretecek yeterli veri yok; PG verisi girin.")
+        parts.append(_("%(ad)s için %(year)s yılında özet üretecek yeterli veri yok; PG verisi girin.", ad=ad, year=year))
     return " ".join(parts)
 
 

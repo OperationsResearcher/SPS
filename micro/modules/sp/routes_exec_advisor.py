@@ -365,30 +365,30 @@ def _exec_heuristik_ozet(snap):
     hs = snap.get("health_score")
     if hs is not None:
         try:
-            parts.append(f"Genel sağlık skoru %{float(hs):.0f}.")
+            parts.append(_("Genel sağlık skoru %%%(v).0f.", v=float(hs)))
         except (TypeError, ValueError) as e:
             logger.warning(f"_exec_heuristik_ozet failed: {e}")
     ot = kpi.get("on_target_pct")
     if ot is not None:
         try:
-            parts.append(f"PG'lerin %{float(ot):.0f}'ı hedef üstünde.")
+            parts.append(_("PG'lerin %%%(v).0f'ı hedef üstünde.", v=float(ot)))
         except (TypeError, ValueError) as e:
             logger.warning(f"_exec_heuristik_ozet failed: {e}")
     total = kpi.get("total") or 0
     wd = kpi.get("with_data")
     if total and wd is not None and wd < total:
-        parts.append(f"{total} PG'den {total - wd}'ine veri girilmemiş.")
+        parts.append(_("%(total)s PG'den %(n)s'ine veri girilmemiş.", total=total, n=total - wd))
     flags = []
     if act.get("overdue"):
-        flags.append(f"{act['overdue']} geciken faaliyet")
+        flags.append(_("%(n)s geciken faaliyet", n=act["overdue"]))
     if risk.get("critical"):
-        flags.append(f"{risk['critical']} kritik risk")
+        flags.append(_("%(n)s kritik risk", n=risk["critical"]))
     if ano.get("high"):
-        flags.append(f"{ano['high']} yüksek anomali")
+        flags.append(_("%(n)s yüksek anomali", n=ano["high"]))
     if flags:
-        parts.append("Kırmızı bayraklar: " + ", ".join(flags) + ".")
+        parts.append(_("Kırmızı bayraklar: %(liste)s.", liste=", ".join(flags)))
     if not parts:
-        parts.append("Özet üretecek yeterli veri yok; PG ve faaliyet verisi girin.")
+        parts.append(_("Özet üretecek yeterli veri yok; PG ve faaliyet verisi girin."))
     return " ".join(parts)
 
 

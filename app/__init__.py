@@ -466,6 +466,15 @@ def create_app(config_class=None):
     def _inject_current_section():
         """Geçerli URL'den sidebar bölümünü çöz — breadcrumb için."""
         from flask import request
+        from flask_babel import gettext as _gettext_raw  # etiketler tabloda sabit TR; gösterimde aktif dile çevrilir
+
+        def _gettext(label):
+            # Dil seçimi DB'ye dokunabilir; oturum bozukken (500 hata sayfası çizilirken) çeviri hatası
+            # sayfayı çökertmemeli → etiketin kendisine düş.
+            try:
+                return _gettext_raw(label)
+            except Exception:
+                return label
         # Path → (etiket, url) eşlemesi. Önek eşleşmesi sıralı; ilk eşleşen kazanır.
         # Sıra: daha uzun/spesifik önek önce.
         # ⚠️ PATH ÖNEKİNE bakar — katman taşımasında bu tablo güncellenmezse
@@ -507,7 +516,7 @@ def create_app(config_class=None):
             return {"current_section": None}
         for prefix, label, url in sections:
             if path == prefix or path.startswith(prefix + "/") or path.startswith(prefix + "?"):
-                return {"current_section": {"label": label, "url": url, "prefix": prefix, "is_root": (path == prefix or path == url)}}
+                return {"current_section": {"label": _gettext(label), "url": url, "prefix": prefix, "is_root": (path == prefix or path == url)}}
         return {"current_section": None}
 
     @app.route("/set-language/<lang>", methods=["GET", "POST"])

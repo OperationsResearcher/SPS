@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PROJECT VERSION\n"
 "Report-Msgid-Bugs-To: EMAIL@ADDRESS\n"
-"POT-Creation-Date: 2026-10-24 05:44+0300\n"
+"POT-Creation-Date: 2026-10-24 07:21+0300\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -1354,13 +1354,18 @@ msgid "Kişisel özet — tüm modüllerden gelen görevler, PG'ler ve iş planl
 msgstr ""
 
 #: micro/core/module_registry.py:21 ui/static/platform/js/command_palette.js:24 ui/templates/platform/base.html:179
-#: ui/templates/platform/sp/blue_ocean.html:11 ui/templates/platform/sp/ceyreklik_review.html:11
-#: ui/templates/platform/sp/donemler.html:12 ui/templates/platform/sp/index.html:71
-#: ui/templates/platform/sp/initiatives.html:10 ui/templates/platform/sp/menu.html:17 ui/templates/platform/sp/okr.html:6
+#: ui/templates/platform/sp/blue_ocean.html:11 ui/templates/platform/sp/bsc.html:6
+#: ui/templates/platform/sp/ceyreklik_review.html:11 ui/templates/platform/sp/degerler.html:6
+#: ui/templates/platform/sp/donemler.html:12 ui/templates/platform/sp/exec_dashboard.html:11
+#: ui/templates/platform/sp/index.html:12 ui/templates/platform/sp/index.html:71
+#: ui/templates/platform/sp/initiatives.html:10 ui/templates/platform/sp/llm_usage.html:6
+#: ui/templates/platform/sp/menu.html:10 ui/templates/platform/sp/menu.html:17 ui/templates/platform/sp/misyon.html:6
+#: ui/templates/platform/sp/okr.html:6 ui/templates/platform/sp/pestel.html:6 ui/templates/platform/sp/porter.html:6
 #: ui/templates/platform/sp/projeler.html:10 ui/templates/platform/sp/projeler.html:32
 #: ui/templates/platform/sp/replan_triggers.html:10 ui/templates/platform/sp/scenarios.html:10
-#: ui/templates/platform/sp/strategy_project_matrix.html:7 ui/templates/platform/sp/vrio.html:11
-#: ui/templates/platform/surec/index.html:490
+#: ui/templates/platform/sp/strategy_project_matrix.html:7 ui/templates/platform/sp/swot.html:6
+#: ui/templates/platform/sp/tows.html:6 ui/templates/platform/sp/vizyon.html:6 ui/templates/platform/sp/vrio.html:11
+#: ui/templates/platform/sp/xmatrix.html:10 ui/templates/platform/surec/index.html:490
 msgid "Stratejik Planlama"
 msgstr ""
 
@@ -1388,7 +1393,8 @@ msgstr ""
 msgid "Stratejik kimlik, kurum bilgileri ve strateji yönetimi"
 msgstr ""
 
-#: micro/core/module_registry.py:45 ui/templates/platform/base.html:219 ui/templates/platform/k_radar/hub.html:86
+#: micro/core/module_registry.py:45 ui/templates/platform/base.html:219 ui/templates/platform/bireysel/karne.html:13
+#: ui/templates/platform/k_radar/hub.html:86
 msgid "Bireysel Performans"
 msgstr ""
 
@@ -1399,11 +1405,11 @@ msgstr ""
 #: micro/core/module_registry.py:52 ui/static/platform/js/command_palette.js:36 ui/templates/platform/base.html:211
 #: ui/templates/platform/proje/index.html:3 ui/templates/platform/project/calendar.html:11
 #: ui/templates/platform/project/detail.html:10 ui/templates/platform/project/form.html:10
-#: ui/templates/platform/project/kanban.html:10 ui/templates/platform/project/kapasite.html:10
-#: ui/templates/platform/project/list.html:3 ui/templates/platform/project/list.html:6
-#: ui/templates/platform/project/list.html:19 ui/templates/platform/project/portfolio.html:6
-#: ui/templates/platform/project/raid.html:10 ui/templates/platform/project/task_detail.html:6
-#: ui/templates/platform/project/task_form.html:6
+#: ui/templates/platform/project/gantt.html:11 ui/templates/platform/project/kanban.html:10
+#: ui/templates/platform/project/kapasite.html:10 ui/templates/platform/project/list.html:3
+#: ui/templates/platform/project/list.html:6 ui/templates/platform/project/list.html:19
+#: ui/templates/platform/project/portfolio.html:6 ui/templates/platform/project/raid.html:10
+#: ui/templates/platform/project/task_detail.html:6 ui/templates/platform/project/task_form.html:6
 msgid "Proje Yönetimi"
 msgstr ""
 
@@ -1421,8 +1427,9 @@ msgid "Süreç bazlı trend, sağlık skoru ve performans raporları"
 msgstr ""
 
 #: micro/core/module_registry.py:68 ui/static/platform/js/command_palette.js:45 ui/templates/platform/base.html:239
-#: ui/templates/platform/raporlar/index.html:3 ui/templates/platform/raporlar/index.html:6
-#: ui/templates/platform/raporlar/index.html:13 ui/templates/platform/raporlar/pg_proje_etki.html:7
+#: ui/templates/platform/k_radar/hub.html:6 ui/templates/platform/raporlar/index.html:3
+#: ui/templates/platform/raporlar/index.html:6 ui/templates/platform/raporlar/index.html:13
+#: ui/templates/platform/raporlar/pg_proje_etki.html:7
 msgid "K-Radar"
 msgstr ""
 
@@ -1466,7 +1473,7 @@ msgstr ""
 #: ui/templates/platform/ayarlar/index.html:2 ui/templates/platform/ayarlar/index.html:3
 #: ui/templates/platform/ayarlar/index.html:11 ui/templates/platform/ayarlar/index.html:20
 #: ui/templates/platform/ayarlar/zamanlanmis_raporlar.html:7 ui/templates/platform/base.html:349
-#: ui/templates/platform/base.html:500
+#: ui/templates/platform/base.html:500 ui/templates/platform/kurum/ayarlar.html:14
 msgid "Ayarlar"
 msgstr ""
 
@@ -2006,6 +2013,35 @@ msgstr ""
 msgid "PDF oluşturulamadı."
 msgstr ""
 
+#: micro/modules/bireysel/routes.py:822
+#, python-format
+msgid "%(year)s yılında %(n)s performans göstergen var, %%%(cov)s'ine veri girilmiş."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:824
+#, python-format
+msgid "%(n)s PG'ye henüz veri girmedin."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:826
+#, python-format
+msgid "%(year)s için tanımlı performans göstergen yok."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:828
+#, python-format
+msgid "Kırmızı bayrak: %(n)s geciken faaliyet."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:830
+#, python-format
+msgid "%(n)s aktif faaliyetin sürüyor."
+msgstr ""
+
+#: micro/modules/bireysel/routes.py:832
+msgid "Özet üretecek yeterli veri yok."
+msgstr ""
+
 #: micro/modules/demo/routes.py:41
 msgid "Başlangıç Paketi"
 msgstr ""
@@ -2478,7 +2514,8 @@ msgstr ""
 #: ui/static/platform/js/reports/sunburst.js:40 ui/templates/platform/_hierarchy_help.html:42
 #: ui/templates/platform/sp/dynamic_flow.html:18 ui/templates/platform/sp/flow.html:42
 #: ui/templates/platform/sp/index.html:179 ui/templates/platform/sp/strateji_haritasi.html:96
-#: ui/templates/platform/sp/strateji_haritasi.html:110 ui/templates/platform/sp/vizyon.html:13
+#: ui/templates/platform/sp/strateji_haritasi.html:110 ui/templates/platform/sp/vizyon.html:6
+#: ui/templates/platform/sp/vizyon.html:13
 msgid "Vizyon"
 msgstr ""
 
@@ -3086,7 +3123,7 @@ msgstr ""
 msgid "Amaç"
 msgstr ""
 
-#: micro/modules/raporlar/routes_faz3.py:244
+#: micro/modules/raporlar/routes_faz3.py:244 ui/templates/platform/sp/degerler.html:6
 msgid "Değerler"
 msgstr ""
 
@@ -3609,7 +3646,8 @@ msgstr ""
 #: ui/templates/platform/admin/users.html:213 ui/templates/platform/admin/users.html:265
 #: ui/templates/platform/ayarlar/index.html:39 ui/templates/platform/ayarlar/index.html:41
 #: ui/templates/platform/ayarlar/index.html:93 ui/templates/platform/k_rapor/index.html:794
-#: ui/templates/platform/kurum/index.html:10 ui/templates/platform/masaustu/index.html:469
+#: ui/templates/platform/kurum/ayarlar.html:14 ui/templates/platform/kurum/index.html:10
+#: ui/templates/platform/masaustu/index.html:469
 msgid "Kurum"
 msgstr ""
 
@@ -4059,6 +4097,45 @@ msgstr ""
 msgid "Aynı dönemi karşılaştıramazsınız."
 msgstr ""
 
+#: micro/modules/sp/routes_exec_advisor.py:368
+#, python-format
+msgid "Genel sağlık skoru %%%(v).0f."
+msgstr ""
+
+#: micro/modules/sp/routes_exec_advisor.py:374
+#, python-format
+msgid "PG'lerin %%%(v).0f'ı hedef üstünde."
+msgstr ""
+
+#: micro/modules/sp/routes_exec_advisor.py:380
+#, python-format
+msgid "%(total)s PG'den %(n)s'ine veri girilmemiş."
+msgstr ""
+
+#: micro/modules/sp/routes_exec_advisor.py:383 services/executive_morning_service.py:176
+#, python-format
+msgid "%(n)s geciken faaliyet"
+msgstr ""
+
+#: micro/modules/sp/routes_exec_advisor.py:385
+#, python-format
+msgid "%(n)s kritik risk"
+msgstr ""
+
+#: micro/modules/sp/routes_exec_advisor.py:387
+#, python-format
+msgid "%(n)s yüksek anomali"
+msgstr ""
+
+#: micro/modules/sp/routes_exec_advisor.py:389
+#, python-format
+msgid "Kırmızı bayraklar: %(liste)s."
+msgstr ""
+
+#: micro/modules/sp/routes_exec_advisor.py:391
+msgid "Özet üretecek yeterli veri yok; PG ve faaliyet verisi girin."
+msgstr ""
+
 #: micro/modules/sp/routes_frameworks.py:267
 msgid "Proje bulunamadı."
 msgstr ""
@@ -4216,6 +4293,34 @@ msgstr ""
 msgid "Sunucuda Excel dışa aktarma kullanılamıyor."
 msgstr ""
 
+#: micro/modules/surec/routes_karne.py:549
+#, python-format
+msgid "%(ad)s %(year)s sağlık skoru %%%(v).0f"
+msgstr ""
+
+#: micro/modules/surec/routes_karne.py:556
+#, python-format
+msgid "PG hedef ulaşma oranı %%%(v).0f."
+msgstr ""
+
+#: micro/modules/surec/routes_karne.py:562
+#, python-format
+msgid "%(total)s PG'den %(n)s'ine veri girilmemiş — veri disiplinini güçlendirin."
+msgstr ""
+
+#: micro/modules/surec/routes_karne.py:570
+msgid "Kırmızı bayrak"
+msgstr ""
+
+#: micro/modules/surec/routes_karne.py:570
+msgid "Öneri"
+msgstr ""
+
+#: micro/modules/surec/routes_karne.py:573
+#, python-format
+msgid "%(ad)s için %(year)s yılında özet üretecek yeterli veri yok; PG verisi girin."
+msgstr ""
+
 #: micro/modules/surec/routes_kpi.py:146
 msgid "Performans göstergesi eklendi."
 msgstr ""
@@ -4303,11 +4408,6 @@ msgstr ""
 #: services/executive_morning_service.py:174
 #, python-format
 msgid "%(n)s PG hedefin %%80 altında"
-msgstr ""
-
-#: services/executive_morning_service.py:176
-#, python-format
-msgid "%(n)s geciken faaliyet"
 msgstr ""
 
 #: services/executive_morning_service.py:178
@@ -4827,12 +4927,12 @@ msgstr ""
 msgid "Sayfa"
 msgstr ""
 
-#: ui/static/platform/js/command_palette.js:25 ui/templates/platform/sp/exec_dashboard.html:77
-#: ui/templates/platform/sp/menu.html:29
+#: ui/static/platform/js/command_palette.js:25 ui/templates/platform/sp/exec_dashboard.html:11
+#: ui/templates/platform/sp/exec_dashboard.html:77 ui/templates/platform/sp/menu.html:29
 msgid "Yönetici Paneli"
 msgstr ""
 
-#: ui/static/platform/js/command_palette.js:26
+#: ui/static/platform/js/command_palette.js:26 ui/templates/platform/sp/xmatrix.html:10
 msgid "X-Matrix"
 msgstr ""
 
@@ -4890,8 +4990,8 @@ msgid "Bireysel Karne"
 msgstr ""
 
 #: ui/static/platform/js/command_palette.js:48 ui/templates/platform/base.html:344 ui/templates/platform/base.html:466
-#: ui/templates/platform/bildirim/index.html:18 ui/templates/platform/masaustu/index.html:465
-#: ui/templates/platform/masaustu/index.html:707
+#: ui/templates/platform/bildirim/index.html:10 ui/templates/platform/bildirim/index.html:18
+#: ui/templates/platform/masaustu/index.html:465 ui/templates/platform/masaustu/index.html:707
 msgid "Bildirimler"
 msgstr ""
 
@@ -11503,6 +11603,10 @@ msgstr ""
 msgid "öğe"
 msgstr ""
 
+#: ui/templates/platform/k_radar/kp.html:5 ui/templates/platform/k_radar/ks.html:45
+msgid "KP"
+msgstr ""
+
 #: ui/templates/platform/k_radar/kp.html:19
 msgid "KP-Radar — Süreç Olgunluk Görünümü"
 msgstr ""
@@ -11875,7 +11979,7 @@ msgid "Kaynak Kapasite"
 msgstr ""
 
 #: ui/templates/platform/k_radar/kpr.html:20 ui/templates/platform/project/_project_views_nav.html:18
-#: ui/templates/platform/project/gantt.html:20
+#: ui/templates/platform/project/gantt.html:11 ui/templates/platform/project/gantt.html:20
 msgid "Gantt"
 msgstr ""
 
@@ -11989,10 +12093,6 @@ msgstr ""
 
 #: ui/templates/platform/k_radar/ks.html:45
 msgid "Süreç Analizi"
-msgstr ""
-
-#: ui/templates/platform/k_radar/ks.html:45
-msgid "KP"
 msgstr ""
 
 #: ui/templates/platform/k_radar/ks.html:46
@@ -12267,11 +12367,11 @@ msgstr ""
 msgid "— Kaynak seçin —"
 msgstr ""
 
-#: ui/templates/platform/k_radar/risk_management.html:104
+#: ui/templates/platform/k_radar/risk_management.html:104 ui/templates/platform/sp/swot.html:6
 msgid "SWOT"
 msgstr ""
 
-#: ui/templates/platform/k_radar/risk_management.html:105
+#: ui/templates/platform/k_radar/risk_management.html:105 ui/templates/platform/sp/pestel.html:6
 msgid "PESTEL"
 msgstr ""
 
@@ -14107,8 +14207,8 @@ msgstr ""
 msgid "Proje Yönetimi modülü geliştirme aşamasında."
 msgstr ""
 
-#: ui/templates/platform/project/_project_views_nav.html:10 ui/templates/platform/surec/index.html:63
-#: ui/templates/platform/surec/karne.html:418
+#: ui/templates/platform/project/_project_views_nav.html:10 ui/templates/platform/project/kanban.html:10
+#: ui/templates/platform/surec/index.html:63 ui/templates/platform/surec/karne.html:418
 msgid "Kanban"
 msgstr ""
 
@@ -16761,6 +16861,10 @@ msgstr ""
 msgid "Düşük etki"
 msgstr ""
 
+#: ui/templates/platform/sp/bsc.html:6
+msgid "Dengeli Karne"
+msgstr ""
+
 #: ui/templates/platform/sp/bsc.html:20 ui/templates/platform/sp/menu.html:42
 msgid "Dengeli Karne (BSC)"
 msgstr ""
@@ -17274,7 +17378,7 @@ msgstr ""
 msgid "Bu sayfada yalnızca görüntüleme yetkiniz var. Düzenleme yetkisi kurum yöneticisindedir."
 msgstr ""
 
-#: ui/templates/platform/sp/index.html:150 ui/templates/platform/sp/misyon.html:13
+#: ui/templates/platform/sp/index.html:150 ui/templates/platform/sp/misyon.html:6 ui/templates/platform/sp/misyon.html:13
 msgid "Misyon"
 msgstr ""
 
@@ -17531,6 +17635,10 @@ msgstr ""
 msgid "Planlanan"
 msgstr ""
 
+#: ui/templates/platform/sp/llm_usage.html:6
+msgid "LLM Kullanımı"
+msgstr ""
+
 #: ui/templates/platform/sp/llm_usage.html:18
 msgid "LLM Kullanımı & Kota"
 msgstr ""
@@ -17615,7 +17723,7 @@ msgstr ""
 msgid "Politik/ekonomik/sosyal/teknolojik/çevresel/yasal"
 msgstr ""
 
-#: ui/templates/platform/sp/menu.html:41
+#: ui/templates/platform/sp/menu.html:41 ui/templates/platform/sp/porter.html:6
 msgid "Porter 5 Güç"
 msgstr ""
 
@@ -18153,6 +18261,10 @@ msgstr ""
 
 #: ui/templates/platform/sp/templates.html:39
 msgid "⚠️ Şablon, mevcut plan yılına ek strateji & alt strateji ekler. Aynı kodlu kayıt varsa atlanır."
+msgstr ""
+
+#: ui/templates/platform/sp/tows.html:6
+msgid "TOWS"
 msgstr ""
 
 #: ui/templates/platform/sp/tows.html:28

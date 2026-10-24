@@ -2,6 +2,36 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-326 | 2026-10-24 | ✅ Tamamlandı (otomatik tarayıcı doğrulaması + P4 boşluk kapatma; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P1–P10 değişikliklerini Playwright ile (yerel DB'nin kopyası üzerinde) doğrula; bulunan i18n boşluklarını kapat
+**Modül:** i18n (breadcrumb, sunucu cümleleri), doğrulama
+**Durum:** ✅ Tamamlandı
+
+### Yöntem
+Yerel `kokpitim_db` salt-okunur `pg_dump` ile ayrı `kokpitim_sandbox` veritabanına kopyalandı (yalnız orada test hesapları/şifre/veri değişti). Aynı sandbox'a bağlı iki sunucu: eski kod (`main`, ayrı git worktree) 5098, yeni kod 5099. Betikler: `C:	mp\pw\*` (kod tabanında değil).
+
+### Ölçülen sonuçlar (eski → yeni)
+- 375px yatay taşma yapan sayfa: **26 → 3** (kalan 3 eskiden de taşıyordu: sektörel detay, risk ısı haritası, kılavuz oluşturucu)
+- Etiketsiz form alanı (31 sayfa): **75 → 0**; etiket tıklaması alanı odaklıyor; kenar çubuğu odak halkası var
+- P6: 31 sayfa açık/koyu temada piksel piksel aynı (fark %0,0) — istisnalar: Masaüstüm (P5 yeni kartlar), Bireysel karne (eski sayfa 1504px'e taşıyordu, yeni 1366'ya sığıyor); mobilde tüm farklar P1 taşma düzeltmesinden
+- CSRF: 53 uçtan 49'u denendi (4 ağır iş atlandı): sayfa üzerinden çağrı kabul, token'sız ham XHR CSRF ile reddedildi (49/49)
+- XSS: plan yılı adına zararlı HTML → eski sürümde `onerror` ÇALIŞTI, yeni sürümde çalışmadı
+- 2FA: yanlış kod oturum açmıyor, doğru kod açıyor; open redirect (`?next=https://...`) → same-origin; Swagger UI `/api/docs/` standart kullanıcıya 403, Admin'e 200; `/demo/start` 404
+- P2: `openMcTextPrompt` (boş gönderimde alan altı hata + aria-invalid, Enter/Esc), SP Dönemler Mühürle/Mührü Aç, alt kurum onayları (SweetAlert2), yerel `alert/confirm` 0
+- P5: Temel akış şeridi, İlk kurulum Gizle, Bekleyen PG kartı (eksik veri oluşturulunca "Eksik: Şubat" + Gir bağlantısı 200)
+- P10: TR sayfalarda "KPI" 6 → 0
+- P7: socket.io istemcisi masaüstünde eski ve yeni sürümde de yüklenmiyor (fark yok)
+
+### Düzeltilenler (test sırasında bulunan)
+- P4 boşluğu: breadcrumb etiketleri (`label_hepsi.py`, 20 şablon/33 etiket) + `app/__init__.py` breadcrumb gettext + sunucu özet cümleleri (`routes_exec_advisor.py`, `routes_karne.py`, `bireysel/routes.py`) f-string → `_()`; `surec.js` dönem etiketi; "KPI" kalıntıları (`k_radar_ks.js` rozet, `surec.js`, `raporlar/mobile.html`)
+- EN Türkçe satır (sandbox verisiyle): 576 → ~494; kalan çoğu kurum verisi (strateji/süreç/plan adları)
+
+### Notlar
+- **Test yan etkisi (kullanıcı diskinde):** CSRF denemesi `otomatik-calistir` ucunu gerçekten çalıştırdı → `C:\kokpitimackups` altında `db_20261024_062636.dump` (8,4 MB) ve `code_tam_20261024_062636.tar.gz` (243,9 MB) oluştu. Silinmedi, karar kullanıcıda.
+- **Mevcut hata (benim değişikliğim değil):** logo yükleme `POST /api/kurum/upload-logo` → 500 `'Tenant' object has no attribute 'logo_url'` (eski sürümde de aynı).
+- pytest'teki iki takılan upload testi gerçek sunucuda tekrarlanmadı (yükleme ~50 ms) → test ortamına özgü.
+
 ## TASK-325 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P10 — KPI→PG terminoloji + karne motoru kıyası; yalnız Yerel; commit yok)
 
 **Görev:** KalDer P10: kullanıcıya görünen "KPI" → "PG"; karne/skor motoru testlerini karşılaştır
