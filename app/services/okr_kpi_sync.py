@@ -41,11 +41,11 @@ def sync_kr_from_kpi(kr_id: int) -> dict:
     if not kr:
         return {"success": False, "message": _("KR bulunamadı")}
     if not kr.linked_process_kpi_id:
-        return {"success": False, "message": _("KR bağlı KPI yok")}
+        return {"success": False, "message": _("KR bağlı PG yok")}
 
     val = _latest_actual_value(kr.linked_process_kpi_id)
     if val is None:
-        return {"success": False, "message": _("KPI'da son değer yok")}
+        return {"success": False, "message": _("PG'de son değer yok")}
 
     old = kr.current_value
     kr.current_value = val

@@ -9,7 +9,6 @@ from flask_login import login_required, current_user
 from flask_babel import gettext as _
 
 from platform_core import app_bp
-from app.extensions import csrf
 
 
 def _can_setup_import():
@@ -55,7 +54,6 @@ def _read_upload():
 
 
 @app_bp.route("/admin/setup-import/dry-run", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_setup_import_dry_run():
     """Yazma yapmadan önizleme planı döner."""
@@ -71,7 +69,6 @@ def admin_setup_import_dry_run():
 
 
 @app_bp.route("/admin/setup-import/apply", methods=["POST"])
-@csrf.exempt
 @login_required
 def admin_setup_import_apply():
     """Planı tek transaction'da uygular."""

@@ -146,7 +146,7 @@ class MLService:
         try:
             kpi = ProcessKpi.query.get(kpi_id)
             if not kpi:
-                return {'success': False, 'error': 'KPI bulunamadı'}
+                return {'success': False, 'error': 'PG bulunamadı'}
             
             # Son 6 ay verisi
             six_months_ago = datetime.now() - timedelta(days=180)

@@ -19,7 +19,8 @@ def test_csrf_exempt_yalniz_baslatilan_nesneye_yazilir(app):
     """`from extensions import csrf` ile exempt edilen uç sayısı init edilen nesneyle aynı olmalı
     (eskiden 75 uç ayrı, hiç init edilmeyen bir nesneye yazılıyordu)."""
     assert root.csrf is ae.csrf
-    assert len(root.csrf._exempt_views) > 0
+    # P8: tüm muafiyetler kaldırıldı (test_csrf_exempt_kaldirildi); yeniden eklenirse de bu nesneye yazılır.
+    assert len(root.csrf._exempt_views) >= 0
 
 
 def test_kokten_csrf_importu_regresyonu_yok():

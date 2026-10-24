@@ -156,6 +156,7 @@ def test_db_restore_locked_in_production(client, ctx, monkeypatch):
 
 def test_db_restore_not_locked_locally(client, ctx, monkeypatch):
     monkeypatch.setenv("FLASK_ENV", "development")
+    monkeypatch.setenv("KOKPITIM_ENV", "local")  # P8: Yerel yalnız açık bayrakla
     _login(client, ctx["admin"])
     rv = client.post("/admin/araclar/yedekleme/geri-yukle/db", data={})
     assert rv.status_code == 400  # onay metni hatali: kilide takilmadi

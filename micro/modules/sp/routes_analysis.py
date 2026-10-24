@@ -855,7 +855,7 @@ def sp_api_bsc_assign():
             ProcessKpi.id == kpi_id, Process.tenant_id == tid
         ).first()
         if not kpi_owner:
-            return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 400
+            return jsonify({"success": False, "message": _("Geçersiz PG.")}), 400
 
         row = BscKpiPerspective.query.filter_by(
             tenant_id=tid, plan_year_id=active_py.id, process_kpi_id=kpi_id
@@ -909,7 +909,7 @@ def sp_api_bsc_assign_bulk():
             }
             invalid = [kid for kid in kpi_ids if kid not in valid_ids]
             if invalid:
-                return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 400
+                return jsonify({"success": False, "message": _("Geçersiz PG.")}), 400
 
         # Mevcut row'ları tek sorguda topla (N+1 önlemi)
         _existing_rows = {r.process_kpi_id: r for r in BscKpiPerspective.query.filter(

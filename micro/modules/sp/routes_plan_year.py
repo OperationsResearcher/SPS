@@ -76,7 +76,6 @@ def sp_api_plan_years_list():
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_years_create():
@@ -149,7 +148,6 @@ def sp_api_plan_years_create():
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years/set-active", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_years_set_active():
@@ -356,7 +354,6 @@ def sp_api_plan_year_kpi_configs(year_id):
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/kpi-configs/<int:kpi_id>", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
@@ -371,14 +368,14 @@ def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
         ProcessKpi.id == kpi_id, Process.tenant_id == tid
     ).first()
     if not kpi_owner:
-        return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 400
+        return jsonify({"success": False, "message": _("Geçersiz PG.")}), 400
 
     data = request.get_json() or {}
     try:
         cfg = upsert_kpi_year_config(py, kpi_id, data)
-        return jsonify({"success": True, "id": cfg.id, "message": _("KPI yıllık hedef güncellendi.")})
+        return jsonify({"success": True, "id": cfg.id, "message": _("PG yıllık hedef güncellendi.")})
     except ValueError:
-        return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 404
+        return jsonify({"success": False, "message": _("Geçersiz PG.")}), 404
     except Exception as e:
         db.session.rollback()
         current_app.logger.error(f"[sp_api_plan_year_kpi_config_upsert] {e}")
@@ -386,7 +383,6 @@ def sp_api_plan_year_kpi_config_upsert(year_id, kpi_id):
 
 
 @app_bp.route("/k-plan/strategy/api/plan-years/<int:year_id>/kpi-configs/bulk", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 def sp_api_plan_year_kpi_configs_bulk(year_id):
@@ -413,7 +409,7 @@ def sp_api_plan_year_kpi_configs_bulk(year_id):
             ).all()
         }
         if len(valid_ids) < len(set(requested_ids)):
-            return jsonify({"success": False, "message": _("Geçersiz KPI.")}), 400
+            return jsonify({"success": False, "message": _("Geçersiz PG.")}), 400
 
     updated = 0
     errors = []

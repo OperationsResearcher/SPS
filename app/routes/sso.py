@@ -7,6 +7,7 @@ Konfigürasyon (.env):
     GOOGLE_CLIENT_SECRET=...
     GOOGLE_OAUTH_ENABLED=true
     SSO_AUTO_PROVISION=true   # mevcut olmayan kullanıcıyı oto oluştur
+    SSO_ALLOWED_DOMAINS=ornek.com,kurum.org   # auto-provision için e-posta alan adı izin listesi
 
 Akış:
     1. /sso/google → Google OAuth redirect
@@ -17,8 +18,12 @@ Güvenlik notları:
 - State parameter ile CSRF koruma
 - Email verified=True kontrolü zorunlu
 - Yeni provisioned user'lar standard_user role'üne atanır
+- Auto-provision yalnız SSO_ALLOWED_DOMAINS içindeki alan adları için (liste boşsa kapalı)
+- TOTP'li kullanıcı SSO dönüşünde de 2FA challenge'dan geçer
 """
 from __future__ import annotations
+
+import os
 
 from flask import Blueprint, redirect, url_for, session, request, flash, current_app
 from flask_login import login_user
@@ -28,6 +33,19 @@ from app.models.core import User, Role, Tenant
 from flask_babel import gettext as _
 
 sso_bp = Blueprint("sso_bp", __name__, url_prefix="/sso")
+
+
+def _allowed_domains() -> set[str]:
+    """Auto-provision için izinli e-posta alan adları (boşsa auto-provision kapalı)."""
+    raw = current_app.config.get("SSO_ALLOWED_DOMAINS") or os.environ.get("SSO_ALLOWED_DOMAINS") or ""
+    if isinstance(raw, str):
+        raw = raw.split(",")
+    return {d.strip().lower().lstrip("@") for d in raw if d and d.strip()}
+
+
+def email_domain_allowed(email: str, allowed: set[str]) -> bool:
+    domain = email.rsplit("@", 1)[-1].lower() if "@" in email else ""
+    return bool(domain) and domain in allowed
 
 
 def _oauth_client():
@@ -110,6 +128,11 @@ def sso_google_callback():
             flash(f"Bu hesap ({email}) Kokpitim'de tanımlı değil. Yöneticinizden erişim talep edin.", "warning")
             return redirect(url_for("auth_bp.login"))
 
+        if not email_domain_allowed(email, _allowed_domains()):
+            current_app.logger.warning(f"[sso_google] auto-provision alan adı izinli değil: {email}")
+            flash(f"Bu hesap ({email}) Kokpitim'de tanımlı değil. Yöneticinizden erişim talep edin.", "warning")
+            return redirect(url_for("auth_bp.login"))
+
         # Auto-provision (default tenant'a ata — config ile değiştirilebilir)
         default_tenant_id = current_app.config.get("SSO_DEFAULT_TENANT_ID", 1)
         std_role = Role.query.filter_by(name="standard_user").first()
@@ -125,6 +148,12 @@ def sso_google_callback():
         db.session.add(user)
         db.session.commit()
         current_app.logger.info(f"[sso_google] auto-provisioned: {email}")
+
+    # 2FA: parola girişiyle aynı kapı — TOTP açıksa challenge tamamlanmadan oturum açılmaz.
+    if user.totp_enabled and user.totp_secret:
+        session["_pending_2fa_user_id"] = user.id
+        current_app.logger.info(f"[sso_google] 2FA challenge yönlendirmesi: {email}")
+        return redirect(url_for("totp_bp.totp_challenge"))
 
     login_user(user)
 

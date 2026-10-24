@@ -6,19 +6,23 @@
     {{ mc_breadcrumb([{'label': _('Yönetim Paneli'), 'url': url_for('app_bp.yonetim_paneli')}, {'label': _('Holding Panosu'), 'url': None}]) }}
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_admin_holding_dashboard.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
 {% block content %}
-<div style="max-width:1400px; margin:0 auto;"
+<div class="st-p12-001"
      id="holding-root"
      data-snapshot-url="{{ url_for('app_bp.holding_api_snapshot') }}"
      data-detail-base="/holding/tenant/">
 
-  <div class="mc-page-header" style="margin-bottom: var(--space-6); display:flex; justify-content:space-between; align-items:flex-end; flex-wrap:wrap; gap: var(--space-3);">
+  <div class="mc-page-header st-p12-002">
     <div>
-      <h2 class="mc-card-title" style="font-size: var(--text-xl); font-weight:700; color: var(--text-strong); margin:0 0 var(--space-1); letter-spacing:-0.01em;">
-        <i class="fas fa-sitemap" style="color: var(--color-primary); margin-right: var(--space-2);"></i>
+      <h2 class="mc-card-title st-p12-003">
+        <i class="fas fa-sitemap st-p12-004"></i>
         {{ _("Holding Konsolide Görünüm") }}
       </h2>
-      <p style="font-size: var(--text-md); color: var(--text-subtle); margin:0;">
+      <p class="st-p12-005">
         {{ holding.name }} {{ _("ve tüm alt kurumlarının özet performansı — <strong>salt okur</strong>.") }}
       </p>
     </div>
@@ -28,76 +32,73 @@
   </div>
 
   {# ─── Hero — özet kart ───────────────────────────────────────────── #}
-  <div class="mc-card" data-card-code="admin_holding_dashboard.ozet_skor" style="padding: var(--space-6); margin-bottom: var(--space-6);
-       background: linear-gradient(135deg, #0f172a 0%, #1e293b 60%, #312e81 100%);
-       color:#fff; border:none; box-shadow: var(--shadow-lg); border-radius:12px; position:relative; overflow:hidden;">
-    <div style="position:absolute; right:-40px; top:-40px; width:240px; height:240px;
-         background: radial-gradient(circle, rgba(99,102,241,0.25) 0%, transparent 70%); pointer-events:none;"></div>
-    <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap: var(--space-6); position:relative;">
-      <div style="flex:1; min-width:240px;">
+  <div class="mc-card st-p12-006" data-card-code="admin_holding_dashboard.ozet_skor">
+    <div class="st-p12-007"></div>
+    <div class="st-p12-008">
+      <div class="st-p12-009">
         <div class="mc-stat-label" style="font-size: var(--text-xs); opacity:0.7; text-transform:uppercase; letter-spacing:0.08em; font-weight:600;">
           {{ _("Ortalama Sağlık Skoru") }}
         </div>
-        <div id="h-avg-health" class="mc-num"
-             style="font-size: var(--text-display); font-weight:800; line-height:1; margin: var(--space-2) 0; letter-spacing:-0.02em;">—</div>
+        <div id="h-avg-health" class="mc-num st-p12-010"
+            >—</div>
         <div style="font-size: var(--text-md); opacity:0.85;" id="h-generated">—</div>
       </div>
-      <div style="display:grid; grid-template-columns:repeat(4, auto); gap: var(--space-8); font-size: var(--text-sm);">
+      <div class="st-p12-011">
         <div>
           <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Toplam Kurum") }}</div>
-          <div id="h-tenant-count" class="mc-num" style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
+          <div id="h-tenant-count" class="mc-num st-p12-012">—</div>
         </div>
         <div>
           <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Toplam Kullanıcı") }}</div>
-          <div id="h-users" class="mc-num" style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
+          <div id="h-users" class="mc-num st-p12-012">—</div>
         </div>
         <div>
-          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Toplam KPI") }}</div>
-          <div id="h-kpi" class="mc-num" style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
+          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Toplam PG") }}</div>
+          <div id="h-kpi" class="mc-num st-p12-012">—</div>
         </div>
         <div>
           <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Toplam Girişim") }}</div>
-          <div id="h-init" class="mc-num" style="font-size: var(--text-2xl); font-weight:700; line-height:1.2; margin-top: var(--space-1);">—</div>
+          <div id="h-init" class="mc-num st-p12-012">—</div>
         </div>
       </div>
     </div>
   </div>
 
   {# ─── 3 alarm tile (kritik özet) ─────────────────────────────────── #}
-  <div style="display:grid; grid-template-columns: repeat(auto-fit, minmax(220px, 1fr)); gap: var(--space-4); margin-bottom: var(--space-6);">
-    <div class="mc-card" data-card-code="admin_holding_dashboard.kritik_risk" style="padding: var(--space-4); border-left:4px solid var(--color-danger);">
-      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Toplam Kritik Risk") }}</div>
-      <div id="h-risk" class="mc-num" style="font-size: var(--text-3xl); font-weight:700; color: var(--color-danger); line-height:1.1; margin-top: var(--space-2);">—</div>
-      <div style="font-size: var(--text-sm); color: var(--text-subtle);">{{ _("Tüm kurumlarda") }}</div>
+  <div class="st-p12-013">
+    <div class="mc-card st-p12-014" data-card-code="admin_holding_dashboard.kritik_risk">
+      <div class="mc-stat-label st-p12-015">{{ _("Toplam Kritik Risk") }}</div>
+      <div id="h-risk" class="mc-num st-p12-016">—</div>
+      <div class="st-p12-017">{{ _("Tüm kurumlarda") }}</div>
     </div>
-    <div class="mc-card" data-card-code="admin_holding_dashboard.yuksek_anomali" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
-      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Yüksek Anomali") }}</div>
-      <div id="h-anomaly" class="mc-num" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
-      <div style="font-size: var(--text-sm); color: var(--text-subtle);">{{ _("KPI sapmaları") }}</div>
+    <div class="mc-card st-p12-018" data-card-code="admin_holding_dashboard.yuksek_anomali">
+      <div class="mc-stat-label st-p12-015">{{ _("Yüksek Anomali") }}</div>
+      <div id="h-anomaly" class="mc-num st-p12-019">—</div>
+      <div class="st-p12-017">{{ _("PG sapmaları") }}</div>
     </div>
-    <div class="mc-card" data-card-code="admin_holding_dashboard.gecikmis_faaliyet" style="padding: var(--space-4); border-left:4px solid var(--color-warning);">
-      <div class="mc-stat-label" style="font-size: var(--text-2xs); color: var(--text-subtle); text-transform:uppercase; letter-spacing:0.05em; font-weight:600;">{{ _("Gecikmiş Faaliyet") }}</div>
-      <div id="h-overdue" class="mc-num" style="font-size: var(--text-3xl); font-weight:700; color: var(--text-strong); line-height:1.1; margin-top: var(--space-2);">—</div>
-      <div style="font-size: var(--text-sm); color: var(--text-subtle);">{{ _("Toplam") }}</div>
+    <div class="mc-card st-p12-018" data-card-code="admin_holding_dashboard.gecikmis_faaliyet">
+      <div class="mc-stat-label st-p12-015">{{ _("Gecikmiş Faaliyet") }}</div>
+      <div id="h-overdue" class="mc-num st-p12-019">—</div>
+      <div class="st-p12-017">{{ _("Toplam") }}</div>
     </div>
   </div>
 
   {# ─── Karşılaştırma grafiği ──────────────────────────────────────── #}
-  <div class="mc-card" data-card-code="admin_holding_dashboard.karsilastirma_grafik" style="padding: var(--space-5); margin-bottom: var(--space-6);">
-    <h3 class="mc-card-title" style="margin:0 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
-      <i class="fas fa-chart-bar" style="color: var(--color-primary);"></i> {{ _("Kurum Karşılaştırma — Sağlık Skoru") }}
+  <div class="mc-card st-p12-020" data-card-code="admin_holding_dashboard.karsilastirma_grafik">
+    <h3 class="mc-card-title st-p12-021">
+      <i class="fas fa-chart-bar st-p12-022"></i> {{ _("Kurum Karşılaştırma — Sağlık Skoru") }}
     </h3>
     <canvas id="health-chart" height="110"></canvas>
   </div>
 
   {# ─── Alt kurum kartları ─────────────────────────────────────────── #}
-  <h3 style="margin: var(--space-6) 0 var(--space-3); font-size: var(--text-lg); color: var(--text-strong);">
-    {{ _("Alt Kurumlar") }} <span id="sub-count" style="font-size: var(--text-sm); color: var(--text-subtle); font-weight:400;">—</span>
+  <h3 class="st-p12-023">
+    {{ _("Alt Kurumlar") }} <span class="st-p12-024" id="sub-count">—</span>
   </h3>
-  <div id="loading" style="padding:30px; text-align:center; color: var(--text-subtle);">
+  <div class="st-p12-025" id="loading">
     <i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}
   </div>
-  <div id="tile-grid" style="display:grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: var(--space-4);"></div>
+  <div class="st-p12-026" id="tile-grid"></div>
   <div id="empty-state" style="display:none;">
     <div class="mc-empty">
       <i class="fas fa-inbox mc-empty-icon"></i>
@@ -151,14 +152,14 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
             <div style="font-size:28px; font-weight:700; color:${hColor};" class="mc-num">${it.health_score != null ? it.health_score : "—"}</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:10px; color:#64748b; text-transform:uppercase;">${t("KPI Hedef Üstü")}</div>
+            <div style="font-size:10px; color:#64748b; text-transform:uppercase;">${t("PG Hedef Üstü")}</div>
             <div style="font-size:18px; font-weight:600; color:var(--text-default);" class="mc-num">%${it.kpi_on_target_pct}</div>
           </div>
         </div>
         <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; font-size:11px; color:#475569; padding-top:10px; border-top:1px solid #e2e8f0;">
           <div style="text-align:center;">
             <div style="font-weight:600; font-size:14px; color:var(--text-default);">${it.kpi_total}</div>
-            <div style="color:#94a3b8;">KPI</div>
+            <div style="color:#94a3b8;">PG</div>
           </div>
           <div style="text-align:center;">
             <div style="font-weight:600; font-size:14px; color:var(--text-default);">${it.initiative_total}</div>

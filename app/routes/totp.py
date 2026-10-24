@@ -153,7 +153,7 @@ def totp_challenge():
         return redirect(url_for("auth_bp.login"))
 
     if request.method == "POST":
-        ip = request.headers.get("X-Real-IP") or request.remote_addr or "unknown"
+        ip = request.remote_addr or "unknown"
 
         # Brute-force koruması: hesap kilitli mi?
         from app.utils.login_throttle import is_locked, record_failure, clear_failures

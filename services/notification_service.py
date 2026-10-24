@@ -739,8 +739,8 @@ def check_pg_performance_deviation(pg_veri_id):
         except (ValueError, TypeError):
             return None
         
-        # Hedef 0 ise kontrol yapma
-        if hedef == 0:
+        # Hedef 0 veya negatifse oran anlamsız (score_engine `achievement` ile aynı kural)
+        if hedef <= 0:
             return None
         
         # Sapma yüzdesini hesapla

@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="sp_quarterly">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_sp_ceyreklik_review.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
@@ -11,34 +12,34 @@
 {% endblock %}
 
 {% block content %}
-<div style="max-width:1100px; margin:0 auto;"
+<div class="st-p28-001"
      id="qr-root"
      data-api-url="{{ url_for('app_bp.sp_api_quarterly_review') }}"
      data-default-year="{{ default_year }}"
      data-default-quarter="{{ default_quarter }}">
 
-  <div class="mc-page-header" style="margin-bottom:24px;">
-    <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
+  <div class="mc-page-header st-p28-002">
+    <h2 class="st-p28-003">
       <i class="fas fa-calendar-check"></i> {{ _("Çeyreklik Değerlendirme") }}
     </h2>
-    <p style="font-size:13px; color:#64748b; margin:0;">
+    <p class="st-p28-004">
       {{ _("Modern strateji ritmi: yıllık vizyon — çeyreklik ayarlama — aylık takip.") }}
     </p>
   </div>
 
-  <div class="mc-card" data-card-code="sp_ceyreklik_review.donem_secici" style="padding:16px; margin-bottom:20px;">
-    <div class="mc-card-title" style="font-size:12px; font-weight:600; color:#64748b; text-transform:uppercase; letter-spacing:0.04em; margin-bottom:10px;">
-      <i class="fas fa-filter" style="margin-right:6px;"></i>{{ _("Dönem Seçici") }}
+  <div class="mc-card st-p28-005" data-card-code="sp_ceyreklik_review.donem_secici">
+    <div class="mc-card-title st-p28-006">
+      <i class="fas fa-filter st-p28-007"></i>{{ _("Dönem Seçici") }}
     </div>
-    <form id="qr-form" style="display:flex; gap:12px; align-items:end; flex-wrap:wrap;">
+    <form class="st-p28-008" id="qr-form">
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Yıl") }}</label>
-        <input type="number" id="qr-year" class="mc-input" value="{{ default_year }}"
-               min="2020" max="2035" style="width:120px;">
+        <label class="st-p28-009" for="qr-year">{{ _("Yıl") }}</label>
+        <input type="number" id="qr-year" class="mc-input st-p28-010" value="{{ default_year }}"
+               min="2020" max="2035">
       </div>
       <div>
-        <label style="display:block; font-size:12px; color:#64748b; margin-bottom:4px;">{{ _("Çeyrek") }}</label>
-        <select id="qr-quarter" class="mc-input" style="width:140px;">
+        <label class="st-p28-009" for="qr-quarter">{{ _("Çeyrek") }}</label>
+        <select id="qr-quarter" class="mc-input st-p28-011">
           <option value="1" {% if default_quarter==1 %}selected{% endif %}>{{ _("Q1 (Oca-Mar)") }}</option>
           <option value="2" {% if default_quarter==2 %}selected{% endif %}>{{ _("Q2 (Nis-Haz)") }}</option>
           <option value="3" {% if default_quarter==3 %}selected{% endif %}>{{ _("Q3 (Tem-Eyl)") }}</option>
@@ -56,38 +57,38 @@
   </div>
 
   <div id="qr-result" style="display:none;">
-    <h3 id="qr-period" style="font-size:18px; color:var(--text-default); margin:0 0 16px;"></h3>
+    <h3 class="st-p28-012" id="qr-period"></h3>
 
-    <div style="display:grid; grid-template-columns:repeat(auto-fit, minmax(220px, 1fr)); gap:14px; margin-bottom:24px;">
-      <a href="/k-report/data-quality" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.pg_durumu" style="padding:16px; text-decoration:none; color:inherit; transition:transform .15s, box-shadow .15s;">
-        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("PG Durumu") }}</div>
-        <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-kpi-ontarget">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-kpi-detail">{{ _("— / — PG'de veri") }}</div>
+    <div class="st-p28-013">
+      <a href="/k-report/data-quality" class="mc-card qr-card st-p28-014" data-card-code="sp_ceyreklik_review.pg_durumu">
+        <div class="mc-stat-label st-p28-015">{{ _("PG Durumu") }}</div>
+        <div class="st-p28-016" id="qr-kpi-ontarget">—</div>
+        <div class="st-p28-017" id="qr-kpi-detail">{{ _("— / — PG'de veri") }}</div>
       </a>
-      <a href="{{ url_for('app_bp.sp_donemler') }}" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.strateji" style="padding:16px; text-decoration:none; color:inherit;">
-        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Strateji") }}</div>
-        <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-strategy">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-strategy-detail">{{ _("— alt strateji") }}</div>
+      <a href="{{ url_for('app_bp.sp_donemler') }}" class="mc-card qr-card st-p28-018" data-card-code="sp_ceyreklik_review.strateji">
+        <div class="mc-stat-label st-p28-015">{{ _("Strateji") }}</div>
+        <div class="st-p28-016" id="qr-strategy">—</div>
+        <div class="st-p28-017" id="qr-strategy-detail">{{ _("— alt strateji") }}</div>
       </a>
-      <a href="{{ url_for('app_bp.sp_okr') }}" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.okr_ilerleme" style="padding:16px; text-decoration:none; color:inherit;">
-        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("OKR İlerleme") }}</div>
-        <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-okr">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-okr-detail">{{ _("— objektif") }}</div>
+      <a href="{{ url_for('app_bp.sp_okr') }}" class="mc-card qr-card st-p28-018" data-card-code="sp_ceyreklik_review.okr_ilerleme">
+        <div class="mc-stat-label st-p28-015">{{ _("OKR İlerleme") }}</div>
+        <div class="st-p28-016" id="qr-okr">—</div>
+        <div class="st-p28-017" id="qr-okr-detail">{{ _("— objektif") }}</div>
       </a>
-      <a href="{{ url_for('app_bp.surec') }}" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.faaliyet" style="padding:16px; text-decoration:none; color:inherit;">
-        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Faaliyet") }}</div>
-        <div style="font-size:24px; font-weight:700; color:#0f172a;" id="qr-activity">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-activity-detail">{{ _("— gecikmiş") }}</div>
+      <a href="{{ url_for('app_bp.surec') }}" class="mc-card qr-card st-p28-018" data-card-code="sp_ceyreklik_review.faaliyet">
+        <div class="mc-stat-label st-p28-015">{{ _("Faaliyet") }}</div>
+        <div class="st-p28-016" id="qr-activity">—</div>
+        <div class="st-p28-017" id="qr-activity-detail">{{ _("— gecikmiş") }}</div>
       </a>
-      <a href="/k-report/risk-heatmap" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.risk" style="padding:16px; text-decoration:none; color:inherit;">
-        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Risk") }}</div>
-        <div style="font-size:24px; font-weight:700; color:#dc2626;" id="qr-risk">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-risk-detail">{{ _("— kritik") }}</div>
+      <a href="/k-report/risk-heatmap" class="mc-card qr-card st-p28-018" data-card-code="sp_ceyreklik_review.risk">
+        <div class="mc-stat-label st-p28-015">{{ _("Risk") }}</div>
+        <div class="st-p28-019" id="qr-risk">—</div>
+        <div class="st-p28-017" id="qr-risk-detail">{{ _("— kritik") }}</div>
       </a>
-      <a href="/k-report/ml-anomaly" class="mc-card qr-card" data-card-code="sp_ceyreklik_review.anomali" style="padding:16px; text-decoration:none; color:inherit;">
-        <div class="mc-stat-label" style="font-size:12px; color:#64748b; text-transform:uppercase;">{{ _("Anomali") }}</div>
-        <div style="font-size:24px; font-weight:700; color:#f59e0b;" id="qr-anomaly">—</div>
-        <div style="font-size:12px; color:#64748b;" id="qr-anomaly-detail">{{ _("— orta") }}</div>
+      <a href="/k-report/ml-anomaly" class="mc-card qr-card st-p28-018" data-card-code="sp_ceyreklik_review.anomali">
+        <div class="mc-stat-label st-p28-015">{{ _("Anomali") }}</div>
+        <div class="st-p28-020" id="qr-anomaly">—</div>
+        <div class="st-p28-017" id="qr-anomaly-detail">{{ _("— orta") }}</div>
       </a>
     </div>
     <style>
@@ -95,11 +96,11 @@
       .qr-card:hover { transform: translateY(-2px); box-shadow: 0 4px 12px rgba(15,23,42,0.08); }
     </style>
 
-    <div class="mc-card" data-card-code="sp_ceyreklik_review.aksiyon_onerileri" style="padding:20px;">
-      <h4 class="mc-card-title" style="margin:0 0 12px; font-size:15px; color:var(--text-default);">
-        <i class="fas fa-lightbulb" style="color:#f59e0b;"></i> {{ _("Aksiyon Önerileri") }}
+    <div class="mc-card st-p28-021" data-card-code="sp_ceyreklik_review.aksiyon_onerileri">
+      <h4 class="mc-card-title st-p28-022">
+        <i class="fas fa-lightbulb st-p28-023"></i> {{ _("Aksiyon Önerileri") }}
       </h4>
-      <ul id="qr-recommendations" style="margin:0; padding-left:20px; line-height:1.8;"></ul>
+      <ul class="st-p28-024" id="qr-recommendations"></ul>
     </div>
   </div>
 

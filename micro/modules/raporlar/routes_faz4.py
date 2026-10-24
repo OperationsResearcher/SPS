@@ -12,7 +12,6 @@ from sqlalchemy import func, and_, or_, text, select
 from sqlalchemy.orm import joinedload
 
 from platform_core import app_bp
-from app.extensions import csrf
 from app.models import db
 from app.models.core import User, Strategy, SubStrategy, Tenant
 from app.models.process import (
@@ -465,7 +464,6 @@ def raporlar_api_sektor_benchmark():
 @app_bp.route("/k-report/api/sektor-benchmark/ai-yorum", methods=["POST"])
 @login_required
 @require_module("k_rapor")
-@csrf.exempt
 def raporlar_api_sektor_benchmark_ai():
     """AI yorumu isteğe bağlı — butona basılınca çağrılır."""
     tid = _tid_or_none()

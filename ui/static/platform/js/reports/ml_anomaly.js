@@ -14,7 +14,7 @@
         stat(t('Anomali Sayısı'),s.anomalies_found,s.anomalies_found>0?'#dc2626':'#10b981'),
       ].join('');
       if(j.anomalies.length===0){
-        document.getElementById('anomalies').innerHTML='<div style="text-align:center;padding:40px;color:#10b981;font-size:13px;"><i class="fas fa-check-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>' + t('Anomali tespit edilmedi — KPI ölçümleriniz normal dağılımda.') + '</div>';
+        document.getElementById('anomalies').innerHTML='<div style="text-align:center;padding:40px;color:#10b981;font-size:13px;"><i class="fas fa-check-circle" style="font-size:24px;margin-bottom:8px;display:block;"></i>' + t('Anomali tespit edilmedi — PG ölçümleriniz normal dağılımda.') + '</div>';
         return;
       }
       document.getElementById('anomalies').innerHTML = '<div style="display:grid;gap:8px;">' + j.anomalies.map(a => `

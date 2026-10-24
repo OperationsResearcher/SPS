@@ -6,30 +6,34 @@
     {{ mc_breadcrumb([{'label': _('Admin Araçları'), 'url': url_for('app_bp.admin_tools_home')}, {'label': _('İstatistikler'), 'url': None}]) }}
 {% endblock %}
 
-{% block content %}
-<div style="max-width:1200px;margin:0 auto;">
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_admin_istatistikler.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
 
-  <div class="mc-page-header" style="margin-bottom:16px;">
+{% block content %}
+<div class="st-p29-001">
+
+  <div class="mc-page-header st-p29-002">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-chart-column" style="color:#6366f1;"></i> {{ _("İstatistikler") }}
+      <h2 class="st-p29-003">
+        <i class="fas fa-chart-column st-p29-004"></i> {{ _("İstatistikler") }}
       </h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">
+      <p class="st-p29-005">
         {{ _("Sistemde kayıtlı kurumların kullanıcı, strateji, süreç, performans göstergesi ve proje sayıları. Salt-okuma; aktif kayıtlar sayılır.") }}
       </p>
     </div>
   </div>
 
   {% if not stats %}
-  <div class="mc-card mc-card--accent-danger" style="padding:16px;background:#fef2f2">
-    <i class="fas fa-circle-exclamation" style="color:#b91c1c;"></i>
-    <span style="font-size:13px;color:#991b1b;">{{ _("İstatistikler alınamadı.") }}</span>
+  <div class="mc-card mc-card--accent-danger st-p29-006">
+    <i class="fas fa-circle-exclamation st-p29-007"></i>
+    <span class="st-p29-008">{{ _("İstatistikler alınamadı.") }}</span>
   </div>
   {% else %}
 
   {# ── Özet kartları ── #}
   {% set t = stats.totals %}
-  <div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(150px,1fr));gap:12px;margin-bottom:18px;">
+  <div class="st-p29-009">
     {% set cards = [
       (_('Kurum'), stats.tenant_count, 'fa-building', '#0284c7', '#e0f2fe', 'ozet_kurum'),
       (_('Kullanıcı'), t.users, 'fa-users', '#7c3aed', '#ede9fe', 'ozet_kullanici'),
@@ -42,12 +46,12 @@
       (_('Proje Task'), t.tasks, 'fa-list-check', '#9333ea', '#faf5ff', 'ozet_proje_task')
     ] %}
     {% for label, value, icon, color, bg, slug in cards %}
-    <div class="mc-card" style="padding:14px;" data-card-code="admin_istatistikler.{{ slug }}">
-      <div style="display:flex;align-items:center;gap:9px;">
+    <div class="mc-card st-p29-010" data-card-code="admin_istatistikler.{{ slug }}">
+      <div class="st-p29-011">
         <span style="width:34px;height:34px;border-radius:9px;background:{{ bg }};color:{{ color }};display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;"><i class="fas {{ icon }}"></i></span>
-        <div style="min-width:0;">
-          <div style="font-size:20px;font-weight:800;color:var(--text-default);line-height:1.1;">{{ "{:,}".format(value).replace(",", ".") }}</div>
-          <div class="mc-stat-label" style="font-size:11.5px;color:#64748b;white-space:nowrap;">{{ label }}</div>
+        <div class="st-p29-012">
+          <div class="st-p29-013">{{ "{:,}".format(value).replace(",", ".") }}</div>
+          <div class="mc-stat-label st-p29-014">{{ label }}</div>
         </div>
       </div>
     </div>
@@ -55,37 +59,37 @@
   </div>
 
   {# ── Kurum bazlı tablo ── #}
-  <div class="mc-card" style="padding:0;overflow:hidden;" data-card-code="admin_istatistikler.kurum_dagilim_tablosu">
-    <div style="padding:14px 16px;border-bottom:1px solid #eef2f7;display:flex;align-items:center;gap:8px;">
-      <i class="fas fa-table" style="color:#475569;"></i>
-      <span class="mc-card-title" style="font-size:14px;font-weight:700;color:var(--text-default);">{{ _("Kurum Bazında Dağılım") }}</span>
-      <span style="font-size:12px;color:#94a3b8;">{{ _("(%(n)s aktif kurum)", n=stats.tenant_count) }}</span>
+  <div class="mc-card st-p29-015" data-card-code="admin_istatistikler.kurum_dagilim_tablosu">
+    <div class="st-p29-016">
+      <i class="fas fa-table st-p29-017"></i>
+      <span class="mc-card-title st-p29-018">{{ _("Kurum Bazında Dağılım") }}</span>
+      <span class="st-p29-019">{{ _("(%(n)s aktif kurum)", n=stats.tenant_count) }}</span>
     </div>
-    <div style="overflow-x:auto;">
-      <table style="width:100%;border-collapse:collapse;font-size:12.5px;white-space:nowrap;">
+    <div class="st-p29-020">
+      <table class="st-p29-021">
         <thead>
-          <tr style="background:#f8fafc;color:#475569;text-align:right;">
-            <th style="padding:9px 12px;text-align:left;position:sticky;left:0;background:#f8fafc;">{{ _("Kurum") }}</th>
-            <th style="padding:9px 12px;">{{ _("Kullanıcı") }}</th>
-            <th style="padding:9px 12px;">{{ _("Ana Str.") }}</th>
-            <th style="padding:9px 12px;">{{ _("Alt Str.") }}</th>
-            <th style="padding:9px 12px;">{{ _("Süreç") }}</th>
-            <th style="padding:9px 12px;">PG</th>
-            <th style="padding:9px 12px;">{{ _("PG Verisi") }}</th>
-            <th style="padding:9px 12px;">{{ _("Proje") }}</th>
-            <th style="padding:9px 12px;">{{ _("Proje Task") }}</th>
+          <tr class="st-p29-022">
+            <th class="st-p29-023">{{ _("Kurum") }}</th>
+            <th class="st-p29-024">{{ _("Kullanıcı") }}</th>
+            <th class="st-p29-024">{{ _("Ana Str.") }}</th>
+            <th class="st-p29-024">{{ _("Alt Str.") }}</th>
+            <th class="st-p29-024">{{ _("Süreç") }}</th>
+            <th class="st-p29-024">{{ _("PG") }}</th>
+            <th class="st-p29-024">{{ _("PG Verisi") }}</th>
+            <th class="st-p29-024">{{ _("Proje") }}</th>
+            <th class="st-p29-024">{{ _("Proje Task") }}</th>
           </tr>
         </thead>
         <tbody>
           {% for r in stats.rows %}
           {% if r.kind == 'subtotal' %}
           {# Grup ara toplamı #}
-          <tr style="border-top:1px solid #e2e8f0;background:#eef2ff;text-align:right;font-weight:700;color:#3730a3;">
-            <td style="padding:8px 12px;text-align:left;position:sticky;left:0;background:#eef2ff;font-style:italic;">
-              <i class="fas fa-turn-up fa-rotate-90" style="color:#818cf8;margin-right:4px;"></i>{{ r.name }}
+          <tr class="st-p29-025">
+            <td class="st-p29-026">
+              <i class="fas fa-turn-up fa-rotate-90 st-p29-027"></i>{{ r.name }}
             </td>
             {% for m in stats.metrics %}
-            <td style="padding:8px 12px;">{{ "{:,}".format(r[m]).replace(",", ".") }}</td>
+            <td class="st-p29-028">{{ "{:,}".format(r[m]).replace(",", ".") }}</td>
             {% endfor %}
           </tr>
           {% else %}
@@ -94,25 +98,25 @@
           {% set rowbg = '#fcfdff' if r.depth > 0 else '#fff' %}
           <tr style="border-top:1px solid #f1f5f9;text-align:right;background:{{ rowbg }};">
             <td style="padding:8px 12px 8px {{ pad }}px;text-align:left;position:sticky;left:0;background:{{ rowbg }};font-weight:{{ 700 if r.has_children else 600 }};color:#334155;">
-              {% if r.depth > 0 %}<span style="color:#cbd5e1;margin-right:4px;">└</span>{% endif %}
+              {% if r.depth > 0 %}<span class="st-p29-029">└</span>{% endif %}
               {{ r.name }}
               {% if r.type_label %}<span style="font-size:10px;font-weight:700;color:#fff;background:{{ '#7c3aed' if r.tenant_type == 'holding' else '#0284c7' }};border-radius:10px;padding:1px 7px;margin-left:6px;vertical-align:middle;">{{ r.type_label }}</span>{% endif %}
             </td>
             {% for m in stats.metrics %}
-            <td style="padding:8px 12px;color:#475569;">{{ "{:,}".format(r[m]).replace(",", ".") }}</td>
+            <td class="st-p29-030">{{ "{:,}".format(r[m]).replace(",", ".") }}</td>
             {% endfor %}
           </tr>
           {% endif %}
           {% else %}
-          <tr><td colspan="9" style="padding:18px;text-align:center;color:#94a3b8;">{{ _("Aktif kurum yok.") }}</td></tr>
+          <tr><td class="st-p29-031" colspan="9">{{ _("Aktif kurum yok.") }}</td></tr>
           {% endfor %}
         </tbody>
         {% if stats.rows %}
         <tfoot>
-          <tr style="border-top:2px solid #e2e8f0;background:#f1f5f9;text-align:right;font-weight:800;color:#1e293b;">
-            <td style="padding:10px 12px;text-align:left;position:sticky;left:0;background:#f1f5f9;">{{ _("SİSTEM TOPLAMI") }}</td>
+          <tr class="st-p29-032">
+            <td class="st-p29-033">{{ _("SİSTEM TOPLAMI") }}</td>
             {% for m in stats.metrics %}
-            <td style="padding:10px 12px;">{{ "{:,}".format(t[m]).replace(",", ".") }}</td>
+            <td class="st-p29-034">{{ "{:,}".format(t[m]).replace(",", ".") }}</td>
             {% endfor %}
           </tr>
         </tfoot>

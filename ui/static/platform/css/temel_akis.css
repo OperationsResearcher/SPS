@@ -1,0 +1,21 @@
+/* Temel akış şeridi (UX-PLANI A / Faz 2.2) */
+.temel-akis { display: flex; align-items: center; gap: 14px; flex-wrap: wrap; margin: 0 0 18px; padding: 10px 14px; border: 1px solid var(--border-default, #e2e8f0); border-radius: 10px; background: var(--surface-card, #fff); }
+.temel-akis-baslik { font-size: 12px; font-weight: 700; letter-spacing: .04em; text-transform: uppercase; color: var(--text-muted, #475569); }
+.temel-akis-liste { display: flex; align-items: center; gap: 6px; flex-wrap: wrap; margin: 0; padding: 0; list-style: none; }
+.temel-akis-adim + .temel-akis-adim::before { content: "\2192"; margin-right: 6px; color: var(--text-subtle, #64748b); }
+.temel-akis-adim { display: flex; align-items: center; }
+.temel-akis-link { display: inline-flex; align-items: center; gap: 8px; padding: 6px 12px; border-radius: 999px; background: var(--surface-hover, #f1f5f9); color: var(--text-strong, #0f172a); text-decoration: none; font-size: 13px; font-weight: 600; }
+.temel-akis-link:hover, .temel-akis-link:focus-visible { background: var(--color-primary-soft, #eef2ff); color: var(--color-primary, #4f46e5); outline: none; }
+.dark .temel-akis-link:hover, .dark .temel-akis-link:focus-visible { background: #334155; color: #c7d2fe; }
+.temel-akis-no { display: inline-flex; align-items: center; justify-content: center; width: 20px; height: 20px; border-radius: 50%; background: var(--color-primary, #4f46e5); color: #fff; font-size: 11px; }
+
+/* İlk kurulum kontrol listesi + ortak boş durum (UX-PLANI E / Faz 2.7) */
+.ilk-kurulum { margin-bottom: 20px; }
+.ilk-kurulum-ikon { margin-right: 6px; color: var(--color-primary, #4f46e5); }
+.ilk-kurulum-rozet { margin-left: 8px; }
+.ilk-kurulum-liste { display: flex; flex-wrap: wrap; gap: 8px 24px; margin: 0; padding: 0; list-style: none; }
+.ilk-kurulum-adim { display: flex; align-items: center; gap: 8px; font-size: 13px; font-weight: 600; }
+.ilk-kurulum-adim--tamam { color: var(--text-muted, #475569); }
+.ilk-kurulum-adim--tamam .fa-circle-check { color: var(--color-success, #16a34a); }
+.bos-durum { padding: 32px 20px; }
+.bos-durum-metin { max-width: 520px; margin: 0 auto 16px; }

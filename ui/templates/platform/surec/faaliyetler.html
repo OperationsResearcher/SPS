@@ -48,7 +48,7 @@
       </div>
 
       <div style="display:flex; align-items:center; gap:8px;">
-        <label class="mc-label" style="margin:0; white-space:nowrap;">{{ _("Yıl") }}:</label>
+        <label for="year-select" class="mc-label" style="margin:0; white-space:nowrap;">{{ _("Yıl") }}:</label>
         <select id="year-select" class="mc-select" style="width:auto;">
           {% for y in range(current_year + 1, current_year - 5, -1) %}
           <option value="{{ y }}" {% if y == current_year %}selected{% endif %}>{{ y }}</option>
@@ -57,7 +57,7 @@
       </div>
 
       <div style="display:flex; align-items:center; gap:8px;">
-        <label class="mc-label" style="margin:0; white-space:nowrap;">{{ _("Süreç") }}:</label>
+        <label for="process-select" class="mc-label" style="margin:0; white-space:nowrap;">{{ _("Süreç") }}:</label>
         <select id="process-select" class="mc-select" style="width:auto; max-width:220px;">
           {% for ap in all_processes %}
           <option value="{{ ap.id }}" {% if ap.id == process.id %}selected{% endif %}>

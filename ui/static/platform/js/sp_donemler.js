@@ -46,22 +46,20 @@
   //   "Bu işlem geri alınamaz"             → K9 ile artık açılabiliyor
   // İkisi de düzeltildi: kilit artık gerçek, açma yolu da var.
   async function muhurle(url, year) {
-    const result = await Swal.fire({
-      icon: "warning",
+    const reason = await openMcTextPrompt({
       title: `${year} ${t("dönemini mühürle")}`,
-      html: `<p>${year} ${t("dönemine artık veri girilemez, değiştirilemez veya silinemez.")}</p>
-             <p style="font-size:13px;color:#64748b">${t("Gerekirse kurum üst yönetimi mührü gerekçesiyle yeniden açabilir.")}</p>`,
-      input: "textarea",
-      inputLabel: t("Gerekçe (denetim kaydına yazılır)"),
-      inputPlaceholder: t("Örn: 2024 verileri tamamlandı ve onaylandı"),
-      showCancelButton: true,
-      confirmButtonText: t("Mühürle"),
-      cancelButtonText: t("Vazgeç"),
-      confirmButtonColor: "#dc2626",
+      iconClass: "fas fa-lock",
+      introHtml: `<p>${year} ${t("dönemine artık veri girilemez, değiştirilemez veya silinemez.")}</p>
+             <p class="mc-prompt-note">${t("Gerekirse kurum üst yönetimi mührü gerekçesiyle yeniden açabilir.")}</p>`,
+      label: t("Gerekçe (denetim kaydına yazılır)"),
+      placeholder: t("Örn: 2024 verileri tamamlandı ve onaylandı"),
+      textarea: true,
+      confirmText: t("Mühürle"),
+      cancelText: t("Vazgeç"),
     });
-    if (!result.isConfirmed) return;
+    if (reason === null) return;
     try {
-      const data = await postJson(url, { reason: result.value || "" });
+      const data = await postJson(url, { reason: reason || "" });
       if (data.success) { toastOk(data.message); setTimeout(() => window.location.reload(), 1200); }
       else { toastErr(data.message || t("Dönem mühürlenemedi.")); }
     } catch (e) { toastErr(t("Bağlantı hatası.")); }
@@ -69,23 +67,21 @@
 
   // ── MÜHÜR AÇMA (K9 + S13: gerekçe ZORUNLU) ────────────────────────────────
   async function muhruAc(url, year) {
-    const result = await Swal.fire({
-      icon: "question",
+    const reason = await openMcTextPrompt({
       title: `${year} ${t("döneminin mührünü aç")}`,
-      html: `<p>${t("Dönem yeniden düzenlenebilir hale gelecek.")}</p>
-             <p style="font-size:13px;color:#64748b">${t("Bu işlem kim/ne zaman/neden bilgisiyle kaydedilir.")}</p>`,
-      input: "textarea",
-      inputLabel: t("Gerekçe (zorunlu)"),
-      inputPlaceholder: t("Örn: Aralık ayı PGV girişi unutulmuş, tamamlanacak"),
-      inputValidator: (v) => (!v || !v.trim()) ? t("Mühür açma gerekçesi zorunludur.") : undefined,
-      showCancelButton: true,
-      confirmButtonText: t("Mührü Aç"),
-      cancelButtonText: t("Vazgeç"),
-      confirmButtonColor: "#f59e0b",
+      iconClass: "fas fa-lock-open",
+      introHtml: `<p>${t("Dönem yeniden düzenlenebilir hale gelecek.")}</p>
+             <p class="mc-prompt-note">${t("Bu işlem kim/ne zaman/neden bilgisiyle kaydedilir.")}</p>`,
+      label: t("Gerekçe (zorunlu)"),
+      placeholder: t("Örn: Aralık ayı PGV girişi unutulmuş, tamamlanacak"),
+      textarea: true,
+      requiredMessage: t("Mühür açma gerekçesi zorunludur."),
+      confirmText: t("Mührü Aç"),
+      cancelText: t("Vazgeç"),
     });
-    if (!result.isConfirmed) return;
+    if (reason === null) return;
     try {
-      const data = await postJson(url, { reason: (result.value || "").trim() });
+      const data = await postJson(url, { reason: reason.trim() });
       if (data.success) { toastOk(data.message); setTimeout(() => window.location.reload(), 1200); }
       else { toastErr(data.message || t("Mühür açılamadı.")); }
     } catch (e) { toastErr(t("Bağlantı hatası.")); }

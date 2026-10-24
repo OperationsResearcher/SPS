@@ -1,6 +1,6 @@
 {% extends "platform/base.html" %}
-{% block title %}CMMI Olgunluk Isı Haritası — Kokpitim{% endblock %}
-{% block page_title %}CMMI Olgunluk Isı Haritası{% endblock %}
+{% block title %}{{ _("CMMI Olgunluk Isı Haritası — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("CMMI Olgunluk Isı Haritası") }}{% endblock %}
 
 {% block breadcrumb %}{{ mc_breadcrumb('CMMI Olgunluk Isı Haritası') }}{% endblock %}
 
@@ -10,7 +10,7 @@
   <div class="mc-page-header" style="margin-bottom:16px;">
     <div>
       <h2 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 4px;">
-        <i class="fas fa-layer-group" style="color:#6366f1;"></i> CMMI Olgunluk Isı Haritası
+        <i class="fas fa-layer-group" style="color:#6366f1;"></i> {{ _("CMMI Olgunluk Isı Haritası") }}
       </h2>
       <p style="font-size:13px; color:#64748b; margin:0;">
         {{ _("Süreç olgunluk seviyesi <b>(1: Başlangıç → 5: Optimize Eden)</b> — kurumsal süreç yetkinliğinin sayısal ölçümü.") }}

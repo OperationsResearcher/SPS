@@ -72,7 +72,7 @@
             {% if not form_users %}
             <p class="text-amber-600 text-sm">{{ _("Kurumda kullanıcı bulunamadı; lider atanamaz.") }}</p>
             {% else %}
-            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-mgr-filter" placeholder="{{ _('Kullanıcılarda ara…') }}" autocomplete="off"/>
+            <input aria-label="{{ _('Kullanıcılarda ara…') }}" type="search" class="mc-input micro-proj-filter" id="micro-proj-mgr-filter" placeholder="{{ _('Kullanıcılarda ara…') }}" autocomplete="off"/>
             <div class="micro-proj-transfer">
                 <div class="micro-proj-transfer-col">
                     <label for="micro-proj-mgr-src" class="micro-proj-transfer-hint">{{ _("Kurum kullanıcıları") }}</label>
@@ -121,7 +121,7 @@
             </div>
             <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">{{ _("Görev ekleyebilen ekip. Süreç üyesi seçimi ile aynı: Ekle / Çıkar veya çift tıklama.") }}</p>
             {% if form_users %}
-            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-mem-filter" placeholder="{{ _('Üyelerde ara…') }}" autocomplete="off"/>
+            <input aria-label="{{ _('Üyelerde ara…') }}" type="search" class="mc-input micro-proj-filter" id="micro-proj-mem-filter" placeholder="{{ _('Üyelerde ara…') }}" autocomplete="off"/>
             <div class="micro-proj-transfer">
                 <div class="micro-proj-transfer-col">
                     <label for="micro-proj-mem-src" class="micro-proj-transfer-hint">{{ _("Kullanıcılar") }}</label>
@@ -145,7 +145,7 @@
             </div>
             <p style="font-size:12px; color:#64748b; margin:0 0 8px 0;">{{ _("Salt okunur erişim. Üye olanlar gözlemci olarak seçilemez.") }}</p>
             {% if form_users %}
-            <input type="search" class="mc-input micro-proj-filter" id="micro-proj-obs-filter" placeholder="{{ _('Gözlemcilerde ara…') }}" autocomplete="off"/>
+            <input aria-label="{{ _('Gözlemcilerde ara…') }}" type="search" class="mc-input micro-proj-filter" id="micro-proj-obs-filter" placeholder="{{ _('Gözlemcilerde ara…') }}" autocomplete="off"/>
             <div class="micro-proj-transfer">
                 <div class="micro-proj-transfer-col">
                     <label for="micro-proj-obs-src" class="micro-proj-transfer-hint">{{ _("Kullanıcılar") }}</label>

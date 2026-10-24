@@ -5,33 +5,37 @@
     {{ mc_breadcrumb([{'label': _('Yönetim Özeti'), 'url': None}]) }}
 {% endblock %}
 
-{% block content %}
-<div id="yo-root" data-api="{{ url_for('app_bp.yonetim_ozeti_api') }}" style="max-width:1180px; margin:0 auto;">
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_masaustu_yonetim_ozeti.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
 
-  <div class="mc-page-header" style="margin-bottom:18px;">
+{% block content %}
+<div class="st-p22-001" id="yo-root" data-api="{{ url_for('app_bp.yonetim_ozeti_api') }}">
+
+  <div class="mc-page-header st-p22-002">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-gauge-high" style="color:#6366f1;"></i> {{ _("Kurumunuz nasıl gidiyor?") }}
+      <h2 class="st-p22-003">
+        <i class="fas fa-gauge-high st-p22-004"></i> {{ _("Kurumunuz nasıl gidiyor?") }}
       </h2>
-      <p style="font-size:13px;color:var(--text-muted);margin:0;">
+      <p class="st-p22-005">
         {{ _("Kurum genelinde tek bakışta durum — skor, geciken işler ve dikkat gereken noktalar.") }}
       </p>
     </div>
   </div>
 
   {# ── Kurum skoru + band ── #}
-  <div class="mc-card" data-card-code="yonetim_ozeti.kurum_skoru" style="margin-bottom:16px;">
+  <div class="mc-card st-p22-006" data-card-code="yonetim_ozeti.kurum_skoru">
     <div class="mc-card-header">
-      <span class="mc-card-title"><i class="fas fa-heart-pulse" style="color:#6366f1;"></i> {{ _("Kurum Skoru") }}</span>
+      <span class="mc-card-title"><i class="fas fa-heart-pulse st-p22-004"></i> {{ _("Kurum Skoru") }}</span>
       <span class="mc-badge" id="yo-total-band">—</span>
     </div>
     <div class="mc-card-body">
-      <div style="display:flex; align-items:center; gap:24px; flex-wrap:wrap;">
-        <div style="text-align:center; min-width:120px;">
-          <div id="yo-total-score" style="font-size:44px; font-weight:800; line-height:1; color:var(--text-default);">—</div>
-          <div style="font-size:11px; color:var(--text-muted); text-transform:uppercase; letter-spacing:.05em; margin-top:4px;">{{ _("Toplam") }}</div>
+      <div class="st-p22-007">
+        <div class="st-p22-008">
+          <div class="st-p22-009" id="yo-total-score">—</div>
+          <div class="st-p22-010">{{ _("Toplam") }}</div>
         </div>
-        <div class="mc-grid-4" style="flex:1; min-width:280px; gap:10px;">
+        <div class="mc-grid-4 st-p22-011">
           <div class="mc-stat-card mc-stat-blue" data-card-code="yonetim_ozeti.ks_skoru">
             <div class="mc-stat-label">{{ _("Strateji") }}</div>
             <div class="mc-stat-value" id="yo-ks">—</div>
@@ -57,16 +61,16 @@
     </div>
   </div>
 
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(320px,1fr)); gap:16px;">
+  <div class="st-p22-012">
 
     {# ── Geciken işler ── #}
     <div class="mc-card" data-card-code="yonetim_ozeti.geciken_isler">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-triangle-exclamation" style="color:#ef4444;"></i> {{ _("Dikkat Gereken") }}</span>
+        <span class="mc-card-title"><i class="fas fa-triangle-exclamation st-p22-013"></i> {{ _("Dikkat Gereken") }}</span>
       </div>
       <div class="mc-card-body">
-        <ul class="yo-metric-list" id="yo-geciken" style="list-style:none; margin:0; padding:0;">
-          <li style="color:var(--text-muted);">{{ _("Yükleniyor…") }}</li>
+        <ul class="yo-metric-list st-p22-014" id="yo-geciken">
+          <li class="st-p22-015">{{ _("Yükleniyor…") }}</li>
         </ul>
       </div>
     </div>
@@ -74,37 +78,37 @@
     {# ── KPI özeti ── #}
     <div class="mc-card" data-card-code="yonetim_ozeti.kpi_ozet">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-bullseye" style="color:#0ea5e9;"></i> {{ _("KPI Özeti") }}</span>
+        <span class="mc-card-title"><i class="fas fa-bullseye st-p22-016"></i> {{ _("PG Özeti") }}</span>
       </div>
       <div class="mc-card-body">
-        <ul class="yo-metric-list" id="yo-kpi" style="list-style:none; margin:0; padding:0;">
-          <li style="color:var(--text-muted);">{{ _("Yükleniyor…") }}</li>
+        <ul class="yo-metric-list st-p22-014" id="yo-kpi">
+          <li class="st-p22-015">{{ _("Yükleniyor…") }}</li>
         </ul>
       </div>
     </div>
 
     {# ── En düşük 5 strateji ── #}
-    <div class="mc-card" data-card-code="yonetim_ozeti.en_dusuk_5" style="grid-column:1/-1;">
+    <div class="mc-card st-p22-017" data-card-code="yonetim_ozeti.en_dusuk_5">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-arrow-trend-down" style="color:#f59e0b;"></i> {{ _("En Düşük Performanslı Stratejiler") }}</span>
+        <span class="mc-card-title"><i class="fas fa-arrow-trend-down st-p22-018"></i> {{ _("En Düşük Performanslı Stratejiler") }}</span>
       </div>
       <div class="mc-card-body">
-        <div id="yo-bottom5" style="display:flex; flex-direction:column; gap:8px;">
-          <div style="color:var(--text-muted);">{{ _("Yükleniyor…") }}</div>
+        <div class="st-p22-019" id="yo-bottom5">
+          <div class="st-p22-015">{{ _("Yükleniyor…") }}</div>
         </div>
       </div>
     </div>
 
     {# ── Hedef Radarı (TASK-262): "hedefe ulaştık mı" değil, "hedef dürüst mü" ── #}
-    <div class="mc-card" data-card-code="yonetim_ozeti.hedef_radar" style="grid-column:1/-1;">
+    <div class="mc-card st-p22-017" data-card-code="yonetim_ozeti.hedef_radar">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-crosshairs" style="color:#dc2626;"></i> {{ _("Hedef Değişiklik Radarı") }}</span>
+        <span class="mc-card-title"><i class="fas fa-crosshairs st-p22-020"></i> {{ _("Hedef Değişiklik Radarı") }}</span>
       </div>
       <div class="mc-card-body">
         <div id="yo-radar">
-          <div style="color:var(--text-muted);">{{ _("Yükleniyor…") }}</div>
+          <div class="st-p22-015">{{ _("Yükleniyor…") }}</div>
         </div>
-        <div style="font-size:11px;color:var(--text-muted);margin-top:10px;line-height:1.5;">
+        <div class="st-p22-021">
           <i class="fas fa-circle-info"></i>
           {{ _("Hedef değişikliği bir olgudur, suçlama değil — pazar koşulu veya kapsam değişimi meşru sebep olabilir. Bu kart soru sorar, yanıt vermez.") }}
         </div>
@@ -162,7 +166,7 @@
     // KPI özeti
     const k = d.kpi_ozet || {};
     const kmap = [
-      [t("Toplam KPI"), k.kpi_total],
+      [t("Toplam PG"), k.kpi_total],
       [t("Veri girilmiş"), k.kpi_with_data],
       [t("Hedef üstü %"), k.on_target_pct!=null ? k.on_target_pct+"%" : "—"],
       [t("Açık risk"), k.risk_count],

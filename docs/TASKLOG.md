@@ -2,6 +2,261 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-329 | 2026-10-24 | ✅ Tamamlandı (karne/sapma tek kaynak + Dockerfile kilide geçti; yalnız Yerel)
+
+**Görev:** Kullanıcı kararları: (a) karne yüzdesi ve sapma formülü KalDer gibi tek kaynağa taşınsın, (b) Dockerfile `requirements.lock` kursun
+**Modül:** skor motoru, karne JS, Docker, bağımlılıklar
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/score_engine_service.py` → `adverse_deviation_pct` (yön + hedef≤0 guard'ı tek yerde)
+- `app/services/muda_analyzer.py`, `app/services/process_deviation_service.py`, `services/notification_service.py` → ortak yardımcıyı kullanır (hedef ≤ 0'da hesap yapılmaz, "Sapma" olumsuz yönde pozitif)
+- `ui/static/platform/js/surec.js` → `computeKpiYearlyMetrics`: başarı yüzdesi yalnız sunucu `achievement`'tan; istemci formülü kaldırıldı
+- `tests/test_sapma_formulleri.py` (yeni), `tests/test_basari_yuzdesi_sunucu.py` (xfail kalktı), `docs/kontrol/PUAN-SOZLESMESI.md` (yeni), `docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md` (güncellendi)
+- `Dockerfile` → `COPY requirements.lock` + `pip install -r requirements.lock`; `tests/test_requirements_lock_tutarli.py` (yeni)
+
+### Notlar
+- **Rakamlar değişebilir** (hedef ≤ 0, yön, istemci yüzdesi): ayrıntı `docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md`. Test'te gerçek kurum verisiyle önce/sonra kıyası yapılmalı.
+- Kilit: x86_64 ve aarch64 cp311 wheel'leri doğrulandı (http-ece sdist). Sunucuda gerçek Docker build yine Test'te (gcc/libpq-dev).
+- Yayın'a/Test'e gönderilmedi.
+
+## TASK-328 | 2026-10-24 | ✅ Tamamlandı (Docker'sız Python 3.11 doğrulaması + kilit yenileme; yalnız Yerel)
+
+**Görev:** Yerel Docker kaldırıldı → Docker imajının (python:3.11-slim + `pip install -r requirements.txt`) yaptığını Docker olmadan doğrula
+**Modül:** bağımlılıklar, doküman
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `requirements-test.txt` → `marshmallow==3.26.2` (P7'de `requirements.txt` güncellenmiş, bu dosya unutulmuştu: ikisi birlikte kurulamıyordu; Docker/CI yalnız `requirements.txt` kurduğu için dağıtımı etkilemiyordu)
+- `requirements.lock` → 3.11'de doğrulanan sürümlerden yeniden üretildi (yalnız numpy 2.5.4→2.4.6, scipy 1.18.1→1.17.1, deprecated 3.0.0→1.3.1); artık Python 3.11–3.13'ün hepsinde kurulabilir
+- `docs/kontrol/BAGIMLILIK-TARAMASI.md` → Python sürümü uyarısı yerine Docker'sız doğrulama bölümü
+
+### Yapılan İşlem
+`uv` ile Python 3.11.17 (kullanıcı klasörüne), temiz venv, `requirements.txt` + `requirements-test.txt` kurulumu (Docker'ın çözeceği sürümler). Tam test 3.11'de **1211 geçti, 0 başarısız** (iki upload testi dahil). 3.13'te bu iki test bu makinede takılıyordu → uygulama değil test ortamı uyumsuzluğuymuş (3.13 + çok parçalı istek). Kilit: hiçbir paketin Requires-Python'u 3.11–3.13'ü dışlamıyor, 3.13'te çözümleme hatasız, pip-audit temiz.
+
+### Notlar
+- **Dockerfile hâlâ `requirements.txt` (`>=`) kuruyor, kilidi değil** (build'ler zamanla farklı sürüm çekebilir). Kilide geçmek dağıtım davranışını değiştirir → kullanıcı onayı + Test'te doğrulama gerekir; YAPILMADI.
+- Sunucuda gerçek Docker build yine Test'te yapılmalı (gcc/libpq-dev gibi sistem paketleri bu doğrulamada yok).
+- Geçici araçlar (yaklaşık 1,5 GB): C:/tmp/venv311, venv_p7, venv_audit ve uv'nin Python kopyaları (APPDATA/uv/python).
+
+## TASK-327 | 2026-10-24 | ✅ Tamamlandı (legacy logo yükleme düzeltmesi + test artıklarının temizliği; yalnız Yerel; commit yok)
+
+**Görev:** `POST /api/kurum/upload-logo` her istekte 500 veriyordu → düzelt; otomatik testin bıraktığı artıkları temizle
+**Modül:** api (legacy yüzey), test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `api/routes_admin.py` → `api_kurum_upload_logo`: var olmayan `Tenant.logo_url` ve herkese açık `static/uploads/logos` yerine modern depolama (`instance/uploads/tenant_logos/<id>.<ext>` + `logo_path`/`logo_updated_at`), magic-byte doğrulaması (`validate_uploaded_image`, SVG script reddi), 2 MB sınırı
+- `tests/test_logo_upload_legacy_alan.py` → yeni (kaynak düzeyinde regresyon koruması)
+
+### Yapılan İşlem
+Kök neden: model `logo_url` değil `logo_path` kullanıyor; legacy uç eski alanı yazıyordu. **Düzeltme öncesi yanlış bilgi:** bu uç hiçbir ekrandan çağrılmıyor (yalnız bir testte); kurum ayarlarındaki gerçek logo yükleme modern uçlardan (`micro/modules/kurum/routes.py`, `admin/routes.py`) geçiyor ve zaten çalışıyordu. Düzeltme tarayıcıda doğrulandı (izole instance klasörüyle): geçerli PNG → 200 + `27.png` yazıldı + ayarlar sayfası logoyu `/tenant-logo/27` ile gösterdi; metin dosyası, script'li SVG → 400; dosya alanı yok → 400; standart kullanıcı → 403.
+
+### Temizlik
+- Otomatik testin gerçek `otomatik-calistir` ucunu çağırması sonucu `instance/yedekler/otomatik/` altında oluşan `db_20261024_062636.dump` ve `code_tam_20261024_062636.tar.gz` SİLİNDİ; `_state.json` önceki zincire (son tam: `code_tam_20260720_020000`, son çalışma 24.07 02:00) geri alındı (silinen dosyaya bakan durum gece fark yedeğini bozardı). Rotasyon başka dosya silmemişti (11/8/3 adet < 14). Aynı denemenin `%TEMP%	mp*.dump` artığı da silindi.
+- `kokpitim_sandbox` veritabanı, `sandbox_src.dump`, bağlantı/şifre dosyaları, ekran görüntüleri ve sonuç dosyaları silindi. `kokpitim_db` ve diğer veritabanlarına dokunulmadı.
+
+### Notlar
+Metin dosyası yüklenince hata mesajı "SVG güvenlik kontrolünden geçemedi" diyor (paylaşılan doğrulayıcının mesajı; modern uçlarda da aynı) — reddi doğru, mesaj yanıltıcı; ayrı iş.
+
+## TASK-326 | 2026-10-24 | ✅ Tamamlandı (otomatik tarayıcı doğrulaması + P4 boşluk kapatma; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P1–P10 değişikliklerini Playwright ile (yerel DB'nin kopyası üzerinde) doğrula; bulunan i18n boşluklarını kapat
+**Modül:** i18n (breadcrumb, sunucu cümleleri), doğrulama
+**Durum:** ✅ Tamamlandı
+
+### Yöntem
+Yerel `kokpitim_db` salt-okunur `pg_dump` ile ayrı `kokpitim_sandbox` veritabanına kopyalandı (yalnız orada test hesapları/şifre/veri değişti). Aynı sandbox'a bağlı iki sunucu: eski kod (`main`, ayrı git worktree) 5098, yeni kod 5099. Betikler: `C:	mp\pw\*` (kod tabanında değil).
+
+### Ölçülen sonuçlar (eski → yeni)
+- 375px yatay taşma yapan sayfa: **26 → 3** (kalan 3 eskiden de taşıyordu: sektörel detay, risk ısı haritası, kılavuz oluşturucu)
+- Etiketsiz form alanı (31 sayfa): **75 → 0**; etiket tıklaması alanı odaklıyor; kenar çubuğu odak halkası var
+- P6: 31 sayfa açık/koyu temada piksel piksel aynı (fark %0,0) — istisnalar: Masaüstüm (P5 yeni kartlar), Bireysel karne (eski sayfa 1504px'e taşıyordu, yeni 1366'ya sığıyor); mobilde tüm farklar P1 taşma düzeltmesinden
+- CSRF: 53 uçtan 49'u denendi (4 ağır iş atlandı): sayfa üzerinden çağrı kabul, token'sız ham XHR CSRF ile reddedildi (49/49)
+- XSS: plan yılı adına zararlı HTML → eski sürümde `onerror` ÇALIŞTI, yeni sürümde çalışmadı
+- 2FA: yanlış kod oturum açmıyor, doğru kod açıyor; open redirect (`?next=https://...`) → same-origin; Swagger UI `/api/docs/` standart kullanıcıya 403, Admin'e 200; `/demo/start` 404
+- P2: `openMcTextPrompt` (boş gönderimde alan altı hata + aria-invalid, Enter/Esc), SP Dönemler Mühürle/Mührü Aç, alt kurum onayları (SweetAlert2), yerel `alert/confirm` 0
+- P5: Temel akış şeridi, İlk kurulum Gizle, Bekleyen PG kartı (eksik veri oluşturulunca "Eksik: Şubat" + Gir bağlantısı 200)
+- P10: TR sayfalarda "KPI" 6 → 0
+- P7: socket.io istemcisi masaüstünde eski ve yeni sürümde de yüklenmiyor (fark yok)
+
+### Düzeltilenler (test sırasında bulunan)
+- P4 boşluğu: breadcrumb etiketleri (`label_hepsi.py`, 20 şablon/33 etiket) + `app/__init__.py` breadcrumb gettext + sunucu özet cümleleri (`routes_exec_advisor.py`, `routes_karne.py`, `bireysel/routes.py`) f-string → `_()`; `surec.js` dönem etiketi; "KPI" kalıntıları (`k_radar_ks.js` rozet, `surec.js`, `raporlar/mobile.html`)
+- EN Türkçe satır (sandbox verisiyle): 576 → ~494; kalan çoğu kurum verisi (strateji/süreç/plan adları)
+
+### Notlar
+- **Test yan etkisi (kullanıcı diskinde):** CSRF denemesi `otomatik-calistir` ucunu gerçekten çalıştırdı → `C:\kokpitimackups` altında `db_20261024_062636.dump` (8,4 MB) ve `code_tam_20261024_062636.tar.gz` (243,9 MB) oluştu. Silinmedi, karar kullanıcıda.
+- **Mevcut hata (benim değişikliğim değil):** logo yükleme `POST /api/kurum/upload-logo` → 500 `'Tenant' object has no attribute 'logo_url'` (eski sürümde de aynı).
+- pytest'teki iki takılan upload testi gerçek sunucuda tekrarlanmadı (yükleme ~50 ms) → test ortamına özgü.
+
+## TASK-325 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P10 — KPI→PG terminoloji + karne motoru kıyası; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P10: kullanıcıya görünen "KPI" → "PG"; karne/skor motoru testlerini karşılaştır
+**Modül:** terminoloji/i18n, karne motoru (yalnız kıyas)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- ~45 dosya (şablon, JS, `app/`, `micro/`, `services/`) → çeviri literallerinde/etiketlerde "KPI" → "PG" (Türkçe ek uyumu: PG'ler/PG'yi/PG'de), `docs/UI-TERMINOLOJI.md`
+- `translations/**` → yeniden çıkarım; 40 yeni msgid'in 37'si KalDer çevirisinden, 3'ü elle
+- `tests/test_terminoloji_pg.py` (yeni), `tests/test_puan_sozlesmesi.py` (yeni, geçiyor), `tests/test_basari_yuzdesi_sunucu.py` (yeni; 1 xfail), `requirements-test.txt` (`hypothesis`)
+- `docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md` (yeni)
+
+### Yapılan İşlem
+Terminoloji: ana projede ~65 görünen "KPI" vardı (rehberin "~4" tahmini yanlıştı); KalDer yaması kısmen, kalanı kural tabanlı betikle (yalnız `_()`/`t()` literalleri ve düz etiket metni; `KPI-327` gibi kodlar hariç) çevrildi. Karne motoru: **Puan sözleşmesi ana projede zaten sağlanıyor (3/3)**; başarı yüzdesi 9/10; sapma formülü testi içe aktarma hatası (`adverse_deviation_pct` yok).
+
+### Notlar
+**Karne/sapma farkları (surec.js istemci yüzdesi, `adverse_deviation_pct`) TAŞINMADI**: kurumların gördüğü rakamları değiştirir → iş kararı. Ayrıntı ve taşıma yolu: `docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md`. Repo hijyeni (`bbc650c`, kök artıklar) yapılmadı. EN çevirilerde "KPI" kalabilir (bilinçli).
+
+## TASK-324 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P8 — güvenlik testleri + açıkların kapatılması; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P8: güvenlik test paketini al, kırılanlar = ana projedeki açıklar → kapat
+**Modül:** güvenlik (CSRF, XSS, SSO, demo, admin araçları, swagger, open redirect), testler
+**Durum:** ✅ Tamamlandı
+
+### Ölçüm (testler ana projeye alındığında)
+9 test dosyası: 22 başarısız + 1 import hatası (SSO). IDOR (cross-tenant) ve sessiz-except lint'leri **ilk koşuda geçti** (ana projede açık yok).
+
+### Değiştirilen Dosyalar
+- Testler (yeni): `test_ham_sql_tenant_lint`, `test_idor_cross_tenant`, `test_sessiz_except_lint`, `test_csrf_exempt_kaldirildi`, `test_innerhtml_kacis`, `test_kucuk_guvenlik_duzeltmeleri`, `test_sso_guvenlik`, `test_admin_tools_ortam_kilidi`, `test_demo_host_csrf`
+- CSRF: 17 `@csrf.exempt` kaldırıldı (`micro/modules/sp/routes_{strategy,initiative,sp_proje,exec_advisor,pages}.py`; diğer muafiyetler KalDer yamasıyla), `csrf_fetch.js` + `base.html` (merkezî `X-CSRFToken`), `yedekleme.html` formlarına `csrf_token`
+- XSS: `calendar_quick_create.js`, `k_rapor.js`, `launcher_vgs.js` (`esc()`)
+- `app.py`, `app/__init__.py`, `app/api/swagger.py`, `app/routes/{auth,totp}.py`, `micro/modules/admin/routes_admin_tools.py` → open redirect, hata ayrıntısı sızıntısı, Swagger yalnız admin, debug açık bayrağa bağlı, ham `X-Real-IP` okunmaz, yedek uçları ortam kilidi (`KOKPITIM_ENV=local` açık bayrak)
+- `app/routes/sso.py` → Google SSO dönüşünde TOTP kapısı + `SSO_ALLOWED_DOMAINS` izin listesi (boşsa auto-provision kapalı)
+- `micro/modules/demo/routes.py`, `demo/landing.html` → demo yalnız demo host'ta; `/demo/start` yalnız CSRF'li POST
+- `app/services/efqm_assessment.py` → ham SQL tenant_id
+
+### Notlar
+- **Davranış değişikliği:** `SSO_ALLOWED_DOMAINS` tanımlı değilse Google SSO ile yeni kullanıcı OTOMATİK AÇILMAZ (eskiden açılıyordu). Yayın/Test `.env`'e gerekirse eklenmeli. `KOKPITIM_ENV=local` yoksa admin araçları (yedek/hata kontrolü) "local" sayılmaz — Yerel `.env`'de bu bayrak olmalı.
+- CSRF: `fetch` dışı çağıran (XHR/ajax/form) taraması yapıldı: yok; base.html miras almayan POST'lu sayfa yok. Yine de **tarayıcıda** tüm POST akışları (SP strateji/girişim/proje, sp_exec_advisor, setup import, kule, ayarlar) denenmeli: 400 çıkarsa token eksik demektir.
+- Dış çağıran (webhook, mobil, BI) muafiyet bekliyorsa 400 alır — envanter yapılmadı.
+
+## TASK-323 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P7 — bağımlılık kilidi + pip-audit; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P7: `requirements.lock`, güvenlik taraması, yama güncellemesi (izole venv)
+**Modül:** bağımlılıklar, ops aracı, doküman
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `requirements.txt` → `marshmallow==3.26.2`, `python-socketio==5.16.2` (PYSEC-2026-1605/1854/3042)
+- `requirements.lock` (yeni, 102 paket, test edilen sürümler), `scripts/ops/kilit_uret.py` (yeni)
+- `docs/kontrol/BAGIMLILIK-TARAMASI.md` (yeni)
+
+### Yapılan İşlem
+İzole venv'de (Py 3.13, senin ortamına dokunulmadı) taze kurulum + tam test (1141 geçti) → kilit → pip-audit: 2 pakette 3 açık → güncellendi → yeniden test (1141) + `pip check` temiz + pip-audit temiz.
+
+### Notlar
+**Kilit Python ≥3.12 ister (numpy 2.5.4/scipy 1.18.1/Deprecated 3.0.0); Docker 3.11 → kilitle KURULMAZ**, Docker `requirements.txt` kullanır. 3.11 kombinasyonu test edilmedi → Yayın öncesi Test'te Docker build + test. Majör güncelleme gerekmedi.
+
+## TASK-322 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P6 — inline style= → sınıf, 31 ağır sayfa; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P6: ağır şablonlarda satır içi `style=` → harici sınıf (UX-G); 4554 → 2630
+**Modül:** şablonlar (31), CSS (31 yeni `g_*.css`), test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/**` (31 sayfa: k_rapor/index, masaustu/index, sp/exec_dashboard, surec/index, admin/loglar … k_radar/kp) → `style=` sınıfa, `{% block extra_css %}` ile `g_*.css` bağlandı
+- `ui/static/platform/css/g_*.css` (31 yeni) → üretilen sınıflar (`.x.x` özgüllük taklidi)
+- `tests/test_inline_stil_sayfalar.py` → yeni; toplam inline sayısı BASELINE=2630 (yalnız küçülür), CSS bağlı/dengeli
+
+### Yapılan İşlem
+`g_arac.py` ile dönüşüm, her sayfa `dogrula.py` ile HEAD'e karşı etiket-etiket **efektif stil eşitliği** doğrulandı (31/31 ESIT). Ek olarak `#id` CSS kuralı ile özgüllük çakışması taraması yapıldı: 1 gerçek çakışma bulundu (`masaustu/index.html` `#masaustu-calendar` min-height 420px inline vs masaustu.css 520px) ve o öğe inline bırakıldı.
+
+### Notlar
+- Bilinçli inline kalanlar: `display:none/visibility/opacity:0` (JS açar), Jinja'lı, `url()`, `!important`. Kalan 2630'un çoğu 129 küçük sayfada; devam edilecekse aynı araç.
+- Aracın görmediği risk: sınıf kuralı yerine inline'ı ezen çok-seçicili (`.a .b`, özgüllük ≥ 0,3,0) mevcut CSS kuralları. Tarayıcı taramasıyla (koyu tema dahil) gözle bakılmalı.
+
+## TASK-317 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P1 — CSS/mobil/kontrast/odak; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P1 paketi: WCAG kontrast token'ları, mobil taşma, kenar çubuğu odak halkası, 16px mobil alan
+**Modül:** frontend CSS, test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/css/components.css` → `--text-subtle` (#5b6b81 / koyu #a3b1c6), `.mc-empty-text`, `.mc-btn-danger/success`, `.dark .mc-badge-gray` kontrast
+- `ui/static/platform/css/sidebar.css` → `.micro-main{min-width:0}`, ≤640px üst çubuk sıkıştırma + plan dönemi gizleme, sidebar `:focus-visible`
+- `ui/static/platform/css/mobile.css` → ≤640px form alanları 16px
+- `tests/test_kontrast_tokenlari.py` → yeni (WCAG AA ≥4.5:1)
+
+### Yapılan İşlem
+KalDer `b72bb03` + `bc7003d` yamaları (yalnız CSS + test) `git apply` ile temiz uygulandı. `temel_akis.css` P5'e bırakıldı.
+
+### Notlar
+Rehberdeki `git apply --3way --reject` birleşimi geçersiz (git hata verir); yalnız `--reject` kullanıldı. Tarayıcı doğrulaması (375px yatay taşma, odak halkası) yapılmadı.
+## TASK-318 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P2 — openMcTextPrompt + alert/confirm; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P2: Swal `input:` formları → `openMcTextPrompt` (alan altı doğrulama), koşulsuz alert/confirm → SweetAlert2
+**Modül:** frontend JS ortak, SP/K-Radar/Bireysel/Admin şablonları, test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/static/platform/js/mc-modal-form.js` → `window.openMcTextPrompt` + tek satırlı alanda Enter = Kaydet
+- `ui/static/platform/css/components.css` → `.mc-form-input--error`, `.mc-form-error`, `.mc-prompt-intro`
+- `ui/static/platform/js/bireysel.js`, `k_radar_ks.js` (4 çağrı), `sp_donemler.js` (2), `sp_liste_analiz.js`, `sp_porter.js` → 8 Swal `input:` çağrısı openMcTextPrompt'a çevrildi
+- `ui/templates/platform/admin/sub_tenants.html` (2 confirm), `yedekleme.html` (1 alert) → SweetAlert2
+- `tests/test_swal_input_kaldirildi.py`, `tests/test_alert_confirm_lint.py` → yeni (lint BASELINE: 6 "Swal yoksa" yedeği, yalnız küçülür)
+
+### Yapılan İşlem
+KalDer `1f4cea8`, `bc7003d` (Enter), `0311c40` yamaları `git apply --reject` ile; Swal input çağrıları ana projenin koduna göre elle çevrildi. Mühürle'de gerekçe isteğe bağlı, Mührü Aç'ta zorunlu (requiredMessage yalnız ikincisinde).
+
+### Notlar
+Plan aşamasında 4 çağrı sanılmıştı; gerçek sayı 8 (ilk grep çok satırlı/satır ortası `input:` kalıplarını kaçırmıştı, lint testi yakaladı). Tarayıcıda elle doğrulanmadı (boş gönderim → alan altı hata, Esc, Enter). Yeni msgid yok (mevcut `t()` metinleri); "Evet, sıfırla" ve "Evet" metinleri `.po`'da yoksa EN'de Türkçe görünür → P4.
+## TASK-319 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P3 — etiketsiz form alanları + odak; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P3: 107 etiketsiz form alanı → ≤1; klavye odak halkası; lint testi
+**Modül:** şablonlar (41 dosya), components.css, test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `ui/templates/platform/**` (41 şablon) → 107 alana `aria-label="{{ _('…') }}"` veya bitişik `<label for>` + `id` (yalnız nitelik eklendi, davranış değişmez)
+- `ui/static/platform/css/components.css` → `.mc-btn/.mc-form-input/.mc-modal-close` `:focus-visible` halkası
+- `tests/test_etiketsiz_input_lint.py` → yeni, BASELINE=1 (yalnız küçülür)
+
+### Yapılan İşlem
+Alanlar KalDer lint mantığıyla (aria-label / label-for / sarmalayan label) ölçüldü: 107. 77'si kural tabanlı araçla (bitişik label → for/id; mevcut placeholder/title çevirisi → aria-label), 28'i bağlamdan elle, 1'i JS dizgesinde (`sp/tv.html`, `t()`). Kalan 1, `surec/karne.html` yorum metnindeki `<select>` (yanlış pozitif).
+
+### Notlar
+KalDer'in karne ızgarası mobil CSS'i alınmadı (ana projede `.karne-izgara-*` yok; P10 opsiyonel özellik). Yeni msgid'ler (`.po`'da yoksa EN'de Türkçe görünür → P4): Bildirim türü, Bildirim durumu, Excel dosyası (.xlsx), Kuruma göre filtrele, Yedek dosyası (.dump), Süreç seç, Profil fotoğrafı, Etki, İlgi, Sırala, Süreç, Olgunluk seviyesi, Proje, Önem derecesi, Risk durumu, Dönem, Gün aralığı, Görev filtresi, Yıl, Temel URL, Karışım oranı, Sahne süresi (sn), Skora göre filtrele, Puan aralığı, Puan açıklaması, Ön yüz adı. Etiketler bağlamdan yazıldı; tarayıcıda gözle doğrulanmadı.
+## TASK-321 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P5 — Masaüstüm: temel akış şeridi, bekleyen PG, ilk kurulum; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P5: Masaüstüm'e Temel akış şeridi, "Veri girişi bekleyen PG'lerim" kartı, İlk kurulum kontrol listesi + ortak boş durum makrosu
+**Modül:** masaustu, servisler, şablon/CSS/JS, test
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `app/services/bekleyen_pg_service.py` (yeni), `app/services/ilk_kurulum_service.py` (yeni), `app/constants/periods.py` → `normalize_period_type` yardımcısı
+- `micro/modules/masaustu/routes.py` → bekleyen PG + ilk kurulum context'i, `masaustu_ilk_kurulum_gizle` (POST, tercih `theme_preferences` JSON'u)
+- `ui/templates/platform/_temel_akis.html`, `masaustu/_ilk_kurulum.html`, `_macros/bos_durum.html` (yeni), `masaustu/index.html`
+- `ui/static/platform/css/temel_akis.css` (yeni, KalDer son hali), `ui/static/platform/js/masaustu.js`
+- `tests/test_bekleyen_pg.py`, `tests/test_ilk_kurulum.py` (yeni)
+- `scripts/seed_masaustu_yeni_kartlar.py` (yeni) → MA21 bekleyen_pg, MA22 ilk_kurulum, TA01 serit (ÇALIŞTIRILMADI)
+
+### Yapılan İşlem
+KalDer `752d51b` (SP hub kısmı hariç), `0f5eb2c`, `7033146`, `27e6fa3` yamaları temiz uygulandı; ana projeye uyarlama: (1) `kalder_core_lock`/holding kilidi bağımlılığı kaldırıldı ve holding testi silindi, (2) kaskad yok → "Strateji" adımı `app_bp.sp`'ye bağlandı, (3) toplu veri girişi ızgarası yok → `izgara=1` parametresi ve "toplu" ifadesi çıkarıldı, (4) kart seed'i ana DB'deki mevcut MA01–MA20 numaralarına dokunmadan yalnız 3 yeni kart için yeniden yazıldı.
+
+### Notlar
+- **Seed koşulmadı:** önce kart keşfi (Admin > Kart Yönetimi), sonra `python scripts/seed_masaustu_yeni_kartlar.py`; Test/Yayın'da ayrıca (kod deploy'u seed çalıştırmaz).
+- Yeni `_()` msgid'leri ("Temel akış", "Stratejik planlama", "Süreç karnesinde veri girişi" vb.) ve 3 kart açıklaması `.po`'da yok → EN'de Türkçe görünür; dallar birleşince `i18n_cikar.py --yaz` + EN çeviri gerekir (KURALLAR §5.1).
+- Tarayıcıda gözle doğrulanmadı; base.html/route değişimi için `python pybasla.py` ile yeniden başlat.
+## TASK-320 | 2026-10-23 | ✅ Tamamlandı (KalDer öğrenme P4 — i18n: kalıcı araç + 1060 boş çeviri + 218 sabit metin sarma; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P4: `.po` çıkarımını kalıcı araca bağla (satır içi JS + `_l`), boş EN çevirilerini doldur, şablonlardaki sarılmamış Türkçe metni `_()` ile sar
+**Modül:** i18n (`translations/`), şablonlar (43 dosya), araçlar
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `scripts/ops/i18n_cikar.py` (yeni), `babel.cfg` → `-k t -k _l` + şablon içi satır içi `t("…")` çıkarımı; `--yaz` ile update+compile
+- `scripts/port_araclari/*` (yeni, KalDer'den) → `say.py`, `g_i18n.py`, `ceviri_ekle.py`, Playwright tarayıcı betikleri (pw_*)
+- `translations/en/LC_MESSAGES/messages.po|mo`, `translations/tr/…`, `translations/messages.pot` → yeniden çıkarım; EN canlı girdi 4247 → 4818, boş msgstr 0
+- `ui/templates/platform/**` (43 şablon) → 218 sabit Türkçe metin `{{ _("…") }}` ile sarıldı (say.py: 218 → 0)
+
+### Yapılan İşlem
+Çıkarım öncesi: 453 boş msgstr + 417 satır içi JS msgid'i `.po`'da hiç yoktu (EN'de Türkçe kalıyordu), 2095 obsolete. Boşların 1066'sı KalDer `.po`'sundan (aynı msgid) dolduruldu, 8 + 10 girdi elle çevrildi, 56'sı (kısaltma/e-posta/URL) aynen bırakıldı. `%` biçimlendirme: msgid'i geçerli 139 girdinin hiçbirinin çevirisi hata vermiyor. i18n/dil testleri geçti.
+
+### Notlar
+- Obsolete (#~) 2209 girdi `.po`'da bırakıldı (zarar yok). KalDer'deki "obsolete geri alma" gerekmedi: boşlar zaten KalDer çevirilerinden (canlı+obsolete) doldu.
+- P2/P3 dallarında eklenen yeni `_()`/`t()` msgid'leri bu dalda YOK; dallar birleşince `python scripts/ops/i18n_cikar.py --yaz` + boşları doldurmak gerekir.
+- `.po` diff'i büyük (kaynak satır referansları). EN tarayıcı taraması (`?lang=en`) yapılmadı.
+
 ## TASK-316 | 2026-10-10 | ✅ Tamamlandı (Dalga 4 — kalite; yalnız Yerel; commit yok)
 
 **Görev:** Derin denetim Dalga 4: modal erişilebilirliği, rapor JS i18n, testlerde tenant guard

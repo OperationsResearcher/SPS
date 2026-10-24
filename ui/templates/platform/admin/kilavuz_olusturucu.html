@@ -6,8 +6,12 @@
     {{ mc_breadcrumb([{'label': _('Admin Araçları'), 'url': url_for('app_bp.admin_tools_home')}, {'label': _('Kılavuz & Video Oluşturucu'), 'url': None}]) }}
 {% endblock %}
 
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_admin_kilavuz_olusturucu.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
 {% block content %}
-<div style="max-width:1050px;margin:0 auto;"
+<div class="st-p27-001"
      id="ko-root"
      data-durum-url="{{ url_for('app_bp.admin_tools_kilavuz_kurum_durum') }}"
      data-baslat-url="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_baslat') }}"
@@ -16,37 +20,37 @@
      data-indir-pdf-url="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_indir_pdf') }}"
      data-is-local="{{ '1' if is_local else '0' }}">
 
-  <div class="mc-page-header" style="margin-bottom:16px;">
+  <div class="mc-page-header st-p27-002">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-book-open" style="color:#d97706;"></i> {{ _("Kılavuz & Video Oluşturucu") }}
+      <h2 class="st-p27-003">
+        <i class="fas fa-book-open st-p27-004"></i> {{ _("Kılavuz & Video Oluşturucu") }}
       </h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">
+      <p class="st-p27-005">
         {{ _("Playwright ile gizli pencerede (incognito) sıfırdan <b>YeniTomofil</b> adımlarını otonom canlandırır, kısa eğitim videoları ve görsel işaretli ekran görüntüleri alıp kılavuz PDF'ini derler.") }}
       </p>
     </div>
   </div>
 
   {% if not is_local %}
-  <div class=" mc-card--accent-danger" style="padding:12px 16px;margin-bottom:16px;background:#fef2f2;">
-    <i class="fas fa-lock" style="color:#b91c1c;"></i>
-    <span style="font-size:13px;color:#991b1b;">{{ _("Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre dışı.") }}</span>
+  <div class=" mc-card--accent-danger st-p27-006">
+    <i class="fas fa-lock st-p27-007"></i>
+    <span class="st-p27-008">{{ _("Bu araç yalnız <b>Yerel</b> ortamda çalışır. Bu ortamda işlemler devre dışı.") }}</span>
   </div>
   {% endif %}
 
-  <div style="display:grid; grid-template-columns: 1fr 320px; gap:16px; align-items:start;">
+  <div class="st-p27-009">
     
     {# Sol sütun: Kontrol Paneli ve Canlı Log Terminali #}
-    <div style="display:flex; flex-direction:column; gap:16px;">
+    <div class="st-p27-010">
       
       {# Kontrol Paneli #}
-      <div class="mc-card" style="padding:18px;" data-card-code="admin_kilavuz_olusturucu.kontrol_paneli">
-        <div style="display:flex; justify-content:space-between; align-items:center; flex-wrap:wrap; gap:12px; margin-bottom:14px;">
+      <div class="mc-card st-p27-011" data-card-code="admin_kilavuz_olusturucu.kontrol_paneli">
+        <div class="st-p27-012">
           <div>
-            <h3 class="mc-card-title" style="font-size:15px; font-weight:700; color:var(--text-default); margin:0 0 4px;">{{ _("Otonom Oluşturma Kontrolleri") }}</h3>
-            <p style="font-size:12px; color:#64748b; margin:0;">{{ _("YeniTomofil'i sıfırlar, 1920x1080 çözünürlükte video çeker ve PDF'i derler.") }}</p>
+            <h3 class="mc-card-title st-p27-013">{{ _("Otonom Oluşturma Kontrolleri") }}</h3>
+            <p class="st-p27-014">{{ _("YeniTomofil'i sıfırlar, 1920x1080 çözünürlükte video çeker ve PDF'i derler.") }}</p>
           </div>
-          <div style="display:flex; gap:8px; flex-wrap:wrap;">
+          <div class="st-p27-015">
             <button id="ko-btn-baslat" class="mc-btn mc-btn-primary" {% if not is_local %}disabled{% endif %}>
               <i class="fas fa-play"></i> {{ _("Otonom Çekimi Başlat") }}
             </button>
@@ -58,10 +62,10 @@
 
         {# Progress Bar #}
         <div id="ko-progress-wrap" style="display:none; margin:15px 0 10px;">
-          <div style="height:8px; background:#e2e8f0; border-radius:6px; overflow:hidden;">
-            <div id="ko-progress-bar" style="height:100%; width:0; background:linear-gradient(90deg, #d97706, #f59e0b); transition:width .3s;"></div>
+          <div class="st-p27-016">
+            <div class="st-p27-017" id="ko-progress-bar"></div>
           </div>
-          <div style="display:flex; justify-content:space-between; font-size:11.5px; color:#64748b; margin-top:5px;">
+          <div class="st-p27-018">
             <span id="ko-progress-text">{{ _("Hazırlanıyor...") }}</span>
             <span id="ko-progress-pct">0%</span>
           </div>
@@ -69,32 +73,32 @@
       </div>
 
       {# Canlı Log Terminali #}
-      <div class="mc-card" style="padding:18px;" data-card-code="admin_kilavuz_olusturucu.calisma_loglari">
-        <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:var(--text-default); margin:0 0 8px; display:flex; align-items:center; gap:6px;">
-          <i class="fas fa-terminal" style="color:#64748b;"></i> {{ _("Otonom Çalışma Logları") }}
+      <div class="mc-card st-p27-011" data-card-code="admin_kilavuz_olusturucu.calisma_loglari">
+        <h3 class="mc-card-title st-p27-019">
+          <i class="fas fa-terminal st-p27-020"></i> {{ _("Otonom Çalışma Logları") }}
         </h3>
-        <div id="ko-terminal" style="background:#0f172a; color:#38bdf8; font-family:monospace; font-size:12.5px; padding:12px 14px; border-radius:8px; height:240px; overflow-y:auto; line-height:1.5;">
-          <div style="color:#64748b;">{{ _('[Sistem] Otonom çalışma bekleniyor. Lütfen "Otonom Çekimi Başlat" butonuna basın.') }}</div>
+        <div class="st-p27-021" id="ko-terminal">
+          <div class="st-p27-020">{{ _('[Sistem] Otonom çalışma bekleniyor. Lütfen "Otonom Çekimi Başlat" butonuna basın.') }}</div>
         </div>
       </div>
 
       {# Video Galeri Kartı #}
-      <div class="mc-card" style="padding:18px;" data-card-code="admin_kilavuz_olusturucu.video_galerisi">
-        <h3 class="mc-card-title" style="font-size:15px; font-weight:700; color:var(--text-default); margin:0 0 12px;">
-          <i class="fas fa-photo-film" style="color:#d97706;"></i> {{ _("Kısa Konu Anlatım Videoları") }}
+      <div class="mc-card st-p27-011" data-card-code="admin_kilavuz_olusturucu.video_galerisi">
+        <h3 class="mc-card-title st-p27-022">
+          <i class="fas fa-photo-film st-p27-004"></i> {{ _("Kısa Konu Anlatım Videoları") }}
         </h3>
         
-        <div style="display:grid; grid-template-columns: repeat(auto-fill, minmax(220px, 1fr)); gap:12px;" id="ko-video-grid">
+        <div class="st-p27-023" id="ko-video-grid">
           
           {# Bölüm 1 — Senaryo v3 (1.1–1.4 tek video). SP/Süreç/Proje/K-Radar bölümleri sıraları gelince eklenecek. #}
-          <div class="ko-video-card" style="border:1px solid #e2e8f0; border-radius:8px; overflow:hidden; background:#f8fafc; padding:8px;">
-            <div style="font-size:12.5px; font-weight:600; color:#334155; margin-bottom:6px;">{{ _("Bölüm 1 — Giriş, Kurum & Kullanıcı Yapılandırması") }}</div>
-            <video width="100%" controls style="border-radius:4px; background:#000;">
+          <div class="ko-video-card st-p27-024">
+            <div class="st-p27-025">{{ _("Bölüm 1 — Giriş, Kurum & Kullanıcı Yapılandırması") }}</div>
+            <video class="st-p27-026" width="100%" controls>
               <source src="/static/videos/kullanim_kilavuzu/1_giris_kurum_kullanici.mp4" type="video/mp4">
               <source src="/static/videos/kullanim_kilavuzu/1_giris_kurum_kullanici.webm" type="video/webm">
             </video>
-            <div style="margin-top:6px; text-align:right;">
-              <a href="/static/videos/kullanim_kilavuzu/1_giris_kurum_kullanici.mp4" class="mc-btn mc-btn-secondary mc-btn-xs" download style="font-size:11px; padding:2px 6px;"><i class="fas fa-download"></i> {{ _("mp4 İndir") }}</a>
+            <div class="st-p27-027">
+              <a href="/static/videos/kullanim_kilavuzu/1_giris_kurum_kullanici.mp4" class="mc-btn mc-btn-secondary mc-btn-xs st-p27-028" download><i class="fas fa-download"></i> {{ _("mp4 İndir") }}</a>
             </div>
           </div>
 
@@ -104,22 +108,22 @@
     </div>
 
     {# Sağ sütun: YeniTomofil Bilgi Kartı ve Kılavuz PDF İndirme #}
-    <div style="display:flex; flex-direction:column; gap:16px;">
+    <div class="st-p27-010">
       
       {# Kurum Bilgi Kartı #}
-      <div class="mc-card" style="padding:18px;" data-card-code="admin_kilavuz_olusturucu.yenitomofil_durumu">
-        <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:var(--text-default); margin:0 0 10px;">{{ _("YeniTomofil Durumu") }}</h3>
-        <div id="ko-durum" style="font-size:12.5px; color:#475569; line-height:1.5;">{{ _("Yükleniyor...") }}</div>
+      <div class="mc-card st-p27-011" data-card-code="admin_kilavuz_olusturucu.yenitomofil_durumu">
+        <h3 class="mc-card-title st-p27-029">{{ _("YeniTomofil Durumu") }}</h3>
+        <div class="st-p27-030" id="ko-durum">{{ _("Yükleniyor...") }}</div>
       </div>
 
       {# Kılavuz İndirme Kartı #}
-      <div class="mc-card" style="padding:18px; border-top: 3px solid #10b981;" data-card-code="admin_kilavuz_olusturucu.kilavuz_pdf_indirme">
-        <h3 class="mc-card-title" style="font-size:14px; font-weight:700; color:var(--text-default); margin:0 0 6px;">{{ _("Güncel Kılavuz PDF") }}</h3>
-        <p style="font-size:12px; color:#64748b; margin:0 0 14px;">{{ _("Otonom çekim bittikten sonra derlenen en güncel piksel kalitesindeki PDF'i indirin.") }}</p>
-        <a id="ko-btn-pdf" href="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_indir_pdf') }}" class="mc-btn mc-btn-success" style="width:100%; text-align:center; display:block; box-sizing:border-box;">
+      <div class="mc-card st-p27-031" data-card-code="admin_kilavuz_olusturucu.kilavuz_pdf_indirme">
+        <h3 class="mc-card-title st-p27-032">{{ _("Güncel Kılavuz PDF") }}</h3>
+        <p class="st-p27-033">{{ _("Otonom çekim bittikten sonra derlenen en güncel piksel kalitesindeki PDF'i indirin.") }}</p>
+        <a id="ko-btn-pdf" href="{{ url_for('app_bp.admin_tools_kilavuz_olusturucu_indir_pdf') }}" class="mc-btn mc-btn-success st-p27-034">
           <i class="fas fa-file-pdf"></i> {{ _("Kılavuz PDF'ini İndir") }}
         </a>
-        <p style="font-size:11px; color:#94a3b8; margin:8px 0 0;">{{ _("Çekim <b>bittiğinde tam</b>, <b>durdurulduğunda</b> o ana kadarki (taslak) kılavuz PDF'i bu butondan indirilir.") }}</p>
+        <p class="st-p27-035">{{ _("Çekim <b>bittiğinde tam</b>, <b>durdurulduğunda</b> o ana kadarki (taslak) kılavuz PDF'i bu butondan indirilir.") }}</p>
       </div>
 
     </div>
@@ -165,7 +169,7 @@
             '<div style="margin-top:6px; font-size:12px; color:#64748b;">' +
             t("Strateji")+': <b>'+d.strategies+'</b><br>' +
             t("Süreçler")+': <b>'+d.processes+'</b><br>' +
-            t("PG/KPI Sayısı")+': <b>'+d.process_kpis+'</b><br>' +
+            t("PG/PG Sayısı")+': <b>'+d.process_kpis+'</b><br>' +
             t("Admin")+': <b>'+d.admin_email+'</b>' +
             '</div>';
         }

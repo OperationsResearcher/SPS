@@ -3,15 +3,17 @@
 {% block page_title %}{{ _("Masaüstüm") }}{% endblock %}
 
 {% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/temel_akis.css') }}?v={{ config['VERSION'] }}">
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/masaustu.css') }}">
 <link href="https://cdn.jsdelivr.net/npm/fullcalendar@6.1.10/index.global.min.css" rel="stylesheet"/>
 {% include "platform/calendar/_calendar_quick_create_styles.html" %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_masaustu_index.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block content %}
 <div id="masaustu-root"
-     class="masaustu-page"
-     style="max-width:1100px; margin:0 auto;"
+     class="masaustu-page st-p02-001"
+    
      data-mark-read-url-template="{{ url_for('app_bp.bildirim_api_mark_read', notif_id=888888) }}"
      data-current-user-id="{{ current_user.id }}"
      data-events-url="{{ url_for('app_bp.masaustu_calendar_events') }}"
@@ -19,6 +21,8 @@
      data-activity-add-url="{{ url_for('app_bp.surec_api_activity_add') }}"
      data-faaliyet-add-url="{{ url_for('app_bp.bireysel_api_faaliyet_add') }}"
      data-task-quick-url="{{ url_for('app_bp.project_task_quick_add') }}">
+
+    {% include "platform/_temel_akis.html" %}
 
     <div class="masaustu-toolbar">
         <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="masaustu-widget-manage" title="{{ _('Widget görünürlüğü') }}">
@@ -30,20 +34,20 @@
     <div class="masaustu-hero">
         {% set role_label = role_label_tr(current_user.role.name) if current_user.role else _('Kurum Kullanıcısı') %}
 
-        <h1 style="font-size:20px; font-weight:700; color:var(--text-default); margin:0 0 2px;" class="dark:text-white">
+        <h1 class="dark:text-white st-p02-002">
             {{ _("Merhaba") }}, {{ current_user.first_name or current_user.email }} 👋
         </h1>
-        <p style="font-size:13px; color:#64748b; margin:0;">
+        <p class="st-p02-003">
             {% if current_user.tenant %}{{ current_user.tenant.short_name or current_user.tenant.name }}{% endif %}
             {% if current_user.role %} &middot; {{ role_label }}{% endif %}
         </p>
     </div>
 
     <!-- Yerel veri bilgisi -->
-    <div class="mc-card mc-card--accent-info masaustu-bilgi-panel" style="margin-bottom:20px;">
-        <div class="mc-card-body" style="padding:14px 18px;">
-            <p style="margin:0; font-size:12px; line-height:1.55; color:#64748b;">
-                <i class="fas fa-circle-info" style="color:#6366f1;"></i>
+    <div class="mc-card mc-card--accent-info masaustu-bilgi-panel st-p02-004">
+        <div class="mc-card-body st-p02-005">
+            <p class="st-p02-006">
+                <i class="fas fa-circle-info st-p02-007"></i>
                 {{ _("<strong>Karalama defteri</strong> ve <strong>widget sırası / gizlenen kartlar</strong> yalnızca bu tarayıcıda (<code>localStorage</code>) saklanır; sunucuya yazılmaz. Başka cihaz veya tarayıcıda görünmez, silinmez yedeklenmez. Widget yönetiminden gizlediğiniz bölümleri geri açmak için sayfa yenilenir.") }}
             </p>
         </div>
@@ -52,14 +56,14 @@
     <!-- Yönetici Sabah Özeti Widget -->
     {% set role_code = current_user.role.name if current_user.role else '' %}
     {% if role_code in ['tenant_admin', 'executive_manager', 'Admin'] %}
-    <div class="mc-card mc-card--accent-info masaustu-widget-panel" data-widget-id="morning-summary" data-card-code="masaustu.yonetici_sabah_ozeti" style="margin-bottom:20px;"
+    <div class="mc-card mc-card--accent-info masaustu-widget-panel st-p02-004" data-widget-id="morning-summary" data-card-code="masaustu.yonetici_sabah_ozeti"
          data-morning-url="{{ url_for('app_bp.api_morning_summary') }}">
-        <div class="mc-card-header masaustu-widget-head" style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="mc-card-title"><i class="fas fa-sun" style="color:#f59e0b; margin-right:6px;"></i>{{ _("Yönetici Sabah Özeti") }}</span>
-            <span id="morning-summary-date" style="font-size:12px; color:#94a3b8;"></span>
+        <div class="mc-card-header masaustu-widget-head st-p02-008">
+            <span class="mc-card-title"><i class="fas fa-sun st-p02-009"></i>{{ _("Yönetici Sabah Özeti") }}</span>
+            <span class="st-p02-010" id="morning-summary-date"></span>
         </div>
         <div class="mc-card-body" id="morning-summary-body">
-            <div style="text-align:center; padding:20px; color:#94a3b8;">
+            <div class="st-p02-011">
                 <i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}
             </div>
         </div>
@@ -68,12 +72,12 @@
 
     {# KOE — Kurumsal Olgunluk Endeksi (L1). Yalnızca yönetici/üst yönetime gönderilir. #}
     {% if koe %}
-    <div class="mc-card mc-card--accent-success masaustu-widget-panel" data-widget-id="koe" data-card-code="masaustu.kurumsal_olgunluk_endeksi" style="margin-bottom:20px;">
-        <div class="mc-card-header masaustu-widget-head" style="display:flex; justify-content:space-between; align-items:center;">
-            <span class="mc-card-title"><i class="fas fa-gauge-high" style="color:#10b981; margin-right:6px;"></i>{{ _("Kurumsal Olgunluk Endeksi") }}</span>
-            <span style="font-size:24px; font-weight:800; color:var(--text-default);" class="dark:text-white">{{ koe.koe }}<span style="font-size:13px; color:#94a3b8; font-weight:600;">/100</span></span>
+    <div class="mc-card mc-card--accent-success masaustu-widget-panel st-p02-004" data-widget-id="koe" data-card-code="masaustu.kurumsal_olgunluk_endeksi">
+        <div class="mc-card-header masaustu-widget-head st-p02-008">
+            <span class="mc-card-title"><i class="fas fa-gauge-high st-p02-012"></i>{{ _("Kurumsal Olgunluk Endeksi") }}</span>
+            <span class="dark:text-white st-p02-013">{{ koe.koe }}<span class="st-p02-014">/100</span></span>
         </div>
-        <div class="mc-card-body" style="padding:14px 18px;">
+        <div class="mc-card-body st-p02-005">
             {% set _boyut_adlari = {
                 'kimlik_strateji': _('Kimlik & Strateji Netliği'),
                 'surec_mimarisi': _('Süreç Mimarisi'),
@@ -81,12 +85,12 @@
                 'icra_disiplini': _('İcra Disiplini')
             } %}
             {% for _key, _b in koe.boyutlar.items() %}
-            <div style="margin-bottom:12px;">
-                <div style="display:flex; justify-content:space-between; font-size:13px; margin-bottom:4px;">
-                    <span style="color:var(--text-muted);" class="dark:text-slate-300">{{ _boyut_adlari[_key] }}</span>
-                    <span style="font-weight:700; color:var(--text-default);" class="dark:text-white">{{ _b.skor }}</span>
+            <div class="st-p02-015">
+                <div class="st-p02-016">
+                    <span class="dark:text-slate-300 st-p02-017">{{ _boyut_adlari[_key] }}</span>
+                    <span class="dark:text-white st-p02-018">{{ _b.skor }}</span>
                 </div>
-                <div style="height:8px; background:#e5e7eb; border-radius:4px; overflow:hidden;" class="dark:bg-slate-700">
+                <div class="dark:bg-slate-700 st-p02-019">
                     {% set _renk = '#10b981' if _b.skor >= 70 else ('#f59e0b' if _b.skor >= 40 else '#ef4444') %}
                     <div style="height:100%; width:{{ _b.skor }}%; background:{{ _renk }}; border-radius:4px; transition:width .4s;"></div>
                 </div>
@@ -94,34 +98,34 @@
             {% endfor %}
 
             {% if koe_danisman %}
-            <div id="koe-danisman-box" style="margin-top:14px; padding-top:14px; border-top:1px solid #e5e7eb;" class="dark:border-slate-700"
+            <div id="koe-danisman-box" class="dark:border-slate-700 st-p02-020"
                  data-ai-url="{{ url_for('app_bp.masaustu_koe_danisman_ai') }}">
-                <p data-koe-anlati style="font-size:13px; color:var(--text-default); margin:0 0 10px; font-weight:600;" class="dark:text-white">
-                    <i class="fas fa-robot" style="color:#10b981; margin-right:6px;"></i>{{ koe_danisman.anlati }}
+                <p data-koe-anlati class="dark:text-white st-p02-021">
+                    <i class="fas fa-robot st-p02-012"></i>{{ koe_danisman.anlati }}
                 </p>
                 {% if koe_danisman.oncelikler %}
-                <p style="font-size:11px; color:#94a3b8; margin:0 0 6px; text-transform:uppercase; letter-spacing:.04em;">{{ _("Bu dönem önceliklerin") }}</p>
+                <p class="st-p02-022">{{ _("Bu dönem önceliklerin") }}</p>
                 <div data-koe-oncelikler>
                 {% for _o in koe_danisman.oncelikler %}
-                <div style="display:flex; gap:8px; align-items:flex-start; margin-bottom:8px;">
-                    <span style="flex:none; width:18px; height:18px; border-radius:50%; background:#10b981; color:#fff; font-size:11px; font-weight:700; display:flex; align-items:center; justify-content:center; margin-top:1px;">{{ loop.index }}</span>
-                    <div style="font-size:12px; line-height:1.5;">
-                        <strong data-koe-baslik style="color:var(--text-default);" class="dark:text-white">{{ _o.baslik }}</strong>
-                        <span data-koe-oneri style="color:var(--text-muted);" class="dark:text-slate-300"> — {{ _o.oneri }}</span>
+                <div class="st-p02-023">
+                    <span class="st-p02-024">{{ loop.index }}</span>
+                    <div class="st-p02-025">
+                        <strong data-koe-baslik class="dark:text-white st-p02-026">{{ _o.baslik }}</strong>
+                        <span data-koe-oneri class="dark:text-slate-300 st-p02-017"> — {{ _o.oneri }}</span>
                     </div>
                 </div>
                 {% endfor %}
                 </div>
                 {% endif %}
-                <button type="button" id="koe-ai-btn"
-                        style="margin-top:4px; font-size:12px; font-weight:600; color:#10b981; background:none; border:none; cursor:pointer; padding:2px 0;">
-                    <i class="fas fa-wand-magic-sparkles" style="margin-right:4px;"></i><span data-koe-ai-label>AI ile zenginleştir</span>
+                <button class="st-p02-027" type="button" id="koe-ai-btn"
+                       >
+                    <i class="fas fa-wand-magic-sparkles st-p02-028"></i><span data-koe-ai-label>{{ _("AI ile zenginleştir") }}</span>
                 </button>
             </div>
             {% endif %}
 
-            <p style="font-size:12px; color:#94a3b8; margin:10px 0 0;">
-                <i class="fas fa-circle-info" style="margin-right:4px;"></i>
+            <p class="st-p02-029">
+                <i class="fas fa-circle-info st-p02-028"></i>
                 {{ _("Yapısal olgunluk — performans verisi (PGV) girmeden mevcut yapıdan hesaplanır.") }}
             </p>
         </div>
@@ -129,39 +133,39 @@
     {% endif %}
 
     <!-- Bugünün özeti -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="command" data-card-code="masaustu.bugunun_ozeti" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="command" data-card-code="masaustu.bugunun_ozeti">
         <div class="mc-card-header masaustu-widget-head">
-            <span class="mc-card-title"><i class="fas fa-compass" style="color:#6366f1; margin-right:6px;"></i>{{ _("Bugünün özeti") }}</span>
+            <span class="mc-card-title"><i class="fas fa-compass st-p02-030"></i>{{ _("Bugünün özeti") }}</span>
         </div>
         <div class="mc-card-body">
             <div class="masaustu-command">
                 <a class="masaustu-command-item" href="{{ url_for('app_bp.bildirim') }}">
-                    <i class="fas fa-bell" style="color:#ef4444; font-size:20px; margin-top:2px;"></i>
+                    <i class="fas fa-bell st-p02-031"></i>
                     <div><strong>{{ toplam_bildirim }}</strong><span>{{ _("Okunmamış bildirim") }}</span></div>
                 </a>
                 <a class="masaustu-command-item" href="{{ url_for('app_bp.bireysel_karne') }}">
-                    <i class="fas fa-chart-line" style="color:#f59e0b; font-size:20px; margin-top:2px;"></i>
+                    <i class="fas fa-chart-line st-p02-032"></i>
                     <div><strong>{{ eksik_pg_bu_ay|length }}</strong><span>{{ _("%(ay)s ayı için eksik PG verisi", ay=bu_ay_ad) }}</span></div>
                 </a>
                 <a class="masaustu-command-item" href="{{ url_for('app_bp.bireysel_karne') }}">
-                    <i class="fas fa-tasks" style="color:#10b981; font-size:20px; margin-top:2px;"></i>
+                    <i class="fas fa-tasks st-p02-033"></i>
                     <div><strong>{{ faaliyet_geciken|length }}</strong><span>{{ _("Geciken faaliyet (bitiş tarihi geçti)") }}</span></div>
                 </a>
                 <a class="masaustu-command-item" href="{{ url_for('app_bp.bireysel_karne') }}">
-                    <i class="fas fa-calendar-week" style="color:#6366f1; font-size:20px; margin-top:2px;"></i>
+                    <i class="fas fa-calendar-week st-p02-034"></i>
                     <div><strong>{{ faaliyet_hafta|length }}</strong><span>{{ _("Önümüzdeki 7 gün içinde biten") }}</span></div>
                 </a>
             </div>
             {% if eksik_pg_bu_ay|length == 0 and faaliyet_geciken|length == 0 and toplam_bildirim == 0 %}
-            <p class="mc-page-subtitle" style="margin:12px 0 0;">
-                <i class="fas fa-face-smile" style="color:#10b981;"></i> {{ _("Harika — acil dikkat gerektiren bir uyarı görünmüyor.") }}
+            <p class="mc-page-subtitle st-p02-035">
+                <i class="fas fa-face-smile st-p02-036"></i> {{ _("Harika — acil dikkat gerektiren bir uyarı görünmüyor.") }}
             </p>
             {% endif %}
         </div>
     </div>
 
     <!-- İstatistik Kartları -->
-    <div class="mc-grid-4 masaustu-widget-panel" data-widget-id="stats" data-card-code="masaustu.mini_kartlar" style="margin-bottom:24px;">
+    <div class="mc-grid-4 masaustu-widget-panel st-p02-037" data-widget-id="stats" data-card-code="masaustu.mini_kartlar">
         <div class="mc-stat-card mc-stat-indigo" data-card-code="masaustu.bireysel_pg">
             <div class="mc-stat-icon"><i class="fas fa-chart-bar"></i></div>
             <div class="mc-stat-label">{{ _("Bireysel PG") }}</div>
@@ -188,17 +192,49 @@
         </div>
     </div>
 
+    {% if ilk_kurulum %}{% include "platform/masaustu/_ilk_kurulum.html" %}{% endif %}
+
     <div id="masaustu-sortable-root">
 
-    {# ── Benim Görevlerim (D4) ─────────────────────────────────────── #}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="my-tasks" data-card-code="masaustu.benim_gorevlerim" style="margin-bottom:20px;">
+    {# ── Veri girişi bekleyen PG'lerim (UX-PLANI B / Faz 2.3) ─────────── #}
+    {% if bekleyen_pg and bekleyen_pg["items"] %}
+    <div class="mc-card mc-card--accent-warning masaustu-widget-panel st-p02-004" data-widget-id="bekleyen-pg" data-card-code="masaustu.bekleyen_pg">
       <div class="mc-card-header">
         <span class="mc-card-title">
-          <i class="fas fa-list-check" style="color:#6366f1; margin-right:6px;"></i>{{ _("Benim Görevlerim") }}
-          <span id="my-tasks-counter" style="background:#eef2ff; color:#4338ca; font-size:11px; padding:1px 8px; border-radius:10px; margin-left:8px; font-weight:600;"></span>
+          <i class="fas fa-pen-to-square st-p02-009"></i>{{ _("Veri girişi bekleyen PG'lerim") }}
+          <span class="mc-badge mc-badge-warning st-p02-038">{{ bekleyen_pg.toplam }}</span>
         </span>
-        <div style="display:flex; gap:8px; align-items:center;">
-          <select id="my-tasks-filter" class="mc-form-input" style="font-size:12px; padding:4px 8px;">
+      </div>
+      <div class="mc-card-body st-p02-039">
+        <ul class="masaustu-bekleyen-liste st-p02-040">
+          {% for b in bekleyen_pg["items"] %}
+          <li class="masaustu-bekleyen-satir st-p02-041">
+            <div class="st-p02-042">
+              <div class="st-p02-043">{% if b.code %}<span class="st-p02-044">{{ b.code }}</span> {% endif %}{{ b.name }}</div>
+              <div class="mc-text-muted st-p02-045">
+                {{ b.process_name }} &middot; {{ _("Eksik") }}: {{ b.eksik[:3]|join(", ") }}{% if b.eksik|length > 3 %} +{{ b.eksik|length - 3 }}{% endif %}
+              </div>
+            </div>
+            <a class="mc-btn mc-btn-sm mc-btn-primary" href="{{ url_for('app_bp.surec_karne', process_id=b.process_id) }}">{{ _("Gir") }}</a>
+          </li>
+          {% endfor %}
+        </ul>
+        {% if bekleyen_pg.toplam > bekleyen_pg["items"]|length %}
+        <div class="mc-text-muted st-p02-046">{{ _("%(n)s PG daha", n=bekleyen_pg.toplam - bekleyen_pg["items"]|length) }}</div>
+        {% endif %}
+      </div>
+    </div>
+    {% endif %}
+
+    {# ── Benim Görevlerim (D4) ─────────────────────────────────────── #}
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="my-tasks" data-card-code="masaustu.benim_gorevlerim">
+      <div class="mc-card-header">
+        <span class="mc-card-title">
+          <i class="fas fa-list-check st-p02-030"></i>{{ _("Benim Görevlerim") }}
+          <span class="st-p02-047" id="my-tasks-counter"></span>
+        </span>
+        <div class="st-p02-048">
+          <select aria-label="{{ _('Görev filtresi') }}" id="my-tasks-filter" class="mc-form-input st-p02-049">
             <option value="all">{{ _("Tümü") }}</option>
             <option value="overdue">{{ _("Gecikmiş") }}</option>
             <option value="today">{{ _("Bugün") }}</option>
@@ -209,10 +245,10 @@
           </button>
         </div>
       </div>
-      <div class="mc-card-body" style="padding-top:8px;">
-        <div id="my-tasks-summary" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(120px,1fr)); gap:8px; margin-bottom:12px;"></div>
-        <div id="my-tasks-list" style="display:grid; gap:6px; max-height:380px; overflow-y:auto;">
-          <div style="text-align:center; padding:14px; color:#94a3b8; font-size:13px;"><i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}</div>
+      <div class="mc-card-body st-p02-050">
+        <div class="st-p02-051" id="my-tasks-summary"></div>
+        <div class="st-p02-052" id="my-tasks-list">
+          <div class="st-p02-053"><i class="fas fa-spinner fa-spin"></i> {{ _("Yükleniyor…") }}</div>
         </div>
       </div>
     </div>
@@ -316,25 +352,25 @@
     </script>
 
     {# ── Favoriler & Son Ziyaret Edilenler (B2) ─────────────────────── #}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="favorites" data-card-code="masaustu.favori_ve_son_ziyaretlerim" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="favorites" data-card-code="masaustu.favori_ve_son_ziyaretlerim">
       <div class="mc-card-header">
         <span class="mc-card-title">
-          <i class="fas fa-star" style="color:#f59e0b; margin-right:6px;"></i>{{ _("Favoriler & Son Ziyaret Edilenler") }}
+          <i class="fas fa-star st-p02-009"></i>{{ _("Favoriler & Son Ziyaret Edilenler") }}
         </span>
         <button type="button" id="fav-add-current" class="mc-btn mc-btn-sm mc-btn-secondary" title="{{ _('Önceki sayfayı favorilere ekle') }}">
           <i class="fas fa-plus"></i> {{ _("Son Sayfayı Pinle") }}
         </button>
       </div>
-      <div class="mc-card-body" style="padding-top:8px;">
-        <div style="font-size:11.5px; color:#94a3b8; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;">⭐ {{ _("Sabitlenmiş") }}</div>
-        <div id="fav-pinned" style="display:flex; flex-wrap:wrap; gap:8px; margin-bottom:14px;">
-          <div id="fav-empty-pinned" style="font-size:12.5px; color:#94a3b8; padding:6px 0;">
+      <div class="mc-card-body st-p02-050">
+        <div class="st-p02-054">⭐ {{ _("Sabitlenmiş") }}</div>
+        <div class="st-p02-055" id="fav-pinned">
+          <div class="st-p02-056" id="fav-empty-pinned">
             {{ _('Henüz sabitlenmiş bir sayfa yok. Bir sayfaya gidip yukarıdaki "Son Sayfayı Pinle" butonuna basın.') }}
           </div>
         </div>
-        <div style="font-size:11.5px; color:#94a3b8; margin-bottom:8px; text-transform:uppercase; letter-spacing:0.04em; font-weight:600;">⏱ {{ _("Son ziyaret edilenler") }}</div>
-        <div id="fav-recent" style="display:flex; flex-wrap:wrap; gap:8px;">
-          <div id="fav-empty-recent" style="font-size:12.5px; color:#94a3b8; padding:6px 0;">
+        <div class="st-p02-054">⏱ {{ _("Son ziyaret edilenler") }}</div>
+        <div class="st-p02-057" id="fav-recent">
+          <div class="st-p02-056" id="fav-empty-recent">
             {{ _("Henüz ziyaret kaydı yok. Sayfalar arasında gezdikçe burada listelenecek.") }}
           </div>
         </div>
@@ -419,9 +455,9 @@
     </script>
 
     <!-- Hızlı işlemler -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="quick" data-card-code="masaustu.hizli_islemler" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="quick" data-card-code="masaustu.hizli_islemler">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-bolt" style="color:#eab308; margin-right:6px;"></i>{{ _("Hızlı işlemler") }}</span>
+            <span class="mc-card-title"><i class="fas fa-bolt st-p02-058"></i>{{ _("Hızlı işlemler") }}</span>
         </div>
         <div class="mc-card-body">
             <div class="masaustu-quick-grid">
@@ -436,20 +472,20 @@
     </div>
 
     <!-- Takvimim -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="calendar" data-card-code="masaustu.takvimim" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="calendar" data-card-code="masaustu.takvimim">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-calendar-days" style="color:#0ea5e9; margin-right:6px;"></i>{{ _("Takvimim") }}</span>
+            <span class="mc-card-title"><i class="fas fa-calendar-days st-p02-059"></i>{{ _("Takvimim") }}</span>
             <div class="masaustu-calendar-legend">
-                <span class="masaustu-calendar-legend-item"><i class="fas fa-circle" style="color:#10b981;"></i> {{ _("Süreç") }}</span>
-                <span class="masaustu-calendar-legend-item"><i class="fas fa-circle" style="color:#3b82f6;"></i> {{ _("Proje") }}</span>
-                <span class="masaustu-calendar-legend-item"><i class="fas fa-circle" style="color:#f59e0b;"></i> {{ _("Kendime") }}</span>
+                <span class="masaustu-calendar-legend-item"><i class="fas fa-circle st-p02-036"></i> {{ _("Süreç") }}</span>
+                <span class="masaustu-calendar-legend-item"><i class="fas fa-circle st-p02-060"></i> {{ _("Proje") }}</span>
+                <span class="masaustu-calendar-legend-item"><i class="fas fa-circle st-p02-061"></i> {{ _("Kendime") }}</span>
             </div>
         </div>
         <div class="mc-card-body">
-            <p class="mc-page-subtitle" style="margin-bottom:10px; font-size:13px;">
+            <p class="mc-page-subtitle st-p02-062">
                 {{ _("Boş güne tıklayın veya aralık seçin; Kurum Takvimi ile aynı hızlı ekleme (süreç faaliyeti, proje görevi, kendime görev).") }}
             </p>
-            <div id="masaustu-calendar-loading" class="mc-page-subtitle" style="margin-bottom:8px;">
+            <div id="masaustu-calendar-loading" class="mc-page-subtitle st-p02-063">
                 <i class="fas fa-spinner fa-spin"></i> {{ _("Takvim yükleniyor…") }}
             </div>
             <div id="masaustu-calendar" style="min-height:420px;"></div>
@@ -457,10 +493,10 @@
     </div>
 
     <!-- Benim Masam -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="masam" data-card-code="masaustu.benim_masam" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="masam" data-card-code="masaustu.benim_masam">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-inbox" style="color:#6366f1; margin-right:6px;"></i>{{ _("Benim Masam") }}</span>
-            <a href="{{ url_for('app_bp.bireysel_karne') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">{{ _("Karnede aç →") }}</a>
+            <span class="mc-card-title"><i class="fas fa-inbox st-p02-030"></i>{{ _("Benim Masam") }}</span>
+            <a class="st-p02-065" href="{{ url_for('app_bp.bireysel_karne') }}">{{ _("Karnede aç →") }}</a>
         </div>
         <div class="mc-card-body">
             <div class="masaustu-tabs" role="tablist">
@@ -470,98 +506,98 @@
             </div>
             <div id="masam-panel-bugun" class="masaustu-tab-panel is-active" role="tabpanel">
                 {% for f in faaliyet_bugun %}
-                <div style="padding:12px 0; border-bottom:1px solid #f1f5f9;" class="dark:border-slate-700">
-                    <div style="font-size:13.5px; font-weight:600; color:var(--text-default);" class="dark:text-white">{{ f.name }}</div>
-                    <div class="mc-page-subtitle" style="margin:4px 0 0;">{{ _("%(p)s%% ilerleme, bugün bitiş", p=(f.progress or 0)) }}</div>
+                <div class="dark:border-slate-700 st-p02-066">
+                    <div class="dark:text-white st-p02-067">{{ f.name }}</div>
+                    <div class="mc-page-subtitle st-p02-068">{{ _("%(p)s%% ilerleme, bugün bitiş", p=(f.progress or 0)) }}</div>
                 </div>
                 {% else %}
-                <div class="mc-empty" style="padding:24px 0;">
+                <div class="mc-empty st-p02-069">
                     <div class="mc-empty-text">{{ _("Bugün bitiş tarihli faaliyet yok.") }}</div>
                 </div>
                 {% endfor %}
             </div>
             <div id="masam-panel-hafta" class="masaustu-tab-panel" role="tabpanel">
                 {% for f in faaliyet_hafta %}
-                <div style="padding:12px 0; border-bottom:1px solid #f1f5f9;">
-                    <div style="font-size:13.5px; font-weight:600; color:var(--text-default);" class="dark:text-white">{{ f.name }}</div>
-                    <div class="mc-page-subtitle" style="margin:4px 0 0;">{{ _("Bitiş: %(tarih)s · %%%(ilerleme)s", tarih=f.end_date.strftime('%d.%m.%Y'), ilerleme=(f.progress or 0)) }}</div>
+                <div class="st-p02-066">
+                    <div class="dark:text-white st-p02-067">{{ f.name }}</div>
+                    <div class="mc-page-subtitle st-p02-068">{{ _("Bitiş: %(tarih)s · %%%(ilerleme)s", tarih=f.end_date.strftime('%d.%m.%Y'), ilerleme=(f.progress or 0)) }}</div>
                 </div>
                 {% else %}
-                <div class="mc-empty" style="padding:24px 0;"><div class="mc-empty-text">{{ _("Önümüzdeki 7 günde biten faaliyet yok.") }}</div></div>
+                <div class="mc-empty st-p02-069"><div class="mc-empty-text">{{ _("Önümüzdeki 7 günde biten faaliyet yok.") }}</div></div>
                 {% endfor %}
             </div>
             <div id="masam-panel-geciken" class="masaustu-tab-panel" role="tabpanel">
                 {% for f in faaliyet_geciken %}
-                <div style="padding:12px 0; border-bottom:1px solid #f1f5f9;">
-                    <div style="font-size:13.5px; font-weight:600; color:#b91c1c;">{{ f.name }}</div>
-                    <div class="mc-page-subtitle" style="margin:4px 0 0;">{{ _("Bitiş: %(tarih)s (gecikmiş)", tarih=f.end_date.strftime('%d.%m.%Y')) }}</div>
+                <div class="st-p02-066">
+                    <div class="st-p02-070">{{ f.name }}</div>
+                    <div class="mc-page-subtitle st-p02-068">{{ _("Bitiş: %(tarih)s (gecikmiş)", tarih=f.end_date.strftime('%d.%m.%Y')) }}</div>
                 </div>
                 {% else %}
-                <div class="mc-empty" style="padding:24px 0;"><div class="mc-empty-text">{{ _("Geciken faaliyet yok.") }}</div></div>
+                <div class="mc-empty st-p02-069"><div class="mc-empty-text">{{ _("Geciken faaliyet yok.") }}</div></div>
                 {% endfor %}
             </div>
         </div>
     </div>
 
     <!-- Dikkat + eksik PG -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="alerts" data-card-code="masaustu.dikkat_donem_verisi" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="alerts" data-card-code="masaustu.dikkat_donem_verisi">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-triangle-exclamation" style="color:#f59e0b; margin-right:6px;"></i>{{ _("Dikkat: %(ay)s verisi", ay=bu_ay_ad) }}</span>
+            <span class="mc-card-title"><i class="fas fa-triangle-exclamation st-p02-009"></i>{{ _("Dikkat: %(ay)s verisi", ay=bu_ay_ad) }}</span>
         </div>
         <div class="mc-card-body">
             {% if eksik_pg_bu_ay|length %}
-            <p class="mc-page-subtitle" style="margin:0 0 10px;">{{ _("Bu ay için henüz veri girmediğiniz göstergeler (%(n)s):", n=eksik_pg_bu_ay|length) }}</p>
-            <ul style="margin:0; padding-left:1.2rem; font-size:13px; color:#334155;" class="dark:text-slate-200">
+            <p class="mc-page-subtitle st-p02-071">{{ _("Bu ay için henüz veri girmediğiniz göstergeler (%(n)s):", n=eksik_pg_bu_ay|length) }}</p>
+            <ul class="dark:text-slate-200 st-p02-072">
                 {% for pg in eksik_pg_bu_ay[:12] %}
-                <li style="margin-bottom:6px;">{{ pg.name }}{% if pg.code %} <span class="mc-badge mc-badge-info" style="font-size:10px;">{{ pg.code }}</span>{% endif %}</li>
+                <li class="st-p02-073">{{ pg.name }}{% if pg.code %} <span class="mc-badge mc-badge-info st-p02-074">{{ pg.code }}</span>{% endif %}</li>
                 {% endfor %}
             </ul>
-            <a href="{{ url_for('app_bp.bireysel_karne') }}" class="mc-btn mc-btn-primary mc-btn-sm" style="margin-top:14px;"><i class="fas fa-pen"></i> {{ _("Karnede veri gir") }}</a>
+            <a href="{{ url_for('app_bp.bireysel_karne') }}" class="mc-btn mc-btn-primary mc-btn-sm st-p02-075"><i class="fas fa-pen"></i> {{ _("Karnede veri gir") }}</a>
             {% else %}
-            <p class="mc-page-subtitle" style="margin:0;"><i class="fas fa-check-circle" style="color:#10b981;"></i> {{ _("Bu ay tüm bireysel PG’lerinizde en az bir veri kaydı var (veya PG yok).") }}</p>
+            <p class="mc-page-subtitle st-p02-076"><i class="fas fa-check-circle st-p02-036"></i> {{ _("Bu ay tüm bireysel PG’lerinizde en az bir veri kaydı var (veya PG yok).") }}</p>
             {% endif %}
         </div>
     </div>
 
     <!-- Karalama -->
-    <div class="mc-card masaustu-widget-panel masaustu-scratch" data-widget-id="scratch" data-card-code="masaustu.karalama_defteri" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel masaustu-scratch st-p02-004" data-widget-id="scratch" data-card-code="masaustu.karalama_defteri">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-note-sticky" style="color:#8b5cf6; margin-right:6px;"></i>{{ _("Karalama defteri") }}</span>
+            <span class="mc-card-title"><i class="fas fa-note-sticky st-p02-077"></i>{{ _("Karalama defteri") }}</span>
         </div>
         <div class="mc-card-body">
-            <p class="mc-page-subtitle" style="margin:0 0 8px;">
+            <p class="mc-page-subtitle st-p02-078">
                 {{ _("Notlar yalnızca <strong>bu tarayıcıda</strong> tutulur (sunucuya gitmez).") }}
             </p>
             <textarea id="masaustu-scratch-body" placeholder="{{ _('Bugünkü notunuz…') }}" aria-label="{{ _('Karalama notu') }}"></textarea>
-            <button type="button" class="mc-btn mc-btn-success mc-btn-sm" id="masaustu-scratch-save" style="margin-top:10px;"><i class="fas fa-save"></i> Kaydet</button>
+            <button type="button" class="mc-btn mc-btn-success mc-btn-sm st-p02-079" id="masaustu-scratch-save"><i class="fas fa-save"></i> {{ _("Kaydet") }}</button>
         </div>
     </div>
 
     <!-- İki Kolon: PG + Faaliyet -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="lists" data-card-code="masaustu.ozet_listeler" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="lists" data-card-code="masaustu.ozet_listeler">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-layer-group" style="color:#64748b; margin-right:6px;"></i>{{ _("Özet listeler") }}</span>
+            <span class="mc-card-title"><i class="fas fa-layer-group st-p02-080"></i>{{ _("Özet listeler") }}</span>
         </div>
-        <div class="mc-card-body" style="padding:0 0 16px;">
-        <div style="display:grid; grid-template-columns:1fr 1fr; gap:20px;">
-        <div class="mc-card" style="box-shadow:none;border:1px solid #e2e8f0;">
+        <div class="mc-card-body st-p02-081">
+        <div class="st-p02-082">
+        <div class="mc-card st-p02-083">
             <div class="mc-card-header">
-                <span class="mc-card-title"><i class="fas fa-chart-bar" style="color:#6366f1; margin-right:6px;"></i>{{ _("Bireysel PG'lerim") }}</span>
-                <a href="{{ url_for('app_bp.bireysel_karne') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">{{ _("Tümünü Gör →") }}</a>
+                <span class="mc-card-title"><i class="fas fa-chart-bar st-p02-030"></i>{{ _("Bireysel PG'lerim") }}</span>
+                <a class="st-p02-065" href="{{ url_for('app_bp.bireysel_karne') }}">{{ _("Tümünü Gör →") }}</a>
             </div>
-            <div style="max-height:280px; overflow-y:auto;" class="mc-scroll">
+            <div class="mc-scroll st-p02-084">
                 {% for pg in bireysel_pgs %}
-                <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
+                <div class="st-p02-085">
                     <div>
-                        <div style="font-size:13.5px; font-weight:500; color:var(--text-default);" class="dark:text-white">{{ pg.name }}</div>
-                        <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">{{ pg.period or '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
+                        <div class="dark:text-white st-p02-086">{{ pg.name }}</div>
+                        <div class="st-p02-087">{{ pg.period or '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
                     </div>
                     <span class="mc-badge {% if pg.status == 'Tamamlandı' %}mc-badge-success{% elif pg.status == 'Gecikmiş' %}mc-badge-danger{% else %}mc-badge-info{% endif %}">
                         {{ pg.status or _('Devam Ediyor') }}
                     </span>
                 </div>
                 {% else %}
-                <div class="mc-empty" style="padding:32px 20px;">
+                <div class="mc-empty st-p02-088">
                     <div class="mc-empty-text">{{ _("Henüz bireysel PG yok.") }}</div>
                 </div>
                 {% endfor %}
@@ -570,26 +606,26 @@
 
         <div class="mc-card">
             <div class="mc-card-header">
-                <span class="mc-card-title"><i class="fas fa-check-circle" style="color:#10b981; margin-right:6px;"></i>{{ _("Devam Eden Faaliyetlerim") }}</span>
-                <a href="{{ url_for('app_bp.bireysel_karne') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">{{ _("Tümünü Gör →") }}</a>
+                <span class="mc-card-title"><i class="fas fa-check-circle st-p02-012"></i>{{ _("Devam Eden Faaliyetlerim") }}</span>
+                <a class="st-p02-065" href="{{ url_for('app_bp.bireysel_karne') }}">{{ _("Tümünü Gör →") }}</a>
             </div>
-            <div style="max-height:280px; overflow-y:auto;" class="mc-scroll">
+            <div class="mc-scroll st-p02-084">
                 {% for faaliyet in bireysel_faaliyetler %}
-                <div style="padding:12px 20px; border-bottom:1px solid #f1f5f9;">
-                    <div style="font-size:13.5px; font-weight:500; color:var(--text-default); margin-bottom:8px;" class="dark:text-white">{{ faaliyet.name }}</div>
-                    <div style="display:flex; align-items:center; gap:10px;">
-                        <div class="mc-progress" style="flex:1;">
+                <div class="st-p02-089">
+                    <div class="dark:text-white st-p02-090">{{ faaliyet.name }}</div>
+                    <div class="st-p02-091">
+                        <div class="mc-progress st-p02-092">
                             <div class="mc-progress-fill {% if faaliyet.progress >= 80 %}success{% elif faaliyet.progress >= 50 %}{% else %}warning{% endif %}"
                                  style="width:{{ faaliyet.progress }}%;"></div>
                         </div>
-                        <span style="font-size:12px; color:#64748b; white-space:nowrap;">{{ faaliyet.progress }}%</span>
+                        <span class="st-p02-093">{{ faaliyet.progress }}%</span>
                     </div>
                     {% if faaliyet.end_date %}
-                    <div style="font-size:11.5px; color:#94a3b8; margin-top:4px;">{{ _("Bitiş: %(tarih)s", tarih=faaliyet.end_date.strftime('%d.%m.%Y')) }}</div>
+                    <div class="st-p02-094">{{ _("Bitiş: %(tarih)s", tarih=faaliyet.end_date.strftime('%d.%m.%Y')) }}</div>
                     {% endif %}
                 </div>
                 {% else %}
-                <div class="mc-empty" style="padding:32px 20px;">
+                <div class="mc-empty st-p02-088">
                     <div class="mc-empty-text">{{ _("Devam eden faaliyet yok.") }}</div>
                 </div>
                 {% endfor %}
@@ -601,39 +637,39 @@
 
     <!-- Favori PG'lerim -->
     {% if favori_pgs %}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="favpg" data-card-code="masaustu.favori_pglerim" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="favpg" data-card-code="masaustu.favori_pglerim">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-star" style="color:#f59e0b; margin-right:6px;"></i>{{ _("Favori PG'lerim") }}</span>
-            <span style="font-size:12px; color:#94a3b8;">{{ _("%(n)s gösterge", n=favori_pgs|length) }}</span>
+            <span class="mc-card-title"><i class="fas fa-star st-p02-009"></i>{{ _("Favori PG'lerim") }}</span>
+            <span class="st-p02-010">{{ _("%(n)s gösterge", n=favori_pgs|length) }}</span>
         </div>
-        <p class="mc-page-subtitle" style="margin:0 20px 10px;">{{ _("Süreç karnelerinden yıldızladığınız göstergeler son ölçüm değerleriyle burada toplanır.") }}</p>
+        <p class="mc-page-subtitle st-p02-095">{{ _("Süreç karnelerinden yıldızladığınız göstergeler son ölçüm değerleriyle burada toplanır.") }}</p>
         <div>
             {% for pg in favori_pgs %}
-            <a href="{{ url_for('app_bp.surec_karne', process_id=pg.process_id) }}"
-               style="display:flex; align-items:center; justify-content:space-between; gap:12px; padding:12px 20px; border-bottom:1px solid #f1f5f9; text-decoration:none; color:inherit;">
-                <div style="min-width:0;">
-                    <div style="font-size:13.5px; font-weight:500; color:var(--text-default); white-space:nowrap; overflow:hidden; text-overflow:ellipsis;" class="dark:text-white">
-                        {% if pg.code %}<span style="font-family:monospace; font-size:11px; color:#6366f1; margin-right:4px;">{{ pg.code }}</span>{% endif %}{{ pg.name }}
+            <a class="st-p02-096" href="{{ url_for('app_bp.surec_karne', process_id=pg.process_id) }}"
+              >
+                <div class="st-p02-097">
+                    <div class="dark:text-white st-p02-098">
+                        {% if pg.code %}<span class="st-p02-099">{{ pg.code }}</span>{% endif %}{{ pg.name }}
                     </div>
-                    <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">{{ pg.process_name or '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
+                    <div class="st-p02-087">{{ pg.process_name or '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
                 </div>
-                <div style="text-align:right; flex-shrink:0;">
+                <div class="st-p02-100">
                     {% if pg.actual_value is not none %}
-                    <div style="font-size:14px; font-weight:700; color:var(--text-default);" class="dark:text-white">{{ pg.actual_value }}{% if pg.unit %} {{ pg.unit }}{% endif %}</div>
-                    <div style="display:flex; flex-direction:column; align-items:flex-end; gap:2px; margin-top:2px;">
+                    <div class="dark:text-white st-p02-101">{{ pg.actual_value }}{% if pg.unit %} {{ pg.unit }}{% endif %}</div>
+                    <div class="st-p02-102">
                     {% if pg.hedef_orani_pct is not none %}
                     {% set _o = pg.hedef_orani_pct %}
-                    <span class="mc-badge {% if _o >= 80 %}mc-badge-success{% elif _o >= 50 %}mc-badge-warning{% else %}mc-badge-danger{% endif %}" style="font-size:10px;" title="{{ _('Hedef oranı — compute_pg_score') }}">{{ _("Hedef oranı") }} %{{ _o|round|int }}</span>
+                    <span class="mc-badge {% if _o >= 80 %}mc-badge-success{% elif _o >= 50 %}mc-badge-warning{% else %}mc-badge-danger{% endif %} st-p02-074" title="{{ _('Hedef oranı — compute_pg_score') }}">{{ _("Hedef oranı") }} %{{ _o|round|int }}</span>
                     {% endif %}
                     {% if pg.basari_bandi_pct is not none %}
                     {% set _p = pg.basari_bandi_pct %}
-                    <span class="mc-badge mc-badge-gray" style="font-size:10px;" title="{{ _('Başarı bandı — status_percentage; hedef oranı değildir') }}">{{ _("Başarı bandı") }} %{{ _p|round|int }}</span>
+                    <span class="mc-badge mc-badge-gray st-p02-074" title="{{ _('Başarı bandı — status_percentage; hedef oranı değildir') }}">{{ _("Başarı bandı") }} %{{ _p|round|int }}</span>
                     {% endif %}
                     </div>
                     {% else %}
-                    <span style="font-size:11.5px; color:#cbd5e1;">{{ _("veri yok") }}</span>
+                    <span class="st-p02-103">{{ _("veri yok") }}</span>
                     {% endif %}
-                    {% if pg.target_value %}<div style="font-size:10.5px; color:#94a3b8; margin-top:2px;">{{ _("Hedef: %(v)s", v=pg.target_value) }}</div>{% endif %}
+                    {% if pg.target_value %}<div class="st-p02-104">{{ _("Hedef: %(v)s", v=pg.target_value) }}</div>{% endif %}
                 </div>
             </a>
             {% endfor %}
@@ -643,21 +679,21 @@
 
     <!-- Süreç PG -->
     {% if surec_pgs %}
-    <div class="mc-card masaustu-widget-panel" data-widget-id="surecpg" data-card-code="masaustu.surec_pglerim" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="surecpg" data-card-code="masaustu.surec_pglerim">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-project-diagram" style="color:#f59e0b; margin-right:6px;"></i>{{ _("Süreç PG'lerim") }}</span>
-            <a href="{{ url_for('app_bp.surec') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">{{ _("Süreçlere Git →") }}</a>
+            <span class="mc-card-title"><i class="fas fa-project-diagram st-p02-009"></i>{{ _("Süreç PG'lerim") }}</span>
+            <a class="st-p02-065" href="{{ url_for('app_bp.surec') }}">{{ _("Süreçlere Git →") }}</a>
         </div>
-        <p class="mc-page-subtitle" style="margin:0 20px 10px;">{{ _("Son güncellenen <strong>5</strong> gösterge listelenir; toplam adet üstteki istatistik kartındadır.") }}</p>
-        <div style="display:grid; grid-template-columns:repeat(auto-fill, minmax(260px, 1fr)); gap:0;">
+        <p class="mc-page-subtitle st-p02-095">{{ _("Son güncellenen <strong>5</strong> gösterge listelenir; toplam adet üstteki istatistik kartındadır.") }}</p>
+        <div class="st-p02-105">
             {% for pg in surec_pgs %}
-            <div style="display:flex; align-items:center; justify-content:space-between; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
+            <div class="st-p02-085">
                 <div>
-                    <div style="font-size:13.5px; font-weight:500; color:var(--text-default);" class="dark:text-white">{{ pg.name }}</div>
-                    <div style="font-size:11.5px; color:#94a3b8; margin-top:2px;">{{ pg.process.name if pg.process else '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
+                    <div class="dark:text-white st-p02-086">{{ pg.name }}</div>
+                    <div class="st-p02-087">{{ pg.process.name if pg.process else '—' }}{% if pg.unit %} &middot; {{ pg.unit }}{% endif %}</div>
                 </div>
                 {% if pg.target_value %}
-                <span style="font-size:12px; color:#64748b;">{{ _("Hedef: %(v)s", v=pg.target_value) }}</span>
+                <span class="st-p02-106">{{ _("Hedef: %(v)s", v=pg.target_value) }}</span>
                 {% endif %}
             </div>
             {% endfor %}
@@ -666,25 +702,25 @@
     {% endif %}
 
     <!-- Bildirimler -->
-    <div class="mc-card masaustu-widget-panel" data-widget-id="notif" data-card-code="masaustu.bildirimler" style="margin-bottom:20px;">
+    <div class="mc-card masaustu-widget-panel st-p02-004" data-widget-id="notif" data-card-code="masaustu.bildirimler">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-bell" style="color:#ef4444; margin-right:6px;"></i>{{ _("Bildirimler") }}</span>
-            <a href="{{ url_for('app_bp.bildirim') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">{{ _("Tümünü Gör →") }}</a>
+            <span class="mc-card-title"><i class="fas fa-bell st-p02-107"></i>{{ _("Bildirimler") }}</span>
+            <a class="st-p02-065" href="{{ url_for('app_bp.bildirim') }}">{{ _("Tümünü Gör →") }}</a>
         </div>
         {% for b in bildirimler %}
-        <div class="masaustu-notif-row" style="padding:12px 20px; border-bottom:1px solid #f1f5f9; display:flex; gap:12px; align-items:flex-start;">
-            <div style="width:8px; height:8px; border-radius:50%; background:#ef4444; margin-top:5px; flex-shrink:0;"></div>
-            <div style="flex:1; min-width:0;">
-                <div style="font-size:13.5px; font-weight:500; color:var(--text-default);" class="dark:text-white">{{ b.title }}</div>
+        <div class="masaustu-notif-row st-p02-108">
+            <div class="st-p02-109"></div>
+            <div class="st-p02-110">
+                <div class="dark:text-white st-p02-086">{{ b.title }}</div>
                 {% if b.message %}
-                <div style="font-size:12px; color:#64748b; margin-top:2px;">{{ b.message[:100] }}{% if b.message|length > 100 %}…{% endif %}</div>
+                <div class="st-p02-111">{{ b.message[:100] }}{% if b.message|length > 100 %}…{% endif %}</div>
                 {% endif %}
-                <div style="font-size:11px; color:#cbd5e1; margin-top:3px;">{{ b.created_at|yerel_saat }}</div>
+                <div class="st-p02-112">{{ b.created_at|yerel_saat }}</div>
             </div>
             <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm masaustu-mark-read" data-notif-id="{{ b.id }}" title="{{ _('Okundu işaretle') }}">{{ _("Okundu") }}</button>
         </div>
         {% else %}
-        <div class="mc-empty" style="padding:28px 20px;">
+        <div class="mc-empty st-p02-113">
             <div class="mc-empty-text">{{ _("Okunmamış bildirim yok.") }}</div>
         </div>
         {% endfor %}
@@ -694,13 +730,13 @@
     {% if stratejiler %}
     <div class="mc-card masaustu-widget-panel" data-widget-id="strat" data-card-code="masaustu.stratejik_hedefler">
         <div class="mc-card-header">
-            <span class="mc-card-title"><i class="fas fa-bullseye" style="color:#8b5cf6; margin-right:6px;"></i>{{ _("Stratejik Hedefler") }}</span>
-            <a href="{{ url_for('app_bp.sp') }}" style="font-size:12px; color:#6366f1; text-decoration:none;">{{ _("Stratejik Planlamaya Git →") }}</a>
+            <span class="mc-card-title"><i class="fas fa-bullseye st-p02-077"></i>{{ _("Stratejik Hedefler") }}</span>
+            <a class="st-p02-065" href="{{ url_for('app_bp.sp') }}">{{ _("Stratejik Planlamaya Git →") }}</a>
         </div>
         {% for s in stratejiler %}
-        <div style="display:flex; align-items:center; gap:12px; padding:12px 20px; border-bottom:1px solid #f1f5f9;">
-            <span class="mc-badge mc-badge-indigo" style="font-family:monospace;">{{ s.code or '—' }}</span>
-            <span style="font-size:13.5px; color:#334155;" class="dark:text-white">{{ s.title }}</span>
+        <div class="st-p02-114">
+            <span class="mc-badge mc-badge-indigo st-p02-115">{{ s.code or '—' }}</span>
+            <span class="dark:text-white st-p02-116">{{ s.title }}</span>
         </div>
         {% endfor %}
     </div>

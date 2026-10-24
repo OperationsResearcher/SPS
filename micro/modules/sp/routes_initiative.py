@@ -40,7 +40,6 @@ def sp_api_initiatives_list():
 
 
 @app_bp.route("/k-plan/strategy/api/initiatives", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_plan_year_open
 def sp_api_initiatives_create():
@@ -101,7 +100,6 @@ def sp_api_initiatives_create():
 
 
 @app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>", methods=["PATCH"])
-@csrf.exempt
 @login_required
 @sp_plan_year_open
 def sp_api_initiatives_update(iid):
@@ -151,7 +149,6 @@ def sp_api_initiatives_update(iid):
 
 
 @app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>", methods=["DELETE"])
-@csrf.exempt
 @login_required
 @sp_plan_year_open
 def sp_api_initiatives_delete(iid):
@@ -168,7 +165,6 @@ def sp_api_initiatives_delete(iid):
 
 
 @app_bp.route("/k-plan/strategy/api/initiatives/<int:iid>/milestones", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_plan_year_open
 def sp_api_milestone_create(iid):
@@ -226,7 +222,6 @@ def sp_api_initiative_projects(iid):
 
 
 @app_bp.route("/k-plan/strategy/api/projects/<int:pid>/initiative", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_plan_year_open
 def sp_api_project_set_initiative(pid):

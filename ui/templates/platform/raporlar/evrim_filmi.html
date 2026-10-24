@@ -24,7 +24,7 @@
         <div style="font-size:13px;color:#475569;">{{ _("Yıl:") }} <b id="current-year" style="color:#9333ea;font-size:18px;">—</b></div>
         <div style="flex:1;min-width:200px;display:flex;align-items:center;gap:10px;">
           <span style="font-size:11px;color:#94a3b8;" id="year-min"></span>
-          <input type="range" id="year-slider" min="0" max="0" value="0" step="1"
+          <input aria-label="{{ _('Yıl') }}" type="range" id="year-slider" min="0" max="0" value="0" step="1"
                  style="flex:1;accent-color:#9333ea;">
           <span style="font-size:11px;color:#94a3b8;" id="year-max"></span>
         </div>

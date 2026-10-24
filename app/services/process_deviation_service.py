@@ -51,19 +51,11 @@ def check_pg_performance_deviation(
         target = _parse_float(entry.target_value) or _parse_float(kpi.target_value)
         actual = _parse_float(entry.actual_value)
 
-        if target is None or actual is None or target == 0:
-            return None
+        from app.services.score_engine_service import adverse_deviation_pct
 
-        sapma_yuzdesi = ((actual - target) / target) * 100
-
-        direction = (kpi.direction or 'Increasing').strip()
-        kritik_sapma = False
-        if direction == 'Decreasing':
-            kritik_sapma = sapma_yuzdesi >= sapma_esik_yuzde
-        else:
-            kritik_sapma = sapma_yuzdesi <= -sapma_esik_yuzde
-
-        if not kritik_sapma:
+        # Yön + hedef guard'ı ortak yardımcıda (negatif/sıfır hedefte None).
+        olumsuz_sapma = adverse_deviation_pct(actual, target, kpi.direction)
+        if olumsuz_sapma is None or olumsuz_sapma < sapma_esik_yuzde:
             return None
 
         process = Process.query.get(kpi.process_id)
@@ -83,7 +75,7 @@ def check_pg_performance_deviation(
             title='Kritik Performans Sapması',
             message=(
                 f'"{kpi.name}" performans göstergesinde kritik sapma tespit edildi. '
-                f'Gerçekleşen: {actual}, Hedef: {target} (Sapma: %{abs(sapma_yuzdesi):.1f})'
+                f'Gerçekleşen: {actual}, Hedef: {target} (Sapma: %{olumsuz_sapma:.1f})'
             ),
             link=f'/process/{process.id}/karne',
             process_id=process.id,
@@ -101,7 +93,7 @@ def check_pg_performance_deviation(
                     message=(
                         f'"{kpi.name}" performans göstergesinde kritik sapma tespit edildi. '
                         f'Kullanıcı: {user_name or "Bilinmiyor"}, '
-                        f'Gerçekleşen: {actual}, Hedef: {target} (Sapma: %{abs(sapma_yuzdesi):.1f})'
+                        f'Gerçekleşen: {actual}, Hedef: {target} (Sapma: %{olumsuz_sapma:.1f})'
                     ),
                     link=f'/process/{process.id}/karne',
                     process_id=process.id,
@@ -113,7 +105,7 @@ def check_pg_performance_deviation(
 
         if current_app:
             current_app.logger.info(
-                f'PG performans sapması bildirimi: KpiData ID {kpi_data_id}, Sapma: %{abs(sapma_yuzdesi):.1f}'
+                f'PG performans sapması bildirimi: KpiData ID {kpi_data_id}, Sapma: %{olumsuz_sapma:.1f}'
             )
 
         return notification

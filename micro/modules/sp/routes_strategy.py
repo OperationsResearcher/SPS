@@ -8,7 +8,6 @@ from flask_login import login_required, current_user
 from sqlalchemy.orm import selectinload
 
 from platform_core import app_bp
-from app.extensions import csrf
 from app.models import db
 from app.utils.audit_logger import AuditLogger
 from sqlalchemy import or_
@@ -77,7 +76,6 @@ def sp_api_strategies_list():
 
 
 @app_bp.route("/k-plan/strategy/api/strategy/add", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open
@@ -127,7 +125,6 @@ def sp_add_strategy():
 
 
 @app_bp.route("/k-plan/strategy/api/strategy/update/<int:strategy_id>", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open
@@ -166,7 +163,6 @@ def sp_update_strategy(strategy_id):
 
 
 @app_bp.route("/k-plan/strategy/api/strategy/delete/<int:strategy_id>", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open
@@ -189,7 +185,6 @@ def sp_delete_strategy(strategy_id):
 # ── API: Alt Strateji CRUD ────────────────────────────────────────────────────
 
 @app_bp.route("/k-plan/strategy/api/sub-strategy/add", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open
@@ -245,7 +240,6 @@ def sp_add_sub_strategy():
 
 
 @app_bp.route("/k-plan/strategy/api/sub-strategy/update/<int:sub_id>", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open
@@ -281,7 +275,6 @@ def sp_update_sub_strategy(sub_id):
 
 
 @app_bp.route("/k-plan/strategy/api/sub-strategy/delete/<int:sub_id>", methods=["POST"])
-@csrf.exempt
 @login_required
 @sp_manage_required
 @sp_plan_year_open

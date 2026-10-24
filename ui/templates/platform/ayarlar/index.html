@@ -4,22 +4,23 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/ayarlar_index.css') }}">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_ayarlar_index.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'Ayarlar', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('Ayarlar'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
-<div style="max-width:1240px; margin:0 auto;">
+<div class="st-p24-001">
 
-  <div class="mc-page-header" style="margin-bottom:16px;">
+  <div class="mc-page-header st-p24-002">
     <div>
-      <h2 style="font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px;">
-        <i class="fas fa-cog" style="color:#6366f1;"></i> Ayarlar
+      <h2 class="st-p24-003">
+        <i class="fas fa-cog st-p24-004"></i> {{ _("Ayarlar") }}
       </h2>
-      <p style="font-size:13px;color:#64748b;margin:0;">
-        Hesap, profil, kurum ve sistem yapılandırması
+      <p class="st-p24-005">
+        {{ _("Hesap, profil, kurum ve sistem yapılandırması") }}
       </p>
     </div>
   </div>
@@ -28,47 +29,47 @@
   {% set role_name = current_user.role.name if current_user.role else '' %}
   {% set is_kurum_admin = role_name in ['tenant_admin', 'executive_manager'] %}
   {% set is_platform_admin = role_name == 'Admin' %}
-  <div style="display:grid; grid-template-columns:repeat(auto-fit,minmax(170px,1fr)); gap:10px; margin-bottom:18px;">
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #3b82f6;" data-card-code="ayarlar.kullanici_ozeti">
-      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kullanıcı") }}</div>
-      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ current_user.email or '—' }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ role_name or _('rol yok') }}</div>
+  <div class="st-p24-006">
+    <div class="st-p24-007" data-card-code="ayarlar.kullanici_ozeti">
+      <div class="mc-stat-label st-p24-008">{{ _("Kullanıcı") }}</div>
+      <div class="st-p24-009">{{ current_user.email or '—' }}</div>
+      <div class="st-p24-010">{{ role_name or _('rol yok') }}</div>
     </div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #16a34a;" data-card-code="ayarlar.kurum_ozeti">
-      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Kurum") }}</div>
-      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;">{{ (current_user.tenant.name if current_user.tenant else '—') }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("Kurum") }} #{{ current_user.tenant_id or '—' }}</div>
+    <div class="st-p24-011" data-card-code="ayarlar.kurum_ozeti">
+      <div class="mc-stat-label st-p24-008">{{ _("Kurum") }}</div>
+      <div class="st-p24-009">{{ (current_user.tenant.name if current_user.tenant else '—') }}</div>
+      <div class="st-p24-010">{{ _("Kurum") }} #{{ current_user.tenant_id or '—' }}</div>
     </div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #9333ea;" data-card-code="ayarlar.tema_durumu">
-      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Tema") }}</div>
-      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px;" id="ayarlar-stat-theme">{{ _("Aydınlık") }}</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("çoklu cihaz senkronlu") }}</div>
+    <div class="st-p24-012" data-card-code="ayarlar.tema_durumu">
+      <div class="mc-stat-label st-p24-008">{{ _("Tema") }}</div>
+      <div class="st-p24-013" id="ayarlar-stat-theme">{{ _("Aydınlık") }}</div>
+      <div class="st-p24-010">{{ _("çoklu cihaz senkronlu") }}</div>
     </div>
-    <div style="background:#fff;border:1px solid #e2e8f0;border-radius:10px;padding:14px;border-top:3px solid #6366f1;" data-card-code="ayarlar.zamanlanmis_rapor_ozeti">
-      <div class="mc-stat-label" style="font-size:10.5px;color:#64748b;font-weight:600;text-transform:uppercase;letter-spacing:0.04em;">{{ _("Zamanlanmış Rapor") }}</div>
-      <div style="font-size:16px;font-weight:700;color:#0f172a;margin-top:4px;" id="ayarlar-stat-sched">—</div>
-      <div style="font-size:11px;color:#64748b;margin-top:2px;">{{ _("aktif abonelik") }}</div>
+    <div class="st-p24-014" data-card-code="ayarlar.zamanlanmis_rapor_ozeti">
+      <div class="mc-stat-label st-p24-008">{{ _("Zamanlanmış Rapor") }}</div>
+      <div class="st-p24-013" id="ayarlar-stat-sched">—</div>
+      <div class="st-p24-010">{{ _("aktif abonelik") }}</div>
     </div>
   </div>
 
   {# ── Hızlı Arama (B6 standardı) ───────────────────────────────────── #}
-  <div style="display:flex; align-items:center; gap:10px; margin-bottom:14px; flex-wrap:wrap;">
-    <div style="position:relative; flex:1; min-width:240px; max-width:420px;">
-      <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
-      <input type="search" id="ayarlar-search" class="mc-form-input" placeholder="{{ _('Ayar ara…') }}"
-             style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
+  <div class="st-p24-015">
+    <div class="st-p24-016">
+      <i class="fas fa-search st-p24-017"></i>
+      <input aria-label="{{ _('Ayar ara…') }}" type="search" id="ayarlar-search" class="mc-form-input st-p24-018" placeholder="{{ _('Ayar ara…') }}"
+            >
     </div>
-    <span id="ayarlar-count-label" style="font-size:12px; color:#64748b; margin-left:auto;"></span>
+    <span class="st-p24-019" id="ayarlar-count-label"></span>
   </div>
 
   {# ── Kişisel ──────────────────────────────────────────────────────── #}
-  <h3 style="font-size:11.5px; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin:18px 0 10px;">
-    <i class="fas fa-user" style="color:#3b82f6; margin-right:4px;"></i> {{ _("Kişisel") }}
+  <h3 class="st-p24-020">
+    <i class="fas fa-user st-p24-021"></i> {{ _("Kişisel") }}
   </h3>
-  <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
+  <div class="ayarlar-grid st-p24-022">
 
     <a href="{{ url_for('app_bp.ayarlar_hesap') }}" class="ayarlar-tile" data-search="hesap bildirim tema dil saat dilimi" data-card-code="ayarlar.hesap_ayarlari">
-      <div class="ayarlar-tile-icon" style="background:#eff6ff;"><i class="fas fa-user-cog" style="color:#3b82f6;"></i></div>
+      <div class="ayarlar-tile-icon st-p24-023"><i class="fas fa-user-cog st-p24-024"></i></div>
       <div class="ayarlar-tile-body">
         <div class="ayarlar-tile-title mc-card-title">{{ _("Hesap Ayarları") }}</div>
         <div class="ayarlar-tile-desc">{{ _("Bildirim tercihleri, tema, dil ve saat dilimi") }}</div>
@@ -77,7 +78,7 @@
     </a>
 
     <a href="{{ url_for('app_bp.profil') }}" class="ayarlar-tile" data-search="profil ad unvan departman foto" data-card-code="ayarlar.profil_bilgileri">
-      <div class="ayarlar-tile-icon" style="background:#f0fdf4;"><i class="fas fa-id-card" style="color:#16a34a;"></i></div>
+      <div class="ayarlar-tile-icon st-p24-025"><i class="fas fa-id-card st-p24-026"></i></div>
       <div class="ayarlar-tile-body">
         <div class="ayarlar-tile-title mc-card-title">{{ _("Profil Bilgileri") }}</div>
         <div class="ayarlar-tile-desc">{{ _("Ad, unvan, departman ve profil fotoğrafı") }}</div>
@@ -88,13 +89,13 @@
 
   {# ── Kurum ────────────────────────────────────────────────────────── #}
   {% if is_kurum_admin or is_platform_admin %}
-  <h3 style="font-size:11.5px; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin:22px 0 10px;">
-    <i class="fas fa-building" style="color:#9333ea; margin-right:4px;"></i> {{ _("Kurum") }}
+  <h3 class="st-p24-027">
+    <i class="fas fa-building st-p24-028"></i> {{ _("Kurum") }}
   </h3>
-  <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
+  <div class="ayarlar-grid st-p24-022">
 
     <a href="{{ url_for('app_bp.ayarlar_eposta') }}" class="ayarlar-tile" data-search="e-posta eposta smtp bildirim" data-card-code="ayarlar.eposta_bildirimleri">
-      <div class="ayarlar-tile-icon" style="background:#fdf4ff;"><i class="fas fa-envelope-open-text" style="color:#9333ea;"></i></div>
+      <div class="ayarlar-tile-icon st-p24-029"><i class="fas fa-envelope-open-text st-p24-030"></i></div>
       <div class="ayarlar-tile-body">
         <div class="ayarlar-tile-title mc-card-title">{{ _("E-posta Bildirimleri") }}</div>
         <div class="ayarlar-tile-desc">{{ _("SMTP yapılandırması ve bildirim tercihleri") }}</div>
@@ -103,7 +104,7 @@
     </a>
 
     <a href="{{ url_for('app_bp.scheduled_reports_page') }}" class="ayarlar-tile" data-search="zamanlanmış rapor haftalık sabah aylık digest abonelik" data-card-code="ayarlar.zamanlanmis_raporlar">
-      <div class="ayarlar-tile-icon" style="background:#eef2ff;"><i class="fas fa-clock" style="color:#6366f1;"></i></div>
+      <div class="ayarlar-tile-icon st-p24-031"><i class="fas fa-clock st-p24-004"></i></div>
       <div class="ayarlar-tile-body">
         <div class="ayarlar-tile-title mc-card-title">{{ _("Zamanlanmış Raporlar") }}</div>
         <div class="ayarlar-tile-desc">{{ _("Haftalık özet · sabah operasyonel · risk uyarısı · aylık PG") }}</div>
@@ -113,7 +114,7 @@
 
     {% if is_kurum_admin %}
     <a href="{{ url_for('app_bp.kurum_ayarlar') }}" class="ayarlar-tile" data-search="kurum şirket iletişim logo" data-card-code="ayarlar.kurum_ayarlari">
-      <div class="ayarlar-tile-icon" style="background:#eff6ff;"><i class="fas fa-building" style="color:#3b82f6;"></i></div>
+      <div class="ayarlar-tile-icon st-p24-023"><i class="fas fa-building st-p24-024"></i></div>
       <div class="ayarlar-tile-body">
         <div class="ayarlar-tile-title mc-card-title">{{ _("Kurum Ayarları") }}</div>
         <div class="ayarlar-tile-desc">{{ _("İletişim bilgileri ve logo") }}</div>
@@ -126,15 +127,15 @@
 
   {# ── Platform Yönetimi ────────────────────────────────────────────── #}
   {% if is_platform_admin %}
-  <h3 style="font-size:11.5px; color:#64748b; text-transform:uppercase; letter-spacing:0.06em; font-weight:700; margin:22px 0 10px;">
-    <i class="fas fa-screwdriver-wrench" style="color:#d97706; margin-right:4px;"></i> {{ _("Platform Yönetimi") }}
-    <span style="font-size:10px; background:#fef3c7; color:#92400e; padding:1px 7px; border-radius:10px; margin-left:6px; font-weight:600;">{{ _("YALNIZ ADMIN") }}</span>
+  <h3 class="st-p24-027">
+    <i class="fas fa-screwdriver-wrench st-p24-032"></i> {{ _("Platform Yönetimi") }}
+    <span class="st-p24-033">{{ _("YALNIZ ADMIN") }}</span>
   </h3>
-  <div class="ayarlar-grid" style="display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px;">
+  <div class="ayarlar-grid st-p24-022">
 
 
     <a href="{{ url_for('app_bp.yonetim_paneli') }}" class="ayarlar-tile" data-search="yönetim panel login istatistik aktivite log" data-card-code="ayarlar.yonetim_paneli">
-      <div class="ayarlar-tile-icon" style="background:#ecfeff;"><i class="fas fa-chart-line" style="color:#0e7490;"></i></div>
+      <div class="ayarlar-tile-icon st-p24-034"><i class="fas fa-chart-line st-p24-035"></i></div>
       <div class="ayarlar-tile-body">
         <div class="ayarlar-tile-title mc-card-title">{{ _("Yönetim Paneli") }}</div>
         <div class="ayarlar-tile-desc">{{ _("Login istatistikleri ve aktivite kayıtları") }}</div>

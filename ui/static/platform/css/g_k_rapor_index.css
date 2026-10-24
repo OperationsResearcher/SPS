@@ -1,0 +1,87 @@
+/* Üretildi: inline style= → sınıf (UX-PLANI G devam). Görünüm değişmez; .x.x = inline stilin özgüllüğünü taklit eder. */
+.st-p01-001.st-p01-001 { margin-bottom:16px; }
+.st-p01-002.st-p01-002 { font-size:20px;font-weight:700;color:var(--text-default);margin:0 0 4px; }
+.st-p01-003.st-p01-003 { color:#6366f1; }
+.st-p01-004.st-p01-004 { font-size:13px;color:#64748b;margin:0; }
+.st-p01-005.st-p01-005 { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
+.st-p01-006.st-p01-006 { color:#10b981; }
+.st-p01-007.st-p01-007 { display:flex; align-items:center; gap:10px; margin-bottom:10px; flex-wrap:wrap; }
+.st-p01-008.st-p01-008 { position:relative; flex:1; min-width:240px; max-width:360px; }
+.st-p01-009.st-p01-009 { position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px; }
+.st-p01-010.st-p01-010 { padding:7px 12px 7px 34px; font-size:13px; width:100%; }
+.st-p01-011.st-p01-011 { font-size:12px; color:#64748b; }
+.st-p01-012.st-p01-012 { display:grid; grid-template-columns:repeat(auto-fill,minmax(200px,1fr)); gap:14px; margin-bottom:22px; }
+.st-p01-013.st-p01-013 { display:flex; flex-direction:column; align-items:center; text-align:center; padding:22px 14px 16px; background:#fff; border:1px solid #e2e8f0; border-radius:12px; cursor:pointer; text-decoration:none; color:inherit; transition: border-color 0.15s, box-shadow 0.15s, transform 0.15s; }
+.st-p01-014.st-p01-014 { font-size:13px; font-weight:600; color:var(--text-default); margin-bottom:4px; }
+.st-p01-015.st-p01-015 { font-size:11px; color:#94a3b8; line-height:1.4; }
+.st-p01-016.st-p01-016 { margin-bottom:20px; }
+.st-p01-017.st-p01-017 { grid-column:span 1; }
+.st-p01-018.st-p01-018 { text-align:center; padding:32px 16px; }
+.st-p01-019.st-p01-019 { grid-column:span 2; }
+.st-p01-020.st-p01-020 { grid-column:span 3; padding:12px; }
+.st-p01-021.st-p01-021 { padding:0; }
+.st-p01-022.st-p01-022 { color:#ef4444; }
+.st-p01-023.st-p01-023 { display:flex; gap:8px; flex-wrap:wrap; }
+.st-p01-024.st-p01-024 { font-size:12px; padding:4px 8px; }
+.st-p01-025.st-p01-025 { padding:24px; }
+.st-p01-026.st-p01-026 { font-size:13px; }
+.st-p01-027.st-p01-027 { grid-column:span 4; padding:24px; }
+.st-p01-028.st-p01-028 { display:flex;gap:6px;flex-wrap:wrap; }
+.st-p01-029.st-p01-029 { text-align:center;padding:24px;color:#94a3b8; }
+.st-p01-030.st-p01-030 { grid-column:span 4; padding:12px; }
+.st-p01-031.st-p01-031 { text-align:center; padding:24px; color:#94a3b8; }
+.st-p01-032.st-p01-032 { grid-column:span 3; padding:24px; }
+.st-p01-033.st-p01-033 { background:#fef3c7;border:1px solid #fcd34d;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12.5px;color:#78350f;display:flex;gap:10px;align-items:flex-start; }
+.st-p01-034.st-p01-034 { margin-top:2px;flex-shrink:0; }
+.st-p01-035.st-p01-035 { margin-left:8px; }
+.st-p01-036.st-p01-036 { color:#ef4444;font-weight:600; }
+.st-p01-037.st-p01-037 { margin-left:6px; }
+.st-p01-038.st-p01-038 { color:#f59e0b;font-weight:600; }
+.st-p01-039.st-p01-039 { color:#10b981;font-weight:600; }
+.st-p01-040.st-p01-040 { margin-left:8px;color:#64748b; }
+.st-p01-041.st-p01-041 { padding:8px 14px 4px;font-size:11px;color:#64748b; }
+.st-p01-042.st-p01-042 { color:#e2e8f0; }
+.st-p01-043.st-p01-043 { color:#f59e0b; }
+.st-p01-044.st-p01-044 { font-size:11px;color:#94a3b8;margin-left:8px; }
+.st-p01-045.st-p01-045 { display:flex; gap:8px; align-items:center; }
+.st-p01-046.st-p01-046 { background:#fef2f2;border:1px solid #fecaca;border-radius:8px;padding:10px 16px;margin-bottom:16px;font-size:12.5px;color:#991b1b;display:flex;gap:10px;align-items:flex-start; }
+.st-p01-047.st-p01-047 { margin-left:4px; }
+.st-p01-048.st-p01-048 { margin-top:16px; }
+.st-p01-049.st-p01-049 { padding:14px 18px; margin-bottom:14px; background:#fefce8; border-left:4px solid #ca8a04; }
+.st-p01-050.st-p01-050 { font-size:13px; color:#713f12; line-height:1.6; }
+.st-p01-051.st-p01-051 { display:grid; grid-template-columns:repeat(auto-fit,minmax(220px,1fr)); gap:12px; margin-bottom:14px; }
+.st-p01-052.st-p01-052 { padding:14px; border-top:3px solid #0ea5e9; }
+.st-p01-053.st-p01-053 { display:flex; align-items:center; gap:8px; }
+.st-p01-054.st-p01-054 { background:#0ea5e9; color:#fff; padding:3px 9px; border-radius:6px; font-family:monospace; font-weight:700; font-size:12px; }
+.st-p01-055.st-p01-055 { font-size:12px; color:#475569; margin:6px 0 0; line-height:1.5; }
+.st-p01-056.st-p01-056 { padding:14px; border-top:3px solid #10b981; }
+.st-p01-057.st-p01-057 { background:#10b981; color:#fff; padding:3px 9px; border-radius:6px; font-family:monospace; font-weight:700; font-size:12px; }
+.st-p01-058.st-p01-058 { padding:14px; border-top:3px solid #dc2626; }
+.st-p01-059.st-p01-059 { background:#dc2626; color:#fff; padding:3px 9px; border-radius:6px; font-family:monospace; font-weight:700; font-size:12px; }
+.st-p01-060.st-p01-060 { display:grid; grid-template-columns:repeat(auto-fit,minmax(280px,1fr)); gap:12px; margin-bottom:14px; }
+.st-p01-061.st-p01-061 { padding:14px; }
+.st-p01-062.st-p01-062 { display:flex; align-items:center; gap:8px; margin-bottom:6px; }
+.st-p01-063.st-p01-063 { background:#6366f1; color:#fff; padding:3px 9px; border-radius:6px; font-family:monospace; font-weight:700; font-size:12px; }
+.st-p01-064.st-p01-064 { font-size:11px; color:#94a3b8; }
+.st-p01-065.st-p01-065 { font-size:12px; color:#475569; line-height:1.6; }
+.st-p01-066.st-p01-066 { background:#dcfce7; color:#166534; padding:1px 6px; border-radius:4px; font-weight:600; }
+.st-p01-067.st-p01-067 { background:#fef3c7; color:#92400e; padding:1px 6px; border-radius:4px; font-weight:600; }
+.st-p01-068.st-p01-068 { background:#fee2e2; color:#991b1b; padding:1px 6px; border-radius:4px; font-weight:600; }
+.st-p01-069.st-p01-069 { background:#8b5cf6; color:#fff; padding:3px 9px; border-radius:6px; font-family:monospace; font-weight:700; font-size:12px; }
+.st-p01-070.st-p01-070 { padding:12px 16px; margin-bottom:14px; }
+.st-p01-071.st-p01-071 { cursor:pointer; font-size:13px; font-weight:600; color:#0f172a; }
+.st-p01-072.st-p01-072 { margin-top:10px; }
+.st-p01-073.st-p01-073 { width:100%; border-collapse:collapse; font-size:12px; }
+.st-p01-074.st-p01-074 { background:#f8fafc; }
+.st-p01-075.st-p01-075 { padding:7px; text-align:left; border-bottom:1px solid #e2e8f0; }
+.st-p01-076.st-p01-076 { padding:7px; }
+.st-p01-077.st-p01-077 { background:#fafbfc; }
+.st-p01-078.st-p01-078 { color:#0ea5e9; }
+.st-p01-079.st-p01-079 { color:#dc2626; }
+.st-p01-080.st-p01-080 { color:#ca8a04; }
+.st-p01-081.st-p01-081 { font-size:11.5px; color:#64748b; }
+.st-p01-082.st-p01-082 { grid-column:span 4;padding:12px; }
+.st-p01-083.st-p01-083 { grid-column:span 3;padding:12px; }
+.st-p01-084.st-p01-084 { font-size:11px; }
+.st-p01-085.st-p01-085 { padding:12px 16px; }
+.st-p01-086.st-p01-086 { padding:16px; }

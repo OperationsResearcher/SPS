@@ -368,7 +368,7 @@ def raporlar_api_quarterly_review():
     # AI ile çeyrek özeti üret
     summary_text = (
         f"{today.year} Q{quarter} ({q_start.strftime('%d %b')} - {q_end.strftime('%d %b')}) "
-        f"döneminde sistem {measurements_q:,} KPI ölçümü topladı. "
+        f"döneminde sistem {measurements_q:,} PG ölçümü topladı. "
         f"{new_inits} yeni stratejik girişim başlatıldı, {completed_inits} girişim tamamlandı. "
         "Çeyrek değerlendirme toplantısı için aşağıdaki gündem önerilmektedir."
     )

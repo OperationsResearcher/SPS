@@ -5,7 +5,6 @@ from flask import render_template, jsonify, request, current_app
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
-from app.extensions import csrf
 from extensions import db
 from app.models.tenant_llm_config import TenantLLMConfig
 from app.services.llm_gateway import test_tenant_config, PROVIDERS
@@ -47,7 +46,6 @@ def sp_api_ai_config_get():
 
 
 @app_bp.route("/k-plan/strategy/api/ai-config", methods=["POST"])
-@csrf.exempt
 @login_required
 def sp_api_ai_config_save():
     if not _can():
@@ -85,7 +83,6 @@ def sp_api_ai_config_save():
 
 
 @app_bp.route("/k-plan/strategy/api/ai-config/test", methods=["POST"])
-@csrf.exempt
 @login_required
 def sp_api_ai_config_test():
     if not _can():
@@ -99,7 +96,6 @@ def sp_api_ai_config_test():
 
 
 @app_bp.route("/k-plan/strategy/api/ai-config", methods=["DELETE"])
-@csrf.exempt
 @login_required
 def sp_api_ai_config_delete():
     if not _can():

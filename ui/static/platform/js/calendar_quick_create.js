@@ -537,7 +537,7 @@
           if (loadingEl) loadingEl.style.display = "none";
           successCallback(data.events || []);
         } catch (err) {
-          if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">${t("Takvim yüklenemedi:")} ${String(err.message || err)}</span>`;
+          if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">${t("Takvim yüklenemedi:")} ${escHtml(String(err.message || err))}</span>`;
           failureCallback(err);
         }
       },

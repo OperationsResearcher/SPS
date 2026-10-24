@@ -4,6 +4,7 @@
 
 {% block extra_css %}
 <meta name="kule-tour-key" content="admin_users">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_admin_users.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block breadcrumb %}
@@ -24,7 +25,7 @@
       <h2 class="mc-page-title">{{ _("Kullanıcı Yönetimi") }}</h2>
       <p class="mc-page-subtitle">{{ _("Toplam %(n)s kullanıcı", n=users|length) }}</p>
     </div>
-    <div style="display:flex; gap:8px;">
+    <div class="st-p23-001">
       <button id="btn-bulk-import" class="mc-btn mc-btn-secondary">
         <i class="fas fa-file-import"></i> {{ _("Toplu İçe Aktar") }}
       </button>
@@ -35,14 +36,14 @@
   </div>
 
   <!-- Arama + Filtreler -->
-  <div class="mc-card" data-card-code="admin_users.arama_filtre" style="margin-bottom:16px;">
+  <div class="mc-card st-p23-002" data-card-code="admin_users.arama_filtre">
     <div class="mc-card-title" style="position:absolute; opacity:0; width:1px; height:1px; overflow:hidden;">{{ _("Arama ve Filtreler") }}</div>
-    <div class="mc-card-body" style="padding:12px 16px; display:flex; gap:12px; flex-wrap:wrap; align-items:center;">
-      <input type="text" id="user-search" class="mc-form-input"
+    <div class="mc-card-body st-p23-003">
+      <input aria-label="{{ _('Ad, e-posta, rol veya kurum ile ara…') }}" type="text" id="user-search" class="mc-form-input st-p23-004"
              placeholder="{{ _('Ad, e-posta, rol veya kurum ile ara…') }}"
-             style="flex:1; min-width:280px; max-width:480px;">
+            >
       {% if tenants %}
-      <select id="tenant-filter" class="mc-form-input" style="min-width:240px; max-width:320px;">
+      <select aria-label="{{ _('Kuruma göre filtrele') }}" id="tenant-filter" class="mc-form-input st-p23-005">
         <option value="">{{ _("— Tüm Kurumlar (%(n)s) —", n=tenants|length) }}</option>
         {% for t in tenants %}
         <option value="{{ t.id }}">{{ t.name }}</option>
@@ -53,12 +54,12 @@
               title="{{ _('Filtreleri sıfırla') }}">
         <i class="fas fa-times"></i> {{ _("Temizle") }}
       </button>
-      <span id="filter-count" style="font-size:12px; color:#64748b; margin-left:auto;"></span>
+      <span class="st-p23-006" id="filter-count"></span>
     </div>
   </div>
 
   <!-- Stat Kartları -->
-  <div class="mc-grid-4" style="margin-bottom:20px;">
+  <div class="mc-grid-4 st-p23-007">
     <div class="mc-stat-card mc-stat-blue" data-card-code="admin_users.toplam_kullanici">
       <div class="mc-stat-icon"><i class="fas fa-users"></i></div>
       <div class="mc-stat-value">{{ users|length }}</div>
@@ -79,31 +80,31 @@
   <!-- Tablo -->
   <div class="mc-table-wrap" data-card-code="admin_users.kullanici_listesi">
     <div class="mc-card-title" style="position:absolute; opacity:0; width:1px; height:1px; overflow:hidden;">{{ _("Kullanıcı Listesi") }}</div>
-    <table class="mc-table" id="users-table" style="table-layout:fixed; width:100%;">
+    <table class="mc-table st-p23-008" id="users-table">
       <colgroup>
         {% if tenants %}
-        <col style="width:20%;">                                 {# Ad Soyad #}
-        <col style="width:25%;">                                 {# E-posta #}
-        <col style="width:12%;">                                 {# Rol #}
-        <col style="width:17%;">                                 {# Kurum #}
-        <col style="width:10%;">                                 {# Durum #}
-        <col style="width:16%;">                                 {# İşlem #}
+        <col class="st-p23-009">                                 {# Ad Soyad #}
+        <col class="st-p23-010">                                 {# E-posta #}
+        <col class="st-p23-011">                                 {# Rol #}
+        <col class="st-p23-012">                                 {# Kurum #}
+        <col class="st-p23-013">                                 {# Durum #}
+        <col class="st-p23-014">                                 {# İşlem #}
         {% else %}
-        <col style="width:25%;">                                 {# Ad Soyad #}
-        <col style="width:32%;">                                 {# E-posta #}
-        <col style="width:15%;">                                 {# Rol #}
-        <col style="width:10%;">                                 {# Durum #}
-        <col style="width:18%;">                                 {# İşlem #}
+        <col class="st-p23-010">                                 {# Ad Soyad #}
+        <col class="st-p23-015">                                 {# E-posta #}
+        <col class="st-p23-016">                                 {# Rol #}
+        <col class="st-p23-013">                                 {# Durum #}
+        <col class="st-p23-017">                                 {# İşlem #}
         {% endif %}
       </colgroup>
       <thead>
         <tr>
-          <th class="sortable" data-sort-key="name"   style="cursor:pointer; user-select:none;">{{ _("Ad Soyad") }} <span class="sort-ico">⇅</span></th>
-          <th class="sortable" data-sort-key="email"  style="cursor:pointer; user-select:none;">{{ _("E-posta") }} <span class="sort-ico">⇅</span></th>
-          <th class="sortable" data-sort-key="role"   style="cursor:pointer; user-select:none;">{{ _("Rol") }} <span class="sort-ico">⇅</span></th>
-          {% if tenants %}<th class="sortable" data-sort-key="tenant" style="cursor:pointer; user-select:none;">{{ _("Kurum") }} <span class="sort-ico">⇅</span></th>{% endif %}
-          <th class="sortable" data-sort-key="status" style="text-align:center; cursor:pointer; user-select:none;">{{ _("Durum") }} <span class="sort-ico">⇅</span></th>
-          <th style="text-align:center;">{{ _("İşlem") }}</th>
+          <th class="sortable st-p23-018" data-sort-key="name"  >{{ _("Ad Soyad") }} <span class="sort-ico">⇅</span></th>
+          <th class="sortable st-p23-018" data-sort-key="email" >{{ _("E-posta") }} <span class="sort-ico">⇅</span></th>
+          <th class="sortable st-p23-018" data-sort-key="role"  >{{ _("Rol") }} <span class="sort-ico">⇅</span></th>
+          {% if tenants %}<th class="sortable st-p23-018" data-sort-key="tenant">{{ _("Kurum") }} <span class="sort-ico">⇅</span></th>{% endif %}
+          <th class="sortable st-p23-019" data-sort-key="status">{{ _("Durum") }} <span class="sort-ico">⇅</span></th>
+          <th class="st-p23-020">{{ _("İşlem") }}</th>
         </tr>
       </thead>
       <tbody>
@@ -116,29 +117,29 @@
             data-sort-tenant="{{ (u.tenant.name if u.tenant else 'zzz')|lower }}"
             data-sort-status="{{ '0_aktif' if u.is_active else '1_pasif' }}">
           <td>
-            <div style="display:flex; align-items:center; gap:10px; min-width:0;">
-              <div class="mc-avatar mc-avatar-sm" style="flex-shrink:0;">{{ (u.first_name or u.email)[0]|upper }}</div>
-              <span style="font-weight:500; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;">{{ u.first_name or '' }} {{ u.last_name or '' }}</span>
+            <div class="st-p23-021">
+              <div class="mc-avatar mc-avatar-sm st-p23-022">{{ (u.first_name or u.email)[0]|upper }}</div>
+              <span class="st-p23-023">{{ u.first_name or '' }} {{ u.last_name or '' }}</span>
             </div>
           </td>
-          <td style="color:#64748b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+          <td class="st-p23-024"
               title="{{ u.email }}">{{ u.email }}</td>
           <td>
             <span class="mc-badge mc-badge-indigo">{{ role_label_tr(u.role.name) if u.role else '—' }}</span>
           </td>
           {% if tenants %}
-          <td style="font-size:12px; color:#64748b; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;"
+          <td class="st-p23-025"
               title="{{ u.tenant.name if u.tenant else '—' }}">{{ u.tenant.name if u.tenant else '—' }}</td>
           {% endif %}
-          <td style="text-align:center;">
+          <td class="st-p23-020">
             <span class="mc-badge {% if u.is_active %}mc-badge-success{% else %}mc-badge-gray{% endif %}">
               {{ _('Aktif') if u.is_active else _('Pasif') }}
             </span>
           </td>
-          <td style="text-align:center;">
-            <div style="display:flex; align-items:center; justify-content:center; gap:6px;">
+          <td class="st-p23-020">
+            <div class="st-p23-026">
               {% if current_user.role and current_user.role.name in ['Admin', 'tenant_admin', 'executive_manager'] %}
-              <button class="mc-btn mc-btn-secondary mc-btn-sm btn-user-edit"
+              <button class="mc-btn mc-btn-secondary mc-btn-sm btn-user-edit st-p23-027"
                       title="{{ _('Düzenle') }}"
                       aria-label="{{ _('Düzenle') }}"
                       data-user-id="{{ u.id }}"
@@ -150,16 +151,16 @@
                       data-tenant-id="{{ u.tenant_id or '' }}"
                       data-email="{{ u.email | e }}"
                       data-totp-enabled="{{ 'true' if u.totp_enabled else 'false' }}"
-                      style="padding:4px 8px;">
+                     >
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="mc-btn mc-btn-sm {% if u.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-user-toggle"
+              <button class="mc-btn mc-btn-sm {% if u.is_active %}mc-btn-danger{% else %}mc-btn-success{% endif %} btn-user-toggle st-p23-027"
                       title="{{ _('Pasife Al') if u.is_active else _('Aktifleştir') }}"
                       aria-label="{{ _('Pasife Al') if u.is_active else _('Aktifleştir') }}"
                       data-user-id="{{ u.id }}"
                       data-name="{{ ((u.first_name or '') ~ ' ' ~ (u.last_name or ''))|trim | e }}"
                       data-active="{{ 'true' if u.is_active else 'false' }}"
-                      style="padding:4px 8px;">
+                     >
                 <i class="fas {% if u.is_active %}fa-ban{% else %}fa-check-circle{% endif %}"></i>
               </button>
               {% endif %}
@@ -168,7 +169,7 @@
         </tr>
         {% else %}
         <tr>
-          <td colspan="6" style="text-align:center; padding:40px; color:#94a3b8;">{{ _("Kullanıcı bulunamadı.") }}</td>
+          <td class="st-p23-028" colspan="6">{{ _("Kullanıcı bulunamadı.") }}</td>
         </tr>
         {% endfor %}
       </tbody>
@@ -196,10 +197,10 @@
           </div>
           <div class="tm-field tm-full">
             <label class="mc-form-label" for="ua-email">{{ _("E-posta") }} <span class="req">*</span></label>
-            <input id="ua-email" class="mc-form-input" type="email" placeholder="ornek@kurum.com">
+            <input id="ua-email" class="mc-form-input" type="email" placeholder="{{ _('ornek@kurum.com') }}">
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label" for="ua-pass">{{ _("Şifre") }} <span style="font-size:11px;color:#94a3b8;">{{ _("(boş = varsayılan atanır)") }}</span></label>
+            <label class="mc-form-label" for="ua-pass">{{ _("Şifre") }} <span class="st-p23-029">{{ _("(boş = varsayılan atanır)") }}</span></label>
             <input id="ua-pass" class="mc-form-input" type="password" placeholder="{{ _('Şifre') }}">
           </div>
           <div class="tm-field">
@@ -247,11 +248,11 @@
           </div>
           <div class="tm-field tm-full">
             <label class="mc-form-label" for="ue-email">{{ _("E-posta") }}</label>
-            <input id="ue-email" class="mc-form-input" type="email" readonly
-                   style="background:#f1f5f9;color:#64748b;cursor:not-allowed;">
+            <input id="ue-email" class="mc-form-input st-p23-030" type="email" readonly
+                  >
           </div>
           <div class="tm-field tm-full">
-            <label class="mc-form-label" for="ue-pass">{{ _("Yeni Şifre") }} <span style="font-size:11px;color:#94a3b8;">{{ _("(boş = değişmez)") }}</span></label>
+            <label class="mc-form-label" for="ue-pass">{{ _("Yeni Şifre") }} <span class="st-p23-029">{{ _("(boş = değişmez)") }}</span></label>
             <input id="ue-pass" class="mc-form-input" type="password" placeholder="{{ _('Değiştirmek için girin') }}">
           </div>
           <div class="tm-field">
@@ -269,16 +270,16 @@
         </div>
 
         {# ─── 2FA Güvenlik Paneli ─────────────────────────────────────── #}
-        <hr style="margin:20px 0 16px; border:none; border-top:1px solid #e2e8f0;">
-        <div style="background:#f8fafc; border-radius:6px; padding:14px;">
-          <div style="display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap;">
-            <div style="display:flex; align-items:center; gap:10px; flex:1; min-width:240px;">
-              <i id="ue-2fa-icon" class="fas fa-shield-alt" style="font-size:20px; color:#94a3b8;"></i>
+        <hr class="st-p23-031">
+        <div class="st-p23-032">
+          <div class="st-p23-033">
+            <div class="st-p23-034">
+              <i id="ue-2fa-icon" class="fas fa-shield-alt st-p23-035"></i>
               <div>
-                <div style="font-weight:600; color:var(--text-default); font-size:13px;">
+                <div class="st-p23-036">
                   {{ _("İki Faktörlü Doğrulama (2FA)") }}
                 </div>
-                <div id="ue-2fa-status" style="font-size:12px; color:#64748b; margin-top:2px;">—</div>
+                <div class="st-p23-037" id="ue-2fa-status">—</div>
               </div>
             </div>
             <button type="button" id="btn-edit-2fa-reset" class="mc-btn mc-btn-sm" style="background:#fef3c7; color:#92400e; border:1px solid #f59e0b; display:none;">

@@ -53,5 +53,6 @@ def cleanup():
 atexit.register(cleanup)
 
 if __name__ == '__main__':
-    app.run(debug=True, host='127.0.0.1', port=5001)
+    # debug yalnız açık yerel bayrakla (KOKPITIM_ENV=local); aksi halde Werkzeug debugger kapalı.
+    app.run(debug=(os.environ.get('KOKPITIM_ENV') or '').strip().lower() == 'local', host='127.0.0.1', port=5001)
 

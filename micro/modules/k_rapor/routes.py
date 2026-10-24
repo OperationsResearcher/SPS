@@ -82,7 +82,7 @@ def k_rapor_api_forecast(kpi_id):
         .first()
     )
     if not kpi:
-        return jsonify({"success": False, "message": _("KPI bulunamadı")}), 404
+        return jsonify({"success": False, "message": _("PG bulunamadı")}), 404
 
     periods = request.args.get("periods", 3, type=int)
     periods = max(1, min(periods, 12))

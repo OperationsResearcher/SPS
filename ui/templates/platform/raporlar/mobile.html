@@ -1,12 +1,12 @@
 {% extends "platform/base.html" %}
-{% block title %}Mobile Hub — Kokpitim{% endblock %}
-{% block page_title %}Mobile Hub (PWA Önizleme){% endblock %}
+{% block title %}{{ _("Mobile Hub — Kokpitim") }}{% endblock %}
+{% block page_title %}{{ _("Mobile Hub (PWA Önizleme)") }}{% endblock %}
 {% block breadcrumb %}{{ mc_breadcrumb('Mobile Hub') }}{% endblock %}
 {% block content %}
 <div style="max-width:480px;margin:0 auto;">
   <div style="margin-bottom:16px;display:flex;align-items:center;justify-content:space-between;gap:12px;">
     <div>
-      <h1 style="font-size:18px;font-weight:700;color:var(--text-default);margin:0;"><i class="fas fa-mobile-alt" style="color:#0ea5e9;"></i> Mobile Hub</h1>
+      <h1 style="font-size:18px;font-weight:700;color:var(--text-default);margin:0;"><i class="fas fa-mobile-alt" style="color:#0ea5e9;"></i> {{ _("Mobile Hub") }}</h1>
       <p style="font-size:12px;color:#64748b;margin:2px 0 0;">{{ _("Cep telefonu için kompakt arayüz — PWA önizleme.") }}</p>
     </div>
     <a href="{{ url_for('app_bp.raporlar_index') }}" class="mc-btn mc-btn-secondary" style="font-size:11px;padding:6px 10px;"><i class="fas fa-arrow-left"></i></a>
@@ -38,8 +38,8 @@
           <button style="background:transparent;border:none;cursor:pointer;font-size:10px;color:#94a3b8;padding:6px;" onclick="Swal.fire({icon:'info',title:'Yakında',text:'Görev modülü',timer:1500,showConfirmButton:false});">
             <i class="fas fa-tasks" style="font-size:18px;display:block;margin-bottom:4px;"></i>{{ _("Görevler") }}
           </button>
-          <button style="background:transparent;border:none;cursor:pointer;font-size:10px;color:#94a3b8;padding:6px;" onclick="Swal.fire({icon:'info',title:'Yakında',text:'KPI ekranı',timer:1500,showConfirmButton:false});">
-            <i class="fas fa-chart-line" style="font-size:18px;display:block;margin-bottom:4px;"></i>KPI
+          <button style="background:transparent;border:none;cursor:pointer;font-size:10px;color:#94a3b8;padding:6px;" onclick="Swal.fire({icon:'info',title:'Yakında',text:'PG ekranı',timer:1500,showConfirmButton:false});">
+            <i class="fas fa-chart-line" style="font-size:18px;display:block;margin-bottom:4px;"></i>{{ _("PG") }}
           </button>
           <button style="background:transparent;border:none;cursor:pointer;font-size:10px;color:#94a3b8;padding:6px;" onclick="Swal.fire({icon:'info',title:'Yakında',text:'Profil ekranı',timer:1500,showConfirmButton:false});">
             <i class="fas fa-user" style="font-size:18px;display:block;margin-bottom:4px;"></i>{{ _("Profil") }}

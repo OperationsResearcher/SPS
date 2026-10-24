@@ -432,7 +432,7 @@ def admin_api_sub_tenants_usage_export():
         "Tenant Adı", "Kısa Ad", "Durum", "Oluşturulma",
         "Lisans Bitiş", "Paket",
         "Kullanıcı", "Maks. Kullanıcı", "Doluluk %",
-        "KPI Sayısı", "Initiative Sayısı", "Plan Year Sayısı",
+        "PG Sayısı", "Initiative Sayısı", "Plan Year Sayısı",
         "LLM Çağrı (bu ay)", "LLM Token (bu ay)", "LLM Maliyet USD (bu ay)",
     ]
     bold = Font(bold=True, color="FFFFFF")

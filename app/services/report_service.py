@@ -131,7 +131,7 @@ class ReportService:
 
             # KPI detayları
             kpi_df = pd.DataFrame(report_data['kpi_details'])
-            kpi_df.to_excel(writer, sheet_name=_('KPI Detayları'), index=False)
+            kpi_df.to_excel(writer, sheet_name=_('PG Detayları'), index=False)
 
             # Öneriler
             recommendations_df = pd.DataFrame({

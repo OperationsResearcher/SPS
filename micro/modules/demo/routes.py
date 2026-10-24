@@ -11,6 +11,7 @@ v2 — 4 kurum, admin-only giriş:
 """
 from __future__ import annotations
 
+import os
 from datetime import datetime, timedelta, timezone
 
 from flask import (
@@ -70,8 +71,21 @@ DEMO_TENANTS = {
 }
 
 
+def _demo_allowed_hosts() -> set[str]:
+    """Demo'nun açılabileceği host adları (DEMO_ALLOWED_HOSTS, virgüllü). Varsayılan: demo + yerel."""
+    raw = current_app.config.get("DEMO_ALLOWED_HOSTS") or os.environ.get("DEMO_ALLOWED_HOSTS") or ""
+    if isinstance(raw, str):
+        raw = raw.split(",")
+    hosts = {h.strip().lower() for h in raw if h and h.strip()}
+    return hosts or {"demo.kokpitim.com", "localhost", "127.0.0.1"}
+
+
 def _demo_enabled() -> bool:
-    return bool(current_app.config.get("KOKPITIM_DEMO_MODE"))
+    """Env bayrağı + host adı: bayrak yanlışlıkla Test/Yayın'da açılsa bile demo oralarda 404 kalır."""
+    if not current_app.config.get("KOKPITIM_DEMO_MODE"):
+        return False
+    host = (request.host or "").split(":")[0].lower()
+    return host in _demo_allowed_hosts()
 
 
 def _demo_admin_for_tenant(tenant_key: str):
@@ -117,9 +131,9 @@ def demo_landing():
 
 # ─── /demo/start/<tenant_key> — Bypass admin login ────────────────────────────
 
-@app_bp.route("/demo/start/<tenant_key>", methods=["GET", "POST"])
+@app_bp.route("/demo/start/<tenant_key>", methods=["POST"])
 def demo_start(tenant_key):
-    """Seçili kurumun admin kullanıcısıyla otomatik giriş yapar."""
+    """Seçili kurumun admin kullanıcısıyla otomatik giriş yapar (yalnız CSRF korumalı POST — GET ile tetiklenemez)."""
     if not _demo_enabled():
         abort(404)
     if tenant_key not in DEMO_TENANTS:

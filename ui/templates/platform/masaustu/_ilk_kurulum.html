@@ -1,0 +1,27 @@
+{# İlk kurulum kontrol listesi (UX-PLANI E / Faz 2.7). Yalnız yönetici + tamamlanmamış + gizlenmemiş. #}
+{% set _ad = {
+  'plan_yili': [_('Plan yılı'), _('Plan yılını tanımla'), url_for('app_bp.sp')],
+  'strateji': [_('Strateji'), _('İlk ana stratejiyi ekle'), url_for('app_bp.sp')],
+  'surec': [_('Süreç'), _('İlk süreci oluştur'), url_for('app_bp.surec')],
+  'pg': [_('PG'), _('Performans göstergesi ekle'), url_for('app_bp.surec')],
+  'veri': [_('İlk veri'), _('İlk veriyi gir'), url_for('app_bp.surec')],
+} %}
+<div class="mc-card ilk-kurulum" data-card-code="masaustu.ilk_kurulum" data-gizle-url="{{ url_for('app_bp.masaustu_ilk_kurulum_gizle') }}">
+  <div class="mc-card-header">
+    <span class="mc-card-title"><i class="fas fa-list-check ilk-kurulum-ikon" aria-hidden="true"></i>{{ _("İlk kurulum") }}
+      <span class="mc-badge mc-badge-info ilk-kurulum-rozet">{{ ilk_kurulum.tamam }}/{{ ilk_kurulum.toplam }}</span>
+    </span>
+    <button type="button" class="mc-btn mc-btn-sm mc-btn-secondary" id="ilk-kurulum-gizle">{{ _("Gizle") }}</button>
+  </div>
+  <div class="mc-card-body ilk-kurulum-govde">
+    <ol class="ilk-kurulum-liste">
+      {% for a in ilk_kurulum.adimlar %}
+      <li class="ilk-kurulum-adim{% if a.tamam %} ilk-kurulum-adim--tamam{% endif %}">
+        <i class="fas {{ 'fa-circle-check' if a.tamam else 'fa-circle' }}" aria-hidden="true"></i>
+        {% if a.tamam %}<span>{{ _ad[a.anahtar][0] }}</span>
+        {% else %}<a href="{{ _ad[a.anahtar][2] }}">{{ _ad[a.anahtar][1] }}</a>{% endif %}
+      </li>
+      {% endfor %}
+    </ol>
+  </div>
+</div>

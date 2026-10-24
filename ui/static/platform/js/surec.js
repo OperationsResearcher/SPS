@@ -513,7 +513,7 @@
       const sel = String(selectedId || "") === String(k.id) ? " selected" : "";
       const code = (k.code || "").trim();
       const title = (k.name || "").trim();
-      const label = `${code ? code + " " : ""}${title}`.trim() || `KPI #${k.id}`;
+      const label = `${code ? code + " " : ""}${title}`.trim() || `PG #${k.id}`;
       opts.push(`<option value="${k.id}"${sel}>${escHtml(label)}</option>`);
     });
     return opts.join("");
@@ -1040,15 +1040,14 @@
         if (x != null) vals.push(x);
       }
     }
-    const yearlyActual =
-      vals.length === 0 ? null : vals.reduce((a, b) => a + b, 0) / vals.length;
-    let successPct = null;
-    if (target != null && target !== 0 && yearlyActual != null) {
-      const dec = String(k.direction || "Increasing").toLowerCase() === "decreasing";
-      successPct = dec
-        ? Math.min(100, Math.round((target / yearlyActual) * 100))
-        : Math.min(100, Math.round((yearlyActual / target) * 100));
+    // Yıl özeti ve başarı oranı SUNUCU motorundan gelir (score_engine_service): yöntem
+    // (Toplama/Ortalama/Son Değer), yön ve negatif/sıfır hedef kuralları tek yerde. İstemci
+    // yalnız sunucu değeri yoksa görüntü için ortalamaya düşer; yüzde ASLA burada hesaplanmaz.
+    let yearlyActual = parseNum(k.year_rollup != null ? k.year_rollup : k.consolidated_value);
+    if (yearlyActual == null && vals.length > 0) {
+      yearlyActual = vals.reduce((a, b) => a + b, 0) / vals.length;
     }
+    const successPct = k.achievement != null ? Math.round(Number(k.achievement)) : null;
     return { target, yearlyActual, successPct, monthCount: vals.length };
   }
 
@@ -2381,7 +2380,7 @@
           </div>
           <div class="kb-card-meta-item">
             <span class="kb-meta-label">${t("Periyot")}</span>
-            <span class="kb-meta-val">${escHtml(k.period || "—")}</span>
+            <span class="kb-meta-val">${escHtml(k.period ? t(k.period) : "—")}</span>
           </div>
         </div>
         <div class="kb-card-weight">${t("Ağırlık:")} ${wDisplay === "—" ? "—" : `${escHtml(wDisplay)} %`}</div>

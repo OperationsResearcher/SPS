@@ -819,17 +819,17 @@ def _bireysel_heuristik_ozet(year, total_pg, pg_with_data, aktif_fa, geciken_fa)
     parts = []
     if total_pg:
         cov = round((pg_with_data / total_pg) * 100) if total_pg else 0
-        parts.append(f"{year} yılında {total_pg} performans göstergen var, %{cov}'ine veri girilmiş.")
+        parts.append(_("%(year)s yılında %(n)s performans göstergen var, %%%(cov)s'ine veri girilmiş.", year=year, n=total_pg, cov=cov))
         if pg_with_data < total_pg:
-            parts.append(f"{total_pg - pg_with_data} PG'ye henüz veri girmedin.")
+            parts.append(_("%(n)s PG'ye henüz veri girmedin.", n=total_pg - pg_with_data))
     else:
-        parts.append(f"{year} için tanımlı performans göstergen yok.")
+        parts.append(_("%(year)s için tanımlı performans göstergen yok.", year=year))
     if geciken_fa:
-        parts.append(f"Kırmızı bayrak: {geciken_fa} geciken faaliyet.")
+        parts.append(_("Kırmızı bayrak: %(n)s geciken faaliyet.", n=geciken_fa))
     elif aktif_fa:
-        parts.append(f"{aktif_fa} aktif faaliyetin sürüyor.")
+        parts.append(_("%(n)s aktif faaliyetin sürüyor.", n=aktif_fa))
     if not parts:
-        parts.append("Özet üretecek yeterli veri yok.")
+        parts.append(_("Özet üretecek yeterli veri yok."))
     return " ".join(parts)
 
 

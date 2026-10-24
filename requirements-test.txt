@@ -14,9 +14,12 @@ coverage==7.3.2
 faker==20.1.0
 
 # Validation testing
-marshmallow==3.20.1
+marshmallow==3.26.2
 
 # Security scanning (pip-audit ile bağımlılık CVE taraması)
 # Kullanım: pip-audit -r requirements.txt
 pip-audit>=2.7.0
 pytest-timeout==2.4.0
+
+# Özellik tabanlı testler (test_puan_sozlesmesi)
+hypothesis>=6.100

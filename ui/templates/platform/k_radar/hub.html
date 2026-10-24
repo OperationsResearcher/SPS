@@ -3,7 +3,7 @@
 {% block page_title %}K-Radar{% endblock %}
 
 {% block breadcrumb %}
-    {{ mc_breadcrumb([{'label': 'K-Radar', 'url': None}]) }}
+    {{ mc_breadcrumb([{'label': _('K-Radar'), 'url': None}]) }}
 {% endblock %}
 
 {% block content %}
@@ -43,7 +43,7 @@
   <div style="display:flex; align-items:center; gap:10px; margin-bottom:18px; flex-wrap:wrap;">
     <div style="position:relative; flex:1; min-width:240px; max-width:520px;">
       <i class="fas fa-search" style="position:absolute; left:12px; top:50%; transform:translateY(-50%); color:#94a3b8; font-size:13px;"></i>
-      <input type="search" id="kr-hub-search" class="mc-form-input" placeholder="{{ _('Rapor ara (ad, anahtar kelime)…') }}"
+      <input aria-label="{{ _('Rapor ara (ad, anahtar kelime)…') }}" type="search" id="kr-hub-search" class="mc-form-input" placeholder="{{ _('Rapor ara (ad, anahtar kelime)…') }}"
              style="padding:8px 12px 8px 34px; font-size:13px; width:100%;">
     </div>
     <span id="kr-hub-count" style="font-size:12px; color:#64748b; margin-left:auto;"></span>
@@ -128,7 +128,7 @@
         {'url': '/k-report?tab=rekabet',                                     'icon':'fa-ranking-star',      'c':'#dc2626','bg':'#fef2f2','n':_('Rekabet & A3'),                'd':_('Rakip kıyas + A3 problem analizi')},
         {'url': '/k-report?tab=kurum-karsilastirma',                         'icon':'fa-scale-balanced',    'c':'#9333ea','bg':'#faf5ff','n':_('Kurum Kıyas'),                 'd':_('Kurumlar arası karşılaştırma')},
         {'url': '/k-report/sectoral',                                       'icon':'fa-industry',          'c':'#16a34a','bg':'#f0fdf4','n':_('Sektörel Plan Paketleri'),     'd':_('Sektöre özel hazır plan şablonları')},
-        {'url': '/k-plan/strategy/strategy-map',                                         'icon':'fa-project-diagram',   'c':'#4f46e5','bg':'#eef2ff','n':_('Strateji Haritası'),           'd':_('Strateji → Süreç → KPI interaktif ilişki ağı')},
+        {'url': '/k-plan/strategy/strategy-map',                                         'icon':'fa-project-diagram',   'c':'#4f46e5','bg':'#eef2ff','n':_('Strateji Haritası'),           'd':_('Strateji → Süreç → PG interaktif ilişki ağı')},
         {'url': '/k-report/sunburst',                                       'icon':'fa-sun',               'c':'#f59e0b','bg':'#fffbeb','n':_('Stratejik Hiyerarşi Sunburst'),'d':_('Strateji ağacı sunburst görseli')},
         {'url': '/k-report/evolution-film',                                    'icon':'fa-film',              'c':'#9333ea','bg':'#faf5ff','n':_('Yıllar Arası Evrim Filmi'),    'd':_('Strateji ağacının yıldan yıla animasyonu')},
         {'url': '/k-report/strategy-story',                              'icon':'fa-book-open',         'c':'#0d9488','bg':'#f0fdfa','n':_('AI Strateji Hikayeleştirici'), 'd':_('Strateji metnini AI ile hikaye formuna çevir')},

@@ -5,7 +5,6 @@ from flask import jsonify, request, abort
 from flask_login import login_required, current_user
 
 from platform_core import app_bp
-from app.extensions import csrf
 from app.services.kule_service import (
     load_tour,
     get_or_create_progress,
@@ -54,7 +53,6 @@ def kule_get_tour(tour_key: str):
 
 @app_bp.route("/api/kule/tour/<tour_key>/seen", methods=["POST"])
 @login_required
-@csrf.exempt
 def kule_mark_seen(tour_key: str):
     """Kullanıcı turu görüntüledi (seen_count artar)."""
     row = mark_seen(current_user.id, tour_key)
@@ -63,7 +61,6 @@ def kule_mark_seen(tour_key: str):
 
 @app_bp.route("/api/kule/tour/<tour_key>/complete", methods=["POST"])
 @login_required
-@csrf.exempt
 def kule_mark_complete(tour_key: str):
     """Tur tamamlandı."""
     row = mark_complete(current_user.id, tour_key)
@@ -72,7 +69,6 @@ def kule_mark_complete(tour_key: str):
 
 @app_bp.route("/api/kule/tour/<tour_key>/dismiss", methods=["POST"])
 @login_required
-@csrf.exempt
 def kule_mark_dismiss(tour_key: str):
     """Kullanıcı turu atladı."""
     row = mark_dismiss(current_user.id, tour_key)
@@ -81,7 +77,6 @@ def kule_mark_dismiss(tour_key: str):
 
 @app_bp.route("/api/kule/tour/<tour_key>/restart", methods=["POST"])
 @login_required
-@csrf.exempt
 def kule_restart(tour_key: str):
     """Tur durumunu sıfırla, tekrar gösterilebilir hale gelsin."""
     row = restart_tour(current_user.id, tour_key)

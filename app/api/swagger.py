@@ -11,7 +11,7 @@ def create_swagger_blueprint(base_prefix: str = ""):
     bp = (base_prefix or "").rstrip("/")
     swagger_url = f"{bp}/api/docs" if bp else "/api/docs"
     api_url = f"{bp}/api/v1/swagger.json" if bp else "/api/v1/swagger.json"
-    return get_swaggerui_blueprint(
+    swagger_bp = get_swaggerui_blueprint(
         swagger_url,
         api_url,
         config={
@@ -19,6 +19,19 @@ def create_swagger_blueprint(base_prefix: str = ""):
             "defaultModelsExpandDepth": -1,
         },
     )
+
+    @swagger_bp.before_request
+    def _yalniz_platform_admin():
+        """API dokümantasyonu yalnız platform Admin'e açık."""
+        from flask import abort
+        from flask_login import current_user
+        from app.constants.roles import PLATFORM_ADMIN_ROLES
+
+        role = getattr(current_user, "role", None)
+        if not (current_user.is_authenticated and role and role.name in PLATFORM_ADMIN_ROLES):
+            abort(403)
+
+    return swagger_bp
 
 
 # Geriye dönük uyumluluk (tercih: create_swagger_blueprint kullanın)

@@ -30,6 +30,7 @@
 
 .micro-main {
     flex: 1;
+    min-width: 0; /* geniş tablo/ızgara sayfayı yatay taşırmasın */
     margin-left: 240px;
     display: flex;
     flex-direction: column;
@@ -358,6 +359,32 @@
     .micro-page {
         padding: 16px 12px;
     }
+
+    /* Üst çubuk dar ekrana sığsın: sayfa yatay kaydırılmasın */
+    .micro-topbar {
+        padding: 0 12px;
+        gap: 8px;
+    }
+    .topbar-title {
+        min-width: 0;
+        overflow: hidden;
+        text-overflow: ellipsis;
+        white-space: nowrap;
+    }
+    .topbar-actions {
+        flex-shrink: 0;
+    }
+    .topbar-year-picker .topbar-sp-period {
+        display: none;
+    }
+}
+
+/* Koyu kenar çubuğunda klavye odağı görünür olsun (UX-F / WCAG 2.4.7) */
+.sidebar-item:focus-visible,
+.sidebar-brand:focus-visible,
+.sidebar-group-toggle:focus-visible {
+    outline: 2px solid #c7d2fe;
+    outline-offset: -2px;
 }
 
 /* Collapsible sidebar groups (hamburger submenu) */
