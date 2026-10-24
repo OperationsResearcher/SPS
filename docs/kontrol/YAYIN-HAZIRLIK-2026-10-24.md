@@ -8,8 +8,8 @@
 |---|---|
 | Yerel `main` | `397371e4` + `claude/yayin-hazirlik` dalındaki düzeltmeler (aşağıda) |
 | `origin/main` | `925bb5a4` → **yerelden 21 commit geride; push YAPILMADI** (orchestrator ön koşulu: `origin/main = yerel HEAD`) |
-| Son etiketli deploy | `deploy-2026-07-08`. **Yayın'ın GERÇEK konumu etiketten farklı olabilir** (21.07 / 05.08'de seed ve kod çalışmaları var) → sunucudaki commit ve `alembic_version` kesin kaynaktır |
-| Etiketten bu yana | 187 commit, 800 dosya, **15 migration** (+1 birleştirme), 8 yeni ortam değişkeni |
+| Yayın'ın GERÇEK konumu (2026-10-24, sunucudan okundu) | **kod `4cb738bb` (2026-09-08), alembic `bi01c4e5f6a7`**, PostgreSQL 14.24, aarch64 (ARM), DB 328 MB, kök disk %84 dolu (32 GB boş). Etiket `deploy-2026-07-08` yanıltıcıydı. |
+| Yayın'a göre bekleyen | **3 migration** (`gs01 → ux01 → mg01`; önceki "15" sayısı etiketten hesaplandığı için YANLIŞTI), 8 yeni ortam değişkeni ve **KMF veri geçişi (aşağıda 2.4, ZORUNLU)** |
 | Otomatik test | Py 3.11: 1227 geçti, 0 başarısız (KalDer P1–P10 + Docker kilidi); Test'te Docker build henüz yapılmadı |
 
 ## 1. 🔴 Bulunan ve düzeltilen deploy engeli: iki Alembic head
@@ -24,7 +24,7 @@
 - Dockerfile artık `requirements.lock` kuruyor (x86_64 + aarch64 cp311 wheel doğrulandı, `http-ece` sdist derlenir). **İlk gerçek Docker build Test'te olacak** (gcc / libpq-dev burada doğrulanmadı).
 - Python 3.11 imajı ile kod uyumlu (tam test 3.11'de geçti).
 
-### 2.2 Şema — 15 migration + 1 birleştirme (Yayın'ın mevcut revizyonundan sonrakiler uygulanır)
+### 2.2 Şema — Yayın `bi01c4e5f6a7`'de; bekleyen: `gs01a2b3c4d5` (users.session_version), `ux01a2b3c4d5` (bireysel PG benzersiz indeks), `mg01a2b3c4d5` (birleştirme). Aşağıdaki liste etiketten (Temmuz) bu yana TÜM migration'lardır; Yayın'da çoğu zaten uygulanmış
 Veri DEĞİŞTİRENLER (hepsi UPDATE: NULL → değer; iki temizlik adımı **kalın**):
 | Migration | Etki |
 |---|---|
@@ -49,6 +49,7 @@ Yerelde aynı betik çalıştı (referans): kpi_data 367.219 satır; ux01 müker
 Kırmızı çizgi ritüeli değişmez: **kontrol dosyası + DB yedeği (custom + sql.gz) + kod yedeği** (REHBER §3). Deploy sonrası satır sayıları kontrol dosyasıyla birebir aynı olmalı (`oracle_safe_deploy.sh` satır kilidi). Yukarıdaki ux01 / e9669 sayıları > 0 ise kullanıcıya bildirilir.
 
 ### 2.4 Tek seferlik işlemler (migration ile GELMEZ)
+0. **🔴 KMF yıl bazlı veri geçişi (ZORUNLU, Yayın'da henüz uygulanmadı):** `yilbazli_faz1_2_clone_zinciri.py --tenant 16 --calistir` → `yilbazli_faz1_5_kpi_data_remap.py --calistir` → `yilbazli_faz1_4_override_goc.py --tenant 16 --calistir` (6 Ekim TASK-311'deki yerel sıra). Yayın'da yapı farkı yalnız KMF'dir (11 süreç/187 PG yılsız; yerelde 77/973); diğer tüm kurumlar Yayın ile yerelde birebir aynı. **Yayın kopyası üzerinde prova edildi, KMF'de kayıp yok** (ayrıntı, 28 görünmez ölçüm bulgusu ve kontrol prosedürü: [KMF-VERI-ENVANTERI-2026-10-24.md](KMF-VERI-ENVANTERI-2026-10-24.md)). Bu işlemden önce DB yedeği şart; yedek aracı `scripts/ops/yayin_kopya_al.py`.
 1. **Kart keşfi** (`/admin/hierarchy` → kart keşfi): yeni kartlar (ör. `masaustu.bekleyen_pg`, `masaustu.ilk_kurulum`, `temel_akis.serit`) `system_cards`'a girer. Seed'den ÖNCE.
 2. `seed_card_descriptions.py --calistir` (orchestrator: `yayin_seed_kart.sh`): ön koşul `description` tipi `text` (391945351814 sonrası).
 3. **`scripts/seed_masaustu_yeni_kartlar.py`** (MA21, MA22, TA01): orchestrator'a `EXTRA_SEEDS="scripts/seed_masaustu_yeni_kartlar.py"` ile eklenir. EN karşılığı `.po`'da hazır.
@@ -59,7 +60,7 @@ Kırmızı çizgi ritüeli değişmez: **kontrol dosyası + DB yedeği (custom +
 |---|---|---|
 | `KOKPITIM_ENV` | `local` ise admin yedek / hata-kontrol araçları açık | **Sunucuda ASLA `local` olmamalı** (tanımsız bırak) |
 | `SSO_ALLOWED_DOMAINS` | boşsa Google SSO ile **yeni kullanıcı otomatik açılmaz** (eskiden açılıyordu) | Google SSO kullanılıyorsa alan adlarını ekle |
-| `YEDEKLEME_SCHEDULER_ENABLED` | **varsayılan `true`**: her gece 02:00 uygulama içi tam DB dökümü + **~250–580 MB kod arşivi**, `kokpitim-instance` volume'una (son 14 tutulur); yalnız Demo'da kapalı | ⚠ **KARAR:** VM'in kendi yedeği (`oracle_full_backup.sh`) var, sunucuda kod git'te → önerim Yayın/Test'te `false` (disk dolması riski, Demo'da yaşandı: TASK-239) |
+| `YEDEKLEME_SCHEDULER_ENABLED` | **varsayılan `true`**: her gece 02:00 uygulama içi tam DB dökümü + **~250–580 MB kod arşivi**, `kokpitim-instance` volume'una (son 14 tutulur); yalnız Demo'da kapalı. **Yayın'da zaten çalışıyor: `/app/instance/yedekler` şu an 2,5 GB, kök disk %84 dolu** (eski kodda da vardı; bu değişken onu kapatabilmeyi sağlıyor) | ⚠ **KARAR:** VM'in kendi yedeği (`oracle_full_backup.sh`) var, sunucuda kod git'te → önerim Yayın/Test'te `false` (disk dolması riski, Demo'da yaşandı: TASK-239) |
 | `DEMO_ALLOWED_HOSTS` | varsayılan demo + yerel; Yayın / Test'te `/demo/start` 404 | Demo'da varsayılan yeterli |
 | `SOCKETIO_CORS_ORIGINS` | tanımsız = yalnız aynı kaynak | nginx arkasında aynı alan adı → dokunma |
 | `REMINDER_SCHEDULERS_ENABLED` | varsayılan kapalı | değişiklik yok |
@@ -75,8 +76,8 @@ Kırmızı çizgi ritüeli değişmez: **kontrol dosyası + DB yedeği (custom +
 1. **"push'la"** → `git push origin main` (+ bu dalın merge'ü).
 2. `.\scripts\ops\oracle\yayina_ver.ps1 -Mod kontrol` → yalnız 4 katman raporu (yazmaz).
 3. **"test'e gönderelim"** → `-Mod test -Onay` (Test **sıfırdan** kurulur). Test'te: Docker build başarılı mı, migration'lar sorunsuz mu (`alembic current` = `mg01a2b3c4d5`), `/health`, tarayıcı testi (artifact: https://claude.ai/artifact/YNoaBojR69dsiy19gEZDmU), karne rakam kıyası.
-4. Yayın'da `yayin_onkontrol.sql` + kontrol dosyası + yedek.
-5. **"yayına çıkalım"** → `-Mod yayin -Onay` (yedek + pull + build + alembic + satır kilidi) → seed (§2.4) → `https://www.kokpitim.com/health`.
+4. Yayın'da `yayin_onkontrol.sql` + kontrol dosyası + yedek. **KMF için ayrıca:** `python scripts/ops/yayin_kopya_al.py --db kokpitim_yayin_oncesi_<tarih>` (deploy'dan hemen önce referans kopya; 2026-10-24 yedeği `backups/yayin/yayin_2026-10-24_1028.dump` zaten alındı).
+5. **"yayına çıkalım"** → `-Mod yayin -Onay` (yedek + pull + build + alembic + satır kilidi) → **KMF veri geçişi (§2.4 madde 0)** → seed (§2.4) → `https://www.kokpitim.com/health` → **KMF kontrolü** (`yayin_kopya_al.py --db kokpitim_yayin_sonrasi` + `kurum_veri_kiyas.py kiyas ...`; KMF-VERI-ENVANTERI §5).
 6. Geri dönüş: rollback image etiketi (REHBER §4 adım 1) + DB yedeği; şema geri dönüşü için migration `downgrade`'leri veri değiştirenlerde güvenilir DEĞİL → **yedekten dön**.
 
 ## 6. Açık kararlar / engeller
@@ -84,3 +85,4 @@ Kırmızı çizgi ritüeli değişmez: **kontrol dosyası + DB yedeği (custom +
 2. `YEDEKLEME_SCHEDULER_ENABLED` Yayın / Test'te kapatılsın mı? (öneri: evet)
 3. Google SSO kullanılıyor mu → `SSO_ALLOWED_DOMAINS`.
 4. Push + bu dalın `main`'e merge'ü (migration birleştirme olmadan deploy engelli).
+5. **KMF veri geçişi ve karışık yapılı 31 PG kopyası** (28 ölçüm yıl bazlı karnede görünmez): karar/plan [KMF-VERI-ENVANTERI-2026-10-24.md](KMF-VERI-ENVANTERI-2026-10-24.md) §4 ve §6.

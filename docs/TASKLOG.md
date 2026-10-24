@@ -2,6 +2,29 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-331 | 2026-10-24 | ✅ Tamamlandı (KMF Yayın verisi: yerel yedek + envanter + Yayın kopyasında prova; Yayın'a YAZMA YOK, deploy YOK)
+
+**Görev:** "Canlıdaki KMF verileri çok kritik: önce yerel yedekle, hangi verimiz var tespit et; canlıya aldıktan sonra eksik var mı kontrol edeceğiz"
+**Modül:** ops araçları, yedek, doğrulama
+**Durum:** ✅ Tamamlandı — ayrıntı: `docs/kontrol/KMF-VERI-ENVANTERI-2026-10-24.md`
+
+### Değiştirilen Dosyalar
+- `scripts/ops/kurum_veri_kiyas.py` (yeni) → bir kurumun TÜM verisini (tenant_id + FK zinciri + FK'siz emniyet ağı) bulup iki yerel DB arasında satır satır kıyaslar; yalnız localhost; negatif kontrolle doğrulandı
+- `scripts/ops/yayin_kopya_al.py` (yeni) → Yayın'ı salt okunur dump + kullanıcı dosyaları (tar) → AYRI yerel DB (`kokpitim_yayin_*`); `kokpitim_db` korunur
+- `docs/kontrol/KMF-VERI-ENVANTERI-2026-10-24.md` (yeni), `docs/kontrol/YAYIN-HAZIRLIK-2026-10-24.md` (düzeltildi: Yayın bi01/4cb738bb, bekleyen 3 migration, KMF veri geçişi zorunlu)
+
+### Yapılan İşlem
+Yayın: salt okunur `sudo -u postgres pg_dump` (9,1 MB, sha256 kayıtlı) + `uploads` tar (KMF logosu dahil). Yerel yedek: `backups/yayin/yayin_2026-10-24_1028.dump`; referans kopya DB `kokpitim_yayin_oncesi` (dokunulmaz). Prova (`kokpitim_yayin_prova`): `run_db_upgrade.py` + `yilbazli_faz1_2 --tenant 16` + `faz1_5` + `faz1_4 --tenant 16`; 13 kurumun hepsinde ve KMF'de değer düzeyinde **kayıp 0**; provada yerelin dönüşüm sonrası KMF yapısı (77 süreç/973 PG) birebir yeniden üretildi.
+
+### Bulgular
+- Yayın ile yerel arasındaki TEK yapı farkı KMF (Yayın 11 süreç/187 PG yılsız; yerel 77/973). Veri geçişi deploy'la gelmez → zorunlu 4. katman işlemi.
+- 31 PG kopyası (SR5 23, SR8 7, SR11 1) süreç yılından farklı yıl taşıyor; 28 ölçüm yıl bazlı karnede GÖRÜNMÜYOR (kayıp değil). Yerelde de var. Karar bekliyor.
+- Karne rakamları değişir (başarı yüzdesi dolar; virgüllü ondalık hatası düzelir; "son değer" en son girileni seçer; 2026 özetleri: SR10 %30→%70, SR8 %50→%66). KMF sorumlusuyla Test'te doğrulanmalı.
+- Önceki raporun "15 migration" sayısı yanlıştı: Yayın alembic `bi01`'de, bekleyen 3.
+
+### Notlar
+Prova sırasında zamanlayıcılar kapatıldı (APScheduler `start` boşa çıkarıldı), Sentry/AI anahtarları boşaltıldı; gerçek kullanıcıya bildirim/e-posta gitmedi. Prova DB'lerinde yalnızca 4 KMF hesabına prova şifresi tanımlandı (kopyada).
+
 ## TASK-330 | 2026-10-24 | ✅ Tamamlandı (Yayın hazırlığı: Alembic çift head düzeltmesi + ön kontrol + rapor; yalnız Yerel, deploy YOK)
 
 **Görev:** "Yayına almak için son hazırlıkları yap" — 4 katman kontrolü (REHBER §0 madde 7), deploy engellerini kapat
