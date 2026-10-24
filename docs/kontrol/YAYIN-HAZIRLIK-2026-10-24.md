@@ -77,7 +77,7 @@ Kırmızı çizgi ritüeli değişmez: **kontrol dosyası + DB yedeği (custom +
 2. `.\scripts\ops\oracle\yayina_ver.ps1 -Mod kontrol` → yalnız 4 katman raporu (yazmaz).
 3. **"test'e gönderelim"** → `-Mod test -Onay` (Test **sıfırdan** kurulur). Test'te: Docker build başarılı mı, migration'lar sorunsuz mu (`alembic current` = `mg01a2b3c4d5`), `/health`, tarayıcı testi (artifact: https://claude.ai/artifact/YNoaBojR69dsiy19gEZDmU), karne rakam kıyası.
 4. Yayın'da `yayin_onkontrol.sql` + kontrol dosyası + yedek. **KMF için ayrıca:** `python scripts/ops/yayin_kopya_al.py --db kokpitim_yayin_oncesi_<tarih>` (deploy'dan hemen önce referans kopya; 2026-10-24 yedeği `backups/yayin/yayin_2026-10-24_1028.dump` zaten alındı).
-5. **"yayına çıkalım"** → `-Mod yayin -Onay` (yedek + pull + build + alembic + satır kilidi) → **KMF veri geçişi (§2.4 madde 0)** → seed (§2.4) → `https://www.kokpitim.com/health` → **KMF kontrolü** (`yayin_kopya_al.py --db kokpitim_yayin_sonrasi` + `kurum_veri_kiyas.py kiyas ...`; KMF-VERI-ENVANTERI §5).
+5. **"yayına çıkalım"** → `-Mod yayin -Onay` (yedek + pull + build + alembic + satır kilidi) → **KMF veri geçişi (§2.4 madde 0; komut: `docker exec kokpitim-web python scripts/ops/kurum_yilbazli_gecis.py --tenant 16` önce KONTROL, sonra `--calistir --yedek-onay <dump adı>`; 1.2b dahil, TASK-332)** → seed (§2.4) → `https://www.kokpitim.com/health` → **KMF kontrolü** (`yayin_kopya_al.py --db kokpitim_yayin_sonrasi` + `kurum_veri_kiyas.py kiyas ...`; KMF-VERI-ENVANTERI §5).
 6. Geri dönüş: rollback image etiketi (REHBER §4 adım 1) + DB yedeği; şema geri dönüşü için migration `downgrade`'leri veri değiştirenlerde güvenilir DEĞİL → **yedekten dön**.
 
 ## 6. Açık kararlar / engeller

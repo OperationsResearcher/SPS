@@ -2,6 +2,23 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-332 | 2026-10-24 | ✅ Tamamlandı (KMF yıl bazlı geçiş runner'ı + karışık yıllı PG düzeltmesi; Yayın'a UYGULANMADI)
+
+**Görev:** KMF için iki bulgu: (1) yıl bazlı veri geçişi deploy'a dahil değil → tek komutlu, kilitli, tekrarlanabilir runner; (2) 31 karışık yıllı PG / 28 görünmez ölçüm → düzeltme betiği.
+**Modül:** ops araçları (yılbazlı geçiş)
+**Durum:** ✅ Tamamlandı — Yayın kopyasında (taze `kokpitim_yayin_prova2`) uçtan uca prova: kayıp yok, karışık PG 0, aktif ölçümün tamamı (861) görünür.
+
+### Değiştirilen Dosyalar
+- `scripts/ops/yilbazli_faz1_2b_karisik_pg_duzelt.py` (yeni) → PG yılı ≠ süreç yılı olan PG'leri düzeltir: yılın klonu varsa ölçüm+bağlı kayıtlar klona taşınır (K pasif), yoksa K yılın sürecine bağlanır + alt strateji yılın klonuna eşlenir. KONTROL varsayılan, `--calistir`, geri alma CSV (`instance/yilbazli/`).
+- `scripts/ops/kurum_yilbazli_gecis.py` (yeni) → sıralı runner: 1.2 → 1.2b → 1.5 → 1.4 → doğrulama; `--calistir` için `--yedek-onay` zorunlu; hata = dur.
+- `tests/test_kurum_yilbazli_gecis.py` (yeni) → yedek kilidi + adım sırası.
+
+### Yapılan İşlem
+KMF'de 31 karışık PG: 8'i klonlu (taşı), 23'ü klonsuz (bağla); etkilenen 31 ölçüm. Prova: `CREATE DATABASE … TEMPLATE kokpitim_yayin_oncesi` → `run_db_upgrade` → runner `--calistir`; `kurum_veri_kiyas` ✅ KAYIP YOK (22219 → 23600, yalnız eklenen klonlar). Kalan "yanlış yıl 343" (faz1_5 uyarısı) = Tenant 28'in 204'ü (Yayın'da zaten var) + KMF'nin 139 PASİF 2020 PG'si (Yayın'da zaten pasif/görünmez).
+
+### Notlar
+Yayın'da çalıştırma: deploy + seed sonrası, container içinde, yedek sonrası; kullanıcı "yayına çıkalım" demeden yok. Aynı adlı kardeş PG'ler (SR8 2025) birleştirilmez, ayrı bağlanır.
+
 ## TASK-331 | 2026-10-24 | ✅ Tamamlandı (KMF Yayın verisi: yerel yedek + envanter + Yayın kopyasında prova; Yayın'a YAZMA YOK, deploy YOK)
 
 **Görev:** "Canlıdaki KMF verileri çok kritik: önce yerel yedekle, hangi verimiz var tespit et; canlıya aldıktan sonra eksik var mı kontrol edeceğiz"
