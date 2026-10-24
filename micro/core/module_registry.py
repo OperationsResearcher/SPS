@@ -14,7 +14,7 @@ MODULES = [
         "name": _("Masaüstüm"),
         "url": "/desktop",
         "icon": "🏠",
-        "description": _("Kişisel özet — tüm modüllerden gelen görevler, KPI'lar ve iş planları"),
+        "description": _("Kişisel özet — tüm modüllerden gelen görevler, PG'ler ve iş planları"),
     },
     {
         "id": "sp",
@@ -29,7 +29,7 @@ MODULES = [
         "name": _("Süreç Yönetimi"),
         "url": "/k-plan/process",
         "icon": "⚙️",
-        "description": _("Süreçler, KPI'lar ve faaliyet takibi"),
+        "description": _("Süreçler, PG'ler ve faaliyet takibi"),
     },
     {
         # Katman mimarisi: KATMAN DIŞI bırakıldı (bilinçli). Kurum kimliği hem

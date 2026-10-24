@@ -1271,7 +1271,7 @@ def raporlar_api_ai_sunum_generate():
             f"{kpi_count} {_('performans göstergesi')}",
             f"{len(initiatives)} {_('stratejik girişim (initiative)')}",
             f"{user_count} {_('aktif çalışan')}",
-            f"{meas_count:,} {_('toplam KPI ölçümü')}",
+            f"{meas_count:,} {_('toplam PG ölçümü')}",
         ])
 
     add_content_slide(prs, 4, _("Ana Stratejiler ve K-Vektör Ağırlıkları"),

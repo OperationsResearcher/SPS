@@ -53,7 +53,7 @@
           <div id="h-users" class="mc-num st-p12-012">—</div>
         </div>
         <div>
-          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Toplam KPI") }}</div>
+          <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Toplam PG") }}</div>
           <div id="h-kpi" class="mc-num st-p12-012">—</div>
         </div>
         <div>
@@ -74,7 +74,7 @@
     <div class="mc-card st-p12-018" data-card-code="admin_holding_dashboard.yuksek_anomali">
       <div class="mc-stat-label st-p12-015">{{ _("Yüksek Anomali") }}</div>
       <div id="h-anomaly" class="mc-num st-p12-019">—</div>
-      <div class="st-p12-017">{{ _("KPI sapmaları") }}</div>
+      <div class="st-p12-017">{{ _("PG sapmaları") }}</div>
     </div>
     <div class="mc-card st-p12-018" data-card-code="admin_holding_dashboard.gecikmis_faaliyet">
       <div class="mc-stat-label st-p12-015">{{ _("Gecikmiş Faaliyet") }}</div>
@@ -152,14 +152,14 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
             <div style="font-size:28px; font-weight:700; color:${hColor};" class="mc-num">${it.health_score != null ? it.health_score : "—"}</div>
           </div>
           <div style="text-align:right;">
-            <div style="font-size:10px; color:#64748b; text-transform:uppercase;">${t("KPI Hedef Üstü")}</div>
+            <div style="font-size:10px; color:#64748b; text-transform:uppercase;">${t("PG Hedef Üstü")}</div>
             <div style="font-size:18px; font-weight:600; color:var(--text-default);" class="mc-num">%${it.kpi_on_target_pct}</div>
           </div>
         </div>
         <div style="display:grid; grid-template-columns:repeat(4, 1fr); gap:8px; font-size:11px; color:#475569; padding-top:10px; border-top:1px solid #e2e8f0;">
           <div style="text-align:center;">
             <div style="font-weight:600; font-size:14px; color:var(--text-default);">${it.kpi_total}</div>
-            <div style="color:#94a3b8;">KPI</div>
+            <div style="color:#94a3b8;">PG</div>
           </div>
           <div style="text-align:center;">
             <div style="font-weight:600; font-size:14px; color:var(--text-default);">${it.initiative_total}</div>

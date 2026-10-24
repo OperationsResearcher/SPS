@@ -2,6 +2,24 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-325 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P10 — KPI→PG terminoloji + karne motoru kıyası; yalnız Yerel; commit yok)
+
+**Görev:** KalDer P10: kullanıcıya görünen "KPI" → "PG"; karne/skor motoru testlerini karşılaştır
+**Modül:** terminoloji/i18n, karne motoru (yalnız kıyas)
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- ~45 dosya (şablon, JS, `app/`, `micro/`, `services/`) → çeviri literallerinde/etiketlerde "KPI" → "PG" (Türkçe ek uyumu: PG'ler/PG'yi/PG'de), `docs/UI-TERMINOLOJI.md`
+- `translations/**` → yeniden çıkarım; 40 yeni msgid'in 37'si KalDer çevirisinden, 3'ü elle
+- `tests/test_terminoloji_pg.py` (yeni), `tests/test_puan_sozlesmesi.py` (yeni, geçiyor), `tests/test_basari_yuzdesi_sunucu.py` (yeni; 1 xfail), `requirements-test.txt` (`hypothesis`)
+- `docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md` (yeni)
+
+### Yapılan İşlem
+Terminoloji: ana projede ~65 görünen "KPI" vardı (rehberin "~4" tahmini yanlıştı); KalDer yaması kısmen, kalanı kural tabanlı betikle (yalnız `_()`/`t()` literalleri ve düz etiket metni; `KPI-327` gibi kodlar hariç) çevrildi. Karne motoru: **Puan sözleşmesi ana projede zaten sağlanıyor (3/3)**; başarı yüzdesi 9/10; sapma formülü testi içe aktarma hatası (`adverse_deviation_pct` yok).
+
+### Notlar
+**Karne/sapma farkları (surec.js istemci yüzdesi, `adverse_deviation_pct`) TAŞINMADI**: kurumların gördüğü rakamları değiştirir → iş kararı. Ayrıntı ve taşıma yolu: `docs/kontrol/KALDER-KARNE-MOTORU-KIYAS.md`. Repo hijyeni (`bbc650c`, kök artıklar) yapılmadı. EN çevirilerde "KPI" kalabilir (bilinçli).
+
 ## TASK-324 | 2026-10-24 | ✅ Tamamlandı (KalDer öğrenme P8 — güvenlik testleri + açıkların kapatılması; yalnız Yerel; commit yok)
 
 **Görev:** KalDer P8: güvenlik test paketini al, kırılanlar = ana projedeki açıklar → kapat

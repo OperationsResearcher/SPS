@@ -421,7 +421,7 @@ class KpiData(db.Model):
     #
     # Ölçek (20,6): yereldeki en büyük değer 381.806.691 (9 tam basamak),
     # ondalık ihtiyacı en fazla 1 satırda 16 basamak. 6 ondalık o satırda
-    # 4.4e-7 fark bırakır (KPI ölçümünde anlamsız); (20,4) ise 0.4444'e
+    # 4.4e-7 fark bırakır (PG ölçümünde anlamsız); (20,4) ise 0.4444'e
     # yuvarlayıp safe_float'tan SAPIYORDU — ölçüldü, bu yüzden 6.
     target_numeric = db.Column(db.Numeric(20, 6), nullable=True)
     actual_numeric = db.Column(db.Numeric(20, 6), nullable=True)

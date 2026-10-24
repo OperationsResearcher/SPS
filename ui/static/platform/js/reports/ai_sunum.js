@@ -22,7 +22,7 @@
         dpItem(t('Süreç'), d.processes),
         dpItem(t('Stratejik Girişim'), d.initiatives),
         dpItem(t('Çalışan'), d.users),
-        dpItem(t('KPI Ölçüm'), d.kpi_measurements.toLocaleString('tr-TR')),
+        dpItem(t('PG Ölçüm'), d.kpi_measurements.toLocaleString('tr-TR')),
       ].join('');
 
       document.getElementById('slides').innerHTML = p.slides.map(s => `

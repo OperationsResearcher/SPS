@@ -668,7 +668,7 @@ def surec_api_kpi_score_detail(kpi_id: int):
     from app.utils.karne_hesaplamalar import hesapla_basari_puani_ham
     kpi = ProcessKpi.query.filter_by(id=kpi_id, is_active=True).first()
     if not kpi:
-        return jsonify({"success": False, "message": _("KPI bulunamadı.")}), 404
+        return jsonify({"success": False, "message": _("PG bulunamadı.")}), 404
     proc = kpi.process
     if not proc or proc.tenant_id != current_user.tenant_id:
         return jsonify({"success": False, "message": "Yetkisiz."}), 403

@@ -35,7 +35,7 @@ _DIGEST_TEMPLATE = """
     <table style="width: 100%; border-collapse: collapse;">
       <tr><td style="padding: 8px; border-bottom: 1px solid #eee;">Aktif Strateji</td><td style="text-align: right; font-weight: bold;">{{ strategy_count }}</td></tr>
       <tr><td style="padding: 8px; border-bottom: 1px solid #eee;">Aktif Süreç</td><td style="text-align: right; font-weight: bold;">{{ process_count }}</td></tr>
-      <tr><td style="padding: 8px; border-bottom: 1px solid #eee;">Toplam KPI</td><td style="text-align: right; font-weight: bold;">{{ kpi_count }}</td></tr>
+      <tr><td style="padding: 8px; border-bottom: 1px solid #eee;">Toplam PG</td><td style="text-align: right; font-weight: bold;">{{ kpi_count }}</td></tr>
       <tr><td style="padding: 8px;">Plan Yılı</td><td style="text-align: right; font-weight: bold;">{{ plan_year }}</td></tr>
     </table>
 
@@ -68,7 +68,7 @@ _DIGEST_TEMPLATE = """
     </table>
     {% else %}
     <h2 style="color: #28a745; margin-top: 24px;">✅ Anomali Yok</h2>
-    <p style="color: #666;">Tüm KPI'lar tarihsel ortalamalar civarında.</p>
+    <p style="color: #666;">Tüm PG'ler tarihsel ortalamalar civarında.</p>
     {% endif %}
 
     <p style="margin-top: 32px; padding: 16px; background: #f5f5f5; border-radius: 6px; color: #666; font-size: 12px;">

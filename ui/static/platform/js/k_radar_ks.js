@@ -993,7 +993,7 @@
       // ── Sekmeler ──────────────────────────────────────────────────────────
       const tabs = [
         { id: "bsc-tab-kart",    label: t("Kart Görünümü"),    icon: "fa-table-cells-large" },
-        { id: "bsc-tab-tablo",   label: t("KPI Tablosu"),      icon: "fa-table" },
+        { id: "bsc-tab-tablo",   label: t("PG Tablosu"),      icon: "fa-table" },
         { id: "bsc-tab-harita",  label: t("Strateji Haritası"), icon: "fa-sitemap" },
         { id: "bsc-tab-atama",   label: t("Perspektif Ata"),   icon: "fa-tag" },
       ];
@@ -1022,7 +1022,7 @@
             </div>
             ${assignBtn}
           </div>`;
-        }).join("") || `<div style="font-size:12px;color:#94a3b8;padding:8px 0;">${t("Bu perspektife atanmış KPI yok.")}</div>`;
+        }).join("") || `<div style="font-size:12px;color:#94a3b8;padding:8px 0;">${t("Bu perspektife atanmış PG yok.")}</div>`;
 
         return `<div class="bsc-persp-card" style="border-top:3px solid ${p.color};">
           <div class="bsc-persp-header" style="background:${p.bg};">
@@ -1039,7 +1039,7 @@
         </div>`;
       }).join("");
 
-      // ── KPI Tablosu ───────────────────────────────────────────────────────
+      // ── PG Tablosu ───────────────────────────────────────────────────────
       const allKpis = PERSPECTIVES.flatMap(p => (persp[p.key]?.kpis || []).map(k => ({ ...k, persp_label: p.label, persp_color: p.color })));
       const tableRows = allKpis.map(k => {
         const pct = k.perf_pct;
@@ -1053,7 +1053,7 @@
           <td style="font-weight:700;color:${scoreColor(pct)}">${pct != null ? pct + "%" : "—"}</td>
           <td>${assignBtn}</td>
         </tr>`;
-      }).join("") || `<tr><td colspan="7" style="text-align:center;padding:20px;color:#94a3b8;">${t("Atanmış KPI yok.")}</td></tr>`;
+      }).join("") || `<tr><td colspan="7" style="text-align:center;padding:20px;color:#94a3b8;">${t("Atanmış PG yok.")}</td></tr>`;
 
       // ── Strateji Haritası ─────────────────────────────────────────────────
       const haritaHtml = stratMap.map(s => {
@@ -1085,7 +1085,7 @@
           </div>
           <div class="bsc-map-subs">${subsHtml}</div>
         </div>`;
-      }).join("") || `<div style="text-align:center;padding:32px;color:#94a3b8;">${t("Strateji bağlantısı olan KPI bulunamadı.")}</div>`;
+      }).join("") || `<div style="text-align:center;padding:32px;color:#94a3b8;">${t("Strateji bağlantısı olan PG bulunamadı.")}</div>`;
 
       // ── Perspektif Ata ────────────────────────────────────────────────────
       const atamaRows = [...allKpis, ...unassigned.map(k => ({ ...k, persp_label: "—", persp_color: "#94a3b8" }))];
@@ -1102,7 +1102,7 @@
           <td style="font-size:11px;">${esc(k.process_code)} ${esc(k.process_name)}</td>
           <td>${btn}</td>
         </tr>`;
-      }).join("") || `<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">${t("KPI bulunamadı.")}</td></tr>`;
+      }).join("") || `<tr><td colspan="5" style="text-align:center;padding:20px;color:#94a3b8;">${t("PG bulunamadı.")}</td></tr>`;
 
       // ── Tümünü birleştir ──────────────────────────────────────────────────
       const autoBtn = canManage ? `<button id="bsc-auto-assign" class="mc-btn mc-btn-primary mc-btn-sm" style="margin-left:8px;"><i class="fas fa-wand-magic-sparkles"></i> ${t("Otomatik Atama")}</button>` : "";
@@ -1129,14 +1129,14 @@
           <div id="bsc-tab-kart"   class="bsc-panel active"><div class="bsc-persp-grid">${kartsHtml}</div></div>
           <div id="bsc-tab-tablo"  class="bsc-panel">
             <div class="mc-table-wrap"><table class="mc-table">
-              <thead><tr><th>${t("Perspektif")}</th><th>${t("Kod")}</th><th>KPI</th><th>${t("Süreç")}</th><th>${t("Strateji")}</th><th>${t("Başarı")}</th><th></th></tr></thead>
+              <thead><tr><th>${t("Perspektif")}</th><th>${t("Kod")}</th><th>PG</th><th>${t("Süreç")}</th><th>${t("Strateji")}</th><th>${t("Başarı")}</th><th></th></tr></thead>
               <tbody>${tableRows}</tbody>
             </table></div>
           </div>
           <div id="bsc-tab-harita" class="bsc-panel"><div class="bsc-map-wrap">${haritaHtml}</div></div>
           <div id="bsc-tab-atama"  class="bsc-panel">
             <div class="mc-table-wrap"><table class="mc-table">
-              <thead><tr><th>${t("Perspektif")}</th><th>${t("Kod")}</th><th>KPI</th><th>${t("Süreç")}</th><th></th></tr></thead>
+              <thead><tr><th>${t("Perspektif")}</th><th>${t("Kod")}</th><th>PG</th><th>${t("Süreç")}</th><th></th></tr></thead>
               <tbody>${atamaHtml}</tbody>
             </table></div>
           </div>
@@ -1455,7 +1455,7 @@
           </div>
         </div>
         <div class="mc-table-wrap"><table class="mc-table">
-          <thead><tr><th>${t("Kod")}</th><th>${t("Süreç")}</th><th>KPI</th><th>${t("Ort. Başarı")}</th><th>GAP</th><th>${t("Durum")}</th></tr></thead>
+          <thead><tr><th>${t("Kod")}</th><th>${t("Süreç")}</th><th>PG</th><th>${t("Ort. Başarı")}</th><th>GAP</th><th>${t("Durum")}</th></tr></thead>
           <tbody>${rows.map(r => {
             const durumBadge = r.durum === "hedefte"
               ? `<span class="mc-badge mc-badge-success">${t("Hedefte")}</span>`

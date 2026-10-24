@@ -112,7 +112,7 @@ def run_early_warning(app) -> dict:
                 ).all()
                 manager_ids = [u.id for u in managers]
 
-                # Aktif KPI'ları çek
+                # Aktif PG'ları çek
                 kpis = (
                     ProcessKpi.query
                     .join(Process, Process.id == ProcessKpi.process_id)

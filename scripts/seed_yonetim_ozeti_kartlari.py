@@ -61,7 +61,7 @@ KARTLAR = [
         "artıyorsa planlama ile gerçekleşme arasında açılma var demektir.",
     ),
     (
-        "yonetim_ozeti.kpi_ozet", "YO07", "KPI Özeti",
+        "yonetim_ozeti.kpi_ozet", "YO07", "PG Özeti",
         "Performans göstergelerinin hedefe göre dağılımı: hedefte, risk altında "
         "ve hedef dışı olanların sayısı.",
     ),

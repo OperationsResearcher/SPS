@@ -48,7 +48,7 @@
         </div>
         <div class="st-p07-012">
           <div>
-            <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Aktif KPI") }}</div>
+            <div style="opacity:0.6; text-transform:uppercase; font-size: var(--text-2xs); letter-spacing:0.05em;">{{ _("Aktif PG") }}</div>
             <div class="st-p07-013" id="d-kpi">—</div>
           </div>
           <div>
@@ -66,7 +66,7 @@
     {# ─── 6 KPI tile (salt-okur) ─────────────────────────────────── #}
     <div class="st-p07-014">
       <div class="mc-card st-p07-015" data-card-code="admin_holding_drilldown.kpi_hedef_ustu">
-        <div class="mc-stat-label st-p07-016">{{ _("KPI Hedef Üstü") }}</div>
+        <div class="mc-stat-label st-p07-016">{{ _("PG Hedef Üstü") }}</div>
         <div class="st-p07-017" id="t-kpi-pct">—</div>
         <div class="st-p07-018" id="t-kpi-detail">—</div>
       </div>
@@ -175,7 +175,7 @@ function esc(s){ const d=document.createElement('div'); d.textContent=String(s??
     // 6 tile
     document.getElementById("t-kpi-pct").textContent = "%" + ((snap.kpi||{}).on_target_pct || 0);
     document.getElementById("t-kpi-detail").textContent =
-      `${(snap.kpi||{}).with_data || 0} / ${(snap.kpi||{}).total || 0} ${t("KPI'da veri")}`;
+      `${(snap.kpi||{}).with_data || 0} / ${(snap.kpi||{}).total || 0} ${t("PG'de veri")}`;
 
     const inProg = ((snap.initiative||{}).by_status||{}).in_progress || {avg_progress:0,count:0};
     document.getElementById("t-init-avg").textContent = "%" + Math.round(inProg.avg_progress);

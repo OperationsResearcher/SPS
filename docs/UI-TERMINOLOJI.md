@@ -83,13 +83,13 @@ Bu belge **Kokpitim arayüzünde kullanılacak Türkçe terimleri** sözlük ola
 | `core_values` | **Değerler** |
 | `replan_trigger` | **Yeniden Planlama Tetikleyicisi** |
 
-### Süreç / KPI
+### Süreç / PG
 
 | Kod tarafı | UI tarafı |
 |---|---|
 | `process` | **Süreç** |
-| `kpi`, `ProcessKpi` | **KPI / Performans Göstergesi** |
-| `kpi_data` | **KPI Verisi / Ölçüm** |
+| `kpi`, `ProcessKpi` | **PG (Performans Göstergesi)** — Türkçe arayüzde "KPI" yazılmaz |
+| `kpi_data` | **PG Verisi / Ölçüm** |
 | `activity` (ProcessActivity) | **Faaliyet** |
 | `individual_pg` | **Bireysel Performans Göstergesi (PG)** |
 | `karne` (zaten Türkçe) | **Karne** |
@@ -184,7 +184,10 @@ Bu belge **Kokpitim arayüzünde kullanılacak Türkçe terimleri** sözlük ola
    - ✗ "yeni kurum eklendi"
    - ✗ "Yeni Kurum Eklendi" (cümle başlığı değilse)
 
-3. **İngilizce kısaltmalar büyük kalır**: API, KPI, EVM, CPM, SWOT, OKR, 2FA, BYOK
+3. **İngilizce kısaltmalar büyük kalır**: API, EVM, CPM, SWOT, OKR, 2FA, BYOK
+   - **İstisna: KPI.** Türkçe arayüzde **PG** kullanılır (dil birliği, karar 2026-10-22): `KPI'lar` → `PG'ler`, `KPI'yı` → `PG'yi`, `KPI'da` → `PG'de`
+     (PG "pe-ge" okunur: ekler ön ünlüye uyar). İngilizce arayüzde (EN çevirisi) `KPI` kalır.
+   - Veri kodları (örn. `KPI-327`) görünen metin değil kimliktir; değişmez.
 
 4. **Tooltip/title attribute**: Aynı dil kurallarına tabidir.
 

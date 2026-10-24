@@ -1,10 +1,10 @@
 {% extends "platform/base.html" %}
-{% block title %}{{ _("KPI Anomali Tespiti") }}{% endblock %}
+{% block title %}{{ _("PG Anomali Tespiti") }}{% endblock %}
 {% block content %}
 <div class="container-fluid py-4">
     <div class="d-flex justify-content-between align-items-center mb-4">
         <div>
-            <h2 class="mb-1"><i class="bi bi-exclamation-triangle"></i> {{ _("KPI Anomali Tespiti") }}</h2>
+            <h2 class="mb-1"><i class="bi bi-exclamation-triangle"></i> {{ _("PG Anomali Tespiti") }}</h2>
             <p class="text-muted mb-0">{{ _("Z-score tabanlı sapma tespiti — tarihsel ortalamadan ±N standart sapma uzaktaki ölçümler.") }}</p>
         </div>
     </div>
@@ -51,7 +51,7 @@
     <div id="anomaly-empty" class="text-center py-5 d-none" data-card-code="k_rapor_anomalies.bos_durum">
         <i class="bi bi-check-circle text-success fs-1"></i>
         <h4 class="text-success mt-3">{{ _("Anomali bulunamadı") }}</h4>
-        <p class="text-muted">{{ _("Tüm KPI'lar tarihsel ortalamalar civarında.") }}</p>
+        <p class="text-muted">{{ _("Tüm PG'ler tarihsel ortalamalar civarında.") }}</p>
     </div>
 </div>
 

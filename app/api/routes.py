@@ -164,7 +164,7 @@ def create_kpi_data(validated_data):
 @api_bp.route('/kpi-data/<int:kpi_data_id>', methods=['GET'])
 @login_required
 def get_kpi_data(kpi_data_id):
-    """KPI veri detayı"""
+    """PG veri detayı"""
     kpi_data = (KpiData.query
         .join(ProcessKpi, KpiData.process_kpi_id == ProcessKpi.id)
         .join(Process, ProcessKpi.process_id == Process.id)

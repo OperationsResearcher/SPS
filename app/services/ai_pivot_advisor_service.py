@@ -39,8 +39,8 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
         recs.append({
             "pivot_type": "refocus",
             "title": _("Stratejik odak daraltma"),
-            "rationale": _("KPI'ların yalnızca %%%(pct).0f'ı hedef üstünde.") % {"pct": kpi.get('on_target_pct', 0)},
-            "action": _("En düşük 3 KPI'yı incele; bağlı oldukları stratejileri pause/sunset adayı yap."),
+            "rationale": _("PG'lerin yalnızca %%%(pct).0f'ı hedef üstünde.") % {"pct": kpi.get('on_target_pct', 0)},
+            "action": _("En düşük 3 PG'yi incele; bağlı oldukları stratejileri pause/sunset adayı yap."),
             "priority": "high",
             "timeframe": "bu çeyrek",
         })
@@ -69,7 +69,7 @@ def _heuristic_recommendations(snapshot: dict) -> list[dict]:
         recs.append({
             "pivot_type": "new_initiative",
             "title": _("Anomali kök neden analizi"),
-            "rationale": _("%(n)s yüksek-severity KPI anomalisi.") % {"n": anom['high']},
+            "rationale": _("%(n)s yüksek-severity PG anomalisi.") % {"n": anom['high']},
             "action": _("A3 raporu + 5-neden analizi başlat."),
             "priority": "medium",
             "timeframe": "bu çeyrek",

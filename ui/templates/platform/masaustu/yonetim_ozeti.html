@@ -78,7 +78,7 @@
     {# ── KPI özeti ── #}
     <div class="mc-card" data-card-code="yonetim_ozeti.kpi_ozet">
       <div class="mc-card-header">
-        <span class="mc-card-title"><i class="fas fa-bullseye st-p22-016"></i> {{ _("KPI Özeti") }}</span>
+        <span class="mc-card-title"><i class="fas fa-bullseye st-p22-016"></i> {{ _("PG Özeti") }}</span>
       </div>
       <div class="mc-card-body">
         <ul class="yo-metric-list st-p22-014" id="yo-kpi">
@@ -166,7 +166,7 @@
     // KPI özeti
     const k = d.kpi_ozet || {};
     const kmap = [
-      [t("Toplam KPI"), k.kpi_total],
+      [t("Toplam PG"), k.kpi_total],
       [t("Veri girilmiş"), k.kpi_with_data],
       [t("Hedef üstü %"), k.on_target_pct!=null ? k.on_target_pct+"%" : "—"],
       [t("Açık risk"), k.risk_count],

@@ -142,7 +142,7 @@ DESCRIPTIONS: dict[str, str] = {
         "\n"
         "Sınır: Listede altı bölüm yazsa da üretilen PDF şu an DÖRT bölüm içerir: kurum "
         "bilgileri, stratejik plan yapısı, son 90 gün denetim günlüğü ve kullanıcı güvenlik "
-        "özeti. 'KPI Özeti' ve 'Risk Özeti' bölümleri henüz dosyada üretilmemektedir.\n"
+        "özeti. 'PG Özeti' ve 'Risk Özeti' bölümleri henüz dosyada üretilmemektedir.\n"
         "\n"
         "Yorum: Denetçiye KPI veya risk verisi gerekiyorsa ilgili raporları (KPI panoları, risk "
         "ısı haritası) ayrıca dışa aktarın."

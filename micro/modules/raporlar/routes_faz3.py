@@ -484,7 +484,7 @@ def raporlar_api_yatirimci_sunum_generate():
 
     s = prs.slides.add_slide(prs.slide_layouts[6]); add_slide_title(s, _("Operasyonel Performans"), BLUE)
     add_body(s, _("Yıllık operasyonel göstergeler:"),
-        bullets=[f"{proc_count} {_('aktif süreç')}", f"{meas_count:,} {_('KPI ölçümü')}",
+        bullets=[f"{proc_count} {_('aktif süreç')}", f"{meas_count:,} {_('PG ölçümü')}",
                  f"{user_count} {_('aktif çalışan')}",
                  # M12: "CMMI olgunluk seviyesinde izlenmektedir" YATIRIMCI
                  # SUNUMUNDA en riskli iddiaydı — arkadaki veri 1-5 arası
