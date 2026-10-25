@@ -25,6 +25,15 @@ SILINEN = [
         "api_key_required API key'i DOĞRULAMIYORDU (TODO bırakılmış) (TASK-250)",
         "Gerçek API auth gerekirse: app/api/data_connector.py token deseni",
     ),
+    # TASK-337 (2026-10-25): import grafiğinde erişilemeyen ve adı hiçbir yerde geçmeyen dosyalar
+    ("app/constants/canonical_schema.py", "hiçbir yerden import edilmiyordu", "app/models/"),
+    ("app/schemas/process_schemas.py", "hiçbir yerden import edilmiyordu", "micro/modules/surec/"),
+    ("app/utils/query_helpers.py", "hiçbir yerden import edilmiyordu", "app/utils/"),
+    ("services/game_theory_service.py", "mock route'lar bile import etmiyordu", "gerekirse app/services/"),
+    ("services/knowledge_graph_service.py", "hiçbir yerden import edilmiyordu", "gerekirse app/services/"),
+    ("services/monte_carlo_service.py", "hiçbir yerden import edilmiyordu", "gerekirse app/services/"),
+    ("static/js/admin_panel.js", "171 KB eski admin arayüzü JS'i; hiçbir şablon yüklemiyordu", "ui/static/platform/js/"),
+    ("ARCHIVE", "tüm içerik ölü şablon/statik arşivi; git geçmişinde duruyor", "git log -- ARCHIVE"),
 ]
 
 
