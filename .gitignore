@@ -50,3 +50,7 @@ htmlcov/
 
 # Excel gecici kilit dosyalari (dosya acikken olusur)
 ~$*
+
+# Kilavuz ciktilari (buyuk ikili dosyalar)
+docs/kılavuz/*.pdf
+docs/kılavuz/ekranlar/*.png

@@ -148,7 +148,8 @@ def _enforce_package_module_gating():
         except Exception:
             allowed = None  # çözülemezse engelleme (fail-open)
         if allowed is not None and pkg_mid not in allowed:
-            return _deny("Bu modül paketinizde yok.")
+            # allowed = get_accessible_modules (paket + rol birlikte) → neden yalnız "paket" denemez.
+            return _deny("Bu sayfaya erişim yetkiniz yok.")
 
     # ── Rol/liderlik kapısı (sayfa + API) ──
     if role_mid is not None:

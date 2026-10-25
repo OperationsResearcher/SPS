@@ -699,8 +699,8 @@ def seed(args):
         mgr = email_to_uid.get(proj.get("manager_email"))
         result = db.session.execute(text("""
             INSERT INTO project (tenant_id, name, description, manager_id, start_date, end_date,
-                                 priority, health_status, is_archived, created_at, updated_at)
-            VALUES (:t, :n, :d, :m, :sd, :ed, :p, :hs, false, NOW(), NOW())
+                                 priority, health_status, is_archived, is_active, created_at, updated_at)
+            VALUES (:t, :n, :d, :m, :sd, :ed, :p, :hs, false, true, NOW(), NOW())
             RETURNING id
         """), {
             "t": tenant.id, "n": proj["name"], "d": proj.get("description"),
