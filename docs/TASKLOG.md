@@ -2,6 +2,33 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-337 | 2026-10-25 | ✅ Tamamlandı (ölü kod temizliği; `claude/temizlik-kok-dosyalar`; commit/push YOK)
+
+**Görev:** Küçük kod dosyalarından ölü olanların tespiti ve silinmesi (statik analiz, kullanıcı onaylı).
+**Modül:** repo hijyeni
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+Yöntem: AST import grafiği (`app_platform.*` = `micro.*` sys.modules takma adı hesaba katıldı; ilk denemede bu atlanıp canlı modüller "ölü" çıkmıştı), şablon yolu/ad referansı, statik dosya adı (uzantılı) ve script anılma taraması. Silinen 347 dosya: 6 Python (`canonical_schema`, `process_schemas`, `query_helpers`, `game_theory/knowledge_graph/monte_carlo_service`), 16 eski şablon (kök `templates/`), 38 eski statik (kök `static/`, `admin_panel.js` 171 KB dahil), 115 tek seferlik script (`scripts/`), 172 arşiv dosyası (`scripts/_arsiv`, `ARCHIVE/`). Korunan: `scripts/_arsiv/fix_oneshot/extract_inline_t.py` ve `extract_db_card_descriptions.py` (`scripts/i18n_extract.sh` çağırıyor).
+Doğrulama: route sayısı 856 → 856 (fark yok); test 123 dosya, 1232 → 1240 geçti (+8 = `test_silinen_olu_kod.py` yeni koruma satırları); tek sorunlu dosya önceden bilinen `test_dalga2_proje_model.py` (bu makinede Windows access violation/zaman aşımı, silmeyle ilgisiz).
+
+### Notlar
+Belirsiz bırakılanlar (dokunulmadı): 29 şablon (marketing/*, process/*, projects/kanban-gantt-raid…), `app/tasks.py`, `webhook_service.py`, yalnız test/script kullanan 5 modül. Değişiklikler staged, commit edilmedi.
+
+## TASK-336 | 2026-10-25 | ✅ Tamamlandı (proje şişkinliği temizliği; `claude/temizlik-kok-dosyalar`; commit/push YOK)
+
+**Görev:** Yerel proje klasörü 16 GB → 5,2 GB (analiz + onaylı temizlik).
+**Modül:** repo hijyeni
+**Durum:** ✅ Tamamlandı
+
+### Yapılan İşlem
+- `instance/yedekler/otomatik`: 8 eski `code_*.tar.gz` + 7 eski DB dump silindi (kalan: son tam 20.07, son fark 24.07, son 3 dump). −9,15 GB. Eski arşivlerde Google Drive geçici klasörü `.tmp.driveupload` (≈860 MB/arşiv) vardı.
+- `.git/lost-found` (1,5 GB; 49 eski "WIP on …" stash commit'i) → `instance/lost-found-wip-2026-10-25.bundle` (402 MB, `git bundle verify` OK, 49 ref) alındı, sonra silindi. `.git` 2,4 → 0,9 GB. Geri yükleme: `git fetch instance/lost-found-wip-2026-10-25.bundle 'refs/rescue/*:refs/rescue/*'`.
+- Kök: 20 log/çıktı/kilit dosyası (`admin_cookie.txt` dahil) `git rm`; 62 eski rapor/plan/xlsx/pptx/sql/bat `docs/_arsiv/kok-dosyalar-2026-10/`'a `git mv` (kod referansı olanlar yerinde bırakıldı). Kök dosya sayısı 139 → 57. Önbellekler (htmlcov, __pycache__, .hypothesis vb.) silindi.
+
+### Notlar
+`admin_cookie.txt` git tarihçesinde kalır → o cookie/oturumun geçersiz kılındığından emin olun. Kök neden duruyor: Yedekleme servisi (`app/services/yedekleme_service.py`, `_KEEP_LAST=14`, `docs/` ve `.tmp*` dışlaması yok) 10 GB'ı yeniden biriktirir — değişiklik yapılmadı, karar bekliyor. Değişiklikler staged, commit edilmedi.
+
 ## TASK-335 | 2026-10-25 | ✅ Tamamlandı (kılavuz bulguları; `claude/fix-kilavuz-bulgulari`; commit/merge/push/deploy YOK)
 
 **Görev:** TASK-334 kılavuz çalışmasında bulunan 4 "ürün hatası"nın kök neden analizi ve düzeltmesi.
