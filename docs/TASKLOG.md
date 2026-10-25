@@ -2,6 +2,41 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-335 | 2026-10-25 | ✅ Tamamlandı (kılavuz bulguları; `claude/fix-kilavuz-bulgulari`; commit/merge/push/deploy YOK)
+
+**Görev:** TASK-334 kılavuz çalışmasında bulunan 4 "ürün hatası"nın kök neden analizi ve düzeltmesi.
+**Modül:** admin / platform_core / seed
+**Durum:** ✅ Tamamlandı — 2 gerçek hata düzeltildi, 1 seed sapması düzeltildi, 1 bulgu hata çıkmadı
+
+### Değiştirilen Dosyalar
+- `micro/modules/admin/routes.py` → `yonetim_paneli_kullanici_detay`: Admin + "Tüm Kurumlar" (tenant_id yok) artık 400 değil; servis (`get_user_activity_stats`) zaten kurumsuz çağrıyı destekliyordu.
+- `platform_core/__init__.py` → paket kapısı reddi "Bu modül paketinizde yok." yerine "Bu sayfaya erişim yetkiniz yok." (kapı `get_accessible_modules` ile paket+rolü birlikte hesaplıyor; neden "paket" denemez).
+- `scripts/seed_generic_tenant.py` → `INSERT INTO project` artık `is_active=true` veriyor (şema `NOT NULL` oldu).
+- `tests/test_kilavuz_bulgulari.py` (yeni) → 2 regresyon testi (düzeltmesiz kırmızı, düzeltmeyle yeşil); `test_dalga1_paket_kapisi` + `test_admin_smoke` ile birlikte 20/20.
+
+### Yapılan İşlem
+Bulgu 1 (kullanici-detay 400) ve 4 (seed) gerçek hata; 3'te yönlendirme tasarım gereği ve uyarı gösteriliyor, yalnız metin yanıltıcıydı. Bulgu 2 (Bireysel "Genel başarı skoru —") hata DEĞİL: PG'de `basari_puani_araliklari` yoksa `hesapla_basari_puani` bilerek `None` döner; örnek verim aralık içermiyordu. Seed düzeltmesi boş DB'de (varsayılan hilesi olmadan) doğrulandı, geçici DB silindi.
+
+### Notlar
+Ürün koduna dokunan 2 değişiklik (admin/routes, platform_core) Yayın'a henüz çıkmadı. İlk taramada görülen tek bir 404 konsol hatasının kaynağı yeniden üretilemedi (incelenmedi).
+
+## TASK-334 | 2026-10-25 | ✅ Tamamlandı (Ana kılavuz PDF v1; modül ekleri YAPILMADI; commit/merge/push YOK)
+
+**Görev:** `docs/kılavuz/KILAVUZ-HAZIRLAMA-PROMPTU.md` talimatıyla Kokpitim ana tanıtım ve kullanım kılavuzu (PDF) hazırlandı (`claude/kilavuz-hazirla`).
+**Modül:** dokümantasyon
+**Durum:** ✅ Tamamlandı (ana kılavuz); modül ekleri ve mobil çekim bekliyor
+
+### Değiştirilen Dosyalar
+- `docs/kılavuz/Kokpitim_Tanitim_ve_Kullanim_Kilavuzu.pdf` → 33 sayfa, 37 işaretli ekran, ~8 MB (git'e eklenmedi).
+- `docs/kılavuz/ekranlar/` → 37 PNG + `_liste.json` (git'e eklenmedi).
+- `.gitignore` → kılavuz PDF/PNG çıktıları için kural.
+
+### Yapılan İşlem
+Ayrı yerel veritabanı `kokpitim_kilavuz` (şema `run_db_upgrade.py`, referans tablolar `kokpitim_db`'den salt okunur kopya, kurgusal Tomofil `seed_generic_tenant.py` ile, ek SWOT/BSC/bildirim/bireysel PG verisi). Ekranlar yalnızca Yerel'den Playwright+Edge ile çekildi; iddialar koddan ve dört rolle giriş denemesiyle doğrulandı; PDF HTML→Edge ile üretildi, içindekiler 54/54 girdi PDF'te doğrulandı.
+
+### Notlar
+Gözlenen, düzeltilmeyen: `/admin/yonetim-paneli` yüklenirken `kullanici-detay` 400; Bireysel "Genel başarı skoru" PG'ler varken "—"; standart kullanıcı yetkisiz adreste 403 yerine Masaüstü'ne yönleniyor; `seed_generic_tenant.py` şemanın gerisinde (`project.is_active` zorunlu). `kokpitim_kilavuz` DB'si ekler için bırakıldı (hesaplar: admin.kilavuz@tomofil.test / admin@tomofil.test / ali.kaplan@tomofil.test / ahmet.akin@tomofil.test, kurgusal).
+
 ## TASK-333 | 2026-10-24 | ✅ Tamamlandı (Yayın deploy 875e6fd9 + KMF yıl bazlı geçiş UYGULANDI)
 
 **Görev:** `claude/yayin-hazirlik` main'e merge+push; Test sıfırdan; Yayın deploy; KMF (tenant 16) geçişi; eksik kontrolü.
