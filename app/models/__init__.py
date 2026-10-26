@@ -82,6 +82,13 @@ from app.models.bsc import BscKpiPerspective  # noqa: E402
 from app.models.esg import EsgMetric, EsgMetricValue  # noqa: E402
 from app.models.project import PlanProject, PlanProjectTask, PlanProjectActivity  # noqa: E402
 from app.models.marketing import DemoRequest  # noqa: E402
+from app.models.project_checklist import (  # noqa: E402,F401
+    ChecklistTemplate,
+    ChecklistTemplateItem,
+    ProjectChecklistItem,
+    ProjectChecklistEvidence,
+    ProjectChecklistAssignment,
+)
 from app.models.portfolio_project import (  # noqa: E402
     Project,
     Task,

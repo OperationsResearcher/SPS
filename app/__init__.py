@@ -710,6 +710,8 @@ def _init_reminder_schedulers(app) -> None:
         from services.process_activity_scheduler import init_process_activity_scheduler
         init_scheduler(app)
         init_process_activity_scheduler(app)
+        from services.project_checklist_scheduler import init_checklist_scheduler
+        init_checklist_scheduler(app)
         app.logger.info("[reminder] Hatirlatma zamanlayicilari baslatildi.")
     except Exception as e:
         app.logger.error("[reminder] baslatma hatasi: %s", e)

@@ -20,6 +20,7 @@ from extensions import db
 from app.models.process import Process as Surec
 from app.models.portfolio_project import Project, Task
 from utils.task_status import normalize_task_status
+from app.services.project_checklist_service import progress as checklist_progress
 
 from app_platform.modules.proje.display import build_user_labels_map, collect_project_user_ids, user_display
 from app_platform.modules.proje.helpers import (
@@ -226,6 +227,14 @@ def project_new():
 
     sync_project_members_observers(proj, kid)
     _notify_new_project_team(proj, kid, set(), set())
+    # Kurumun (projenin yılındaki) kontrol listesi şablonu projeye kopyalanır.
+    # Savepoint: şablon kopyası patlarsa proje oluşturma etkilenmez.
+    try:
+        from app.services.project_checklist_service import copy_template_to_project
+        with db.session.begin_nested():
+            copy_template_to_project(proj)
+    except Exception as ck_err:
+        current_app.logger.error(f"[project_create] kontrol listesi kopyalanamadı: {ck_err}", exc_info=True)
     db.session.commit()
     try:
         AuditLogger.log_create("Proje Yönetimi", proj.id, {"name": proj.name, "kurum_id": proj.kurum_id})
@@ -273,6 +282,7 @@ def project_detail(project_id: int):
         tasks_by_status=tasks_by_status,
         today=today,
         geciken_gorevler=geciken,
+        ck_progress=checklist_progress(project_id),
         can_edit_tasks=user_can_edit_tasks(current_user, proj),
         is_leader=user_is_project_leader(current_user, proj),
         show_strategy=can_crud_project_portfolio(current_user),

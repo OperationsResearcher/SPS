@@ -10,6 +10,7 @@ from datetime import date
 from types import SimpleNamespace
 
 from flask import Response, flash, redirect, render_template, request, url_for
+from app.services.project_checklist_service import progress_map as checklist_progress_map
 from flask_login import current_user, login_required
 from sqlalchemy import func
 from sqlalchemy.exc import ProgrammingError
@@ -137,6 +138,7 @@ def project_list():
         surecler=surecler,
         filter_leaders=filter_leaders,
         bulk_allowed=privileged,
+        ck_progress=checklist_progress_map([p.id for p in pagination.items]),
     )
 
 

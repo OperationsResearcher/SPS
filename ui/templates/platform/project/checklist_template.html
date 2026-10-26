@@ -1,0 +1,96 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ _("Kontrol Listesi Şablonu") }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Kontrol Listesi Şablonu") }}{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': _('Proje Yönetimi'), 'url': url_for('app_bp.project_list')}, {'label': _('Kontrol Listesi Şablonu'), 'url': None}]) }}
+{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/checklist.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
+{% block content %}
+<div id="ckt-root" class="ck-page"
+     data-year="{{ year }}"
+     data-api="{{ url_for('app_bp.api_checklist_template_get') }}"
+     data-item-url="{{ url_for('app_bp.api_checklist_template_item_save') }}"
+     data-item-delete-url="{{ url_for('app_bp.api_checklist_template_item_delete', item_id=0) }}"
+     data-reorder-url="{{ url_for('app_bp.api_checklist_template_reorder') }}"
+     data-import-url="{{ url_for('app_bp.api_checklist_template_import') }}"
+     data-copy-url="{{ url_for('app_bp.api_checklist_template_copy') }}">
+
+    <div class="mc-page-header">
+        <div>
+            <h2><i class="fas fa-list-check ck-title-icon"></i> {{ _("Kontrol Listesi Şablonu") }}</h2>
+            <p class="ck-sub">{{ _("Yeni açılan her proje, projenin yılına ait şablonun bir kopyasıyla başlar; sorumlular şablonda değil, proje içinde maddelere atanır. Burada yaptığınız değişiklik yalnızca bundan sonra açılacak projeleri etkiler; mevcut projelerin listesi proje içinden düzenlenir.") }}</p>
+        </div>
+        <div class="ck-actions">
+            <a href="{{ url_for('app_bp.project_list') }}" class="mc-btn mc-btn-secondary mc-btn-sm"><i class="fas fa-arrow-left"></i> {{ _("Projelere dön") }}</a>
+        </div>
+    </div>
+
+    <div class="mc-card" data-card-code="project.kontrol_sablonu">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-clipboard-check ck-card-icon"></i>{{ _("Şablon maddeleri") }}</span>
+            <div class="ck-toolbar">
+                <label for="ckt-year" class="ck-year-label">{{ _("Yıl") }}</label>
+                <select id="ckt-year" class="mc-input ck-year-select"></select>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm" id="ckt-copy"><i class="fas fa-copy"></i> {{ _("Yıldan kopyala") }}</button>
+                <label class="mc-btn mc-btn-secondary mc-btn-sm ck-file-btn" for="ckt-file"><i class="fas fa-file-excel"></i> {{ _("Excel'den içe aktar") }}</label>
+                <input type="file" id="ckt-file" class="ck-file-input" accept=".xlsx">
+                <button type="button" class="mc-btn mc-btn-primary mc-btn-sm" id="ckt-add"><i class="fas fa-plus"></i> {{ _("Madde ekle") }}</button>
+            </div>
+        </div>
+        <div class="mc-card-body">
+            <div id="ckt-empty" class="ck-empty ck-hidden">
+                {{ _("Bu yıl için şablon boş. Excel'den içe aktarabilir, başka bir yıldan kopyalayabilir veya madde ekleyebilirsiniz.") }}
+            </div>
+            <div id="ckt-list"></div>
+        </div>
+    </div>
+</div>
+
+<div class="mc-modal-overlay" id="ckt-modal">
+    <div class="mc-modal-lg">
+        <div class="mc-modal-header">
+            <h3 id="ckt-modal-title">{{ _("Madde") }}</h3>
+            <button type="button" class="mc-modal-close" id="ckt-modal-close" aria-label="{{ _('Kapat') }}">✕</button>
+        </div>
+        <div class="mc-modal-body ck-form">
+            <input type="hidden" id="ckt-f-id">
+            <div class="ck-form-row">
+                <div>
+                    <label class="mc-label" for="ckt-f-stage">{{ _("Aşama") }} *</label>
+                    <input id="ckt-f-stage" class="mc-input" maxlength="100" list="ckt-stage-list">
+                    <datalist id="ckt-stage-list"></datalist>
+                </div>
+                <div>
+                    <label class="mc-label" for="ckt-f-group">{{ _("Alt grup") }}</label>
+                    <input id="ckt-f-group" class="mc-input" maxlength="60" placeholder="{{ _('Uygulama / Çıktı') }}">
+                </div>
+            </div>
+            <div>
+                <label class="mc-label" for="ckt-f-text">{{ _("Madde metni") }} *</label>
+                <textarea id="ckt-f-text" class="mc-input" rows="3"></textarea>
+            </div>
+            <div class="ck-form-row ck-form-row-single">
+                <div>
+                    <label class="mc-label" for="ckt-f-period">{{ _("Periyodik hatırlatma (gün)") }}</label>
+                    <input id="ckt-f-period" class="mc-input" type="number" min="1" max="366" placeholder="{{ _('Yok') }}">
+                </div>
+            </div>
+            <label class="ck-check"><input type="checkbox" id="ckt-f-evidence"> {{ _("Kanıt (dosya/bağlantı) eklemeden işaretlenemesin") }}</label>
+            <p id="ckt-err" class="ck-err ck-hidden"></p>
+        </div>
+        <div class="mc-modal-footer">
+            <button type="button" class="mc-btn mc-btn-secondary" id="ckt-cancel">{{ _("İptal") }}</button>
+            <button type="button" class="mc-btn mc-btn-primary" id="ckt-save">{{ _("Kaydet") }}</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/checklist_template.js') }}?v={{ config['VERSION'] }}"></script>
+{% endblock %}

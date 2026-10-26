@@ -21929,6 +21929,508 @@ msgstr "KPIs Below Target"
 msgid "Yarıyıl"
 msgstr "Half-year"
 
+msgid "Süreç Faaliyeti"
+msgstr "Process Activity"
+
+msgid "Kendime Görev"
+msgstr "My Task"
+
+msgid "Bireysel Görev"
+msgstr "Individual Task"
+
+msgid "Geçersiz istek."
+msgstr "Invalid request."
+
+msgid "Bu faaliyeti değiştirme yetkiniz yok."
+msgstr "You are not allowed to change this activity."
+
+msgid "Bu görevi değiştirme yetkiniz yok."
+msgstr "You are not allowed to change this task."
+
+msgid "Bu kullanıcıya görev atama yetkiniz yok."
+msgstr "You are not allowed to assign tasks to this user."
+
+msgid "Takvime abone ol"
+msgstr "Subscribe to calendar"
+
+msgid "Bu bağlantıyı Google Takvim, Outlook veya Apple Takvim'de 'URL ile takvim ekle' bölümüne yapıştırın. Bağlantı kişiseldir; başkalarıyla paylaşmayın."
+msgstr "Paste this link into Google Calendar, Outlook or Apple Calendar under 'Add calendar from URL'. The link is personal; do not share it with others."
+
+msgid "Bağlantıyı kopyala"
+msgstr "Copy link"
+
+msgid "Bağlantı kopyalandı"
+msgstr "Link copied"
+
+msgid "Tüm kişiler"
+msgstr "All people"
+
+msgid "Tüm süreçler"
+msgstr "All processes"
+
+msgid "Atanan kişi"
+msgstr "Assigned person"
+
+msgid "Seçilen kişinin bireysel karnesine eklenir ve kendisine bildirim gider."
+msgstr "It is added to the selected person's individual scorecard and they are notified."
+
+msgid "Alt grup"
+msgstr "Sub-group"
+
+msgid "Atama kaydedildi"
+msgstr "Assignment saved"
+
+msgid "Atanmadı"
+msgstr "Unassigned"
+
+msgid "Aşama"
+msgstr "Stage"
+
+msgid "Aşama ve madde metni zorunludur."
+msgstr "Stage and item text are required."
+
+msgid "Aşağı taşı"
+msgstr "Move down"
+
+msgid "Bana atananlar"
+msgstr "Assigned to me"
+
+msgid "Bir .xlsx dosyası seçin."
+msgstr "Select an .xlsx file."
+
+msgid "Bir dosya seçin veya bağlantı girin."
+msgstr "Select a file or enter a link."
+
+msgid "Bir role atadığınız kişi, o rolün tüm maddelerinden sorumlu olur."
+msgstr "The person you assign to a role becomes responsible for all items of that role."
+
+msgid "Bu dosya türü kabul edilmiyor."
+msgstr "This file type is not accepted."
+
+msgid "Bu işlem kayıt altına alınır."
+msgstr "This action is recorded in the audit log."
+
+msgid "Bu madde için kanıt (dosya veya bağlantı) eklemeden işaretlenemez."
+msgstr "This item cannot be marked without evidence (a file or a link)."
+
+msgid "Bu maddeyi işaretleme yetkiniz yok."
+msgstr "You are not allowed to mark this item."
+
+msgid "Bu projede kontrol listesi yok. Kurum şablonu bu yıl için boş olduğundan madde eklenmemiş; “Madde ekle” ile oluşturabilirsiniz."
+msgstr "This project has no checklist. The organization template is empty for this year, so no items were added; you can create them with “Add item”."
+
+msgid "Bu yıl için şablon boş. Excel'den içe aktarabilir, başka bir yıldan kopyalayabilir veya madde ekleyebilirsiniz."
+msgstr "The template is empty for this year. You can import from Excel, copy from another year or add items."
+
+msgid "Bu yılın şablonunda zaten madde var."
+msgstr "This year's template already has items."
+
+msgid "Değiştir"
+msgstr "Replace"
+
+msgid "Dosya (en çok 10 MB)"
+msgstr "File (max 10 MB)"
+
+msgid "Dosya boş."
+msgstr "The file is empty."
+
+msgid "Dosya en çok 10 MB olabilir."
+msgstr "The file can be at most 10 MB."
+
+msgid "Dosya en çok 2 MB olabilir."
+msgstr "The file can be at most 2 MB."
+
+msgid "Excel"
+msgstr "Excel"
+
+msgid "Excel'den içe aktar"
+msgstr "Import from Excel"
+
+msgid "Geri al"
+msgstr "Undo"
+
+msgid "Geri alındı"
+msgstr "Reverted"
+
+msgid "Geçerli bir bağlantı (http/https) girin."
+msgstr "Enter a valid link (http/https)."
+
+msgid "Geçerli bir kullanıcı seçin."
+msgstr "Select a valid user."
+
+msgid "Hangi yıldan kopyalansın?"
+msgstr "Copy from which year?"
+
+msgid "Hedef yılın şablonunda zaten madde var."
+msgstr "The target year's template already has items."
+
+msgid "Her"
+msgstr "Every"
+
+msgid "Kanıt"
+msgstr "Evidence"
+
+msgid "Kanıt (dosya/bağlantı) eklemeden işaretlenemesin"
+msgstr "Do not allow marking without evidence (file/link)"
+
+msgid "Kanıt bulunamadı."
+msgstr "Evidence not found."
+
+msgid "Kanıt ekle"
+msgstr "Add evidence"
+
+msgid "Kanıt eklemeden işaretlenemesin"
+msgstr "Do not allow marking without evidence"
+
+msgid "Kanıt eklendi"
+msgstr "Evidence added"
+
+msgid "Kanıt silindi"
+msgstr "Evidence deleted"
+
+msgid "Kanıt silinsin mi?"
+msgstr "Delete this evidence?"
+
+msgid "Kanıt zorunlu"
+msgstr "Evidence required"
+
+msgid "Kanıtı sil"
+msgstr "Delete evidence"
+
+msgid "Karışık"
+msgstr "Mixed"
+
+msgid "Kaynak ve hedef yıl aynı olamaz."
+msgstr "Source and target year cannot be the same."
+
+msgid "Kaynak yılın şablonu boş."
+msgstr "The source year's template is empty."
+
+msgid "Kontrol Listesi"
+msgstr "Checklist"
+
+msgid "Kontrol Listesi Şablonu"
+msgstr "Checklist Template"
+
+msgid "Kontrol listesi"
+msgstr "Checklist"
+
+msgid "Kontrol listesi ilerlemesi"
+msgstr "Checklist progress"
+
+msgid "Kontrol listesi tekrar düzenlenebilir olur."
+msgstr "The checklist becomes editable again."
+
+msgid "Kontrol listesinde onaylanmamış %(n)s madde var; proje tamamlanamaz."
+msgstr "The checklist has %(n)s unapproved items; the project cannot be completed."
+
+msgid "Madde 'Bekliyor' durumuna döner."
+msgstr "The item returns to 'Pending'."
+
+msgid "Madde geri alınsın mı?"
+msgstr "Undo this item?"
+
+msgid "Madde metni"
+msgstr "Item text"
+
+msgid "Madde projeden çıkarılsın mı?"
+msgstr "Remove this item from the project?"
+
+msgid "Madde zaten işaretlenmiş."
+msgstr "The item is already marked."
+
+msgid "Madde çıkarıldı"
+msgstr "Item removed"
+
+msgid "Madde şablondan çıkarılır; mevcut projelerdeki kopyaları etkilenmez."
+msgstr "The item is removed from the template; copies in existing projects are not affected."
+
+msgid "Madde, sorumlu tarafından 'Yapıldı' işaretlenir; yapandan farklı bir proje lideri/yöneticisi onaylayınca tamamlanmış sayılır. Tüm maddeler onaylanmadan proje tamamlanamaz."
+msgstr "An item is marked 'Done' by the responsible person and counts as complete once a project leader/manager other than the marker approves it. The project cannot be completed until all items are approved."
+
+msgid "Maddeler"
+msgstr "Items"
+
+msgid "Maddeyi düzenle"
+msgstr "Edit item"
+
+msgid "Maddeyi işaretleyen kişi onaylayamaz; ikinci bir yetkili onaylamalıdır."
+msgstr "The person who marked the item cannot approve it; a second authorized person must approve."
+
+msgid "Mevcut maddeler ne olsun?"
+msgstr "What should happen to the existing items?"
+
+msgid "Not"
+msgstr "Note"
+
+msgid "Onay bekliyor"
+msgstr "Awaiting approval"
+
+msgid "Onay yetkisi yalnızca proje lideri ve yöneticisindedir."
+msgstr "Only the project leader and managers can approve."
+
+msgid "Onaylandı"
+msgstr "Approved"
+
+msgid "PDF"
+msgstr "PDF"
+
+msgid "Periyodik hatırlatma (gün)"
+msgstr "Periodic reminder (days)"
+
+msgid "Periyot 1 ile 366 gün arasında olmalıdır."
+msgstr "The period must be between 1 and 366 days."
+
+msgid "Periyot gün sayısı geçersiz."
+msgstr "Invalid period in days."
+
+msgid "Proje tamamlandı"
+msgstr "Project completed"
+
+msgid "Proje tamamlandı; kontrol listesi kilitli. Değişiklik için önce projeyi yeniden açın."
+msgstr "The project is completed; the checklist is locked. Reopen the project first to make changes."
+
+msgid "Proje tamamlansın mı?"
+msgstr "Complete the project?"
+
+msgid "Proje yeniden açıldı"
+msgstr "Project reopened"
+
+msgid "Proje yeniden açılsın mı?"
+msgstr "Reopen the project?"
+
+msgid "Proje zaten tamamlandı."
+msgstr "The project is already completed."
+
+msgid "Projelere dön"
+msgstr "Back to projects"
+
+msgid "Projeyi tamamla"
+msgstr "Complete project"
+
+msgid "Projeyi tamamlama yetkiniz yok."
+msgstr "You are not allowed to complete the project."
+
+msgid "Projeyi yeniden aç"
+msgstr "Reopen project"
+
+msgid "Projeyi yeniden açma yetkiniz yok."
+msgstr "You are not allowed to reopen the project."
+
+msgid "Rol atamaları"
+msgstr "Role assignments"
+
+msgid "Rol bulunamadı."
+msgstr "Role not found."
+
+msgid "Sonuna ekle"
+msgstr "Append"
+
+msgid "Sorumlu rol"
+msgstr "Responsible role"
+
+msgid "Sorumlu yok"
+msgstr "No one responsible"
+
+msgid "Tamamla"
+msgstr "Complete"
+
+msgid "Tüm aşamalar"
+msgstr "All stages"
+
+msgid "Tüm durumlar"
+msgstr "All statuses"
+
+msgid "Tüm maddeler onaylı. Proje tamamlandı olarak işaretlenir ve liste kilitlenir."
+msgstr "All items are approved. The project will be marked as completed and the list will be locked."
+
+msgid "Uygulama / Çıktı"
+msgstr "Application / Output"
+
+msgid "Yalnızca 'Yapıldı' durumundaki madde onaylanabilir."
+msgstr "Only an item in 'Done' status can be approved."
+
+msgid "Yapıldı"
+msgstr "Done"
+
+msgid "Yapıldı (onay bekliyor)"
+msgstr "Done (awaiting approval)"
+
+msgid "Yeni açılan her proje, projenin yılına ait şablonun bir kopyasıyla başlar. Burada yaptığınız değişiklik yalnızca bundan sonra açılacak projeleri etkiler; mevcut projelerin listesi proje içinden düzenlenir."
+msgstr "Every new project starts with a copy of the template for the project's year. Changes here only affect projects created from now on; the list of an existing project is edited inside that project."
+
+msgid "Yeni projelere otomatik eklenen kontrol listesi"
+msgstr "The checklist automatically added to new projects"
+
+msgid "Yeniden aç"
+msgstr "Reopen"
+
+msgid "Yukarı taşı"
+msgstr "Move up"
+
+msgid "Yıldan kopyala"
+msgstr "Copy from year"
+
+msgid "günde bir"
+msgstr "days"
+
+msgid "madde içe aktarıldı"
+msgstr "items imported"
+
+msgid "madde kopyalandı"
+msgstr "items copied"
+
+msgid "madde onaylı"
+msgstr "items approved"
+
+msgid "veya"
+msgstr "or"
+
+msgid "Örn. Uzman"
+msgstr "E.g. Specialist"
+
+msgid "İşaretlendi; onay bekliyor"
+msgstr "Marked; awaiting approval"
+
+msgid "Şablon bulunamadı."
+msgstr "Template not found."
+
+msgid "Şablon maddeleri"
+msgstr "Template items"
+
+msgid "Şablon yönetimi için yetkiniz yok."
+msgstr "You are not allowed to manage the template."
+
+msgid ""
+"Kurumun yıl bazlı kontrol listesi şablonunu yönetir: madde ekleme, düzenleme, silme, sıralama, Excel'den içe aktarma ve başka yıldan kopyalama.\n"
+"\n"
+"Sınır: Şablondaki değişiklik yalnızca bundan sonra açılacak projeleri etkiler; açılmış projelerin listesi o projenin Kontrol Listesi sekmesinden düzenlenir. Her yılın şablonu ayrıdır.\n"
+"\n"
+"Yorum: Sorumlu alanına kişi adı değil rol yazın (Uzman, Pazarlama…); kişi, projede role atanır. Periyot (gün) girilen madde sorumlusuna düzenli hatırlatma gönderir."
+msgstr ""
+"Manages the organization's year-based checklist template: add, edit, delete and reorder items, import from Excel and copy from another year.\n"
+"\n"
+"Limit: Changes to the template only affect projects created from now on; the list of an existing project is edited from that project's Checklist tab. Each year has its own template.\n"
+"\n"
+"Insight: In the responsible field enter a role (Specialist, Marketing…), not a person's name; the person is assigned to the role inside the project. An item with a period (days) sends regular reminders to its owner."
+
+msgid ""
+"Projenin kontrol listesi ilerlemesini gösterir: onaylı madde sayısı, onay bekleyenler ve aşama bazında durum; projeyi tamamlama ve Excel/PDF çıktısı buradan yapılır.\n"
+"\n"
+"Sınır: Yalnızca 'Onaylandı' durumundaki maddeler ilerlemeye sayılır — 'Yapıldı' işaretlenmiş ama onay bekleyen madde sayılmaz. Tüm maddeler onaylanmadan proje tamamlanamaz.\n"
+"\n"
+"Yorum: Çok sayıda 'onay bekliyor' maddesi, onay yetkililerinde birikme olduğunu gösterir; ilerlemeyi hızlandırmanın yolu onay kuyruğunu eritmektir."
+msgstr ""
+"Shows the project's checklist progress: approved items, items awaiting approval and the status per stage; completing the project and the Excel/PDF output are done here.\n"
+"\n"
+"Limit: Only items in 'Approved' status count toward progress — an item marked 'Done' but awaiting approval does not. The project cannot be completed until all items are approved.\n"
+"\n"
+"Insight: Many 'awaiting approval' items mean a backlog with the approvers; the way to speed up progress is to clear the approval queue."
+
+msgid ""
+"Kontrol listesindeki rolleri (Uzman, Pazarlama…) proje ekibinden kişilere atar; atanan kişi o rolün tüm maddelerinden sorumlu olur.\n"
+"\n"
+"Sınır: Atama rolün tüm maddelerine birden uygulanır, tek tek madde ataması yapılmaz. Yalnızca proje lideri ve yöneticiler atama yapabilir; proje tamamlandıysa atama kilitlidir.\n"
+"\n"
+"Yorum: 'Karışık' görünmesi, aynı role bağlı maddelerin farklı kişilere atanmış olduğunu gösterir."
+msgstr ""
+"Assigns the checklist roles (Specialist, Marketing…) to people from the project team; the assigned person becomes responsible for all items of that role.\n"
+"\n"
+"Limit: An assignment applies to all items of the role at once; items are not assigned one by one. Only the project leader and managers can assign; once the project is completed, assignment is locked.\n"
+"\n"
+"Insight: 'Mixed' means items tied to the same role are assigned to different people."
+
+msgid ""
+"Proje kontrol listesi maddelerini aşamalara göre listeler; her madde sorumlu tarafından 'Yapıldı' işaretlenir, yapandan farklı bir lider/yönetici onaylar. Kanıt (dosya veya bağlantı) ve not eklenebilir.\n"
+"\n"
+"Sınır: Maddeyi işaretleyen kişi kendi maddesini onaylayamaz (çift onay). 'Kanıt zorunlu' maddeler kanıt eklenmeden işaretlenemez. Maddeyi projeden çıkarmak yalnızca yöneticiye açıktır ve denetim kaydına yazılır.\n"
+"\n"
+"Yorum: Periyot rozeti taşıyan maddeler için sorumluya düzenli hatırlatma gider; onaylanınca hatırlatma durur."
+msgstr ""
+"Lists the project checklist items by stage; each item is marked 'Done' by the responsible person and approved by a leader/manager other than the marker. Evidence (file or link) and notes can be added.\n"
+"\n"
+"Limit: The person who marked an item cannot approve it (dual approval). Items marked 'Evidence required' cannot be marked without evidence. Removing an item from the project is only available to managers and is written to the audit log.\n"
+"\n"
+"Insight: Items with a period badge send regular reminders to the responsible person; approval stops the reminders."
+
+msgid ""
+"Proje özet sayfasında kontrol listesi ilerlemesini ve tamamlanma durumunu gösterir; ayrıntı için Kontrol Listesi sekmesine geçilir.\n"
+"\n"
+"Sınır: Kart yalnızca özet verir, madde işlemleri sekmede yapılır. Projede kontrol listesi yoksa kart görünmez.\n"
+"\n"
+"Yorum: Yüzde yalnızca onaylı maddelere göredir; proje, yüzde 100 olmadan tamamlanmış sayılmaz."
+msgstr ""
+"Shows the checklist progress and completion status on the project summary page; for details go to the Checklist tab.\n"
+"\n"
+"Limit: The card only gives a summary; item actions are done in the tab. If the project has no checklist the card is hidden.\n"
+"\n"
+"Insight: The percentage is based on approved items only; a project is not considered complete before 100 percent."
+
+msgid "Bir rolün adını değiştirirseniz o roldeki tüm maddeler güncellenir; aynı ada çevirerek roller birleştirilebilir."
+msgstr "If you rename a role, all items of that role are updated; roles can be merged by renaming them to the same name."
+
+msgid "Rol adı boş olamaz."
+msgstr "Role name cannot be empty."
+
+msgid "Rol adını değiştir"
+msgstr "Rename role"
+
+msgid "Roller"
+msgstr "Roles"
+
+msgid "Rol adı"
+msgstr "Role name"
+
+msgid ""
+"Kurumun yıl bazlı kontrol listesi şablonunu yönetir: madde ekleme, düzenleme, silme, sıralama, Excel'den içe aktarma ve başka yıldan kopyalama.\n"
+"\n"
+"Sınır: Şablondaki değişiklik yalnızca bundan sonra açılacak projeleri etkiler; açılmış projelerin listesi o projenin Kontrol Listesi sekmesinden düzenlenir. Her yılın şablonu ayrıdır. Şablonda sorumlu tutulmaz — sorumlular proje içinde maddelere atanır.\n"
+"\n"
+"Yorum: Periyot (gün) girilen madde, atanan kişilere düzenli hatırlatma gönderir; 'Kanıt zorunlu' işaretli madde kanıtsız tamamlanamaz."
+msgstr ""
+"Manages the organization's year-based checklist template: add, edit, delete and reorder items, import from Excel and copy from another year.\n"
+"\n"
+"Limit: Changes to the template only affect projects created from now on; the list of an existing project is edited from that project's Checklist tab. Each year has its own template. No one is responsible in the template — responsible parties are assigned to items inside the project.\n"
+"\n"
+"Insight: An item with a period (days) sends regular reminders to the assigned people; an item marked 'Evidence required' cannot be completed without evidence."
+
+msgid ""
+"Proje kontrol listesi maddelerini aşamalara göre listeler; her maddeye kişi, süreç (sürecin tüm üyeleri) ve/veya proje ekibi atanır. Atanan 'Yapıldı' işaretler, yapandan farklı bir lider/yönetici onaylar. Kanıt (dosya veya bağlantı) ve not eklenebilir.\n"
+"\n"
+"Sınır: Atamayı yalnızca proje lideri ve yöneticiler yapar; birden çok maddeyi seçip toplu atayabilirler. Maddeyi işaretleyen kişi kendi maddesini onaylayamaz (çift onay). 'Kanıt zorunlu' maddeler kanıtsız işaretlenemez. Maddeyi projeden çıkarmak denetim kaydına yazılır.\n"
+"\n"
+"Yorum: Süreç atamak, o sürecin üyeleri değiştikçe sorumluları da kendiliğinden günceller; proje ekibi için de aynısı geçerlidir. Periyot rozeti taşıyan maddeler için atananlara düzenli hatırlatma gider, onaylanınca durur."
+msgstr ""
+"Lists the project checklist items by stage; each item is assigned to people, a process (all its members) and/or the project team. The assignee marks it 'Done' and a leader/manager other than the marker approves it. Evidence (file or link) and notes can be added.\n"
+"\n"
+"Limit: Only the project leader and managers can assign, and they can select several items and assign in bulk. The person who marked an item cannot approve it (dual approval). Items marked 'Evidence required' cannot be marked without evidence. Removing an item from the project is written to the audit log.\n"
+"\n"
+"Insight: Assigning a process automatically updates the responsible people as that process's members change; the same applies to the project team. Items with a period badge send regular reminders to the assignees; approval stops them."
+
+msgid "Ata"
+msgstr "Assign"
+
+msgid "Geçerli bir süreç seçin."
+msgstr "Select a valid process."
+
+msgid "Geçersiz atama hedefi."
+msgstr "Invalid assignment target."
+
+msgid "Kişi ara…"
+msgstr "Search people…"
+
+msgid "Madde seçilmedi."
+msgstr "No item selected."
+
+msgid "Proje ekibi"
+msgstr "Project team"
+
+msgid "Seçilenlere ata"
+msgstr "Assign to selected"
+
+msgid "Yeni açılan her proje, projenin yılına ait şablonun bir kopyasıyla başlar; sorumlular şablonda değil, proje içinde maddelere atanır. Burada yaptığınız değişiklik yalnızca bundan sonra açılacak projeleri etkiler; mevcut projelerin listesi proje içinden düzenlenir."
+msgstr "Every new project starts with a copy of the template for the project's year; responsible parties are assigned to items inside the project, not in the template. Changes here only affect projects created from now on; the list of an existing project is edited inside that project."
+
 #~ msgid "Kritik KPI:"
 #~ msgstr "Critical KPI:"
 

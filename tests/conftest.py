@@ -14,29 +14,61 @@ from app.models.portfolio_project import Project, Task
 from config import TestingConfig
 
 
-@pytest.fixture(scope='function')
-def app():
-    """Flask app fixture - function scope for test isolation."""
+def _reset_tenant_guard_cache():
+    """Tenant guard (enforce): testte dis app_context acik oldugu icin `g`
+    istekler arasi paylasilir; guard onbellegi (g._tenant_guard_ids) onceki
+    (anonim/fixture) baglamdan kalip oturumu dusurur. Prod'da her istek
+    kendi g'sine sahiptir. Her istek basinda onbellegi sifirla."""
+    from flask import g
+    g.pop("_tenant_guard_ids", None)
+    g.pop("_tenant_guard_lock", None)
+    g.pop("_login_user", None)
+
+
+def _build_app():
     app = create_app(TestingConfig)
-
-    # Tenant guard (enforce): testte dis app_context acik oldugu icin `g`
-    # istekler arasi paylasilir; guard onbellegi (g._tenant_guard_ids) onceki
-    # (anonim/fixture) baglamdan kalip oturumu dusurur. Prod'da her istek
-    # kendi g'sine sahiptir. Her istek basinda onbellegi sifirla.
-    def _reset_tenant_guard_cache():
-        from flask import g
-        g.pop("_tenant_guard_ids", None)
-        g.pop("_tenant_guard_lock", None)
-        g.pop("_login_user", None)
-
     # Diger before_request kancalarindan (platform_core kapisi) ONCE calismali.
     app.before_request_funcs.setdefault(None, []).insert(0, _reset_tenant_guard_cache)
+    return app
+
+
+@pytest.fixture(scope='session')
+def _shared_app():
+    """Oturum boyunca TEK uygulama: create_app (~1 sn) her testte tekrarlanmaz.
+
+    Test izolasyonu veritabani seviyesinde saglanir (her testte create_all/drop_all) ve
+    config / limiter / cache durumu testler arasi sifirlanir (bkz. `app` fixture'i).
+    Temiz uygulama isteyen test `@pytest.mark.fresh_app` ile isaretlenir.
+    """
+    return _build_app()
+
+
+def _reset_shared_state(app, config_snapshot):
+    app.config.clear()
+    app.config.update(config_snapshot)
+    try:
+        from extensions import cache, limiter
+        cache.clear()
+        limiter.reset()
+    except Exception:  # sifirlama basarisizligi testi dusurmemeli
+        pass
+
+
+@pytest.fixture(scope='function')
+def app(request, _shared_app):
+    """Flask app fixture — paylasilan uygulama + testte temiz veritabani."""
+    if request.node.get_closest_marker("fresh_app"):
+        app, snapshot = _build_app(), None
+    else:
+        app, snapshot = _shared_app, dict(_shared_app.config)
 
     with app.app_context():
         db.create_all()
         yield app
         db.session.remove()
         db.drop_all()
+    if snapshot is not None:
+        _reset_shared_state(app, snapshot)
 
 
 @pytest.fixture(scope='function')
