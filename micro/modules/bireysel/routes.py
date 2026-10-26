@@ -378,8 +378,19 @@ def bireysel_api_veri_add():
 def bireysel_api_faaliyet_add():
     data = request.get_json() or {}
     try:
+        # Üst yönetim kurumdaki başka bir kullanıcıya bireysel görev atayabilir.
+        target_uid = current_user.id
+        raw_target = data.get("assignee_id")
+        if raw_target not in (None, "") and int(raw_target) != int(current_user.id):
+            from app_platform.modules.proje.permissions import is_privileged
+            from app.models.core import User as _CoreUser
+            target = db.session.get(_CoreUser, int(raw_target))
+            if (not is_privileged(current_user) or not target or not target.is_active
+                    or target.tenant_id != current_user.tenant_id):
+                return jsonify({"success": False, "message": _("Bu kullanıcıya görev atama yetkiniz yok.")}), 403
+            target_uid = target.id
         act = IndividualActivity(
-            user_id=current_user.id,
+            user_id=target_uid,
             name=data.get("name"),
             description=data.get("description"),
             status=data.get("status", "Planlandı"),
@@ -390,6 +401,18 @@ def bireysel_api_faaliyet_add():
         if data.get("end_date"):
             act.end_date = datetime.strptime(data["end_date"], "%Y-%m-%d").date()
         db.session.add(act)
+        db.session.flush()
+        if int(target_uid) != int(current_user.id):
+            from micro.services.notification_triggers import _create as _notif_create
+            _notif_create(
+                user_id=int(target_uid),
+                tenant_id=current_user.tenant_id,
+                notification_type="task_assigned",
+                title="Size görev atandı",
+                message=f"'{act.name}' görevi size atandı. İşlemi yapan: {current_user.first_name or current_user.email}",
+                link="/individual/scorecard",
+                related_user_id=current_user.id,
+            )
         db.session.commit()
         return jsonify({"success": True, "message": "Faaliyet eklendi.", "id": act.id})
     except Exception as e:
