@@ -35,6 +35,10 @@
         .replace(/"/g, "&quot;");
     }
 
+    const moveUrl = root.dataset.moveUrl || "/api/calendar/event/move";
+    const icalLinkUrl = root.dataset.icalLinkUrl || "/api/calendar/ical-link";
+    const filters = { user_id: "", process_id: "" };
+
     let metaCache = null;
     async function loadMeta() {
       if (metaCache) return metaCache;
@@ -46,6 +50,103 @@
     }
 
     let activityMetaCache = { processId: null, data: null };
+
+    function fillSelect(sel, items, placeholder, labelOf) {
+      sel.innerHTML = "";
+      const o0 = document.createElement("option");
+      o0.value = "";
+      o0.textContent = placeholder;
+      sel.appendChild(o0);
+      (items || []).forEach((it) => {
+        const o = document.createElement("option");
+        o.value = String(it.id);
+        o.textContent = labelOf(it);
+        sel.appendChild(o);
+      });
+    }
+
+    function toast(icon, title) {
+      if (typeof Swal === "undefined") return;
+      Swal.fire({ toast: true, position: "top-end", icon, title, showConfirmButton: false, timer: 2500 });
+    }
+
+    async function showIcalLink() {
+      try {
+        const res = await fetch(icalLinkUrl, { credentials: "same-origin", headers: { Accept: "application/json" } });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.message || t("Kaydedilemedi"));
+        if (typeof Swal === "undefined") return;
+        const r = await Swal.fire({
+          icon: "info",
+          title: t("Takvime abone ol"),
+          html: `<p style="font-size:13px;margin-bottom:8px;">${escHtml(t("Bu bağlantıyı Google Takvim, Outlook veya Apple Takvim'de 'URL ile takvim ekle' bölümüne yapıştırın. Bağlantı kişiseldir; başkalarıyla paylaşmayın."))}</p><input class="swal2-input" id="cal-ical-url" readonly value="${escHtml(data.url)}">`,
+          showCancelButton: true,
+          confirmButtonText: t("Bağlantıyı kopyala"),
+          cancelButtonText: t("Kapat"),
+        });
+        if (r.isConfirmed) {
+          try {
+            await navigator.clipboard.writeText(data.url);
+            toast("success", t("Bağlantı kopyalandı"));
+          } catch (e) {
+            const i = document.getElementById("cal-ical-url");
+            if (i) i.select();
+          }
+        }
+      } catch (e) {
+        toast("error", String(e.message || e));
+      }
+    }
+
+    function buildToolbar(meta) {
+      const bar = document.createElement("div");
+      bar.className = "cal-toolbar";
+      if (meta.can_filter) {
+        const selU = document.createElement("select");
+        selU.className = "mc-input cal-toolbar-sel";
+        selU.setAttribute("aria-label", t("Kişi"));
+        fillSelect(selU, meta.users, t("Tüm kişiler"), (u) => u.full_name || u.email || "#" + u.id);
+        const selP = document.createElement("select");
+        selP.className = "mc-input cal-toolbar-sel";
+        selP.setAttribute("aria-label", t("Süreç"));
+        fillSelect(selP, meta.processes, t("Tüm süreçler"), (p) => p.name);
+        const apply = () => {
+          filters.user_id = selU.value;
+          filters.process_id = selP.value;
+          calendar.refetchEvents();
+        };
+        selU.addEventListener("change", apply);
+        selP.addEventListener("change", apply);
+        bar.appendChild(selU);
+        bar.appendChild(selP);
+      }
+      const ical = document.createElement("button");
+      ical.type = "button";
+      ical.className = "mc-btn mc-btn-secondary cal-toolbar-ical";
+      ical.innerHTML = '<i class="fas fa-calendar-plus"></i> ' + escHtml(t("Takvime abone ol"));
+      ical.addEventListener("click", showIcalLink);
+      bar.appendChild(ical);
+      calEl.parentNode.insertBefore(bar, calEl);
+    }
+
+    async function persistMove(info) {
+      const ev = info.event;
+      const fmt = (d) => (d ? d.toISOString().slice(0, 19) : null);
+      try {
+        const res = await fetch(moveUrl, {
+          method: "POST",
+          credentials: "same-origin",
+          headers: { "Content-Type": "application/json", Accept: "application/json", "X-CSRFToken": getCsrf() },
+          body: JSON.stringify({ id: ev.id, start: fmt(ev.start), end: fmt(ev.end), all_day: ev.allDay }),
+        });
+        const data = await res.json();
+        if (!res.ok || !data.success) throw new Error(data.message || t("Kaydedilemedi"));
+        toast("success", t("Tarih güncellendi"));
+      } catch (e) {
+        info.revert();
+        toast("error", String(e.message || e));
+      }
+    }
 
     function activityMetaUrl(pid) {
       return `/api/calendar/process/${pid}/activity-form-meta`;
@@ -100,7 +201,7 @@
 
     function dateRangeRecap() {
       if (rangeStart === rangeEndIncl) return t("Takvim seçimi:") + " " + fmtTr(new Date(rangeStart + "T12:00:00"));
-      return t("Takvim seçimi:") + " " + fmtTr(new Date(rangeStart + "T12:00:00")) + " ÔåÆ " + fmtTr(new Date(rangeEndIncl + "T12:00:00"));
+      return t("Takvim seçimi:") + " " + fmtTr(new Date(rangeStart + "T12:00:00")) + " → " + fmtTr(new Date(rangeEndIncl + "T12:00:00"));
     }
 
     function toDatetimeLocal(d, hm) {
@@ -356,6 +457,15 @@
         resetSelfForm();
         document.getElementById("cal-self-start").value = rangeStart;
         document.getElementById("cal-self-end").value = rangeEndIncl;
+        const selfWrap = document.getElementById("cal-self-assignee-wrap");
+        const selfSel = document.getElementById("cal-self-assignee");
+        if (selfWrap && selfSel) {
+          const can = !!(metaCache && metaCache.can_assign_others);
+          selfWrap.classList.toggle("hidden", !can);
+          if (can) fillSelect(selfSel, metaCache.users, t("Kendime"), (u) => u.full_name || u.email || "#" + u.id);
+          const note = document.getElementById("cal-self-note");
+          if (note) note.classList.toggle("hidden", can);
+        }
       }
     }
 
@@ -386,10 +496,12 @@
           const te = (document.getElementById("cal-self-t-end").value || "").trim();
           const note = (document.getElementById("cal-self-desc").value || "").trim();
           const parts = [];
-          if (ts || te) parts.push(t("Planlanan saat:") + " " + (ts || "—") + " ÔÇô " + (te || "—"));
+          if (ts || te) parts.push(t("Planlanan saat:") + " " + (ts || "—") + " – " + (te || "—"));
           if (note) parts.push(note);
           const description = parts.length ? parts.join("\n\n") : "";
           const body = { name: title, status: "Planlandı", start_date: sd, end_date: ed };
+          const selfAssignee = document.getElementById("cal-self-assignee");
+          if (selfAssignee && selfAssignee.value) body.assignee_id = parseInt(selfAssignee.value, 10);
           if (description) body.description = description;
           const res = await fetch(faaliyetAddUrl, {
             method: "POST",
@@ -514,7 +626,9 @@
       },
       events: async function (fetchInfo, successCallback, failureCallback) {
         try {
-          const url = `${eventsUrl}?start=${encodeURIComponent(fetchInfo.startStr)}&end=${encodeURIComponent(fetchInfo.endStr)}`;
+          let url = `${eventsUrl}?start=${encodeURIComponent(fetchInfo.startStr)}&end=${encodeURIComponent(fetchInfo.endStr)}`;
+          if (filters.user_id) url += `&user_id=${encodeURIComponent(filters.user_id)}`;
+          if (filters.process_id) url += `&process_id=${encodeURIComponent(filters.process_id)}`;
           const res = await fetch(url, {
             credentials: "same-origin",
             headers: { Accept: "application/json" },
@@ -535,7 +649,10 @@
             throw new Error((data && data.message) || `HTTP ${res.status}`);
           }
           if (loadingEl) loadingEl.style.display = "none";
-          successCallback(data.events || []);
+          successCallback((data.events || []).map((e) => {
+            e.editable = !!(e.extendedProps && e.extendedProps.canMove);
+            return e;
+          }));
         } catch (err) {
           if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">${t("Takvim yüklenemedi:")} ${escHtml(String(err.message || err))}</span>`;
           failureCallback(err);
@@ -560,8 +677,20 @@
         minute: "2-digit",
         hour12: false,
       },
+      editable: false,
+      eventDrop: persistMove,
+      eventResize: persistMove,
+      eventDidMount: function (info) {
+        const ep = info.event.extendedProps || {};
+        const bits = [info.event.title];
+        if (ep.status) bits.push(t("Durum") + ": " + ep.status);
+        if (ep.assignees && ep.assignees.length) bits.push(t("Atanan") + ": " + ep.assignees.join(", "));
+        if (ep.overdue) bits.push(t("Gecikmiş"));
+        info.el.title = bits.join("\n");
+      },
     });
     calendar.render();
+    loadMeta().then(buildToolbar).catch(() => {});
   }
 
   global.KokpitimCalendarQuickCreate = { boot };

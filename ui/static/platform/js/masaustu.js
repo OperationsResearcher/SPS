@@ -247,72 +247,14 @@
   }
 
   function initCalendar() {
-    const calEl = document.getElementById("masaustu-calendar");
-    if (!calEl || typeof FullCalendar === "undefined") return;
-    const loadingEl = document.getElementById("masaustu-calendar-loading");
-    const eventsUrl = root.dataset.calendarEventsUrl || "/api/calendar/events";
-
-    const calendar = new FullCalendar.Calendar(calEl, {
-      locale: (document.documentElement.lang || "tr").toLowerCase(),
-      timeZone: "Europe/Istanbul",
-      initialView: "dayGridMonth",
-      firstDay: 1,
-      height: "auto",
-      headerToolbar: {
-        left: "prev,next today",
-        center: "title",
-        right: "dayGridMonth,timeGridWeek,timeGridDay",
-      },
-      buttonText: {
-        today: t("Bugün"),
-        month: t("Ay"),
-        week: t("Hafta"),
-        day: t("Gün"),
-      },
-      events: async function (fetchInfo, successCallback, failureCallback) {
-        try {
-          const url = `${eventsUrl}?start=${encodeURIComponent(fetchInfo.startStr)}&end=${encodeURIComponent(fetchInfo.endStr)}`;
-          const res = await fetch(url, {
-            credentials: "same-origin",
-            headers: { Accept: "application/json" },
-          });
-          const contentType = String(res.headers.get("content-type") || "").toLowerCase();
-          let data = null;
-          if (contentType.includes("application/json")) {
-            data = await res.json();
-          } else {
-            const raw = await res.text();
-            throw new Error(
-              res.status >= 500
-                ? `${t("Sunucu hatası")} (HTTP ${res.status})`
-                : `${t("Beklenmeyen yanıt")} (HTTP ${res.status}): ${raw.slice(0, 120)}`
-            );
-          }
-          if (!res.ok || !data.success) {
-            throw new Error((data && data.message) || `HTTP ${res.status}`);
-          }
-          if (loadingEl) loadingEl.style.display = "none";
-          successCallback(data.events || []);
-        } catch (err) {
-          if (loadingEl) loadingEl.innerHTML = `<span style="color:#dc2626;">${t("Takvim yüklenemedi:")} ${escAttr(String(err.message || err))}</span>`;
-          failureCallback(err);
-        }
-      },
-      eventClick: function (info) {
-        const u = info.event.url || (info.event.extendedProps && info.event.extendedProps.url);
-        if (u) {
-          info.jsEvent.preventDefault();
-          window.location.href = u;
-        }
-      },
-      eventTimeFormat: {
-        hour: "2-digit",
-        minute: "2-digit",
-        hour12: false,
-      },
+    // Masaüstü takvimi, Kurum Takvimi ile aynı bileşen: yetkili roller kurum geneli görür;
+    // süzgeç, sürükle-bırak ve hızlı ekleme aynıdır.
+    if (typeof KokpitimCalendarQuickCreate === "undefined") return;
+    KokpitimCalendarQuickCreate.boot({
+      root: root,
+      calendarId: "masaustu-calendar",
+      loadingId: "masaustu-calendar-loading",
     });
-
-    calendar.render();
   }
 
   applyHiddenWidgets();

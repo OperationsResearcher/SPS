@@ -1,0 +1,151 @@
+{% extends "platform/base.html" %}
+{% block title %}{{ _("Kontrol Listesi") }} — {{ project.name }} — Kokpitim{% endblock %}
+{% block page_title %}{{ _("Kontrol Listesi") }} — {{ project.name }}{% endblock %}
+
+{% block extra_css %}
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/project_views.css') }}?v={{ config['VERSION'] }}">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/checklist.css') }}?v={{ config['VERSION'] }}">
+{% endblock %}
+
+{% block breadcrumb %}
+    {{ mc_breadcrumb([{'label': _('Proje Yönetimi'), 'url': url_for('app_bp.project_list')}, {'label': project.name, 'url': url_for('app_bp.project_detail', project_id=project.id)}, {'label': _('Kontrol Listesi'), 'url': None}]) }}
+{% endblock %}
+
+{% block content %}
+{% set active_view = 'checklist' %}
+<div id="ckp-root" class="ck-page"
+     data-project-id="{{ project.id }}"
+     data-api="{{ url_for('app_bp.api_project_checklist', project_id=project.id) }}"
+     data-base="{{ url_for('app_bp.api_project_checklist', project_id=project.id) }}"
+     data-complete-url="{{ url_for('app_bp.api_checklist_complete_project', project_id=project.id) }}"
+     data-reopen-project-url="{{ url_for('app_bp.api_checklist_reopen_project', project_id=project.id) }}"
+     data-assign-url="{{ url_for('app_bp.api_checklist_assign', project_id=project.id) }}"
+     data-add-url="{{ url_for('app_bp.api_checklist_item_add', project_id=project.id) }}">
+
+    <div class="micro-project-view-toolbar align-items-center">
+        <div>
+            <a href="{{ url_for('app_bp.project_detail', project_id=project.id) }}" class="mc-btn mc-btn-secondary mc-btn-sm mb-2"><i class="fas fa-arrow-left"></i> {{ _("Projeye dön") }}</a>
+            <div class="micro-project-view-title"><i class="fas fa-list-check ck-title-icon"></i> {{ _("Kontrol Listesi") }}</div>
+        </div>
+        {% include "platform/project/_project_views_nav.html" %}
+    </div>
+
+    <div id="ckp-lock" class="ck-lock ck-hidden"></div>
+
+    <div class="mc-card" data-card-code="project.kontrol_ilerleme">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-chart-line ck-card-icon"></i>{{ _("İlerleme") }}</span>
+            <div class="ck-toolbar">
+                <button type="button" class="mc-btn mc-btn-primary mc-btn-sm ck-hidden" id="ckp-complete"><i class="fas fa-flag-checkered"></i> {{ _("Projeyi tamamla") }}</button>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm ck-hidden" id="ckp-reopen-project"><i class="fas fa-lock-open"></i> {{ _("Projeyi yeniden aç") }}</button>
+                <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.api_checklist_export', project_id=project.id, fmt='xlsx') }}"><i class="fas fa-file-excel"></i> {{ _("Excel") }}</a>
+                <a class="mc-btn mc-btn-secondary mc-btn-sm" href="{{ url_for('app_bp.api_checklist_export', project_id=project.id, fmt='pdf') }}"><i class="fas fa-file-pdf"></i> {{ _("PDF") }}</a>
+                <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm ck-hidden" id="ckp-add"><i class="fas fa-plus"></i> {{ _("Madde ekle") }}</button>
+            </div>
+        </div>
+        <div class="mc-card-body">
+            <div class="ck-progress-line">
+                <div class="ck-progress"><div class="ck-progress-bar" id="ckp-bar"></div></div>
+                <div class="ck-progress-text" id="ckp-bar-text"></div>
+            </div>
+            <div id="ckp-stage-chips" class="ck-chips"></div>
+            <p class="ck-hint">{{ _("Madde, sorumlu tarafından 'Yapıldı' işaretlenir; yapandan farklı bir proje lideri/yöneticisi onaylayınca tamamlanmış sayılır. Tüm maddeler onaylanmadan proje tamamlanamaz.") }}</p>
+        </div>
+    </div>
+
+    <div class="mc-card ck-gap" data-card-code="project.kontrol_maddeler">
+        <div class="mc-card-header">
+            <span class="mc-card-title"><i class="fas fa-clipboard-check ck-card-icon"></i>{{ _("Maddeler") }}</span>
+            <div class="ck-toolbar">
+                <select id="ckp-f-status" class="mc-input ck-filter" aria-label="{{ _('Durum') }}">
+                    <option value="">{{ _("Tüm durumlar") }}</option>
+                    <option value="Bekliyor">{{ _("Bekliyor") }}</option>
+                    <option value="Yapıldı">{{ _("Yapıldı (onay bekliyor)") }}</option>
+                    <option value="Onaylandı">{{ _("Onaylandı") }}</option>
+                </select>
+                <select id="ckp-f-stage" class="mc-input ck-filter" aria-label="{{ _('Aşama') }}"></select>
+                <label class="ck-check"><input type="checkbox" id="ckp-f-mine"> {{ _("Bana atananlar") }}</label>
+                <label class="ck-check ck-hidden" id="ckp-select-all-wrap"><input type="checkbox" id="ckp-select-all"> {{ _("Görünenleri seç") }}</label>
+                <button type="button" class="mc-btn mc-btn-primary mc-btn-sm ck-hidden" id="ckp-assign-selected"><i class="fas fa-user-plus"></i> {{ _("Seçilenlere ata") }} (<span id="ckp-sel-count">0</span>)</button>
+            </div>
+        </div>
+        <div class="mc-card-body">
+            <div id="ckp-empty" class="ck-empty ck-hidden">{{ _("Bu projede kontrol listesi yok. Kurum şablonu bu yıl için boş olduğundan madde eklenmemiş; “Madde ekle” ile oluşturabilirsiniz.") }}</div>
+            <div id="ckp-list"></div>
+        </div>
+    </div>
+</div>
+
+<div class="mc-modal-overlay" id="ckp-modal">
+    <div class="mc-modal-lg">
+        <div class="mc-modal-header">
+            <h3 id="ckp-modal-title">{{ _("Madde") }}</h3>
+            <button type="button" class="mc-modal-close" id="ckp-modal-close" aria-label="{{ _('Kapat') }}">✕</button>
+        </div>
+        <div class="mc-modal-body ck-form">
+            <input type="hidden" id="ckp-f-id">
+            <div class="ck-form-row">
+                <div>
+                    <label class="mc-label" for="ckp-m-stage">{{ _("Aşama") }} *</label>
+                    <input id="ckp-m-stage" class="mc-input" maxlength="100" list="ckp-stage-list">
+                    <datalist id="ckp-stage-list"></datalist>
+                </div>
+                <div>
+                    <label class="mc-label" for="ckp-m-group">{{ _("Alt grup") }}</label>
+                    <input id="ckp-m-group" class="mc-input" maxlength="60">
+                </div>
+            </div>
+            <div>
+                <label class="mc-label" for="ckp-m-text">{{ _("Madde metni") }} *</label>
+                <textarea id="ckp-m-text" class="mc-input" rows="3"></textarea>
+            </div>
+            <div class="ck-form-row ck-form-row-single">
+                <div>
+                    <label class="mc-label" for="ckp-m-period">{{ _("Periyodik hatırlatma (gün)") }}</label>
+                    <input id="ckp-m-period" class="mc-input" type="number" min="1" max="366">
+                </div>
+            </div>
+            <label class="ck-check"><input type="checkbox" id="ckp-m-evidence"> {{ _("Kanıt eklemeden işaretlenemesin") }}</label>
+            <p id="ckp-err" class="ck-err ck-hidden"></p>
+        </div>
+        <div class="mc-modal-footer">
+            <button type="button" class="mc-btn mc-btn-secondary" id="ckp-cancel">{{ _("İptal") }}</button>
+            <button type="button" class="mc-btn mc-btn-primary" id="ckp-save">{{ _("Kaydet") }}</button>
+        </div>
+    </div>
+</div>
+
+<div class="mc-modal-overlay" id="ckp-ev-modal">
+    <div class="mc-modal-lg">
+        <div class="mc-modal-header">
+            <h3>{{ _("Kanıt ekle") }}</h3>
+            <button type="button" class="mc-modal-close" id="ckp-ev-close" aria-label="{{ _('Kapat') }}">✕</button>
+        </div>
+        <div class="mc-modal-body ck-form">
+            <input type="hidden" id="ckp-ev-item">
+            <div>
+                <label class="mc-label" for="ckp-ev-title">{{ _("Başlık") }}</label>
+                <input id="ckp-ev-title" class="mc-input" maxlength="255">
+            </div>
+            <div>
+                <label class="mc-label" for="ckp-ev-file">{{ _("Dosya (en çok 10 MB)") }}</label>
+                <input id="ckp-ev-file" type="file" class="mc-input">
+            </div>
+            <div class="ck-or">{{ _("veya") }}</div>
+            <div>
+                <label class="mc-label" for="ckp-ev-url">{{ _("Bağlantı") }}</label>
+                <input id="ckp-ev-url" class="mc-input" type="url" placeholder="https://">
+            </div>
+            <p id="ckp-ev-err" class="ck-err ck-hidden"></p>
+        </div>
+        <div class="mc-modal-footer">
+            <button type="button" class="mc-btn mc-btn-secondary" id="ckp-ev-cancel">{{ _("İptal") }}</button>
+            <button type="button" class="mc-btn mc-btn-primary" id="ckp-ev-save">{{ _("Ekle") }}</button>
+        </div>
+    </div>
+</div>
+{% endblock %}
+
+{% block extra_js %}
+<script src="{{ url_for('app_bp.static', filename='platform/js/project_checklist.js') }}?v={{ config['VERSION'] }}"></script>
+{% endblock %}

@@ -57,6 +57,7 @@ from utils.karne_hesaplamalar import (
 from app_platform.modules.surec.permissions import (
     accessible_processes_filter,
     can_crud_process_entity,
+    is_privileged,
     user_can_access_process,
     user_can_crud_pg_and_activity,
     user_can_edit_kpi_data_row,
@@ -158,7 +159,15 @@ def surec_api_activity_add():
             raw_assignees = [raw_assignees] if raw_assignees is not None else []
         assignee_ids = []
         seen = set()
-        allowed_ids = {int(u.id) for u in (p.leaders + p.members + p.owners) if u and u.is_active}
+        if is_privileged(current_user):
+            # Üst yönetim: kurumdaki tüm aktif kullanıcılara atayabilir (süreç üyesi olmaları gerekmez)
+            allowed_ids = {
+                int(r[0]) for r in db.session.query(User.id).filter(
+                    User.tenant_id == current_user.tenant_id, User.is_active.is_(True)
+                ).all()
+            }
+        else:
+            allowed_ids = {int(u.id) for u in (p.leaders + p.members + p.owners) if u and u.is_active}
         for rid in raw_assignees:
             try:
                 uid = int(rid)
@@ -258,6 +267,28 @@ def surec_api_activity_add():
                     continue
                 current_app.logger.warning(f"[surec_api_activity_add] notification: {notif_err}")
                 break
+
+        # Süreç dışından atananlara (üst yönetim ataması) bildirim: notify_activity_assignment
+        # yalnız sürecin lider/üyelerine gider.
+        try:
+            from app_platform.services.notification_triggers import _create as _notif_create
+            in_process = {int(u.id) for u in (p.leaders + p.members)}
+            for ext_uid in assignee_ids:
+                if int(ext_uid) in in_process or int(ext_uid) == int(current_user.id):
+                    continue
+                _notif_create(
+                    user_id=int(ext_uid),
+                    tenant_id=p.tenant_id,
+                    notification_type="activity_added",
+                    title=f"Size faaliyet atandı: {p.name}",
+                    message=f"'{act.name}' faaliyeti size atandı. İşlemi yapan: {current_user.first_name or current_user.email}",
+                    link=f"/process/{p.id}/karne?tab=activities",
+                    related_user_id=current_user.id,
+                )
+            db.session.commit()
+        except Exception as ext_err:
+            db.session.rollback()
+            current_app.logger.warning(f"[surec_api_activity_add] external assignee notification: {ext_err}")
 
         try:
             AuditLogger.log_create(

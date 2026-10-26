@@ -25,5 +25,9 @@
        class="mc-btn mc-btn-sm {% if av == 'kapasite' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
         <i class="fas fa-users-gear"></i> {{ _("Kapasite") }}
     </a>
+    <a href="{{ url_for('app_bp.project_view_checklist', project_id=project.id) }}"
+       class="mc-btn mc-btn-sm {% if av == 'checklist' %}mc-btn-primary{% else %}mc-btn-secondary{% endif %}">
+        <i class="fas fa-list-check"></i> {{ _("Kontrol Listesi") }}
+    </a>
 </div>
 

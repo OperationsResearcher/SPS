@@ -80,6 +80,9 @@ class Project(TenantScopedMixin, db.Model):
     # Durum
     priority = db.Column(db.String(50), default='Orta')  # Düşük, Orta, Yüksek
     is_archived = db.Column(db.Boolean, default=False, index=True)
+    # Tamamlanma: yalnız proje kontrol listesindeki TÜM maddeler onaylanınca set edilir
+    completed_at = db.Column(db.DateTime, nullable=True, index=True)
+    completed_by = db.Column(db.Integer, db.ForeignKey('users.id', ondelete='SET NULL'), nullable=True)
 
     # Soft Delete
     is_active = db.Column(db.Boolean, default=True, nullable=False, index=True)

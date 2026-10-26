@@ -151,7 +151,12 @@
       </div>
 
       <div id="cal-form-self" class="hidden space-y-3">
-        <p class="text-sm text-slate-600 dark:text-slate-400">{{ _("Bireysel karnenize kaydedilir; yalnızca siz görürsünüz.") }}</p>
+        <p id="cal-self-note" class="text-sm text-slate-600 dark:text-slate-400">{{ _("Bireysel karnenize kaydedilir; yalnızca siz görürsünüz.") }}</p>
+        <div id="cal-self-assignee-wrap" class="hidden">
+          <label class="mc-label" for="cal-self-assignee">{{ _("Atanan kişi") }}</label>
+          <select id="cal-self-assignee" class="mc-input w-full"></select>
+          <p class="text-xs text-slate-500 mt-1">{{ _("Seçilen kişinin bireysel karnesine eklenir ve kendisine bildirim gider.") }}</p>
+        </div>
         <div>
           <label class="mc-label" for="cal-self-title">{{ _("Görev başlığı") }} *</label>
           <input id="cal-self-title" type="text" class="mc-input w-full" placeholder="{{ _('Örn. Eğitim modülünü tamamla') }}" />

@@ -1,0 +1,109 @@
+/* Proje kontrol listesi — şablon yönetimi ve proje sekmesi */
+.ck-page { max-width: 1200px; margin: 0 auto; padding-bottom: 24px; }
+.ck-title-icon { color: #0ea5e9; margin-right: 6px; }
+.ck-card-icon { color: #10b981; margin-right: 6px; }
+.ck-sub { font-size: 13px; color: var(--text-muted, #64748b); margin: 4px 0 0; max-width: 760px; }
+.ck-actions, .ck-toolbar { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ck-year-label { font-size: 12px; color: var(--text-muted, #64748b); }
+.ck-year-select { width: auto; min-width: 90px; }
+.ck-file-input { display: none; }
+.ck-file-btn { cursor: pointer; }
+.ck-hidden { display: none !important; }
+.ck-empty { padding: 18px; text-align: center; font-size: 13px; color: var(--text-muted, #64748b); border: 1px dashed #cbd5e1; border-radius: 8px; }
+.ck-err { color: #dc2626; font-size: 13px; margin-top: 8px; }
+
+.ck-stage { margin-bottom: 16px; border: 1px solid #e2e8f0; border-radius: 10px; overflow: hidden; }
+.dark .ck-stage { border-color: #334155; }
+.ck-stage-head { display: flex; align-items: center; justify-content: space-between; gap: 8px; padding: 8px 12px; background: #f1f5f9; font-weight: 600; font-size: 13px; }
+.dark .ck-stage-head { background: #1e293b; }
+.ck-stage-count { font-weight: 400; font-size: 12px; color: #64748b; }
+.ck-group-label { padding: 4px 12px; font-size: 11px; text-transform: uppercase; letter-spacing: .04em; color: #64748b; background: #f8fafc; }
+.dark .ck-group-label { background: #0f172a; }
+.ck-row { display: grid; grid-template-columns: 1fr auto auto; gap: 10px; align-items: center; padding: 8px 12px; border-top: 1px solid #e2e8f0; font-size: 13px; }
+.dark .ck-row { border-color: #334155; }
+.ck-row-text { line-height: 1.4; }
+.ck-row-role { color: #475569; }
+.dark .ck-row-role { color: #cbd5e1; }
+.ck-badges { display: flex; gap: 6px; flex-wrap: wrap; }
+.ck-badge { font-size: 11px; padding: 2px 8px; border-radius: 999px; background: #e0f2fe; color: #0369a1; white-space: nowrap; }
+.ck-badge-evidence { background: #fef3c7; color: #92400e; }
+.ck-row-actions { display: flex; gap: 4px; justify-content: flex-end; }
+.ck-icon-btn { border: 0; background: transparent; cursor: pointer; padding: 4px 6px; color: #64748b; border-radius: 6px; }
+.ck-icon-btn:hover { background: #e2e8f0; color: #0f172a; }
+.ck-icon-btn[disabled] { opacity: .3; cursor: default; }
+
+.ck-form { display: grid; gap: 12px; }
+.ck-form-row { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; }
+.ck-check { display: flex; align-items: center; gap: 8px; font-size: 13px; }
+
+@media (max-width: 720px) {
+  .ck-row { grid-template-columns: 1fr; }
+  .ck-row-actions { justify-content: flex-start; }
+  .ck-form-row { grid-template-columns: 1fr; }
+}
+
+/* ── Proje kontrol listesi sekmesi ─────────────────────────────────────── */
+.ck-gap { margin-top: 16px; }
+.ck-hint { font-size: 12px; color: #64748b; margin-top: 8px; }
+.ck-lock { background: #fef3c7; color: #92400e; padding: 10px 14px; border-radius: 8px; margin-bottom: 12px; font-size: 13px; }
+.ck-progress-line { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.ck-progress { flex: 1; min-width: 200px; height: 12px; background: #e2e8f0; border-radius: 999px; overflow: hidden; }
+.dark .ck-progress { background: #334155; }
+.ck-progress-bar { height: 100%; width: 0; background: #10b981; transition: width .3s; }
+.ck-progress-text { font-size: 13px; font-weight: 600; }
+.ck-chips { display: flex; flex-wrap: wrap; gap: 6px; margin-top: 10px; }
+.ck-chip { border: 1px solid #cbd5e1; background: transparent; border-radius: 999px; padding: 3px 10px; font-size: 12px; cursor: pointer; color: inherit; }
+.ck-chip-done { background: #d1fae5; border-color: #6ee7b7; color: #065f46; }
+.ck-roles { display: grid; grid-template-columns: repeat(auto-fill, minmax(280px, 1fr)); gap: 8px; }
+.ck-role-row { display: flex; align-items: center; justify-content: space-between; gap: 8px; border: 1px solid #e2e8f0; border-radius: 8px; padding: 6px 10px; }
+.dark .ck-role-row { border-color: #334155; }
+.ck-role-name { font-size: 13px; font-weight: 600; }
+.ck-role-select { width: 55%; }
+.ck-filter { width: auto; min-width: 150px; }
+.ck-item { display: grid; grid-template-columns: 1fr auto; gap: 12px; padding: 10px 12px; border-top: 1px solid #e2e8f0; align-items: start; }
+.dark .ck-item { border-color: #334155; }
+.ck-item-main { display: flex; flex-direction: column; gap: 6px; font-size: 13px; }
+.ck-item-text { line-height: 1.45; }
+.ck-item-meta { display: flex; flex-wrap: wrap; gap: 10px; font-size: 12px; color: #64748b; align-items: center; }
+.ck-item-actions { display: flex; flex-wrap: wrap; gap: 6px; justify-content: flex-end; max-width: 360px; }
+.ck-status { align-self: flex-start; font-size: 11px; font-weight: 600; padding: 2px 8px; border-radius: 999px; }
+.ck-st-pending { background: #f1f5f9; color: #475569; }
+.ck-st-done { background: #fef3c7; color: #92400e; }
+.ck-st-approved { background: #d1fae5; color: #065f46; }
+.ck-evidences { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
+.ck-evidence { font-size: 12px; color: #0369a1; text-decoration: underline; }
+.ck-note { font-size: 12px; font-style: italic; color: #475569; border-left: 3px solid #cbd5e1; padding-left: 8px; }
+.ck-or { text-align: center; font-size: 12px; color: #64748b; }
+@media (max-width: 720px) {
+  .ck-item { grid-template-columns: 1fr; }
+  .ck-item-actions { justify-content: flex-start; max-width: none; }
+}
+
+/* Liste / detay özet çubukları */
+.ck-mini { display: flex; flex-wrap: wrap; align-items: center; gap: 8px; margin-top: 8px; }
+.ck-progress-native { width: 160px; height: 8px; accent-color: #10b981; }
+.ck-mini-text { font-size: 12px; color: #475569; }
+a.ck-mini-text { text-decoration: underline; }
+.ck-detail-card { padding: 12px 16px; margin-bottom: 12px; display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+.ck-detail-head { display: flex; flex-wrap: wrap; align-items: center; gap: 10px; }
+
+.ck-page .mc-page-header h2 { font-size: 20px; font-weight: 700; margin: 0; color: var(--text-primary, #0f172a); }
+.dark .ck-page .mc-page-header h2 { color: #f1f5f9; }
+.ck-roles-box { margin-bottom: 16px; padding: 10px 12px; border: 1px solid #e2e8f0; border-radius: 10px; }
+.dark .ck-roles-box { border-color: #334155; }
+.ck-roles-title { font-size: 13px; font-weight: 600; }
+
+.ck-form-row-single { grid-template-columns: 1fr; }
+.ck-item-left { display: flex; gap: 10px; align-items: flex-start; }
+.ck-select { margin-top: 3px; }
+.ck-unassigned { color: #b45309; }
+.ck-badge-user { background: #e0f2fe; color: #0369a1; }
+.ck-badge-process { background: #ede9fe; color: #5b21b6; }
+.ck-badge-project { background: #dcfce7; color: #166534; }
+.ck-as-team { display: flex; align-items: center; gap: 8px; padding: 8px 10px; border: 1px solid #e2e8f0; border-radius: 8px; margin-bottom: 10px; }
+.ck-as-title { font-size: 12px; font-weight: 600; margin: 10px 0 4px; }
+.ck-as-title small { font-weight: 400; color: #64748b; }
+.ck-as-list { max-height: 180px; overflow: auto; border: 1px solid #e2e8f0; border-radius: 8px; padding: 4px 8px; margin-top: 4px; }
+.dark .ck-as-list, .dark .ck-as-team { border-color: #334155; }
+.ck-as-row { display: flex; align-items: center; gap: 8px; padding: 3px 0; font-size: 13px; }
+.ck-as-mode { display: flex; flex-direction: column; gap: 4px; margin-top: 12px; font-size: 13px; }

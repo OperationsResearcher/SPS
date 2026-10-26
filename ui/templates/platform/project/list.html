@@ -8,6 +8,7 @@
 
 {% block extra_css %}
 <link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/g_project_list.css') }}?v={{ config['VERSION'] }}">
+<link rel="stylesheet" href="{{ url_for('app_bp.static', filename='platform/css/checklist.css') }}?v={{ config['VERSION'] }}">
 {% endblock %}
 
 {% block content %}
@@ -39,6 +40,11 @@
             <button type="button" class="mc-btn mc-btn-secondary mc-btn-sm mc-hier-help-btn" title="{{ _('Strateji hiyerarşisini öğren') }}">
                 <i class="fas fa-circle-info"></i> {{ _("Hiyerarşi Rehberi") }}
             </button>
+            {% if privileged %}
+            <a href="{{ url_for('app_bp.project_checklist_template_page') }}" class="mc-btn mc-btn-secondary mc-btn-sm" title="{{ _('Yeni projelere otomatik eklenen kontrol listesi') }}">
+                <i class="fas fa-list-check"></i> {{ _("Kontrol Listesi Şablonu") }}
+            </a>
+            {% endif %}
             <a href="{{ url_for('app_bp.project_new') }}" class="mc-btn mc-btn-primary">
                 <i class="fas fa-plus"></i> {{ _("Yeni Proje") }}
             </a>
@@ -143,6 +149,16 @@
                                     <span class="ms-2"><i class="fas fa-flag"></i> {{ p.priority or '—' }}</span>
                                     {% if p.health_score is not none %}<span class="ms-2"><i class="fas fa-heartbeat"></i> {{ p.health_score }}</span>{% endif %}
                                 </div>
+                                {% set ckp = ck_progress.get(p.id) %}
+                                {% if p.completed_at or (ckp and ckp.total) %}
+                                <div class="ck-mini">
+                                    {% if p.completed_at %}<span class="ck-status ck-st-approved"><i class="fas fa-flag-checkered"></i> {{ _("Tamamlandı") }}</span>{% endif %}
+                                    {% if ckp and ckp.total %}
+                                    <progress class="ck-progress-native" max="100" value="{{ ckp.pct }}" aria-label="{{ _('Kontrol listesi ilerlemesi') }}"></progress>
+                                    <a class="ck-mini-text" href="{{ url_for('app_bp.project_view_checklist', project_id=p.id) }}">{{ _("Kontrol listesi") }} %{{ ckp.pct }} · {{ ckp.approved }}/{{ ckp.total }}</a>
+                                    {% endif %}
+                                </div>
+                                {% endif %}
                             </div>
                         </div>
                         <div class="flex flex-wrap gap-2 shrink-0">

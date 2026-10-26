@@ -2,6 +2,51 @@
 > Her kod değişikliği bu dosyaya işlenir.
 > Format: TASK-[numara] | Tarih | Durum
 
+## TASK-339 | 2026-10-26 | ✅ Tamamlandı (`claude/proje-kontrol-listesi`; commit/push/deploy YOK)
+
+**Görev:** Proje Kontrol Listesi (docs/ProjeKontrol.xlsx → her projede zorunlu, çift onaylı, kilitli kapanışlı kontrol listesi).
+**Modül:** proje
+**Durum:** ✅ Tamamlandı (Yerel). Test/Demo/Yayın'a taşınmadı.
+
+### Değiştirilen Dosyalar
+- `app/models/project_checklist.py` + `migrations/versions/pk01a2b3c4d5_proje_kontrol_listesi.py` → 4 yeni tablo (şablon kurum+yıl, şablon maddesi, proje maddesi, kanıt) + `project.completed_at/by` (migration İDEMPOTENT)
+- `app/services/project_checklist_service.py` → şablon→proje kopyası, çift onay (yapan≠onaylayan), kilitli kapanış, rol ataması, kanıt, bildirim, periyodik hatırlatma
+- `app/services/checklist_excel.py`, `checklist_export.py` → Excel içe aktarma (ProjeKontrol düzeni) / Excel + PDF çıktı (PDF'te gömülü DejaVu: `app/utils/fonts/`)
+- `micro/modules/proje/routes_checklist.py` (+`routes.py`) → şablon yönetimi + proje API'leri; `routes_project_crud.py` → yeni projede şablon otomatik kopyalanır (savepoint)
+- `ui/templates/platform/project/checklist*.html`, `ui/static/platform/{js,css}/…checklist*` → şablon sayfası + proje "Kontrol Listesi" sekmesi; liste/detayda ilerleme
+- `services/project_checklist_scheduler.py` (+`app/__init__.py`) → saatlik periyodik hatırlatma (REMINDER_SCHEDULERS_ENABLED bayrağıyla)
+- `scripts/ops/proje_kontrol_sablon_yukle.py` → Excel'den şablon yükle + mevcut projelere kopyala (KONTROL varsayılan, `--calistir`)
+- `scripts/seed_data/card_descriptions_proje_kontrol.py` (5 kart) + `translations/en/*` (≈230 msgid) + `tests/test_proje_kontrol_listesi.py` (17 test)
+
+### Yapılan İşlem
+Kararlar: kilitli kapanış, çift onay (yapan≠onaylayan), kurum+yıl şablonu (proje içinde ekle/sil), rol etiketi (şablon) → kişi (proje), periyot yalnız hatırlatma, kanıt (dosya ≤10MB/bağlantı, dosyalar `instance/checklist_evidence/`, yetkili indirme), Excel+PDF. Yerelde KMF (tenant 16) 2026 şablonu Excel'den yüklendi (38 madde); Playwright ile şablon sayfası/proje sekmesi/liste/detay doğrulandı.
+
+### Revizyon (2026-10-26, aynı gün)
+Rol etiketi mantığı KALDIRILDI: şablonda sorumlu alanı yok (Excel'deki SORUMLU okunmaz). Sorumlular proje içinde **maddeye** atanır: kişi, süreç (sürecin tüm üyeleri — üyelik değiştikçe kendiliğinden güncellenir) ve/veya proje ekibi; tek madde veya toplu seçim; yalnız lider/yönetici. Yeni tablo `project_checklist_assignment`; `responsible_role`/`assignee_id` kolonları kaldırıldı (pk01 yayınlanmamıştı, düzenlendi; Yerel tablolar yeniden kuruldu, KMF şablonu yeniden yüklendi). Test altyapısı: paylaşılan `app` fixture + xdist (tam paket 20 dk → 3 dk), `scripts/dev/pytest_izle.py` (ilerleme + takılma bekçisi), `pytest-timeout` kuruldu.
+
+### Notlar
+Yayın'a taşırken: migration `pk01…` + (isteğe bağlı) `proje_kontrol_sablon_yukle.py` + Kart Yönetimi keşfi → `seed_card_descriptions.py` (5 kart). Mevcut projelere kopya: `--mevcut-projelere --calistir` (kullanıcı onayıyla). Yerel DB'ye migration yalnız bu tabloları/kolonları açacak şekilde elle uygulandı (alembic_version değişmedi; `db upgrade head` idempotent).
+
+## TASK-338 | 2026-10-26 | ✅ Tamamlandı (`claude/takvim-yetki-yil-filtresi`; commit/push/deploy YOK)
+
+**Görev:** Takvim (/takvim ve /desktop): üst yönetim kurum kapsamı + atama, süreç listesinde yıl süzgeci, ek özellikler.
+**Modül:** masaustu / takvim
+**Durum:** ✅ Tamamlandı
+
+### Değiştirilen Dosyalar
+- `micro/modules/masaustu/routes.py` → olay derleme yeniden yazıldı (rol kapısı, kişi/süreç süzgeci, durum renkleri, başkalarının bireysel görevleri), süreç listesi seçili yıla göre, `/api/calendar/event/move`, iCal bağlantısı + oturumsuz imzalı akış
+- `micro/modules/surec/routes_activity.py` → üst yönetim kurumdaki her aktif kullanıcıya atayabilir (eskiden sessizce kendine çevriliyordu); süreç dışı atanana bildirim
+- `micro/modules/bireysel/routes.py` → üst yönetim `assignee_id` ile başkasına bireysel görev atar (+bildirim)
+- `ui/static/platform/js/calendar_quick_create.js`, `masaustu.js` → süzgeç çubuğu, sürükle-bırak, iCal, "Atanan kişi"; masaüstü takvimi ortak bileşene geçti
+- `ui/templates/platform/calendar/_calendar_quick_create_{modal,styles}.html`, `translations/en/*` → UI + 15 çeviri
+- `tests/test_takvim_yetki.py` → 9 test
+
+### Yapılan İşlem
+Kök neden (yıl): süreçler yıl bazlı kopyalanıyor, liste `plan_year_id` süzmüyordu (yerel: 77 satır / 11 benzersiz → 11). `/api/calendar/events/org` rol kontrolsüzdü (standart kullanıcı kurumu görüyordu) — artık yetkisizler kişisel kapsama düşer. Playwright ile /takvim ve /desktop doğrulandı.
+
+### Notlar
+iCal bağlantısı imzalı belirteçtir (süresiz, salt okunur, kişinin kendi kapsamı); iptali için SECRET_KEY değişir. Etkinlikler yıla göre süzülmez (tarih bazlı), yalnız süreç seçici süzülür.
+
 ## TASK-337 | 2026-10-25 | ✅ Tamamlandı (ölü kod temizliği; `claude/temizlik-kok-dosyalar`; commit/push YOK)
 
 **Görev:** Küçük kod dosyalarından ölü olanların tespiti ve silinmesi (statik analiz, kullanıcı onaylı).
